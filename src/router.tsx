@@ -46,7 +46,11 @@ export const getRouter = () => {
     // (staleTime 60 s ci-dessus). Sinon le cache de preload Router masque
     // les invalidations Query après mutations.
     defaultPreloadStaleTime: 0,
-    defaultPendingMs: 200,
+    // Évite un rendu SSR du spinner sur les routes code-splittées pendant un
+    // cold start/HMR : si le client charge déjà la vraie page, React signale
+    // sinon un mismatch d'hydratation et le preview peut rester masqué par
+    // l'overlay d'erreur.
+    defaultPendingMs: 3000,
     defaultPendingMinMs: 300,
     defaultPendingComponent: RoutePending,
     defaultErrorComponent: ErrorComponent,
