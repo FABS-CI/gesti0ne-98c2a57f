@@ -44,6 +44,7 @@ function AuthPage() {
   const [error, setError] = useState("");
   const [idleTimeout, setIdleTimeout] = useState(false);
   const [remember, setRemember] = useState(true);
+  const [authReady, setAuthReady] = useState(false);
 
   function isFetchProxyError(err: unknown) {
     const message = err instanceof Error ? err.message : String(err ?? "");
@@ -72,6 +73,12 @@ function AuthPage() {
   }
 
   useEffect(() => {
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.has("password") || currentUrl.searchParams.has("email")) {
+      currentUrl.searchParams.delete("password");
+      currentUrl.searchParams.delete("email");
+      window.history.replaceState({}, "", `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`);
+    }
     const reason = new URLSearchParams(window.location.search).get("reason");
     setIdleTimeout(reason === "idle_timeout");
     if (reason === "account_disabled") {
@@ -89,6 +96,7 @@ function AuthPage() {
       /* ignore */
     }
     initRememberPolicyFromStorage();
+    setAuthReady(true);
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/dashboard" });
     });
@@ -294,6 +302,7 @@ function AuthPage() {
             onSubmit={handleSubmit}
             remember={remember}
             setRemember={setRemember}
+            authReady={authReady}
           />
         </div>
       </div>
