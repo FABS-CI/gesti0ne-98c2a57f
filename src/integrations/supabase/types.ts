@@ -278,6 +278,176 @@ export type Database = {
         }
         Relationships: []
       }
+      commande_lignes: {
+        Row: {
+          commande_id: string
+          created_at: string
+          designation: string
+          ligne_id: string
+          montant_remise: number
+          prix_unitaire: number
+          produit_id: string | null
+          quantite: number
+          reference_produit: string | null
+          remise_pct: number
+          total_ht_ligne: number
+          total_ligne: number
+          updated_at: string
+        }
+        Insert: {
+          commande_id: string
+          created_at?: string
+          designation: string
+          ligne_id?: string
+          montant_remise?: number
+          prix_unitaire?: number
+          produit_id?: string | null
+          quantite?: number
+          reference_produit?: string | null
+          remise_pct?: number
+          total_ht_ligne?: number
+          total_ligne?: number
+          updated_at?: string
+        }
+        Update: {
+          commande_id?: string
+          created_at?: string
+          designation?: string
+          ligne_id?: string
+          montant_remise?: number
+          prix_unitaire?: number
+          produit_id?: string | null
+          quantite?: number
+          reference_produit?: string | null
+          remise_pct?: number
+          total_ht_ligne?: number
+          total_ligne?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commande_lignes_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
+        ]
+      }
+      commandes: {
+        Row: {
+          adresse: string | null
+          client_id: string | null
+          client_nom: string | null
+          commande_id: string
+          commercial_id: string | null
+          commercial_nom: string | null
+          created_at: string
+          created_by: string | null
+          created_by_nom: string | null
+          date_commande: string
+          depot_id: string | null
+          etablissement: string | null
+          exercice_id: string | null
+          montant_total: number
+          montant_ttc: number
+          montant_tva: number
+          nb_produits: number
+          net_a_payer: number
+          notes: string | null
+          numero: string | null
+          observations: string | null
+          reference: string | null
+          remise: number
+          remise_globale_montant: number
+          remise_globale_pct: number
+          representant_nom: string | null
+          statut: string
+          taux_tva: number
+          telephone: string | null
+          total_ht_brut: number
+          total_ht_net: number
+          total_quantite: number
+          total_remises_lignes: number
+          updated_at: string
+          ville: string | null
+        }
+        Insert: {
+          adresse?: string | null
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string
+          commercial_id?: string | null
+          commercial_nom?: string | null
+          created_at?: string
+          created_by?: string | null
+          created_by_nom?: string | null
+          date_commande?: string
+          depot_id?: string | null
+          etablissement?: string | null
+          exercice_id?: string | null
+          montant_total?: number
+          montant_ttc?: number
+          montant_tva?: number
+          nb_produits?: number
+          net_a_payer?: number
+          notes?: string | null
+          numero?: string | null
+          observations?: string | null
+          reference?: string | null
+          remise?: number
+          remise_globale_montant?: number
+          remise_globale_pct?: number
+          representant_nom?: string | null
+          statut?: string
+          taux_tva?: number
+          telephone?: string | null
+          total_ht_brut?: number
+          total_ht_net?: number
+          total_quantite?: number
+          total_remises_lignes?: number
+          updated_at?: string
+          ville?: string | null
+        }
+        Update: {
+          adresse?: string | null
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string
+          commercial_id?: string | null
+          commercial_nom?: string | null
+          created_at?: string
+          created_by?: string | null
+          created_by_nom?: string | null
+          date_commande?: string
+          depot_id?: string | null
+          etablissement?: string | null
+          exercice_id?: string | null
+          montant_total?: number
+          montant_ttc?: number
+          montant_tva?: number
+          nb_produits?: number
+          net_a_payer?: number
+          notes?: string | null
+          numero?: string | null
+          observations?: string | null
+          reference?: string | null
+          remise?: number
+          remise_globale_montant?: number
+          remise_globale_pct?: number
+          representant_nom?: string | null
+          statut?: string
+          taux_tva?: number
+          telephone?: string | null
+          total_ht_brut?: number
+          total_ht_net?: number
+          total_quantite?: number
+          total_remises_lignes?: number
+          updated_at?: string
+          ville?: string | null
+        }
+        Relationships: []
+      }
       produits: {
         Row: {
           actif: boolean
