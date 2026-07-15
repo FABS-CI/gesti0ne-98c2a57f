@@ -1,0 +1,1 @@
+ALTER TYPE public.statut_livraison_cmd ADD VALUE IF NOT EXISTS 'annulee';

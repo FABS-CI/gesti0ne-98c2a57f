@@ -1,0 +1,174 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Calendar, FileText, Receipt, User } from "lucide-react";
+
+import { supabase } from "@/integrations/supabase/client";
+import { formatFCFA } from "@/lib/format";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+export const Route = createFileRoute("/_authenticated/proformas/$proformaId")({
+  component: ProformaDetailPage,
+});
+
+function frDate(d: string | null | undefined) {
+  return d ? new Date(d).toLocaleDateString("fr-FR") : "—";
+}
+
+async function getProforma(id: string) {
+  const { data, error } = await supabase
+    .from("proformas")
+    .select("*")
+    .eq("proforma_id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+async function getProformaLignes(id: string) {
+  const { data, error } = await supabase
+    .from("proforma_lignes")
+    .select("*")
+    .eq("proforma_id", id)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+function ProformaDetailPage() {
+  const { proformaId } = Route.useParams();
+  const { data: proforma, isLoading } = useQuery({
+    queryKey: ["proforma", proformaId],
+    queryFn: () => getProforma(proformaId),
+  });
+  const { data: lignes = [] } = useQuery({
+    queryKey: ["proforma-lignes", proformaId],
+    queryFn: () => getProformaLignes(proformaId),
+  });
+
+  if (isLoading) return <Skeleton className="h-64 w-full" />;
+  if (!proforma)
+    return (
+      <div className="space-y-4">
+        <p className="text-muted-foreground">Proforma introuvable.</p>
+        <Button asChild variant="outline">
+          <Link to="/proformas">Retour</Link>
+        </Button>
+      </div>
+    );
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Button asChild variant="ghost" size="icon">
+            <Link to="/proformas">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-xl font-bold">Proforma {proforma.reference}</h1>
+            <p className="text-sm text-muted-foreground">
+              {proforma.client_nom ?? "Client non renseigné"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+              <User className="h-4 w-4" /> Client
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="font-medium">{proforma.client_nom ?? "—"}</CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Calendar className="h-4 w-4" /> Date
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="font-medium">{frDate(proforma.date_proforma)}</CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+              <FileText className="h-4 w-4" /> Validité
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="font-medium">{frDate(proforma.date_validite)}</CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Receipt className="h-4 w-4" /> Total
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-lg font-bold text-primary">
+            {formatFCFA(proforma.montant_total)}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Lignes de proforma</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Désignation</TableHead>
+                <TableHead className="text-right">Qté</TableHead>
+                <TableHead className="text-right">P.U.</TableHead>
+                <TableHead className="text-right">Total</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {lignes.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    Aucune ligne
+                  </TableCell>
+                </TableRow>
+              ) : (
+                lignes.map((l) => (
+                  <TableRow key={l.ligne_id}>
+                    <TableCell>{l.designation}</TableCell>
+                    <TableCell className="text-right">{l.quantite}</TableCell>
+                    <TableCell className="text-right">{formatFCFA(l.prix_unitaire)}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {formatFCFA(l.total_ligne)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {proforma.notes && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Notes</CardTitle>
+          </CardHeader>
+          <CardContent className="whitespace-pre-wrap text-sm text-muted-foreground">
+            {proforma.notes}
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}

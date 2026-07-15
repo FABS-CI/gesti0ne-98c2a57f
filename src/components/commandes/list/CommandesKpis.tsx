@@ -1,0 +1,48 @@
+import { ShoppingCart, Wallet, Clock, CheckCircle2 } from "lucide-react";
+import { formatFCFA } from "@/lib/format";
+
+export type Kpis = { moisCount: number; ca: number; enAttente: number; livrees: number };
+
+export function CommandesKpis({ kpis }: { kpis: Kpis }) {
+  const items = [
+    {
+      label: "Commandes du mois",
+      value: kpis.moisCount,
+      icon: ShoppingCart,
+      tint: "text-primary bg-primary/10",
+    },
+    {
+      label: "Chiffre d'affaires",
+      value: formatFCFA(kpis.ca),
+      icon: Wallet,
+      tint: "text-emerald-600 bg-emerald-500/10",
+    },
+    {
+      label: "En attente",
+      value: kpis.enAttente,
+      icon: Clock,
+      tint: "text-amber-600 bg-amber-500/10",
+    },
+    {
+      label: "Livrées",
+      value: kpis.livrees,
+      icon: CheckCircle2,
+      tint: "text-sky-600 bg-sky-500/10",
+    },
+  ];
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {items.map((k) => (
+        <div key={k.label} className="rounded-xl border bg-card p-5 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm text-muted-foreground">{k.label}</p>
+            <div className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${k.tint}`}>
+              <k.icon className="h-4 w-4" />
+            </div>
+          </div>
+          <p className="mt-2 truncate text-2xl font-bold tracking-tight">{k.value}</p>
+        </div>
+      ))}
+    </div>
+  );
+}

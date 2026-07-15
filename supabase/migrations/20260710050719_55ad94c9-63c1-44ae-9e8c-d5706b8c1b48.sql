@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "admin fne_settings" ON public.fne_settings;

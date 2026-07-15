@@ -1,0 +1,52 @@
+name: QA PDF render
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  qa-pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install system deps (poppler)
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Install JS deps
+        run: bun install --frozen-lockfile
+      - name: Install Playwright
+        run: |
+          python -m pip install --no-cache-dir playwright
+          python -m playwright install --with-deps chromium
+      - name: Start dev server
+        run: |
+          bun run dev &
+          for i in {1..40}; do
+            curl -sf http://localhost:8080 >/dev/null && exit 0
+            sleep 2
+          done
+          echo "dev server failed to start" && exit 1
+      - name: Run QA suite (strict: 6/6 docs must pass)
+        run: |
+          python scripts/qa-pdf-render.py | tee /tmp/qa.log
+          # Seuil strict : un seul ✗ fait échouer le job
+          if grep -E "^✗" /tmp/qa.log; then
+            echo "Régression de rendu détectée" >&2
+            exit 1
+          fi
+          # Vérifie qu'on a bien 6 documents validés
+          ok=$(grep -cE "^✓" /tmp/qa.log || true)
+          test "$ok" = "6" || { echo "Attendu 6 ✓, obtenu $ok"; exit 1; }
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-qa-shots
+          path: tmp/pdf-qa/

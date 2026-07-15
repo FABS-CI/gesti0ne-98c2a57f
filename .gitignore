@@ -30,3 +30,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
+# Lovable Cloud writes the public backend URL/publishable key to .env for builds.
+# Keep local override files ignored, but allow the managed .env to be versioned.
+.env.*
+!.env.example

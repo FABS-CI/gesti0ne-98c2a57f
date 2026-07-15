@@ -1,0 +1,99 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  typecheck:
+    name: TypeScript typecheck (tsgo)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      # Bloque toute régression TS (TS2304 « Cannot find name », mauvais schéma search, etc.)
+      - run: bunx tsgo --noEmit
+
+  unit:
+    name: Unit + a11y (vitest + jest-axe)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx vitest run
+
+  rls:
+    name: RLS + RPC audit (psql)
+    runs-on: ubuntu-latest
+    # Requiert le secret SUPABASE_DB_URL (URL postgres avec droits lecture user_roles + RPC audit).
+    # Sans le secret, le job échoue explicitement pour bloquer la publication.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install psql
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Vérifier présence du secret DB
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::SUPABASE_DB_URL secret manquant — impossible d'exécuter les tests RLS/RPC. Configurez-le dans les secrets GitHub pour débloquer la publication."
+            exit 1
+          fi
+      - name: Exécuter les tests RLS/RPC
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f scripts/test-rls-audit.sql | tee rls-report.txt
+      - name: Détecter les FAIL dans le rapport
+        run: |
+          if grep -Ei "^FAIL|EXCEPTION|ERROR:" rls-report.txt; then
+            echo "::error::Test RLS/RPC en échec — publication bloquée."
+            exit 1
+          fi
+      - name: Upload rapport RLS
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rls-audit-report
+          path: rls-report.txt
+          retention-days: 30
+
+  e2e:
+    name: Playwright e2e (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [desktop, mobile]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - run: bunx playwright test --project=${{ matrix.project }}
+        env:
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
+          E2E_CLIENT_URL: ${{ secrets.E2E_CLIENT_URL }}
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: playwright-report
+          retention-days: 14
+      - name: Upload Playwright traces & videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results-${{ matrix.project }}
+          path: test-results
+          retention-days: 14
+
+  deploy-guard:
+    name: Deploy guard (bloque la publication en cas d'échec)
+    needs: [typecheck, unit, rls, e2e]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Tous les tests unitaires + RLS/RPC + e2e sont passés — publication autorisée."

@@ -1,0 +1,178 @@
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Eye, Pencil, PowerOff, RotateCcw, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
+import { formatFCFA } from "@/lib/format";
+import { TYPE_COLOR } from "@/lib/company";
+import type { Client } from "@/lib/clients-api";
+import { Can } from "@/components/rbac/Can";
+import { usePermissions } from "@/hooks/use-permissions";
+
+interface Props {
+  items: Client[];
+  isLoading: boolean;
+  readOnly: boolean;
+  onDisable: (c: Client) => void;
+  /** Un filtre est-il actif (recherche, type, statut, actifs exercice, CRM…) ? */
+  hasActiveFilters?: boolean;
+  /** Remet tous les filtres à leur valeur par défaut. */
+  onResetFilters?: () => void;
+}
+
+export function ClientsTable({
+  items,
+  isLoading,
+  readOnly,
+  onDisable,
+  hasActiveFilters,
+  onResetFilters,
+}: Props) {
+  const navigate = useNavigate();
+  const { has } = usePermissions();
+  const canSeeSolde = has("clients.voir_ca");
+  const colSpan = canSeeSolde ? 8 : 7;
+  return (
+    <div className="rounded-lg border bg-card">
+      <ResponsiveTable stickyFirstCol>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Référence</TableHead>
+              <TableHead>Nom</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Représentant</TableHead>
+              <TableHead>Téléphone</TableHead>
+              {canSeeSolde && <TableHead className="text-right">Solde</TableHead>}
+              <TableHead>Statut</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={colSpan} className="py-10 text-center text-muted-foreground">
+                  Chargement…
+                </TableCell>
+              </TableRow>
+            ) : items.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={colSpan} className="py-12 text-center">
+                  <div className="mx-auto flex max-w-md flex-col items-center gap-3">
+                    <p className="text-sm text-muted-foreground">
+                      {hasActiveFilters
+                        ? "Aucun client ne correspond aux filtres appliqués."
+                        : "Aucun client enregistré pour le moment."}
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {hasActiveFilters && onResetFilters && (
+                        <Button variant="outline" size="sm" onClick={onResetFilters}>
+                          <RotateCcw className="mr-2 h-4 w-4" />
+                          Réinitialiser les filtres
+                        </Button>
+                      )}
+                      {!readOnly && !hasActiveFilters && (
+                        <Button
+                          size="sm"
+                          onClick={() => navigate({ to: "/clients/nouveau" })}
+                        >
+                          <UserPlus className="mr-2 h-4 w-4" />
+                          Créer un client
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              items.map((c) => {
+                const type = TYPE_COLOR[c.type_client];
+                return (
+                  <TableRow
+                    key={c.client_id}
+                    className="hover:bg-[#F97316]/10 cursor-pointer"
+                    onClick={() =>
+                      navigate({ to: "/clients/$clientId", params: { clientId: c.client_id } })
+                    }
+                  >
+                    <TableCell className="font-mono text-xs">{c.reference}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        to="/clients/$clientId"
+                        params={{ clientId: c.client_id }}
+                        className="hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {c.nom}
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        style={{
+                          backgroundColor: type?.bg ?? "#CFD8DC",
+                          color: type?.color ?? "#0A2540",
+                        }}
+                      >
+                        {type?.label ?? c.type_client}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{c.representant || "—"}</TableCell>
+                    <TableCell>{c.telephone || "—"}</TableCell>
+                    {canSeeSolde && (
+                      <TableCell className="text-right">{formatFCFA(c.solde)}</TableCell>
+                    )}
+                    <TableCell>
+                      {c.actif ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+                          <span className="h-2 w-2 rounded-full bg-emerald-500" /> Actif
+                        </span>
+                      ) : (
+                        <Badge variant="secondary">Désactivé</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon" asChild>
+                          <Link to="/clients/$clientId" params={{ clientId: c.client_id }}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        {!readOnly && (
+                          <>
+                            <Button variant="ghost" size="icon" asChild>
+                              <Link
+                                to="/clients/$clientId/modifier"
+                                params={{ clientId: c.client_id }}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                            {c.actif && (
+                              <Can permission="clients.supprimer">
+                                <Button variant="ghost" size="icon" onClick={() => onDisable(c)}>
+                                  <PowerOff className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </Can>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+      </ResponsiveTable>
+    </div>
+  );
+}

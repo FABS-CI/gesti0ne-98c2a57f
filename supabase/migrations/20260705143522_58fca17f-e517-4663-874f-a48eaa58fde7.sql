@@ -1,0 +1,1 @@
+ALTER TABLE public.notification_preferences ADD COLUMN IF NOT EXISTS son_notification text NOT NULL DEFAULT 'melodie1_cristal';
