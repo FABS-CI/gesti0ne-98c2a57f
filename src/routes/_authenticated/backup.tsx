@@ -42,33 +42,82 @@ export const Route = createFileRoute("/_authenticated/backup")({
 });
 
 const TABLES = [
-  // Référentiels / RBAC
+  // Administration & RBAC
   "profiles",
   "rbac_roles",
   "rbac_permissions",
   "rbac_role_permissions",
   "user_roles",
   "rbac_user_roles",
+  "parametres_systeme",
+  "parametres_entreprise",
+  // Référentiels
+  "departements",
+  "fonctions",
+  "depots",
+  "preparateurs",
+  "livreurs",
+  "vehicules",
+  "plan_comptable",
+  "journaux_comptables",
+  "exercices_comptables",
+  "rubriques_paie",
+  "parametres_paie",
   // Tiers & catalogue
   "clients",
   "fournisseurs",
   "produits",
   "employes",
-  // Transactions métier
+  // Commercial
+  "proformas",
+  "proforma_lignes",
   "commandes",
   "commande_lignes",
   "factures",
   "paiements",
   "paiement_annulations_audit",
+  "retours",
+  "retour_lignes",
+  "specimens",
+  "crm_interactions",
+  // Achats & stock
   "achats",
   "achat_lignes",
-  "transactions",
+  "approvisionnements",
+  "approvisionnement_lignes",
   "stock_mouvements",
+  "inventaires",
+  "inventaire_lignes",
+  "transferts",
+  "transfert_lignes",
+  "incidents_stock",
+  "alertes_stock",
+  "audit_stock",
+  // Logistique
+  "colisages",
+  "tournees",
+  "livraisons",
+  "bons_livraison",
+  // Finance & compta
+  "transactions",
+  "fne_declarations",
+  "couts_logistiques",
+  "ecritures_comptables",
+  "ecriture_lignes",
+  // RH & paie
+  "contrats",
   "conges",
+  "absences",
+  "missions",
+  "evaluations",
+  "bulletins_paie",
+  "bulletin_lignes",
+  "declarations_paie",
   // Journaux
   "audit_logs",
   "rbac_audit_log",
 ];
+
 
 type BackupRow = {
   backup_id: string;
