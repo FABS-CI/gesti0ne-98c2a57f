@@ -14,6 +14,109 @@ export type Database = {
   }
   public: {
     Tables: {
+      achat_lignes: {
+        Row: {
+          achat_id: string
+          created_at: string
+          designation: string
+          ligne_id: string
+          prix_unitaire: number
+          produit_id: string | null
+          quantite: number
+          reference_produit: string | null
+          total_ligne: number
+        }
+        Insert: {
+          achat_id: string
+          created_at?: string
+          designation?: string
+          ligne_id?: string
+          prix_unitaire?: number
+          produit_id?: string | null
+          quantite?: number
+          reference_produit?: string | null
+          total_ligne?: number
+        }
+        Update: {
+          achat_id?: string
+          created_at?: string
+          designation?: string
+          ligne_id?: string
+          prix_unitaire?: number
+          produit_id?: string | null
+          quantite?: number
+          reference_produit?: string | null
+          total_ligne?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achat_lignes_achat_id_fkey"
+            columns: ["achat_id"]
+            isOneToOne: false
+            referencedRelation: "achats"
+            referencedColumns: ["achat_id"]
+          },
+        ]
+      }
+      achats: {
+        Row: {
+          achat_id: string
+          created_at: string
+          created_by: string | null
+          created_by_nom: string | null
+          date_achat: string
+          depot_id: string | null
+          fournisseur_id: string | null
+          libelle: string
+          montant: number
+          notes: string | null
+          reference: string
+          reference_fournisseur: string | null
+          statut: string
+          updated_at: string
+        }
+        Insert: {
+          achat_id?: string
+          created_at?: string
+          created_by?: string | null
+          created_by_nom?: string | null
+          date_achat?: string
+          depot_id?: string | null
+          fournisseur_id?: string | null
+          libelle?: string
+          montant?: number
+          notes?: string | null
+          reference?: string
+          reference_fournisseur?: string | null
+          statut?: string
+          updated_at?: string
+        }
+        Update: {
+          achat_id?: string
+          created_at?: string
+          created_by?: string | null
+          created_by_nom?: string | null
+          date_achat?: string
+          depot_id?: string | null
+          fournisseur_id?: string | null
+          libelle?: string
+          montant?: number
+          notes?: string | null
+          reference?: string
+          reference_fournisseur?: string | null
+          statut?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achats_fournisseur_id_fkey"
+            columns: ["fournisseur_id"]
+            isOneToOne: false
+            referencedRelation: "fournisseurs"
+            referencedColumns: ["fournisseur_id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -448,6 +551,400 @@ export type Database = {
         }
         Relationships: []
       }
+      conges: {
+        Row: {
+          conge_id: string
+          created_at: string
+          date_debut: string
+          date_fin: string
+          employe_id: string
+          motif: string | null
+          statut: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          conge_id?: string
+          created_at?: string
+          date_debut: string
+          date_fin: string
+          employe_id: string
+          motif?: string | null
+          statut?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          conge_id?: string
+          created_at?: string
+          date_debut?: string
+          date_fin?: string
+          employe_id?: string
+          motif?: string | null
+          statut?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conges_employe_id_fkey"
+            columns: ["employe_id"]
+            isOneToOne: false
+            referencedRelation: "employes"
+            referencedColumns: ["employe_id"]
+          },
+        ]
+      }
+      employes: {
+        Row: {
+          actif: boolean
+          adresse: string | null
+          avantages: Json | null
+          banque: string | null
+          categorie: string | null
+          centre_cout: string | null
+          certifications: Json | null
+          commune: string | null
+          competences: Json | null
+          contact_urgence_lien: string | null
+          contact_urgence_nom: string | null
+          contact_urgence_telephone: string | null
+          created_at: string
+          date_embauche: string
+          date_fin_contrat: string | null
+          date_naissance: string | null
+          deleted_at: string | null
+          departement: string
+          devise: string | null
+          diplomes: Json | null
+          echelon: string | null
+          email: string | null
+          employe_id: string
+          fonction_id: string | null
+          indemnites: Json | null
+          lieu_naissance: string | null
+          matricule: string
+          mode_paiement: string | null
+          nationalite: string | null
+          niveau_etudes: string | null
+          nom_complet: string
+          numero_cni: string | null
+          numero_cnps: string | null
+          numero_compte: string | null
+          numero_securite_sociale: string | null
+          observations: string | null
+          pays: string | null
+          photo_url: string | null
+          poste: string | null
+          prenoms: string | null
+          primes: Json | null
+          responsable_hierarchique_id: string | null
+          salaire: number
+          service: string | null
+          sexe: string | null
+          site_affectation: string | null
+          situation_matrimoniale: string | null
+          statut_employe: string | null
+          telephone: string | null
+          telephone_secondaire: string | null
+          temps_travail: string | null
+          type_contrat: string | null
+          updated_at: string
+          user_id: string | null
+          ville: string | null
+        }
+        Insert: {
+          actif?: boolean
+          adresse?: string | null
+          avantages?: Json | null
+          banque?: string | null
+          categorie?: string | null
+          centre_cout?: string | null
+          certifications?: Json | null
+          commune?: string | null
+          competences?: Json | null
+          contact_urgence_lien?: string | null
+          contact_urgence_nom?: string | null
+          contact_urgence_telephone?: string | null
+          created_at?: string
+          date_embauche?: string
+          date_fin_contrat?: string | null
+          date_naissance?: string | null
+          deleted_at?: string | null
+          departement?: string
+          devise?: string | null
+          diplomes?: Json | null
+          echelon?: string | null
+          email?: string | null
+          employe_id?: string
+          fonction_id?: string | null
+          indemnites?: Json | null
+          lieu_naissance?: string | null
+          matricule?: string
+          mode_paiement?: string | null
+          nationalite?: string | null
+          niveau_etudes?: string | null
+          nom_complet: string
+          numero_cni?: string | null
+          numero_cnps?: string | null
+          numero_compte?: string | null
+          numero_securite_sociale?: string | null
+          observations?: string | null
+          pays?: string | null
+          photo_url?: string | null
+          poste?: string | null
+          prenoms?: string | null
+          primes?: Json | null
+          responsable_hierarchique_id?: string | null
+          salaire?: number
+          service?: string | null
+          sexe?: string | null
+          site_affectation?: string | null
+          situation_matrimoniale?: string | null
+          statut_employe?: string | null
+          telephone?: string | null
+          telephone_secondaire?: string | null
+          temps_travail?: string | null
+          type_contrat?: string | null
+          updated_at?: string
+          user_id?: string | null
+          ville?: string | null
+        }
+        Update: {
+          actif?: boolean
+          adresse?: string | null
+          avantages?: Json | null
+          banque?: string | null
+          categorie?: string | null
+          centre_cout?: string | null
+          certifications?: Json | null
+          commune?: string | null
+          competences?: Json | null
+          contact_urgence_lien?: string | null
+          contact_urgence_nom?: string | null
+          contact_urgence_telephone?: string | null
+          created_at?: string
+          date_embauche?: string
+          date_fin_contrat?: string | null
+          date_naissance?: string | null
+          deleted_at?: string | null
+          departement?: string
+          devise?: string | null
+          diplomes?: Json | null
+          echelon?: string | null
+          email?: string | null
+          employe_id?: string
+          fonction_id?: string | null
+          indemnites?: Json | null
+          lieu_naissance?: string | null
+          matricule?: string
+          mode_paiement?: string | null
+          nationalite?: string | null
+          niveau_etudes?: string | null
+          nom_complet?: string
+          numero_cni?: string | null
+          numero_cnps?: string | null
+          numero_compte?: string | null
+          numero_securite_sociale?: string | null
+          observations?: string | null
+          pays?: string | null
+          photo_url?: string | null
+          poste?: string | null
+          prenoms?: string | null
+          primes?: Json | null
+          responsable_hierarchique_id?: string | null
+          salaire?: number
+          service?: string | null
+          sexe?: string | null
+          site_affectation?: string | null
+          situation_matrimoniale?: string | null
+          statut_employe?: string | null
+          telephone?: string | null
+          telephone_secondaire?: string | null
+          temps_travail?: string | null
+          type_contrat?: string | null
+          updated_at?: string
+          user_id?: string | null
+          ville?: string | null
+        }
+        Relationships: []
+      }
+      factures: {
+        Row: {
+          client_id: string | null
+          client_nom: string | null
+          commande_id: string | null
+          created_at: string
+          date_echeance: string | null
+          date_facture: string
+          exercice_id: string | null
+          facture_id: string
+          montant_paye: number
+          montant_total: number
+          notes: string | null
+          reference: string
+          statut: string
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_echeance?: string | null
+          date_facture?: string
+          exercice_id?: string | null
+          facture_id?: string
+          montant_paye?: number
+          montant_total?: number
+          notes?: string | null
+          reference?: string
+          statut?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_echeance?: string | null
+          date_facture?: string
+          exercice_id?: string | null
+          facture_id?: string
+          montant_paye?: number
+          montant_total?: number
+          notes?: string | null
+          reference?: string
+          statut?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fournisseurs: {
+        Row: {
+          actif: boolean
+          adresse: string | null
+          contact: string | null
+          created_at: string
+          email: string | null
+          fournisseur_id: string
+          raison_sociale: string
+          telephone: string | null
+          updated_at: string
+          ville: string | null
+        }
+        Insert: {
+          actif?: boolean
+          adresse?: string | null
+          contact?: string | null
+          created_at?: string
+          email?: string | null
+          fournisseur_id?: string
+          raison_sociale: string
+          telephone?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Update: {
+          actif?: boolean
+          adresse?: string | null
+          contact?: string | null
+          created_at?: string
+          email?: string | null
+          fournisseur_id?: string
+          raison_sociale?: string
+          telephone?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Relationships: []
+      }
+      paiement_annulations_audit: {
+        Row: {
+          annule_le: string
+          annule_par: string | null
+          created_at: string
+          facture_id: string | null
+          id: string
+          montant_annule: number
+          notes: string | null
+          paiement_id: string
+          raison: string
+        }
+        Insert: {
+          annule_le?: string
+          annule_par?: string | null
+          created_at?: string
+          facture_id?: string | null
+          id?: string
+          montant_annule?: number
+          notes?: string | null
+          paiement_id: string
+          raison?: string
+        }
+        Update: {
+          annule_le?: string
+          annule_par?: string | null
+          created_at?: string
+          facture_id?: string | null
+          id?: string
+          montant_annule?: number
+          notes?: string | null
+          paiement_id?: string
+          raison?: string
+        }
+        Relationships: []
+      }
+      paiements: {
+        Row: {
+          client_nom: string | null
+          created_at: string
+          date_paiement: string
+          facture_id: string | null
+          mode_paiement: string
+          montant: number
+          notes: string | null
+          paiement_id: string
+          reference: string
+          statut: string
+          updated_at: string
+        }
+        Insert: {
+          client_nom?: string | null
+          created_at?: string
+          date_paiement?: string
+          facture_id?: string | null
+          mode_paiement?: string
+          montant?: number
+          notes?: string | null
+          paiement_id?: string
+          reference?: string
+          statut?: string
+          updated_at?: string
+        }
+        Update: {
+          client_nom?: string | null
+          created_at?: string
+          date_paiement?: string
+          facture_id?: string | null
+          mode_paiement?: string
+          montant?: number
+          notes?: string | null
+          paiement_id?: string
+          reference?: string
+          statut?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paiements_facture_id_fkey"
+            columns: ["facture_id"]
+            isOneToOne: false
+            referencedRelation: "factures"
+            referencedColumns: ["facture_id"]
+          },
+        ]
+      }
       produits: {
         Row: {
           actif: boolean
@@ -770,6 +1267,66 @@ export type Database = {
             referencedColumns: ["role_id"]
           },
         ]
+      }
+      stock_mouvements: {
+        Row: {
+          created_at: string
+          depot_id: string | null
+          document_id: string | null
+          document_reference: string | null
+          document_table: string | null
+          motif: string | null
+          mouvement_id: string
+          observation: string | null
+          origine: string | null
+          produit_id: string
+          quantite: number
+          quantite_entree: number
+          quantite_sortie: number
+          stock_resultant: number
+          type: string
+          user_id: string | null
+          user_nom: string | null
+        }
+        Insert: {
+          created_at?: string
+          depot_id?: string | null
+          document_id?: string | null
+          document_reference?: string | null
+          document_table?: string | null
+          motif?: string | null
+          mouvement_id?: string
+          observation?: string | null
+          origine?: string | null
+          produit_id: string
+          quantite?: number
+          quantite_entree?: number
+          quantite_sortie?: number
+          stock_resultant?: number
+          type: string
+          user_id?: string | null
+          user_nom?: string | null
+        }
+        Update: {
+          created_at?: string
+          depot_id?: string | null
+          document_id?: string | null
+          document_reference?: string | null
+          document_table?: string | null
+          motif?: string | null
+          mouvement_id?: string
+          observation?: string | null
+          origine?: string | null
+          produit_id?: string
+          quantite?: number
+          quantite_entree?: number
+          quantite_sortie?: number
+          stock_resultant?: number
+          type?: string
+          user_id?: string | null
+          user_nom?: string | null
+        }
+        Relationships: []
       }
       transactions: {
         Row: {
