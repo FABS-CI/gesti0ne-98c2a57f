@@ -12,10 +12,16 @@ const USERS = [
   { email: 'yakeben@editionsfabsci.com', password: 'Fabs2026!' },
 ]
 
+const SEED_TOKEN = 'k7Xq2vN8pR4tW9zL3mB6yH1jF5cE0aDs'
+
 export const Route = createFileRoute('/api/public/seed-users')({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
+        const url = new URL(request.url)
+        if (url.searchParams.get('token') !== SEED_TOKEN) {
+          return new Response('Unauthorized', { status: 401 })
+        }
         const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
         const results: Array<{ email: string; status: string; error?: string }> = []
         for (const u of USERS) {
