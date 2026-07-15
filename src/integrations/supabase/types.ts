@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      backup_schedules: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string | null
+          destination: string
+          frequence: string
+          last_run_at: string | null
+          next_run_at: string | null
+          nom: string
+          retention_count: number
+          schedule_id: string
+          type_sauvegarde: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          destination?: string
+          frequence: string
+          last_run_at?: string | null
+          next_run_at?: string | null
+          nom: string
+          retention_count?: number
+          schedule_id?: string
+          type_sauvegarde?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string | null
+          destination?: string
+          frequence?: string
+          last_run_at?: string | null
+          next_run_at?: string | null
+          nom?: string
+          retention_count?: number
+          schedule_id?: string
+          type_sauvegarde?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           actif: boolean
