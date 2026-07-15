@@ -121,12 +121,12 @@ function AuthPage() {
     try {
       let signInData: { user?: { id?: string; email?: string | null } | null } = {};
       try {
-        const { data, error } = await withAuthTimeout(
+        const { data, error } = (await withAuthTimeout(
           supabase.auth.signInWithPassword({
             email: emailVal,
             password: passwordVal,
           }),
-        );
+        )) as any;
         if (error) throw error;
         signInData = data;
       } catch (err) {
