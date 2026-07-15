@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.creer_specimen_avec_lignes(date, text, text, uuid, text, text, text, text, text, text, text, jsonb) FROM anon, public;
+GRANT EXECUTE ON FUNCTION public.creer_specimen_avec_lignes(date, text, text, uuid, text, text, text, text, text, text, text, jsonb) TO authenticated;

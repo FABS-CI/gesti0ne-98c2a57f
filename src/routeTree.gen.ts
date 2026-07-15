@@ -9,38 +9,2469 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PresentationRouteImport } from './routes/presentation'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CartonColisIdRouteImport } from './routes/carton.$colisId'
+import { Route as AuthenticatedWorkflowsDefinitionsRouteImport } from './routes/_authenticated/workflows-definitions'
+import { Route as AuthenticatedWorkflowApprovalsRouteImport } from './routes/_authenticated/workflow-approvals'
+import { Route as AuthenticatedTransfertsRouteImport } from './routes/_authenticated/transferts'
+import { Route as AuthenticatedStockRouteImport } from './routes/_authenticated/stock'
+import { Route as AuthenticatedRolesPermissionsRouteImport } from './routes/_authenticated/roles-permissions'
+import { Route as AuthenticatedRhDashboardRouteImport } from './routes/_authenticated/rh-dashboard'
+import { Route as AuthenticatedRetoursRouteImport } from './routes/_authenticated/retours'
+import { Route as AuthenticatedRapportsLogistiqueRouteImport } from './routes/_authenticated/rapports-logistique'
+import { Route as AuthenticatedRapportsComptablesRouteImport } from './routes/_authenticated/rapports-comptables'
+import { Route as AuthenticatedRapportsRouteImport } from './routes/_authenticated/rapports'
+import { Route as AuthenticatedProformasRouteImport } from './routes/_authenticated/proformas'
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
+import { Route as AuthenticatedProduitsRouteImport } from './routes/_authenticated/produits'
+import { Route as AuthenticatedPlanComptableRouteImport } from './routes/_authenticated/plan-comptable'
+import { Route as AuthenticatedParametresRouteImport } from './routes/_authenticated/parametres'
+import { Route as AuthenticatedPaiementsRouteImport } from './routes/_authenticated/paiements'
+import { Route as AuthenticatedPaieRubriquesRouteImport } from './routes/_authenticated/paie-rubriques'
+import { Route as AuthenticatedPaieRapportsRouteImport } from './routes/_authenticated/paie-rapports'
+import { Route as AuthenticatedPaieParametresRouteImport } from './routes/_authenticated/paie-parametres'
+import { Route as AuthenticatedPaieHistoriqueRouteImport } from './routes/_authenticated/paie-historique'
+import { Route as AuthenticatedPaieGenerationRouteImport } from './routes/_authenticated/paie-generation'
+import { Route as AuthenticatedPaieExportsRouteImport } from './routes/_authenticated/paie-exports'
+import { Route as AuthenticatedPaieDeclarationsRouteImport } from './routes/_authenticated/paie-declarations'
+import { Route as AuthenticatedPaieDashboardRouteImport } from './routes/_authenticated/paie-dashboard'
+import { Route as AuthenticatedPaieRouteImport } from './routes/_authenticated/paie'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedMonDashboardRouteImport } from './routes/_authenticated/mon-dashboard'
+import { Route as AuthenticatedModelesDocumentsRouteImport } from './routes/_authenticated/modeles-documents'
+import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
+import { Route as AuthenticatedLogisticsCostsRouteImport } from './routes/_authenticated/logistics-costs'
+import { Route as AuthenticatedLivreursRouteImport } from './routes/_authenticated/livreurs'
+import { Route as AuthenticatedLivraisonSuiviRouteImport } from './routes/_authenticated/livraison-suivi'
+import { Route as AuthenticatedInventairesRouteImport } from './routes/_authenticated/inventaires'
+import { Route as AuthenticatedIncidentsRouteImport } from './routes/_authenticated/incidents'
+import { Route as AuthenticatedImportDonneesRouteImport } from './routes/_authenticated/import-donnees'
+import { Route as AuthenticatedHistoriqueEnvoisRouteImport } from './routes/_authenticated/historique-envois'
+import { Route as AuthenticatedGrandLivreRouteImport } from './routes/_authenticated/grand-livre'
+import { Route as AuthenticatedFournisseursRouteImport } from './routes/_authenticated/fournisseurs'
+import { Route as AuthenticatedFonctionsRouteImport } from './routes/_authenticated/fonctions'
+import { Route as AuthenticatedFneSettingsRouteImport } from './routes/_authenticated/fne-settings'
+import { Route as AuthenticatedFneNouvelleRouteImport } from './routes/_authenticated/fne-nouvelle'
+import { Route as AuthenticatedFneLogsRouteImport } from './routes/_authenticated/fne-logs'
+import { Route as AuthenticatedFneRouteImport } from './routes/_authenticated/fne'
+import { Route as AuthenticatedFleetRouteImport } from './routes/_authenticated/fleet'
+import { Route as AuthenticatedFinancesRouteImport } from './routes/_authenticated/finances'
+import { Route as AuthenticatedFileStorageRouteImport } from './routes/_authenticated/file-storage'
+import { Route as AuthenticatedFacturesRouteImport } from './routes/_authenticated/factures'
+import { Route as AuthenticatedExportsRouteImport } from './routes/_authenticated/exports'
+import { Route as AuthenticatedExpeditionsRouteImport } from './routes/_authenticated/expeditions'
+import { Route as AuthenticatedExercicesRouteImport } from './routes/_authenticated/exercices'
+import { Route as AuthenticatedEvaluationsRouteImport } from './routes/_authenticated/evaluations'
+import { Route as AuthenticatedEtatsComptablesRouteImport } from './routes/_authenticated/etats-comptables'
+import { Route as AuthenticatedEtatCompteClientsRouteImport } from './routes/_authenticated/etat-compte-clients'
+import { Route as AuthenticatedEmployesRouteImport } from './routes/_authenticated/employes'
+import { Route as AuthenticatedEcrituresComptablesRouteImport } from './routes/_authenticated/ecritures-comptables'
+import { Route as AuthenticatedDocumentsImpressionRouteImport } from './routes/_authenticated/documents-impression'
+import { Route as AuthenticatedDocumentationRouteImport } from './routes/_authenticated/documentation'
+import { Route as AuthenticatedDepotsRouteImport } from './routes/_authenticated/depots'
+import { Route as AuthenticatedDepartementsRouteImport } from './routes/_authenticated/departements'
+import { Route as AuthenticatedDashboardLogistiqueRouteImport } from './routes/_authenticated/dashboard-logistique'
+import { Route as AuthenticatedDashboardGlobalRouteImport } from './routes/_authenticated/dashboard-global'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedContratsRouteImport } from './routes/_authenticated/contrats'
+import { Route as AuthenticatedCongesEnCoursRouteImport } from './routes/_authenticated/conges-en-cours'
+import { Route as AuthenticatedCongesRouteImport } from './routes/_authenticated/conges'
+import { Route as AuthenticatedComptabiliteRouteImport } from './routes/_authenticated/comptabilite'
+import { Route as AuthenticatedComptaDashboardRouteImport } from './routes/_authenticated/compta-dashboard'
+import { Route as AuthenticatedCommandesRouteImport } from './routes/_authenticated/commandes'
+import { Route as AuthenticatedColisageRouteImport } from './routes/_authenticated/colisage'
+import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
+import { Route as AuthenticatedCentreDocumentsRouteImport } from './routes/_authenticated/centre-documents'
+import { Route as AuthenticatedCatalogueIntegriteRouteImport } from './routes/_authenticated/catalogue-integrite'
+import { Route as AuthenticatedBonsLivraisonRouteImport } from './routes/_authenticated/bons-livraison'
+import { Route as AuthenticatedBiAnalyticsRouteImport } from './routes/_authenticated/bi-analytics'
+import { Route as AuthenticatedBalanceRouteImport } from './routes/_authenticated/balance'
+import { Route as AuthenticatedBackupRouteImport } from './routes/_authenticated/backup'
+import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
+import { Route as AuthenticatedApprobationsRouteImport } from './routes/_authenticated/approbations'
+import { Route as AuthenticatedAlertesStockRouteImport } from './routes/_authenticated/alertes-stock'
+import { Route as AuthenticatedAccesRefuseRouteImport } from './routes/_authenticated/acces-refuse'
+import { Route as AuthenticatedAbsencesRouteImport } from './routes/_authenticated/absences'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as AuthenticatedUtilisateursIndexRouteImport } from './routes/_authenticated/utilisateurs.index'
+import { Route as AuthenticatedTransfertsIndexRouteImport } from './routes/_authenticated/transferts.index'
+import { Route as AuthenticatedTourneesIndexRouteImport } from './routes/_authenticated/tournees.index'
+import { Route as AuthenticatedSpecimensIndexRouteImport } from './routes/_authenticated/specimens.index'
+import { Route as AuthenticatedRetoursIndexRouteImport } from './routes/_authenticated/retours.index'
+import { Route as AuthenticatedRapportsIndexRouteImport } from './routes/_authenticated/rapports.index'
+import { Route as AuthenticatedProformasIndexRouteImport } from './routes/_authenticated/proformas.index'
+import { Route as AuthenticatedProduitsIndexRouteImport } from './routes/_authenticated/produits.index'
+import { Route as AuthenticatedPaiementsIndexRouteImport } from './routes/_authenticated/paiements.index'
+import { Route as AuthenticatedPaieIndexRouteImport } from './routes/_authenticated/paie.index'
+import { Route as AuthenticatedLivraisonSuiviIndexRouteImport } from './routes/_authenticated/livraison-suivi.index'
+import { Route as AuthenticatedInventairesIndexRouteImport } from './routes/_authenticated/inventaires.index'
+import { Route as AuthenticatedIncidentsIndexRouteImport } from './routes/_authenticated/incidents.index'
+import { Route as AuthenticatedFournisseursIndexRouteImport } from './routes/_authenticated/fournisseurs.index'
+import { Route as AuthenticatedFacturesIndexRouteImport } from './routes/_authenticated/factures.index'
+import { Route as AuthenticatedEvaluationsIndexRouteImport } from './routes/_authenticated/evaluations.index'
+import { Route as AuthenticatedEmployesIndexRouteImport } from './routes/_authenticated/employes.index'
+import { Route as AuthenticatedContratsIndexRouteImport } from './routes/_authenticated/contrats.index'
+import { Route as AuthenticatedCongesIndexRouteImport } from './routes/_authenticated/conges.index'
+import { Route as AuthenticatedComptabiliteIndexRouteImport } from './routes/_authenticated/comptabilite.index'
+import { Route as AuthenticatedCommandesIndexRouteImport } from './routes/_authenticated/commandes.index'
+import { Route as AuthenticatedColisageIndexRouteImport } from './routes/_authenticated/colisage.index'
+import { Route as AuthenticatedClientsIndexRouteImport } from './routes/_authenticated/clients.index'
+import { Route as AuthenticatedAchatsIndexRouteImport } from './routes/_authenticated/achats.index'
+import { Route as AuthenticatedAbsencesIndexRouteImport } from './routes/_authenticated/absences.index'
+import { Route as AuthenticatedUtilisateursProductionRouteImport } from './routes/_authenticated/utilisateurs.production'
+import { Route as AuthenticatedUtilisateursNouveauRouteImport } from './routes/_authenticated/utilisateurs.nouveau'
+import { Route as AuthenticatedTransfertsNouveauRouteImport } from './routes/_authenticated/transferts.nouveau'
+import { Route as AuthenticatedTransfertsTransfertIdRouteImport } from './routes/_authenticated/transferts.$transfertId'
+import { Route as AuthenticatedTourneesNouvelleRouteImport } from './routes/_authenticated/tournees.nouvelle'
+import { Route as AuthenticatedTourneesTourneeIdRouteImport } from './routes/_authenticated/tournees.$tourneeId'
+import { Route as AuthenticatedTourneesBlTourneeIdRouteImport } from './routes/_authenticated/tournees-bl.$tourneeId'
+import { Route as AuthenticatedStockAuditRouteImport } from './routes/_authenticated/stock.audit'
+import { Route as AuthenticatedSpecimensNouveauRouteImport } from './routes/_authenticated/specimens.nouveau'
+import { Route as AuthenticatedSpecimensSpecimenIdRouteImport } from './routes/_authenticated/specimens.$specimenId'
+import { Route as AuthenticatedRetoursNouveauRouteImport } from './routes/_authenticated/retours.nouveau'
+import { Route as AuthenticatedRetoursRetourIdRouteImport } from './routes/_authenticated/retours.$retourId'
+import { Route as AuthenticatedRapportsAnalyseRouteImport } from './routes/_authenticated/rapports.analyse'
+import { Route as AuthenticatedProformasProformaIdRouteImport } from './routes/_authenticated/proformas.$proformaId'
+import { Route as AuthenticatedProduitsProduitIdRouteImport } from './routes/_authenticated/produits.$produitId'
+import { Route as AuthenticatedParametresZonesLivraisonRouteImport } from './routes/_authenticated/parametres.zones-livraison'
+import { Route as AuthenticatedPaiementsNouveauRouteImport } from './routes/_authenticated/paiements.nouveau'
+import { Route as AuthenticatedPaiementsPaiementIdRouteImport } from './routes/_authenticated/paiements.$paiementId'
+import { Route as AuthenticatedPaieNouveauRouteImport } from './routes/_authenticated/paie.nouveau'
+import { Route as AuthenticatedPaieBulletinIdRouteImport } from './routes/_authenticated/paie.$bulletinId'
+import { Route as AuthenticatedMfaEnrollRouteImport } from './routes/_authenticated/mfa.enroll'
+import { Route as AuthenticatedMfaBackupCodesRouteImport } from './routes/_authenticated/mfa.backup-codes'
+import { Route as AuthenticatedLivraisonSuiviTourneesRouteImport } from './routes/_authenticated/livraison-suivi.tournees'
+import { Route as AuthenticatedLivraisonSuiviCommandeRefRouteImport } from './routes/_authenticated/livraison-suivi.$commandeRef'
+import { Route as AuthenticatedInventairesNouveauPhysiqueRouteImport } from './routes/_authenticated/inventaires.nouveau-physique'
+import { Route as AuthenticatedInventairesInventaireIdRouteImport } from './routes/_authenticated/inventaires.$inventaireId'
+import { Route as AuthenticatedIncidentsNouveauRouteImport } from './routes/_authenticated/incidents.nouveau'
+import { Route as AuthenticatedIncidentsIncidentIdRouteImport } from './routes/_authenticated/incidents.$incidentId'
+import { Route as AuthenticatedFournisseursFournisseurIdRouteImport } from './routes/_authenticated/fournisseurs.$fournisseurId'
+import { Route as AuthenticatedFneDetailFactureIdRouteImport } from './routes/_authenticated/fne-detail.$factureId'
+import { Route as AuthenticatedFacturesFactureIdRouteImport } from './routes/_authenticated/factures.$factureId'
+import { Route as AuthenticatedExercicesRapportRouteImport } from './routes/_authenticated/exercices.rapport'
+import { Route as AuthenticatedExercicesJournalRouteImport } from './routes/_authenticated/exercices.journal'
+import { Route as AuthenticatedExercicesComparatifRouteImport } from './routes/_authenticated/exercices.comparatif'
+import { Route as AuthenticatedEvaluationsNouveauRouteImport } from './routes/_authenticated/evaluations.nouveau'
+import { Route as AuthenticatedEmployesNouveauRouteImport } from './routes/_authenticated/employes.nouveau'
+import { Route as AuthenticatedContratsNouveauRouteImport } from './routes/_authenticated/contrats.nouveau'
+import { Route as AuthenticatedContratsContratIdRouteImport } from './routes/_authenticated/contrats.$contratId'
+import { Route as AuthenticatedCongesNouveauRouteImport } from './routes/_authenticated/conges.nouveau'
+import { Route as AuthenticatedComptabiliteNouvelleRouteImport } from './routes/_authenticated/comptabilite.nouvelle'
+import { Route as AuthenticatedComptabiliteFecRouteImport } from './routes/_authenticated/comptabilite.fec'
+import { Route as AuthenticatedComptabiliteAuditRouteImport } from './routes/_authenticated/comptabilite.audit'
+import { Route as AuthenticatedCommandesNouvelleRouteImport } from './routes/_authenticated/commandes.nouvelle'
+import { Route as AuthenticatedCommandesCommandeIdRouteImport } from './routes/_authenticated/commandes.$commandeId'
+import { Route as AuthenticatedColisageResponsablesRouteImport } from './routes/_authenticated/colisage.responsables'
+import { Route as AuthenticatedColisageBlIdRouteImport } from './routes/_authenticated/colisage.$blId'
+import { Route as AuthenticatedClientsNouveauRouteImport } from './routes/_authenticated/clients.nouveau'
+import { Route as AuthenticatedClientsDashboardRouteImport } from './routes/_authenticated/clients.dashboard'
+import { Route as AuthenticatedClientsClientIdRouteImport } from './routes/_authenticated/clients.$clientId'
+import { Route as AuthenticatedBonDeTourneeTourneeIdRouteImport } from './routes/_authenticated/bon-de-tournee.$tourneeId'
+import { Route as AuthenticatedBonDeSortieTourneeIdRouteImport } from './routes/_authenticated/bon-de-sortie.$tourneeId'
+import { Route as AuthenticatedAdminSloRouteImport } from './routes/_authenticated/admin.slo'
+import { Route as AuthenticatedAdminSanteSystemeRouteImport } from './routes/_authenticated/admin.sante-systeme'
+import { Route as AuthenticatedAdminRpcErrorsRouteImport } from './routes/_authenticated/admin.rpc-errors'
+import { Route as AuthenticatedAdminPerfRouteImport } from './routes/_authenticated/admin.perf'
+import { Route as AuthenticatedAdminGoogleDriveRouteImport } from './routes/_authenticated/admin.google-drive'
+import { Route as AuthenticatedAdminDataQualityRouteImport } from './routes/_authenticated/admin.data-quality'
+import { Route as AuthenticatedAdminAuditPaiementsRouteImport } from './routes/_authenticated/admin.audit-paiements'
+import { Route as AuthenticatedAchatsNouveauRouteImport } from './routes/_authenticated/achats.nouveau'
+import { Route as AuthenticatedAchatsAchatIdRouteImport } from './routes/_authenticated/achats.$achatId'
+import { Route as AuthenticatedAbsencesNouveauRouteImport } from './routes/_authenticated/absences.nouveau'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AuthenticatedEmployesEmployeIdIndexRouteImport } from './routes/_authenticated/employes.$employeId.index'
+import { Route as AuthenticatedCommandesCommandeIdIndexRouteImport } from './routes/_authenticated/commandes.$commandeId.index'
+import { Route as ApiPublicHooksRunSchedulesRouteImport } from './routes/api/public/hooks/run-schedules'
+import { Route as ApiPublicHooksAlertRouteImport } from './routes/api/public/hooks/alert'
+import { Route as AuthenticatedUtilisateursUserIdModifierRouteImport } from './routes/_authenticated/utilisateurs.$userId.modifier'
+import { Route as AuthenticatedStockProduitIdMouvementsRouteImport } from './routes/_authenticated/stock_.$produitId.mouvements'
+import { Route as AuthenticatedLivraisonSuiviTourneesTourneeIdRouteImport } from './routes/_authenticated/livraison-suivi.tournees.$tourneeId'
+import { Route as AuthenticatedLivraisonSuiviCommandeRefRemiseRouteImport } from './routes/_authenticated/livraison-suivi.$commandeRef.remise'
+import { Route as AuthenticatedEvaluationsEvaluationIdModifierRouteImport } from './routes/_authenticated/evaluations.$evaluationId.modifier'
+import { Route as AuthenticatedEmployesEmployeIdModifierRouteImport } from './routes/_authenticated/employes.$employeId.modifier'
+import { Route as AuthenticatedContratsContratIdModifierRouteImport } from './routes/_authenticated/contrats.$contratId.modifier'
+import { Route as AuthenticatedCongesCongeIdModifierRouteImport } from './routes/_authenticated/conges.$congeId.modifier'
+import { Route as AuthenticatedCommandesCommandeIdModifierRouteImport } from './routes/_authenticated/commandes.$commandeId.modifier'
+import { Route as AuthenticatedClientsClientIdModifierRouteImport } from './routes/_authenticated/clients.$clientId.modifier'
+import { Route as AuthenticatedAdminAuditPaiementsAuditIdRouteImport } from './routes/_authenticated/admin.audit-paiements.$auditId'
+import { Route as AuthenticatedAbsencesAbsenceIdModifierRouteImport } from './routes/_authenticated/absences.$absenceId.modifier'
 
+const PresentationRoute = PresentationRouteImport.update({
+  id: '/presentation',
+  path: '/presentation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CartonColisIdRoute = CartonColisIdRouteImport.update({
+  id: '/carton/$colisId',
+  path: '/carton/$colisId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedWorkflowsDefinitionsRoute =
+  AuthenticatedWorkflowsDefinitionsRouteImport.update({
+    id: '/workflows-definitions',
+    path: '/workflows-definitions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedWorkflowApprovalsRoute =
+  AuthenticatedWorkflowApprovalsRouteImport.update({
+    id: '/workflow-approvals',
+    path: '/workflow-approvals',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTransfertsRoute = AuthenticatedTransfertsRouteImport.update({
+  id: '/transferts',
+  path: '/transferts',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedStockRoute = AuthenticatedStockRouteImport.update({
+  id: '/stock',
+  path: '/stock',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRolesPermissionsRoute =
+  AuthenticatedRolesPermissionsRouteImport.update({
+    id: '/roles-permissions',
+    path: '/roles-permissions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRhDashboardRoute =
+  AuthenticatedRhDashboardRouteImport.update({
+    id: '/rh-dashboard',
+    path: '/rh-dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRetoursRoute = AuthenticatedRetoursRouteImport.update({
+  id: '/retours',
+  path: '/retours',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRapportsLogistiqueRoute =
+  AuthenticatedRapportsLogistiqueRouteImport.update({
+    id: '/rapports-logistique',
+    path: '/rapports-logistique',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRapportsComptablesRoute =
+  AuthenticatedRapportsComptablesRouteImport.update({
+    id: '/rapports-comptables',
+    path: '/rapports-comptables',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRapportsRoute = AuthenticatedRapportsRouteImport.update({
+  id: '/rapports',
+  path: '/rapports',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProformasRoute = AuthenticatedProformasRouteImport.update({
+  id: '/proformas',
+  path: '/proformas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProduitsRoute = AuthenticatedProduitsRouteImport.update({
+  id: '/produits',
+  path: '/produits',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPlanComptableRoute =
+  AuthenticatedPlanComptableRouteImport.update({
+    id: '/plan-comptable',
+    path: '/plan-comptable',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedParametresRoute = AuthenticatedParametresRouteImport.update({
+  id: '/parametres',
+  path: '/parametres',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPaiementsRoute = AuthenticatedPaiementsRouteImport.update({
+  id: '/paiements',
+  path: '/paiements',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPaieRubriquesRoute =
+  AuthenticatedPaieRubriquesRouteImport.update({
+    id: '/paie-rubriques',
+    path: '/paie-rubriques',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaieRapportsRoute =
+  AuthenticatedPaieRapportsRouteImport.update({
+    id: '/paie-rapports',
+    path: '/paie-rapports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaieParametresRoute =
+  AuthenticatedPaieParametresRouteImport.update({
+    id: '/paie-parametres',
+    path: '/paie-parametres',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaieHistoriqueRoute =
+  AuthenticatedPaieHistoriqueRouteImport.update({
+    id: '/paie-historique',
+    path: '/paie-historique',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaieGenerationRoute =
+  AuthenticatedPaieGenerationRouteImport.update({
+    id: '/paie-generation',
+    path: '/paie-generation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaieExportsRoute =
+  AuthenticatedPaieExportsRouteImport.update({
+    id: '/paie-exports',
+    path: '/paie-exports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaieDeclarationsRoute =
+  AuthenticatedPaieDeclarationsRouteImport.update({
+    id: '/paie-declarations',
+    path: '/paie-declarations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaieDashboardRoute =
+  AuthenticatedPaieDashboardRouteImport.update({
+    id: '/paie-dashboard',
+    path: '/paie-dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaieRoute = AuthenticatedPaieRouteImport.update({
+  id: '/paie',
+  path: '/paie',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMonDashboardRoute =
+  AuthenticatedMonDashboardRouteImport.update({
+    id: '/mon-dashboard',
+    path: '/mon-dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedModelesDocumentsRoute =
+  AuthenticatedModelesDocumentsRouteImport.update({
+    id: '/modeles-documents',
+    path: '/modeles-documents',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMissionsRoute = AuthenticatedMissionsRouteImport.update({
+  id: '/missions',
+  path: '/missions',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLogisticsCostsRoute =
+  AuthenticatedLogisticsCostsRouteImport.update({
+    id: '/logistics-costs',
+    path: '/logistics-costs',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLivreursRoute = AuthenticatedLivreursRouteImport.update({
+  id: '/livreurs',
+  path: '/livreurs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLivraisonSuiviRoute =
+  AuthenticatedLivraisonSuiviRouteImport.update({
+    id: '/livraison-suivi',
+    path: '/livraison-suivi',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedInventairesRoute =
+  AuthenticatedInventairesRouteImport.update({
+    id: '/inventaires',
+    path: '/inventaires',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedIncidentsRoute = AuthenticatedIncidentsRouteImport.update({
+  id: '/incidents',
+  path: '/incidents',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedImportDonneesRoute =
+  AuthenticatedImportDonneesRouteImport.update({
+    id: '/import-donnees',
+    path: '/import-donnees',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedHistoriqueEnvoisRoute =
+  AuthenticatedHistoriqueEnvoisRouteImport.update({
+    id: '/historique-envois',
+    path: '/historique-envois',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedGrandLivreRoute = AuthenticatedGrandLivreRouteImport.update({
+  id: '/grand-livre',
+  path: '/grand-livre',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFournisseursRoute =
+  AuthenticatedFournisseursRouteImport.update({
+    id: '/fournisseurs',
+    path: '/fournisseurs',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFonctionsRoute = AuthenticatedFonctionsRouteImport.update({
+  id: '/fonctions',
+  path: '/fonctions',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFneSettingsRoute =
+  AuthenticatedFneSettingsRouteImport.update({
+    id: '/fne-settings',
+    path: '/fne-settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFneNouvelleRoute =
+  AuthenticatedFneNouvelleRouteImport.update({
+    id: '/fne-nouvelle',
+    path: '/fne-nouvelle',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFneLogsRoute = AuthenticatedFneLogsRouteImport.update({
+  id: '/fne-logs',
+  path: '/fne-logs',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFneRoute = AuthenticatedFneRouteImport.update({
+  id: '/fne',
+  path: '/fne',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFleetRoute = AuthenticatedFleetRouteImport.update({
+  id: '/fleet',
+  path: '/fleet',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFinancesRoute = AuthenticatedFinancesRouteImport.update({
+  id: '/finances',
+  path: '/finances',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFileStorageRoute =
+  AuthenticatedFileStorageRouteImport.update({
+    id: '/file-storage',
+    path: '/file-storage',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFacturesRoute = AuthenticatedFacturesRouteImport.update({
+  id: '/factures',
+  path: '/factures',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedExportsRoute = AuthenticatedExportsRouteImport.update({
+  id: '/exports',
+  path: '/exports',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedExpeditionsRoute =
+  AuthenticatedExpeditionsRouteImport.update({
+    id: '/expeditions',
+    path: '/expeditions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedExercicesRoute = AuthenticatedExercicesRouteImport.update({
+  id: '/exercices',
+  path: '/exercices',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEvaluationsRoute =
+  AuthenticatedEvaluationsRouteImport.update({
+    id: '/evaluations',
+    path: '/evaluations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEtatsComptablesRoute =
+  AuthenticatedEtatsComptablesRouteImport.update({
+    id: '/etats-comptables',
+    path: '/etats-comptables',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEtatCompteClientsRoute =
+  AuthenticatedEtatCompteClientsRouteImport.update({
+    id: '/etat-compte-clients',
+    path: '/etat-compte-clients',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEmployesRoute = AuthenticatedEmployesRouteImport.update({
+  id: '/employes',
+  path: '/employes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEcrituresComptablesRoute =
+  AuthenticatedEcrituresComptablesRouteImport.update({
+    id: '/ecritures-comptables',
+    path: '/ecritures-comptables',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDocumentsImpressionRoute =
+  AuthenticatedDocumentsImpressionRouteImport.update({
+    id: '/documents-impression',
+    path: '/documents-impression',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDocumentationRoute =
+  AuthenticatedDocumentationRouteImport.update({
+    id: '/documentation',
+    path: '/documentation',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDepotsRoute = AuthenticatedDepotsRouteImport.update({
+  id: '/depots',
+  path: '/depots',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDepartementsRoute =
+  AuthenticatedDepartementsRouteImport.update({
+    id: '/departements',
+    path: '/departements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDashboardLogistiqueRoute =
+  AuthenticatedDashboardLogistiqueRouteImport.update({
+    id: '/dashboard-logistique',
+    path: '/dashboard-logistique',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDashboardGlobalRoute =
+  AuthenticatedDashboardGlobalRouteImport.update({
+    id: '/dashboard-global',
+    path: '/dashboard-global',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedContratsRoute = AuthenticatedContratsRouteImport.update({
+  id: '/contrats',
+  path: '/contrats',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCongesEnCoursRoute =
+  AuthenticatedCongesEnCoursRouteImport.update({
+    id: '/conges-en-cours',
+    path: '/conges-en-cours',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCongesRoute = AuthenticatedCongesRouteImport.update({
+  id: '/conges',
+  path: '/conges',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedComptabiliteRoute =
+  AuthenticatedComptabiliteRouteImport.update({
+    id: '/comptabilite',
+    path: '/comptabilite',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedComptaDashboardRoute =
+  AuthenticatedComptaDashboardRouteImport.update({
+    id: '/compta-dashboard',
+    path: '/compta-dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCommandesRoute = AuthenticatedCommandesRouteImport.update({
+  id: '/commandes',
+  path: '/commandes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedColisageRoute = AuthenticatedColisageRouteImport.update({
+  id: '/colisage',
+  path: '/colisage',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedClientsRoute = AuthenticatedClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCentreDocumentsRoute =
+  AuthenticatedCentreDocumentsRouteImport.update({
+    id: '/centre-documents',
+    path: '/centre-documents',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCatalogueIntegriteRoute =
+  AuthenticatedCatalogueIntegriteRouteImport.update({
+    id: '/catalogue-integrite',
+    path: '/catalogue-integrite',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBonsLivraisonRoute =
+  AuthenticatedBonsLivraisonRouteImport.update({
+    id: '/bons-livraison',
+    path: '/bons-livraison',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBiAnalyticsRoute =
+  AuthenticatedBiAnalyticsRouteImport.update({
+    id: '/bi-analytics',
+    path: '/bi-analytics',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBalanceRoute = AuthenticatedBalanceRouteImport.update({
+  id: '/balance',
+  path: '/balance',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBackupRoute = AuthenticatedBackupRouteImport.update({
+  id: '/backup',
+  path: '/backup',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedApprobationsRoute =
+  AuthenticatedApprobationsRouteImport.update({
+    id: '/approbations',
+    path: '/approbations',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAlertesStockRoute =
+  AuthenticatedAlertesStockRouteImport.update({
+    id: '/alertes-stock',
+    path: '/alertes-stock',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAccesRefuseRoute =
+  AuthenticatedAccesRefuseRouteImport.update({
+    id: '/acces-refuse',
+    path: '/acces-refuse',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAbsencesRoute = AuthenticatedAbsencesRouteImport.update({
+  id: '/absences',
+  path: '/absences',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedUtilisateursIndexRoute =
+  AuthenticatedUtilisateursIndexRouteImport.update({
+    id: '/utilisateurs/',
+    path: '/utilisateurs/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTransfertsIndexRoute =
+  AuthenticatedTransfertsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedTransfertsRoute,
+  } as any)
+const AuthenticatedTourneesIndexRoute =
+  AuthenticatedTourneesIndexRouteImport.update({
+    id: '/tournees/',
+    path: '/tournees/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSpecimensIndexRoute =
+  AuthenticatedSpecimensIndexRouteImport.update({
+    id: '/specimens/',
+    path: '/specimens/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRetoursIndexRoute =
+  AuthenticatedRetoursIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedRetoursRoute,
+  } as any)
+const AuthenticatedRapportsIndexRoute =
+  AuthenticatedRapportsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedRapportsRoute,
+  } as any)
+const AuthenticatedProformasIndexRoute =
+  AuthenticatedProformasIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedProformasRoute,
+  } as any)
+const AuthenticatedProduitsIndexRoute =
+  AuthenticatedProduitsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedProduitsRoute,
+  } as any)
+const AuthenticatedPaiementsIndexRoute =
+  AuthenticatedPaiementsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPaiementsRoute,
+  } as any)
+const AuthenticatedPaieIndexRoute = AuthenticatedPaieIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedPaieRoute,
+} as any)
+const AuthenticatedLivraisonSuiviIndexRoute =
+  AuthenticatedLivraisonSuiviIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedLivraisonSuiviRoute,
+  } as any)
+const AuthenticatedInventairesIndexRoute =
+  AuthenticatedInventairesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedInventairesRoute,
+  } as any)
+const AuthenticatedIncidentsIndexRoute =
+  AuthenticatedIncidentsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedIncidentsRoute,
+  } as any)
+const AuthenticatedFournisseursIndexRoute =
+  AuthenticatedFournisseursIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedFournisseursRoute,
+  } as any)
+const AuthenticatedFacturesIndexRoute =
+  AuthenticatedFacturesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedFacturesRoute,
+  } as any)
+const AuthenticatedEvaluationsIndexRoute =
+  AuthenticatedEvaluationsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedEvaluationsRoute,
+  } as any)
+const AuthenticatedEmployesIndexRoute =
+  AuthenticatedEmployesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedEmployesRoute,
+  } as any)
+const AuthenticatedContratsIndexRoute =
+  AuthenticatedContratsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedContratsRoute,
+  } as any)
+const AuthenticatedCongesIndexRoute =
+  AuthenticatedCongesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCongesRoute,
+  } as any)
+const AuthenticatedComptabiliteIndexRoute =
+  AuthenticatedComptabiliteIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedComptabiliteRoute,
+  } as any)
+const AuthenticatedCommandesIndexRoute =
+  AuthenticatedCommandesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCommandesRoute,
+  } as any)
+const AuthenticatedColisageIndexRoute =
+  AuthenticatedColisageIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedColisageRoute,
+  } as any)
+const AuthenticatedClientsIndexRoute =
+  AuthenticatedClientsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedClientsRoute,
+  } as any)
+const AuthenticatedAchatsIndexRoute =
+  AuthenticatedAchatsIndexRouteImport.update({
+    id: '/achats/',
+    path: '/achats/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAbsencesIndexRoute =
+  AuthenticatedAbsencesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAbsencesRoute,
+  } as any)
+const AuthenticatedUtilisateursProductionRoute =
+  AuthenticatedUtilisateursProductionRouteImport.update({
+    id: '/utilisateurs/production',
+    path: '/utilisateurs/production',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedUtilisateursNouveauRoute =
+  AuthenticatedUtilisateursNouveauRouteImport.update({
+    id: '/utilisateurs/nouveau',
+    path: '/utilisateurs/nouveau',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTransfertsNouveauRoute =
+  AuthenticatedTransfertsNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedTransfertsRoute,
+  } as any)
+const AuthenticatedTransfertsTransfertIdRoute =
+  AuthenticatedTransfertsTransfertIdRouteImport.update({
+    id: '/$transfertId',
+    path: '/$transfertId',
+    getParentRoute: () => AuthenticatedTransfertsRoute,
+  } as any)
+const AuthenticatedTourneesNouvelleRoute =
+  AuthenticatedTourneesNouvelleRouteImport.update({
+    id: '/tournees/nouvelle',
+    path: '/tournees/nouvelle',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTourneesTourneeIdRoute =
+  AuthenticatedTourneesTourneeIdRouteImport.update({
+    id: '/tournees/$tourneeId',
+    path: '/tournees/$tourneeId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTourneesBlTourneeIdRoute =
+  AuthenticatedTourneesBlTourneeIdRouteImport.update({
+    id: '/tournees-bl/$tourneeId',
+    path: '/tournees-bl/$tourneeId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStockAuditRoute = AuthenticatedStockAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AuthenticatedStockRoute,
+} as any)
+const AuthenticatedSpecimensNouveauRoute =
+  AuthenticatedSpecimensNouveauRouteImport.update({
+    id: '/specimens/nouveau',
+    path: '/specimens/nouveau',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSpecimensSpecimenIdRoute =
+  AuthenticatedSpecimensSpecimenIdRouteImport.update({
+    id: '/specimens/$specimenId',
+    path: '/specimens/$specimenId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRetoursNouveauRoute =
+  AuthenticatedRetoursNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedRetoursRoute,
+  } as any)
+const AuthenticatedRetoursRetourIdRoute =
+  AuthenticatedRetoursRetourIdRouteImport.update({
+    id: '/$retourId',
+    path: '/$retourId',
+    getParentRoute: () => AuthenticatedRetoursRoute,
+  } as any)
+const AuthenticatedRapportsAnalyseRoute =
+  AuthenticatedRapportsAnalyseRouteImport.update({
+    id: '/analyse',
+    path: '/analyse',
+    getParentRoute: () => AuthenticatedRapportsRoute,
+  } as any)
+const AuthenticatedProformasProformaIdRoute =
+  AuthenticatedProformasProformaIdRouteImport.update({
+    id: '/$proformaId',
+    path: '/$proformaId',
+    getParentRoute: () => AuthenticatedProformasRoute,
+  } as any)
+const AuthenticatedProduitsProduitIdRoute =
+  AuthenticatedProduitsProduitIdRouteImport.update({
+    id: '/$produitId',
+    path: '/$produitId',
+    getParentRoute: () => AuthenticatedProduitsRoute,
+  } as any)
+const AuthenticatedParametresZonesLivraisonRoute =
+  AuthenticatedParametresZonesLivraisonRouteImport.update({
+    id: '/zones-livraison',
+    path: '/zones-livraison',
+    getParentRoute: () => AuthenticatedParametresRoute,
+  } as any)
+const AuthenticatedPaiementsNouveauRoute =
+  AuthenticatedPaiementsNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedPaiementsRoute,
+  } as any)
+const AuthenticatedPaiementsPaiementIdRoute =
+  AuthenticatedPaiementsPaiementIdRouteImport.update({
+    id: '/$paiementId',
+    path: '/$paiementId',
+    getParentRoute: () => AuthenticatedPaiementsRoute,
+  } as any)
+const AuthenticatedPaieNouveauRoute =
+  AuthenticatedPaieNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedPaieRoute,
+  } as any)
+const AuthenticatedPaieBulletinIdRoute =
+  AuthenticatedPaieBulletinIdRouteImport.update({
+    id: '/$bulletinId',
+    path: '/$bulletinId',
+    getParentRoute: () => AuthenticatedPaieRoute,
+  } as any)
+const AuthenticatedMfaEnrollRoute = AuthenticatedMfaEnrollRouteImport.update({
+  id: '/mfa/enroll',
+  path: '/mfa/enroll',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMfaBackupCodesRoute =
+  AuthenticatedMfaBackupCodesRouteImport.update({
+    id: '/mfa/backup-codes',
+    path: '/mfa/backup-codes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLivraisonSuiviTourneesRoute =
+  AuthenticatedLivraisonSuiviTourneesRouteImport.update({
+    id: '/tournees',
+    path: '/tournees',
+    getParentRoute: () => AuthenticatedLivraisonSuiviRoute,
+  } as any)
+const AuthenticatedLivraisonSuiviCommandeRefRoute =
+  AuthenticatedLivraisonSuiviCommandeRefRouteImport.update({
+    id: '/$commandeRef',
+    path: '/$commandeRef',
+    getParentRoute: () => AuthenticatedLivraisonSuiviRoute,
+  } as any)
+const AuthenticatedInventairesNouveauPhysiqueRoute =
+  AuthenticatedInventairesNouveauPhysiqueRouteImport.update({
+    id: '/nouveau-physique',
+    path: '/nouveau-physique',
+    getParentRoute: () => AuthenticatedInventairesRoute,
+  } as any)
+const AuthenticatedInventairesInventaireIdRoute =
+  AuthenticatedInventairesInventaireIdRouteImport.update({
+    id: '/$inventaireId',
+    path: '/$inventaireId',
+    getParentRoute: () => AuthenticatedInventairesRoute,
+  } as any)
+const AuthenticatedIncidentsNouveauRoute =
+  AuthenticatedIncidentsNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedIncidentsRoute,
+  } as any)
+const AuthenticatedIncidentsIncidentIdRoute =
+  AuthenticatedIncidentsIncidentIdRouteImport.update({
+    id: '/$incidentId',
+    path: '/$incidentId',
+    getParentRoute: () => AuthenticatedIncidentsRoute,
+  } as any)
+const AuthenticatedFournisseursFournisseurIdRoute =
+  AuthenticatedFournisseursFournisseurIdRouteImport.update({
+    id: '/$fournisseurId',
+    path: '/$fournisseurId',
+    getParentRoute: () => AuthenticatedFournisseursRoute,
+  } as any)
+const AuthenticatedFneDetailFactureIdRoute =
+  AuthenticatedFneDetailFactureIdRouteImport.update({
+    id: '/fne-detail/$factureId',
+    path: '/fne-detail/$factureId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedFacturesFactureIdRoute =
+  AuthenticatedFacturesFactureIdRouteImport.update({
+    id: '/$factureId',
+    path: '/$factureId',
+    getParentRoute: () => AuthenticatedFacturesRoute,
+  } as any)
+const AuthenticatedExercicesRapportRoute =
+  AuthenticatedExercicesRapportRouteImport.update({
+    id: '/rapport',
+    path: '/rapport',
+    getParentRoute: () => AuthenticatedExercicesRoute,
+  } as any)
+const AuthenticatedExercicesJournalRoute =
+  AuthenticatedExercicesJournalRouteImport.update({
+    id: '/journal',
+    path: '/journal',
+    getParentRoute: () => AuthenticatedExercicesRoute,
+  } as any)
+const AuthenticatedExercicesComparatifRoute =
+  AuthenticatedExercicesComparatifRouteImport.update({
+    id: '/comparatif',
+    path: '/comparatif',
+    getParentRoute: () => AuthenticatedExercicesRoute,
+  } as any)
+const AuthenticatedEvaluationsNouveauRoute =
+  AuthenticatedEvaluationsNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedEvaluationsRoute,
+  } as any)
+const AuthenticatedEmployesNouveauRoute =
+  AuthenticatedEmployesNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedEmployesRoute,
+  } as any)
+const AuthenticatedContratsNouveauRoute =
+  AuthenticatedContratsNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedContratsRoute,
+  } as any)
+const AuthenticatedContratsContratIdRoute =
+  AuthenticatedContratsContratIdRouteImport.update({
+    id: '/$contratId',
+    path: '/$contratId',
+    getParentRoute: () => AuthenticatedContratsRoute,
+  } as any)
+const AuthenticatedCongesNouveauRoute =
+  AuthenticatedCongesNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedCongesRoute,
+  } as any)
+const AuthenticatedComptabiliteNouvelleRoute =
+  AuthenticatedComptabiliteNouvelleRouteImport.update({
+    id: '/nouvelle',
+    path: '/nouvelle',
+    getParentRoute: () => AuthenticatedComptabiliteRoute,
+  } as any)
+const AuthenticatedComptabiliteFecRoute =
+  AuthenticatedComptabiliteFecRouteImport.update({
+    id: '/fec',
+    path: '/fec',
+    getParentRoute: () => AuthenticatedComptabiliteRoute,
+  } as any)
+const AuthenticatedComptabiliteAuditRoute =
+  AuthenticatedComptabiliteAuditRouteImport.update({
+    id: '/audit',
+    path: '/audit',
+    getParentRoute: () => AuthenticatedComptabiliteRoute,
+  } as any)
+const AuthenticatedCommandesNouvelleRoute =
+  AuthenticatedCommandesNouvelleRouteImport.update({
+    id: '/nouvelle',
+    path: '/nouvelle',
+    getParentRoute: () => AuthenticatedCommandesRoute,
+  } as any)
+const AuthenticatedCommandesCommandeIdRoute =
+  AuthenticatedCommandesCommandeIdRouteImport.update({
+    id: '/$commandeId',
+    path: '/$commandeId',
+    getParentRoute: () => AuthenticatedCommandesRoute,
+  } as any)
+const AuthenticatedColisageResponsablesRoute =
+  AuthenticatedColisageResponsablesRouteImport.update({
+    id: '/responsables',
+    path: '/responsables',
+    getParentRoute: () => AuthenticatedColisageRoute,
+  } as any)
+const AuthenticatedColisageBlIdRoute =
+  AuthenticatedColisageBlIdRouteImport.update({
+    id: '/$blId',
+    path: '/$blId',
+    getParentRoute: () => AuthenticatedColisageRoute,
+  } as any)
+const AuthenticatedClientsNouveauRoute =
+  AuthenticatedClientsNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedClientsRoute,
+  } as any)
+const AuthenticatedClientsDashboardRoute =
+  AuthenticatedClientsDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedClientsRoute,
+  } as any)
+const AuthenticatedClientsClientIdRoute =
+  AuthenticatedClientsClientIdRouteImport.update({
+    id: '/$clientId',
+    path: '/$clientId',
+    getParentRoute: () => AuthenticatedClientsRoute,
+  } as any)
+const AuthenticatedBonDeTourneeTourneeIdRoute =
+  AuthenticatedBonDeTourneeTourneeIdRouteImport.update({
+    id: '/bon-de-tournee/$tourneeId',
+    path: '/bon-de-tournee/$tourneeId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBonDeSortieTourneeIdRoute =
+  AuthenticatedBonDeSortieTourneeIdRouteImport.update({
+    id: '/bon-de-sortie/$tourneeId',
+    path: '/bon-de-sortie/$tourneeId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminSloRoute = AuthenticatedAdminSloRouteImport.update({
+  id: '/admin/slo',
+  path: '/admin/slo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminSanteSystemeRoute =
+  AuthenticatedAdminSanteSystemeRouteImport.update({
+    id: '/admin/sante-systeme',
+    path: '/admin/sante-systeme',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminRpcErrorsRoute =
+  AuthenticatedAdminRpcErrorsRouteImport.update({
+    id: '/admin/rpc-errors',
+    path: '/admin/rpc-errors',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminPerfRoute = AuthenticatedAdminPerfRouteImport.update({
+  id: '/admin/perf',
+  path: '/admin/perf',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminGoogleDriveRoute =
+  AuthenticatedAdminGoogleDriveRouteImport.update({
+    id: '/admin/google-drive',
+    path: '/admin/google-drive',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminDataQualityRoute =
+  AuthenticatedAdminDataQualityRouteImport.update({
+    id: '/admin/data-quality',
+    path: '/admin/data-quality',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminAuditPaiementsRoute =
+  AuthenticatedAdminAuditPaiementsRouteImport.update({
+    id: '/admin/audit-paiements',
+    path: '/admin/audit-paiements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAchatsNouveauRoute =
+  AuthenticatedAchatsNouveauRouteImport.update({
+    id: '/achats/nouveau',
+    path: '/achats/nouveau',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAchatsAchatIdRoute =
+  AuthenticatedAchatsAchatIdRouteImport.update({
+    id: '/achats/$achatId',
+    path: '/achats/$achatId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAbsencesNouveauRoute =
+  AuthenticatedAbsencesNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedAbsencesRoute,
+  } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedEmployesEmployeIdIndexRoute =
+  AuthenticatedEmployesEmployeIdIndexRouteImport.update({
+    id: '/$employeId/',
+    path: '/$employeId/',
+    getParentRoute: () => AuthenticatedEmployesRoute,
+  } as any)
+const AuthenticatedCommandesCommandeIdIndexRoute =
+  AuthenticatedCommandesCommandeIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCommandesCommandeIdRoute,
+  } as any)
+const ApiPublicHooksRunSchedulesRoute =
+  ApiPublicHooksRunSchedulesRouteImport.update({
+    id: '/api/public/hooks/run-schedules',
+    path: '/api/public/hooks/run-schedules',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksAlertRoute = ApiPublicHooksAlertRouteImport.update({
+  id: '/api/public/hooks/alert',
+  path: '/api/public/hooks/alert',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedUtilisateursUserIdModifierRoute =
+  AuthenticatedUtilisateursUserIdModifierRouteImport.update({
+    id: '/utilisateurs/$userId/modifier',
+    path: '/utilisateurs/$userId/modifier',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStockProduitIdMouvementsRoute =
+  AuthenticatedStockProduitIdMouvementsRouteImport.update({
+    id: '/stock_/$produitId/mouvements',
+    path: '/stock/$produitId/mouvements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLivraisonSuiviTourneesTourneeIdRoute =
+  AuthenticatedLivraisonSuiviTourneesTourneeIdRouteImport.update({
+    id: '/$tourneeId',
+    path: '/$tourneeId',
+    getParentRoute: () => AuthenticatedLivraisonSuiviTourneesRoute,
+  } as any)
+const AuthenticatedLivraisonSuiviCommandeRefRemiseRoute =
+  AuthenticatedLivraisonSuiviCommandeRefRemiseRouteImport.update({
+    id: '/remise',
+    path: '/remise',
+    getParentRoute: () => AuthenticatedLivraisonSuiviCommandeRefRoute,
+  } as any)
+const AuthenticatedEvaluationsEvaluationIdModifierRoute =
+  AuthenticatedEvaluationsEvaluationIdModifierRouteImport.update({
+    id: '/$evaluationId/modifier',
+    path: '/$evaluationId/modifier',
+    getParentRoute: () => AuthenticatedEvaluationsRoute,
+  } as any)
+const AuthenticatedEmployesEmployeIdModifierRoute =
+  AuthenticatedEmployesEmployeIdModifierRouteImport.update({
+    id: '/$employeId/modifier',
+    path: '/$employeId/modifier',
+    getParentRoute: () => AuthenticatedEmployesRoute,
+  } as any)
+const AuthenticatedContratsContratIdModifierRoute =
+  AuthenticatedContratsContratIdModifierRouteImport.update({
+    id: '/modifier',
+    path: '/modifier',
+    getParentRoute: () => AuthenticatedContratsContratIdRoute,
+  } as any)
+const AuthenticatedCongesCongeIdModifierRoute =
+  AuthenticatedCongesCongeIdModifierRouteImport.update({
+    id: '/$congeId/modifier',
+    path: '/$congeId/modifier',
+    getParentRoute: () => AuthenticatedCongesRoute,
+  } as any)
+const AuthenticatedCommandesCommandeIdModifierRoute =
+  AuthenticatedCommandesCommandeIdModifierRouteImport.update({
+    id: '/modifier',
+    path: '/modifier',
+    getParentRoute: () => AuthenticatedCommandesCommandeIdRoute,
+  } as any)
+const AuthenticatedClientsClientIdModifierRoute =
+  AuthenticatedClientsClientIdModifierRouteImport.update({
+    id: '/modifier',
+    path: '/modifier',
+    getParentRoute: () => AuthenticatedClientsClientIdRoute,
+  } as any)
+const AuthenticatedAdminAuditPaiementsAuditIdRoute =
+  AuthenticatedAdminAuditPaiementsAuditIdRouteImport.update({
+    id: '/$auditId',
+    path: '/$auditId',
+    getParentRoute: () => AuthenticatedAdminAuditPaiementsRoute,
+  } as any)
+const AuthenticatedAbsencesAbsenceIdModifierRoute =
+  AuthenticatedAbsencesAbsenceIdModifierRouteImport.update({
+    id: '/$absenceId/modifier',
+    path: '/$absenceId/modifier',
+    getParentRoute: () => AuthenticatedAbsencesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/mcp': typeof McpRoute
+  '/presentation': typeof PresentationRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/absences': typeof AuthenticatedAbsencesRouteWithChildren
+  '/acces-refuse': typeof AuthenticatedAccesRefuseRoute
+  '/alertes-stock': typeof AuthenticatedAlertesStockRoute
+  '/approbations': typeof AuthenticatedApprobationsRoute
+  '/audit': typeof AuthenticatedAuditRoute
+  '/backup': typeof AuthenticatedBackupRoute
+  '/balance': typeof AuthenticatedBalanceRoute
+  '/bi-analytics': typeof AuthenticatedBiAnalyticsRoute
+  '/bons-livraison': typeof AuthenticatedBonsLivraisonRoute
+  '/catalogue-integrite': typeof AuthenticatedCatalogueIntegriteRoute
+  '/centre-documents': typeof AuthenticatedCentreDocumentsRoute
+  '/clients': typeof AuthenticatedClientsRouteWithChildren
+  '/colisage': typeof AuthenticatedColisageRouteWithChildren
+  '/commandes': typeof AuthenticatedCommandesRouteWithChildren
+  '/compta-dashboard': typeof AuthenticatedComptaDashboardRoute
+  '/comptabilite': typeof AuthenticatedComptabiliteRouteWithChildren
+  '/conges': typeof AuthenticatedCongesRouteWithChildren
+  '/conges-en-cours': typeof AuthenticatedCongesEnCoursRoute
+  '/contrats': typeof AuthenticatedContratsRouteWithChildren
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard-global': typeof AuthenticatedDashboardGlobalRoute
+  '/dashboard-logistique': typeof AuthenticatedDashboardLogistiqueRoute
+  '/departements': typeof AuthenticatedDepartementsRoute
+  '/depots': typeof AuthenticatedDepotsRoute
+  '/documentation': typeof AuthenticatedDocumentationRoute
+  '/documents-impression': typeof AuthenticatedDocumentsImpressionRoute
+  '/ecritures-comptables': typeof AuthenticatedEcrituresComptablesRoute
+  '/employes': typeof AuthenticatedEmployesRouteWithChildren
+  '/etat-compte-clients': typeof AuthenticatedEtatCompteClientsRoute
+  '/etats-comptables': typeof AuthenticatedEtatsComptablesRoute
+  '/evaluations': typeof AuthenticatedEvaluationsRouteWithChildren
+  '/exercices': typeof AuthenticatedExercicesRouteWithChildren
+  '/expeditions': typeof AuthenticatedExpeditionsRoute
+  '/exports': typeof AuthenticatedExportsRoute
+  '/factures': typeof AuthenticatedFacturesRouteWithChildren
+  '/file-storage': typeof AuthenticatedFileStorageRoute
+  '/finances': typeof AuthenticatedFinancesRoute
+  '/fleet': typeof AuthenticatedFleetRoute
+  '/fne': typeof AuthenticatedFneRoute
+  '/fne-logs': typeof AuthenticatedFneLogsRoute
+  '/fne-nouvelle': typeof AuthenticatedFneNouvelleRoute
+  '/fne-settings': typeof AuthenticatedFneSettingsRoute
+  '/fonctions': typeof AuthenticatedFonctionsRoute
+  '/fournisseurs': typeof AuthenticatedFournisseursRouteWithChildren
+  '/grand-livre': typeof AuthenticatedGrandLivreRoute
+  '/historique-envois': typeof AuthenticatedHistoriqueEnvoisRoute
+  '/import-donnees': typeof AuthenticatedImportDonneesRoute
+  '/incidents': typeof AuthenticatedIncidentsRouteWithChildren
+  '/inventaires': typeof AuthenticatedInventairesRouteWithChildren
+  '/livraison-suivi': typeof AuthenticatedLivraisonSuiviRouteWithChildren
+  '/livreurs': typeof AuthenticatedLivreursRoute
+  '/logistics-costs': typeof AuthenticatedLogisticsCostsRoute
+  '/missions': typeof AuthenticatedMissionsRoute
+  '/modeles-documents': typeof AuthenticatedModelesDocumentsRoute
+  '/mon-dashboard': typeof AuthenticatedMonDashboardRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
+  '/paie': typeof AuthenticatedPaieRouteWithChildren
+  '/paie-dashboard': typeof AuthenticatedPaieDashboardRoute
+  '/paie-declarations': typeof AuthenticatedPaieDeclarationsRoute
+  '/paie-exports': typeof AuthenticatedPaieExportsRoute
+  '/paie-generation': typeof AuthenticatedPaieGenerationRoute
+  '/paie-historique': typeof AuthenticatedPaieHistoriqueRoute
+  '/paie-parametres': typeof AuthenticatedPaieParametresRoute
+  '/paie-rapports': typeof AuthenticatedPaieRapportsRoute
+  '/paie-rubriques': typeof AuthenticatedPaieRubriquesRoute
+  '/paiements': typeof AuthenticatedPaiementsRouteWithChildren
+  '/parametres': typeof AuthenticatedParametresRouteWithChildren
+  '/plan-comptable': typeof AuthenticatedPlanComptableRoute
+  '/produits': typeof AuthenticatedProduitsRouteWithChildren
+  '/profil': typeof AuthenticatedProfilRoute
+  '/proformas': typeof AuthenticatedProformasRouteWithChildren
+  '/rapports': typeof AuthenticatedRapportsRouteWithChildren
+  '/rapports-comptables': typeof AuthenticatedRapportsComptablesRoute
+  '/rapports-logistique': typeof AuthenticatedRapportsLogistiqueRoute
+  '/retours': typeof AuthenticatedRetoursRouteWithChildren
+  '/rh-dashboard': typeof AuthenticatedRhDashboardRoute
+  '/roles-permissions': typeof AuthenticatedRolesPermissionsRoute
+  '/stock': typeof AuthenticatedStockRouteWithChildren
+  '/transferts': typeof AuthenticatedTransfertsRouteWithChildren
+  '/workflow-approvals': typeof AuthenticatedWorkflowApprovalsRoute
+  '/workflows-definitions': typeof AuthenticatedWorkflowsDefinitionsRoute
+  '/carton/$colisId': typeof CartonColisIdRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/absences/nouveau': typeof AuthenticatedAbsencesNouveauRoute
+  '/achats/$achatId': typeof AuthenticatedAchatsAchatIdRoute
+  '/achats/nouveau': typeof AuthenticatedAchatsNouveauRoute
+  '/admin/audit-paiements': typeof AuthenticatedAdminAuditPaiementsRouteWithChildren
+  '/admin/data-quality': typeof AuthenticatedAdminDataQualityRoute
+  '/admin/google-drive': typeof AuthenticatedAdminGoogleDriveRoute
+  '/admin/perf': typeof AuthenticatedAdminPerfRoute
+  '/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
+  '/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
+  '/admin/slo': typeof AuthenticatedAdminSloRoute
+  '/bon-de-sortie/$tourneeId': typeof AuthenticatedBonDeSortieTourneeIdRoute
+  '/bon-de-tournee/$tourneeId': typeof AuthenticatedBonDeTourneeTourneeIdRoute
+  '/clients/$clientId': typeof AuthenticatedClientsClientIdRouteWithChildren
+  '/clients/dashboard': typeof AuthenticatedClientsDashboardRoute
+  '/clients/nouveau': typeof AuthenticatedClientsNouveauRoute
+  '/colisage/$blId': typeof AuthenticatedColisageBlIdRoute
+  '/colisage/responsables': typeof AuthenticatedColisageResponsablesRoute
+  '/commandes/$commandeId': typeof AuthenticatedCommandesCommandeIdRouteWithChildren
+  '/commandes/nouvelle': typeof AuthenticatedCommandesNouvelleRoute
+  '/comptabilite/audit': typeof AuthenticatedComptabiliteAuditRoute
+  '/comptabilite/fec': typeof AuthenticatedComptabiliteFecRoute
+  '/comptabilite/nouvelle': typeof AuthenticatedComptabiliteNouvelleRoute
+  '/conges/nouveau': typeof AuthenticatedCongesNouveauRoute
+  '/contrats/$contratId': typeof AuthenticatedContratsContratIdRouteWithChildren
+  '/contrats/nouveau': typeof AuthenticatedContratsNouveauRoute
+  '/employes/nouveau': typeof AuthenticatedEmployesNouveauRoute
+  '/evaluations/nouveau': typeof AuthenticatedEvaluationsNouveauRoute
+  '/exercices/comparatif': typeof AuthenticatedExercicesComparatifRoute
+  '/exercices/journal': typeof AuthenticatedExercicesJournalRoute
+  '/exercices/rapport': typeof AuthenticatedExercicesRapportRoute
+  '/factures/$factureId': typeof AuthenticatedFacturesFactureIdRoute
+  '/fne-detail/$factureId': typeof AuthenticatedFneDetailFactureIdRoute
+  '/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRoute
+  '/incidents/$incidentId': typeof AuthenticatedIncidentsIncidentIdRoute
+  '/incidents/nouveau': typeof AuthenticatedIncidentsNouveauRoute
+  '/inventaires/$inventaireId': typeof AuthenticatedInventairesInventaireIdRoute
+  '/inventaires/nouveau-physique': typeof AuthenticatedInventairesNouveauPhysiqueRoute
+  '/livraison-suivi/$commandeRef': typeof AuthenticatedLivraisonSuiviCommandeRefRouteWithChildren
+  '/livraison-suivi/tournees': typeof AuthenticatedLivraisonSuiviTourneesRouteWithChildren
+  '/mfa/backup-codes': typeof AuthenticatedMfaBackupCodesRoute
+  '/mfa/enroll': typeof AuthenticatedMfaEnrollRoute
+  '/paie/$bulletinId': typeof AuthenticatedPaieBulletinIdRoute
+  '/paie/nouveau': typeof AuthenticatedPaieNouveauRoute
+  '/paiements/$paiementId': typeof AuthenticatedPaiementsPaiementIdRoute
+  '/paiements/nouveau': typeof AuthenticatedPaiementsNouveauRoute
+  '/parametres/zones-livraison': typeof AuthenticatedParametresZonesLivraisonRoute
+  '/produits/$produitId': typeof AuthenticatedProduitsProduitIdRoute
+  '/proformas/$proformaId': typeof AuthenticatedProformasProformaIdRoute
+  '/rapports/analyse': typeof AuthenticatedRapportsAnalyseRoute
+  '/retours/$retourId': typeof AuthenticatedRetoursRetourIdRoute
+  '/retours/nouveau': typeof AuthenticatedRetoursNouveauRoute
+  '/specimens/$specimenId': typeof AuthenticatedSpecimensSpecimenIdRoute
+  '/specimens/nouveau': typeof AuthenticatedSpecimensNouveauRoute
+  '/stock/audit': typeof AuthenticatedStockAuditRoute
+  '/tournees-bl/$tourneeId': typeof AuthenticatedTourneesBlTourneeIdRoute
+  '/tournees/$tourneeId': typeof AuthenticatedTourneesTourneeIdRoute
+  '/tournees/nouvelle': typeof AuthenticatedTourneesNouvelleRoute
+  '/transferts/$transfertId': typeof AuthenticatedTransfertsTransfertIdRoute
+  '/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
+  '/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
+  '/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
+  '/absences/': typeof AuthenticatedAbsencesIndexRoute
+  '/achats/': typeof AuthenticatedAchatsIndexRoute
+  '/clients/': typeof AuthenticatedClientsIndexRoute
+  '/colisage/': typeof AuthenticatedColisageIndexRoute
+  '/commandes/': typeof AuthenticatedCommandesIndexRoute
+  '/comptabilite/': typeof AuthenticatedComptabiliteIndexRoute
+  '/conges/': typeof AuthenticatedCongesIndexRoute
+  '/contrats/': typeof AuthenticatedContratsIndexRoute
+  '/employes/': typeof AuthenticatedEmployesIndexRoute
+  '/evaluations/': typeof AuthenticatedEvaluationsIndexRoute
+  '/factures/': typeof AuthenticatedFacturesIndexRoute
+  '/fournisseurs/': typeof AuthenticatedFournisseursIndexRoute
+  '/incidents/': typeof AuthenticatedIncidentsIndexRoute
+  '/inventaires/': typeof AuthenticatedInventairesIndexRoute
+  '/livraison-suivi/': typeof AuthenticatedLivraisonSuiviIndexRoute
+  '/paie/': typeof AuthenticatedPaieIndexRoute
+  '/paiements/': typeof AuthenticatedPaiementsIndexRoute
+  '/produits/': typeof AuthenticatedProduitsIndexRoute
+  '/proformas/': typeof AuthenticatedProformasIndexRoute
+  '/rapports/': typeof AuthenticatedRapportsIndexRoute
+  '/retours/': typeof AuthenticatedRetoursIndexRoute
+  '/specimens/': typeof AuthenticatedSpecimensIndexRoute
+  '/tournees/': typeof AuthenticatedTourneesIndexRoute
+  '/transferts/': typeof AuthenticatedTransfertsIndexRoute
+  '/utilisateurs/': typeof AuthenticatedUtilisateursIndexRoute
+  '/absences/$absenceId/modifier': typeof AuthenticatedAbsencesAbsenceIdModifierRoute
+  '/admin/audit-paiements/$auditId': typeof AuthenticatedAdminAuditPaiementsAuditIdRoute
+  '/clients/$clientId/modifier': typeof AuthenticatedClientsClientIdModifierRoute
+  '/commandes/$commandeId/modifier': typeof AuthenticatedCommandesCommandeIdModifierRoute
+  '/conges/$congeId/modifier': typeof AuthenticatedCongesCongeIdModifierRoute
+  '/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
+  '/employes/$employeId/modifier': typeof AuthenticatedEmployesEmployeIdModifierRoute
+  '/evaluations/$evaluationId/modifier': typeof AuthenticatedEvaluationsEvaluationIdModifierRoute
+  '/livraison-suivi/$commandeRef/remise': typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRoute
+  '/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
+  '/stock/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
+  '/utilisateurs/$userId/modifier': typeof AuthenticatedUtilisateursUserIdModifierRoute
+  '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
+  '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
+  '/commandes/$commandeId/': typeof AuthenticatedCommandesCommandeIdIndexRoute
+  '/employes/$employeId/': typeof AuthenticatedEmployesEmployeIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/mcp': typeof McpRoute
+  '/presentation': typeof PresentationRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/acces-refuse': typeof AuthenticatedAccesRefuseRoute
+  '/alertes-stock': typeof AuthenticatedAlertesStockRoute
+  '/approbations': typeof AuthenticatedApprobationsRoute
+  '/audit': typeof AuthenticatedAuditRoute
+  '/backup': typeof AuthenticatedBackupRoute
+  '/balance': typeof AuthenticatedBalanceRoute
+  '/bi-analytics': typeof AuthenticatedBiAnalyticsRoute
+  '/bons-livraison': typeof AuthenticatedBonsLivraisonRoute
+  '/catalogue-integrite': typeof AuthenticatedCatalogueIntegriteRoute
+  '/centre-documents': typeof AuthenticatedCentreDocumentsRoute
+  '/compta-dashboard': typeof AuthenticatedComptaDashboardRoute
+  '/conges-en-cours': typeof AuthenticatedCongesEnCoursRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/dashboard-global': typeof AuthenticatedDashboardGlobalRoute
+  '/dashboard-logistique': typeof AuthenticatedDashboardLogistiqueRoute
+  '/departements': typeof AuthenticatedDepartementsRoute
+  '/depots': typeof AuthenticatedDepotsRoute
+  '/documentation': typeof AuthenticatedDocumentationRoute
+  '/documents-impression': typeof AuthenticatedDocumentsImpressionRoute
+  '/ecritures-comptables': typeof AuthenticatedEcrituresComptablesRoute
+  '/etat-compte-clients': typeof AuthenticatedEtatCompteClientsRoute
+  '/etats-comptables': typeof AuthenticatedEtatsComptablesRoute
+  '/exercices': typeof AuthenticatedExercicesRouteWithChildren
+  '/expeditions': typeof AuthenticatedExpeditionsRoute
+  '/exports': typeof AuthenticatedExportsRoute
+  '/file-storage': typeof AuthenticatedFileStorageRoute
+  '/finances': typeof AuthenticatedFinancesRoute
+  '/fleet': typeof AuthenticatedFleetRoute
+  '/fne': typeof AuthenticatedFneRoute
+  '/fne-logs': typeof AuthenticatedFneLogsRoute
+  '/fne-nouvelle': typeof AuthenticatedFneNouvelleRoute
+  '/fne-settings': typeof AuthenticatedFneSettingsRoute
+  '/fonctions': typeof AuthenticatedFonctionsRoute
+  '/grand-livre': typeof AuthenticatedGrandLivreRoute
+  '/historique-envois': typeof AuthenticatedHistoriqueEnvoisRoute
+  '/import-donnees': typeof AuthenticatedImportDonneesRoute
+  '/livreurs': typeof AuthenticatedLivreursRoute
+  '/logistics-costs': typeof AuthenticatedLogisticsCostsRoute
+  '/missions': typeof AuthenticatedMissionsRoute
+  '/modeles-documents': typeof AuthenticatedModelesDocumentsRoute
+  '/mon-dashboard': typeof AuthenticatedMonDashboardRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
+  '/paie-dashboard': typeof AuthenticatedPaieDashboardRoute
+  '/paie-declarations': typeof AuthenticatedPaieDeclarationsRoute
+  '/paie-exports': typeof AuthenticatedPaieExportsRoute
+  '/paie-generation': typeof AuthenticatedPaieGenerationRoute
+  '/paie-historique': typeof AuthenticatedPaieHistoriqueRoute
+  '/paie-parametres': typeof AuthenticatedPaieParametresRoute
+  '/paie-rapports': typeof AuthenticatedPaieRapportsRoute
+  '/paie-rubriques': typeof AuthenticatedPaieRubriquesRoute
+  '/parametres': typeof AuthenticatedParametresRouteWithChildren
+  '/plan-comptable': typeof AuthenticatedPlanComptableRoute
+  '/profil': typeof AuthenticatedProfilRoute
+  '/rapports-comptables': typeof AuthenticatedRapportsComptablesRoute
+  '/rapports-logistique': typeof AuthenticatedRapportsLogistiqueRoute
+  '/rh-dashboard': typeof AuthenticatedRhDashboardRoute
+  '/roles-permissions': typeof AuthenticatedRolesPermissionsRoute
+  '/stock': typeof AuthenticatedStockRouteWithChildren
+  '/workflow-approvals': typeof AuthenticatedWorkflowApprovalsRoute
+  '/workflows-definitions': typeof AuthenticatedWorkflowsDefinitionsRoute
+  '/carton/$colisId': typeof CartonColisIdRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/absences/nouveau': typeof AuthenticatedAbsencesNouveauRoute
+  '/achats/$achatId': typeof AuthenticatedAchatsAchatIdRoute
+  '/achats/nouveau': typeof AuthenticatedAchatsNouveauRoute
+  '/admin/audit-paiements': typeof AuthenticatedAdminAuditPaiementsRouteWithChildren
+  '/admin/data-quality': typeof AuthenticatedAdminDataQualityRoute
+  '/admin/google-drive': typeof AuthenticatedAdminGoogleDriveRoute
+  '/admin/perf': typeof AuthenticatedAdminPerfRoute
+  '/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
+  '/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
+  '/admin/slo': typeof AuthenticatedAdminSloRoute
+  '/bon-de-sortie/$tourneeId': typeof AuthenticatedBonDeSortieTourneeIdRoute
+  '/bon-de-tournee/$tourneeId': typeof AuthenticatedBonDeTourneeTourneeIdRoute
+  '/clients/$clientId': typeof AuthenticatedClientsClientIdRouteWithChildren
+  '/clients/dashboard': typeof AuthenticatedClientsDashboardRoute
+  '/clients/nouveau': typeof AuthenticatedClientsNouveauRoute
+  '/colisage/$blId': typeof AuthenticatedColisageBlIdRoute
+  '/colisage/responsables': typeof AuthenticatedColisageResponsablesRoute
+  '/commandes/nouvelle': typeof AuthenticatedCommandesNouvelleRoute
+  '/comptabilite/audit': typeof AuthenticatedComptabiliteAuditRoute
+  '/comptabilite/fec': typeof AuthenticatedComptabiliteFecRoute
+  '/comptabilite/nouvelle': typeof AuthenticatedComptabiliteNouvelleRoute
+  '/conges/nouveau': typeof AuthenticatedCongesNouveauRoute
+  '/contrats/$contratId': typeof AuthenticatedContratsContratIdRouteWithChildren
+  '/contrats/nouveau': typeof AuthenticatedContratsNouveauRoute
+  '/employes/nouveau': typeof AuthenticatedEmployesNouveauRoute
+  '/evaluations/nouveau': typeof AuthenticatedEvaluationsNouveauRoute
+  '/exercices/comparatif': typeof AuthenticatedExercicesComparatifRoute
+  '/exercices/journal': typeof AuthenticatedExercicesJournalRoute
+  '/exercices/rapport': typeof AuthenticatedExercicesRapportRoute
+  '/factures/$factureId': typeof AuthenticatedFacturesFactureIdRoute
+  '/fne-detail/$factureId': typeof AuthenticatedFneDetailFactureIdRoute
+  '/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRoute
+  '/incidents/$incidentId': typeof AuthenticatedIncidentsIncidentIdRoute
+  '/incidents/nouveau': typeof AuthenticatedIncidentsNouveauRoute
+  '/inventaires/$inventaireId': typeof AuthenticatedInventairesInventaireIdRoute
+  '/inventaires/nouveau-physique': typeof AuthenticatedInventairesNouveauPhysiqueRoute
+  '/livraison-suivi/$commandeRef': typeof AuthenticatedLivraisonSuiviCommandeRefRouteWithChildren
+  '/livraison-suivi/tournees': typeof AuthenticatedLivraisonSuiviTourneesRouteWithChildren
+  '/mfa/backup-codes': typeof AuthenticatedMfaBackupCodesRoute
+  '/mfa/enroll': typeof AuthenticatedMfaEnrollRoute
+  '/paie/$bulletinId': typeof AuthenticatedPaieBulletinIdRoute
+  '/paie/nouveau': typeof AuthenticatedPaieNouveauRoute
+  '/paiements/$paiementId': typeof AuthenticatedPaiementsPaiementIdRoute
+  '/paiements/nouveau': typeof AuthenticatedPaiementsNouveauRoute
+  '/parametres/zones-livraison': typeof AuthenticatedParametresZonesLivraisonRoute
+  '/produits/$produitId': typeof AuthenticatedProduitsProduitIdRoute
+  '/proformas/$proformaId': typeof AuthenticatedProformasProformaIdRoute
+  '/rapports/analyse': typeof AuthenticatedRapportsAnalyseRoute
+  '/retours/$retourId': typeof AuthenticatedRetoursRetourIdRoute
+  '/retours/nouveau': typeof AuthenticatedRetoursNouveauRoute
+  '/specimens/$specimenId': typeof AuthenticatedSpecimensSpecimenIdRoute
+  '/specimens/nouveau': typeof AuthenticatedSpecimensNouveauRoute
+  '/stock/audit': typeof AuthenticatedStockAuditRoute
+  '/tournees-bl/$tourneeId': typeof AuthenticatedTourneesBlTourneeIdRoute
+  '/tournees/$tourneeId': typeof AuthenticatedTourneesTourneeIdRoute
+  '/tournees/nouvelle': typeof AuthenticatedTourneesNouvelleRoute
+  '/transferts/$transfertId': typeof AuthenticatedTransfertsTransfertIdRoute
+  '/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
+  '/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
+  '/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
+  '/absences': typeof AuthenticatedAbsencesIndexRoute
+  '/achats': typeof AuthenticatedAchatsIndexRoute
+  '/clients': typeof AuthenticatedClientsIndexRoute
+  '/colisage': typeof AuthenticatedColisageIndexRoute
+  '/commandes': typeof AuthenticatedCommandesIndexRoute
+  '/comptabilite': typeof AuthenticatedComptabiliteIndexRoute
+  '/conges': typeof AuthenticatedCongesIndexRoute
+  '/contrats': typeof AuthenticatedContratsIndexRoute
+  '/employes': typeof AuthenticatedEmployesIndexRoute
+  '/evaluations': typeof AuthenticatedEvaluationsIndexRoute
+  '/factures': typeof AuthenticatedFacturesIndexRoute
+  '/fournisseurs': typeof AuthenticatedFournisseursIndexRoute
+  '/incidents': typeof AuthenticatedIncidentsIndexRoute
+  '/inventaires': typeof AuthenticatedInventairesIndexRoute
+  '/livraison-suivi': typeof AuthenticatedLivraisonSuiviIndexRoute
+  '/paie': typeof AuthenticatedPaieIndexRoute
+  '/paiements': typeof AuthenticatedPaiementsIndexRoute
+  '/produits': typeof AuthenticatedProduitsIndexRoute
+  '/proformas': typeof AuthenticatedProformasIndexRoute
+  '/rapports': typeof AuthenticatedRapportsIndexRoute
+  '/retours': typeof AuthenticatedRetoursIndexRoute
+  '/specimens': typeof AuthenticatedSpecimensIndexRoute
+  '/tournees': typeof AuthenticatedTourneesIndexRoute
+  '/transferts': typeof AuthenticatedTransfertsIndexRoute
+  '/utilisateurs': typeof AuthenticatedUtilisateursIndexRoute
+  '/absences/$absenceId/modifier': typeof AuthenticatedAbsencesAbsenceIdModifierRoute
+  '/admin/audit-paiements/$auditId': typeof AuthenticatedAdminAuditPaiementsAuditIdRoute
+  '/clients/$clientId/modifier': typeof AuthenticatedClientsClientIdModifierRoute
+  '/commandes/$commandeId/modifier': typeof AuthenticatedCommandesCommandeIdModifierRoute
+  '/conges/$congeId/modifier': typeof AuthenticatedCongesCongeIdModifierRoute
+  '/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
+  '/employes/$employeId/modifier': typeof AuthenticatedEmployesEmployeIdModifierRoute
+  '/evaluations/$evaluationId/modifier': typeof AuthenticatedEvaluationsEvaluationIdModifierRoute
+  '/livraison-suivi/$commandeRef/remise': typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRoute
+  '/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
+  '/stock/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
+  '/utilisateurs/$userId/modifier': typeof AuthenticatedUtilisateursUserIdModifierRoute
+  '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
+  '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
+  '/commandes/$commandeId': typeof AuthenticatedCommandesCommandeIdIndexRoute
+  '/employes/$employeId': typeof AuthenticatedEmployesEmployeIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/mcp': typeof McpRoute
+  '/presentation': typeof PresentationRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/_authenticated/absences': typeof AuthenticatedAbsencesRouteWithChildren
+  '/_authenticated/acces-refuse': typeof AuthenticatedAccesRefuseRoute
+  '/_authenticated/alertes-stock': typeof AuthenticatedAlertesStockRoute
+  '/_authenticated/approbations': typeof AuthenticatedApprobationsRoute
+  '/_authenticated/audit': typeof AuthenticatedAuditRoute
+  '/_authenticated/backup': typeof AuthenticatedBackupRoute
+  '/_authenticated/balance': typeof AuthenticatedBalanceRoute
+  '/_authenticated/bi-analytics': typeof AuthenticatedBiAnalyticsRoute
+  '/_authenticated/bons-livraison': typeof AuthenticatedBonsLivraisonRoute
+  '/_authenticated/catalogue-integrite': typeof AuthenticatedCatalogueIntegriteRoute
+  '/_authenticated/centre-documents': typeof AuthenticatedCentreDocumentsRoute
+  '/_authenticated/clients': typeof AuthenticatedClientsRouteWithChildren
+  '/_authenticated/colisage': typeof AuthenticatedColisageRouteWithChildren
+  '/_authenticated/commandes': typeof AuthenticatedCommandesRouteWithChildren
+  '/_authenticated/compta-dashboard': typeof AuthenticatedComptaDashboardRoute
+  '/_authenticated/comptabilite': typeof AuthenticatedComptabiliteRouteWithChildren
+  '/_authenticated/conges': typeof AuthenticatedCongesRouteWithChildren
+  '/_authenticated/conges-en-cours': typeof AuthenticatedCongesEnCoursRoute
+  '/_authenticated/contrats': typeof AuthenticatedContratsRouteWithChildren
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/dashboard-global': typeof AuthenticatedDashboardGlobalRoute
+  '/_authenticated/dashboard-logistique': typeof AuthenticatedDashboardLogistiqueRoute
+  '/_authenticated/departements': typeof AuthenticatedDepartementsRoute
+  '/_authenticated/depots': typeof AuthenticatedDepotsRoute
+  '/_authenticated/documentation': typeof AuthenticatedDocumentationRoute
+  '/_authenticated/documents-impression': typeof AuthenticatedDocumentsImpressionRoute
+  '/_authenticated/ecritures-comptables': typeof AuthenticatedEcrituresComptablesRoute
+  '/_authenticated/employes': typeof AuthenticatedEmployesRouteWithChildren
+  '/_authenticated/etat-compte-clients': typeof AuthenticatedEtatCompteClientsRoute
+  '/_authenticated/etats-comptables': typeof AuthenticatedEtatsComptablesRoute
+  '/_authenticated/evaluations': typeof AuthenticatedEvaluationsRouteWithChildren
+  '/_authenticated/exercices': typeof AuthenticatedExercicesRouteWithChildren
+  '/_authenticated/expeditions': typeof AuthenticatedExpeditionsRoute
+  '/_authenticated/exports': typeof AuthenticatedExportsRoute
+  '/_authenticated/factures': typeof AuthenticatedFacturesRouteWithChildren
+  '/_authenticated/file-storage': typeof AuthenticatedFileStorageRoute
+  '/_authenticated/finances': typeof AuthenticatedFinancesRoute
+  '/_authenticated/fleet': typeof AuthenticatedFleetRoute
+  '/_authenticated/fne': typeof AuthenticatedFneRoute
+  '/_authenticated/fne-logs': typeof AuthenticatedFneLogsRoute
+  '/_authenticated/fne-nouvelle': typeof AuthenticatedFneNouvelleRoute
+  '/_authenticated/fne-settings': typeof AuthenticatedFneSettingsRoute
+  '/_authenticated/fonctions': typeof AuthenticatedFonctionsRoute
+  '/_authenticated/fournisseurs': typeof AuthenticatedFournisseursRouteWithChildren
+  '/_authenticated/grand-livre': typeof AuthenticatedGrandLivreRoute
+  '/_authenticated/historique-envois': typeof AuthenticatedHistoriqueEnvoisRoute
+  '/_authenticated/import-donnees': typeof AuthenticatedImportDonneesRoute
+  '/_authenticated/incidents': typeof AuthenticatedIncidentsRouteWithChildren
+  '/_authenticated/inventaires': typeof AuthenticatedInventairesRouteWithChildren
+  '/_authenticated/livraison-suivi': typeof AuthenticatedLivraisonSuiviRouteWithChildren
+  '/_authenticated/livreurs': typeof AuthenticatedLivreursRoute
+  '/_authenticated/logistics-costs': typeof AuthenticatedLogisticsCostsRoute
+  '/_authenticated/missions': typeof AuthenticatedMissionsRoute
+  '/_authenticated/modeles-documents': typeof AuthenticatedModelesDocumentsRoute
+  '/_authenticated/mon-dashboard': typeof AuthenticatedMonDashboardRoute
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/paie': typeof AuthenticatedPaieRouteWithChildren
+  '/_authenticated/paie-dashboard': typeof AuthenticatedPaieDashboardRoute
+  '/_authenticated/paie-declarations': typeof AuthenticatedPaieDeclarationsRoute
+  '/_authenticated/paie-exports': typeof AuthenticatedPaieExportsRoute
+  '/_authenticated/paie-generation': typeof AuthenticatedPaieGenerationRoute
+  '/_authenticated/paie-historique': typeof AuthenticatedPaieHistoriqueRoute
+  '/_authenticated/paie-parametres': typeof AuthenticatedPaieParametresRoute
+  '/_authenticated/paie-rapports': typeof AuthenticatedPaieRapportsRoute
+  '/_authenticated/paie-rubriques': typeof AuthenticatedPaieRubriquesRoute
+  '/_authenticated/paiements': typeof AuthenticatedPaiementsRouteWithChildren
+  '/_authenticated/parametres': typeof AuthenticatedParametresRouteWithChildren
+  '/_authenticated/plan-comptable': typeof AuthenticatedPlanComptableRoute
+  '/_authenticated/produits': typeof AuthenticatedProduitsRouteWithChildren
+  '/_authenticated/profil': typeof AuthenticatedProfilRoute
+  '/_authenticated/proformas': typeof AuthenticatedProformasRouteWithChildren
+  '/_authenticated/rapports': typeof AuthenticatedRapportsRouteWithChildren
+  '/_authenticated/rapports-comptables': typeof AuthenticatedRapportsComptablesRoute
+  '/_authenticated/rapports-logistique': typeof AuthenticatedRapportsLogistiqueRoute
+  '/_authenticated/retours': typeof AuthenticatedRetoursRouteWithChildren
+  '/_authenticated/rh-dashboard': typeof AuthenticatedRhDashboardRoute
+  '/_authenticated/roles-permissions': typeof AuthenticatedRolesPermissionsRoute
+  '/_authenticated/stock': typeof AuthenticatedStockRouteWithChildren
+  '/_authenticated/transferts': typeof AuthenticatedTransfertsRouteWithChildren
+  '/_authenticated/workflow-approvals': typeof AuthenticatedWorkflowApprovalsRoute
+  '/_authenticated/workflows-definitions': typeof AuthenticatedWorkflowsDefinitionsRoute
+  '/carton/$colisId': typeof CartonColisIdRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_authenticated/absences/nouveau': typeof AuthenticatedAbsencesNouveauRoute
+  '/_authenticated/achats/$achatId': typeof AuthenticatedAchatsAchatIdRoute
+  '/_authenticated/achats/nouveau': typeof AuthenticatedAchatsNouveauRoute
+  '/_authenticated/admin/audit-paiements': typeof AuthenticatedAdminAuditPaiementsRouteWithChildren
+  '/_authenticated/admin/data-quality': typeof AuthenticatedAdminDataQualityRoute
+  '/_authenticated/admin/google-drive': typeof AuthenticatedAdminGoogleDriveRoute
+  '/_authenticated/admin/perf': typeof AuthenticatedAdminPerfRoute
+  '/_authenticated/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
+  '/_authenticated/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
+  '/_authenticated/admin/slo': typeof AuthenticatedAdminSloRoute
+  '/_authenticated/bon-de-sortie/$tourneeId': typeof AuthenticatedBonDeSortieTourneeIdRoute
+  '/_authenticated/bon-de-tournee/$tourneeId': typeof AuthenticatedBonDeTourneeTourneeIdRoute
+  '/_authenticated/clients/$clientId': typeof AuthenticatedClientsClientIdRouteWithChildren
+  '/_authenticated/clients/dashboard': typeof AuthenticatedClientsDashboardRoute
+  '/_authenticated/clients/nouveau': typeof AuthenticatedClientsNouveauRoute
+  '/_authenticated/colisage/$blId': typeof AuthenticatedColisageBlIdRoute
+  '/_authenticated/colisage/responsables': typeof AuthenticatedColisageResponsablesRoute
+  '/_authenticated/commandes/$commandeId': typeof AuthenticatedCommandesCommandeIdRouteWithChildren
+  '/_authenticated/commandes/nouvelle': typeof AuthenticatedCommandesNouvelleRoute
+  '/_authenticated/comptabilite/audit': typeof AuthenticatedComptabiliteAuditRoute
+  '/_authenticated/comptabilite/fec': typeof AuthenticatedComptabiliteFecRoute
+  '/_authenticated/comptabilite/nouvelle': typeof AuthenticatedComptabiliteNouvelleRoute
+  '/_authenticated/conges/nouveau': typeof AuthenticatedCongesNouveauRoute
+  '/_authenticated/contrats/$contratId': typeof AuthenticatedContratsContratIdRouteWithChildren
+  '/_authenticated/contrats/nouveau': typeof AuthenticatedContratsNouveauRoute
+  '/_authenticated/employes/nouveau': typeof AuthenticatedEmployesNouveauRoute
+  '/_authenticated/evaluations/nouveau': typeof AuthenticatedEvaluationsNouveauRoute
+  '/_authenticated/exercices/comparatif': typeof AuthenticatedExercicesComparatifRoute
+  '/_authenticated/exercices/journal': typeof AuthenticatedExercicesJournalRoute
+  '/_authenticated/exercices/rapport': typeof AuthenticatedExercicesRapportRoute
+  '/_authenticated/factures/$factureId': typeof AuthenticatedFacturesFactureIdRoute
+  '/_authenticated/fne-detail/$factureId': typeof AuthenticatedFneDetailFactureIdRoute
+  '/_authenticated/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRoute
+  '/_authenticated/incidents/$incidentId': typeof AuthenticatedIncidentsIncidentIdRoute
+  '/_authenticated/incidents/nouveau': typeof AuthenticatedIncidentsNouveauRoute
+  '/_authenticated/inventaires/$inventaireId': typeof AuthenticatedInventairesInventaireIdRoute
+  '/_authenticated/inventaires/nouveau-physique': typeof AuthenticatedInventairesNouveauPhysiqueRoute
+  '/_authenticated/livraison-suivi/$commandeRef': typeof AuthenticatedLivraisonSuiviCommandeRefRouteWithChildren
+  '/_authenticated/livraison-suivi/tournees': typeof AuthenticatedLivraisonSuiviTourneesRouteWithChildren
+  '/_authenticated/mfa/backup-codes': typeof AuthenticatedMfaBackupCodesRoute
+  '/_authenticated/mfa/enroll': typeof AuthenticatedMfaEnrollRoute
+  '/_authenticated/paie/$bulletinId': typeof AuthenticatedPaieBulletinIdRoute
+  '/_authenticated/paie/nouveau': typeof AuthenticatedPaieNouveauRoute
+  '/_authenticated/paiements/$paiementId': typeof AuthenticatedPaiementsPaiementIdRoute
+  '/_authenticated/paiements/nouveau': typeof AuthenticatedPaiementsNouveauRoute
+  '/_authenticated/parametres/zones-livraison': typeof AuthenticatedParametresZonesLivraisonRoute
+  '/_authenticated/produits/$produitId': typeof AuthenticatedProduitsProduitIdRoute
+  '/_authenticated/proformas/$proformaId': typeof AuthenticatedProformasProformaIdRoute
+  '/_authenticated/rapports/analyse': typeof AuthenticatedRapportsAnalyseRoute
+  '/_authenticated/retours/$retourId': typeof AuthenticatedRetoursRetourIdRoute
+  '/_authenticated/retours/nouveau': typeof AuthenticatedRetoursNouveauRoute
+  '/_authenticated/specimens/$specimenId': typeof AuthenticatedSpecimensSpecimenIdRoute
+  '/_authenticated/specimens/nouveau': typeof AuthenticatedSpecimensNouveauRoute
+  '/_authenticated/stock/audit': typeof AuthenticatedStockAuditRoute
+  '/_authenticated/tournees-bl/$tourneeId': typeof AuthenticatedTourneesBlTourneeIdRoute
+  '/_authenticated/tournees/$tourneeId': typeof AuthenticatedTourneesTourneeIdRoute
+  '/_authenticated/tournees/nouvelle': typeof AuthenticatedTourneesNouvelleRoute
+  '/_authenticated/transferts/$transfertId': typeof AuthenticatedTransfertsTransfertIdRoute
+  '/_authenticated/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
+  '/_authenticated/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
+  '/_authenticated/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
+  '/_authenticated/absences/': typeof AuthenticatedAbsencesIndexRoute
+  '/_authenticated/achats/': typeof AuthenticatedAchatsIndexRoute
+  '/_authenticated/clients/': typeof AuthenticatedClientsIndexRoute
+  '/_authenticated/colisage/': typeof AuthenticatedColisageIndexRoute
+  '/_authenticated/commandes/': typeof AuthenticatedCommandesIndexRoute
+  '/_authenticated/comptabilite/': typeof AuthenticatedComptabiliteIndexRoute
+  '/_authenticated/conges/': typeof AuthenticatedCongesIndexRoute
+  '/_authenticated/contrats/': typeof AuthenticatedContratsIndexRoute
+  '/_authenticated/employes/': typeof AuthenticatedEmployesIndexRoute
+  '/_authenticated/evaluations/': typeof AuthenticatedEvaluationsIndexRoute
+  '/_authenticated/factures/': typeof AuthenticatedFacturesIndexRoute
+  '/_authenticated/fournisseurs/': typeof AuthenticatedFournisseursIndexRoute
+  '/_authenticated/incidents/': typeof AuthenticatedIncidentsIndexRoute
+  '/_authenticated/inventaires/': typeof AuthenticatedInventairesIndexRoute
+  '/_authenticated/livraison-suivi/': typeof AuthenticatedLivraisonSuiviIndexRoute
+  '/_authenticated/paie/': typeof AuthenticatedPaieIndexRoute
+  '/_authenticated/paiements/': typeof AuthenticatedPaiementsIndexRoute
+  '/_authenticated/produits/': typeof AuthenticatedProduitsIndexRoute
+  '/_authenticated/proformas/': typeof AuthenticatedProformasIndexRoute
+  '/_authenticated/rapports/': typeof AuthenticatedRapportsIndexRoute
+  '/_authenticated/retours/': typeof AuthenticatedRetoursIndexRoute
+  '/_authenticated/specimens/': typeof AuthenticatedSpecimensIndexRoute
+  '/_authenticated/tournees/': typeof AuthenticatedTourneesIndexRoute
+  '/_authenticated/transferts/': typeof AuthenticatedTransfertsIndexRoute
+  '/_authenticated/utilisateurs/': typeof AuthenticatedUtilisateursIndexRoute
+  '/_authenticated/absences/$absenceId/modifier': typeof AuthenticatedAbsencesAbsenceIdModifierRoute
+  '/_authenticated/admin/audit-paiements/$auditId': typeof AuthenticatedAdminAuditPaiementsAuditIdRoute
+  '/_authenticated/clients/$clientId/modifier': typeof AuthenticatedClientsClientIdModifierRoute
+  '/_authenticated/commandes/$commandeId/modifier': typeof AuthenticatedCommandesCommandeIdModifierRoute
+  '/_authenticated/conges/$congeId/modifier': typeof AuthenticatedCongesCongeIdModifierRoute
+  '/_authenticated/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
+  '/_authenticated/employes/$employeId/modifier': typeof AuthenticatedEmployesEmployeIdModifierRoute
+  '/_authenticated/evaluations/$evaluationId/modifier': typeof AuthenticatedEvaluationsEvaluationIdModifierRoute
+  '/_authenticated/livraison-suivi/$commandeRef/remise': typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRoute
+  '/_authenticated/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
+  '/_authenticated/stock_/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
+  '/_authenticated/utilisateurs/$userId/modifier': typeof AuthenticatedUtilisateursUserIdModifierRoute
+  '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
+  '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
+  '/_authenticated/commandes/$commandeId/': typeof AuthenticatedCommandesCommandeIdIndexRoute
+  '/_authenticated/employes/$employeId/': typeof AuthenticatedEmployesEmployeIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/mcp'
+    | '/presentation'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
+    | '/absences'
+    | '/acces-refuse'
+    | '/alertes-stock'
+    | '/approbations'
+    | '/audit'
+    | '/backup'
+    | '/balance'
+    | '/bi-analytics'
+    | '/bons-livraison'
+    | '/catalogue-integrite'
+    | '/centre-documents'
+    | '/clients'
+    | '/colisage'
+    | '/commandes'
+    | '/compta-dashboard'
+    | '/comptabilite'
+    | '/conges'
+    | '/conges-en-cours'
+    | '/contrats'
+    | '/dashboard'
+    | '/dashboard-global'
+    | '/dashboard-logistique'
+    | '/departements'
+    | '/depots'
+    | '/documentation'
+    | '/documents-impression'
+    | '/ecritures-comptables'
+    | '/employes'
+    | '/etat-compte-clients'
+    | '/etats-comptables'
+    | '/evaluations'
+    | '/exercices'
+    | '/expeditions'
+    | '/exports'
+    | '/factures'
+    | '/file-storage'
+    | '/finances'
+    | '/fleet'
+    | '/fne'
+    | '/fne-logs'
+    | '/fne-nouvelle'
+    | '/fne-settings'
+    | '/fonctions'
+    | '/fournisseurs'
+    | '/grand-livre'
+    | '/historique-envois'
+    | '/import-donnees'
+    | '/incidents'
+    | '/inventaires'
+    | '/livraison-suivi'
+    | '/livreurs'
+    | '/logistics-costs'
+    | '/missions'
+    | '/modeles-documents'
+    | '/mon-dashboard'
+    | '/notifications'
+    | '/paie'
+    | '/paie-dashboard'
+    | '/paie-declarations'
+    | '/paie-exports'
+    | '/paie-generation'
+    | '/paie-historique'
+    | '/paie-parametres'
+    | '/paie-rapports'
+    | '/paie-rubriques'
+    | '/paiements'
+    | '/parametres'
+    | '/plan-comptable'
+    | '/produits'
+    | '/profil'
+    | '/proformas'
+    | '/rapports'
+    | '/rapports-comptables'
+    | '/rapports-logistique'
+    | '/retours'
+    | '/rh-dashboard'
+    | '/roles-permissions'
+    | '/stock'
+    | '/transferts'
+    | '/workflow-approvals'
+    | '/workflows-definitions'
+    | '/carton/$colisId'
+    | '/.mcp/invoke-tool/$tool'
+    | '/absences/nouveau'
+    | '/achats/$achatId'
+    | '/achats/nouveau'
+    | '/admin/audit-paiements'
+    | '/admin/data-quality'
+    | '/admin/google-drive'
+    | '/admin/perf'
+    | '/admin/rpc-errors'
+    | '/admin/sante-systeme'
+    | '/admin/slo'
+    | '/bon-de-sortie/$tourneeId'
+    | '/bon-de-tournee/$tourneeId'
+    | '/clients/$clientId'
+    | '/clients/dashboard'
+    | '/clients/nouveau'
+    | '/colisage/$blId'
+    | '/colisage/responsables'
+    | '/commandes/$commandeId'
+    | '/commandes/nouvelle'
+    | '/comptabilite/audit'
+    | '/comptabilite/fec'
+    | '/comptabilite/nouvelle'
+    | '/conges/nouveau'
+    | '/contrats/$contratId'
+    | '/contrats/nouveau'
+    | '/employes/nouveau'
+    | '/evaluations/nouveau'
+    | '/exercices/comparatif'
+    | '/exercices/journal'
+    | '/exercices/rapport'
+    | '/factures/$factureId'
+    | '/fne-detail/$factureId'
+    | '/fournisseurs/$fournisseurId'
+    | '/incidents/$incidentId'
+    | '/incidents/nouveau'
+    | '/inventaires/$inventaireId'
+    | '/inventaires/nouveau-physique'
+    | '/livraison-suivi/$commandeRef'
+    | '/livraison-suivi/tournees'
+    | '/mfa/backup-codes'
+    | '/mfa/enroll'
+    | '/paie/$bulletinId'
+    | '/paie/nouveau'
+    | '/paiements/$paiementId'
+    | '/paiements/nouveau'
+    | '/parametres/zones-livraison'
+    | '/produits/$produitId'
+    | '/proformas/$proformaId'
+    | '/rapports/analyse'
+    | '/retours/$retourId'
+    | '/retours/nouveau'
+    | '/specimens/$specimenId'
+    | '/specimens/nouveau'
+    | '/stock/audit'
+    | '/tournees-bl/$tourneeId'
+    | '/tournees/$tourneeId'
+    | '/tournees/nouvelle'
+    | '/transferts/$transfertId'
+    | '/transferts/nouveau'
+    | '/utilisateurs/nouveau'
+    | '/utilisateurs/production'
+    | '/absences/'
+    | '/achats/'
+    | '/clients/'
+    | '/colisage/'
+    | '/commandes/'
+    | '/comptabilite/'
+    | '/conges/'
+    | '/contrats/'
+    | '/employes/'
+    | '/evaluations/'
+    | '/factures/'
+    | '/fournisseurs/'
+    | '/incidents/'
+    | '/inventaires/'
+    | '/livraison-suivi/'
+    | '/paie/'
+    | '/paiements/'
+    | '/produits/'
+    | '/proformas/'
+    | '/rapports/'
+    | '/retours/'
+    | '/specimens/'
+    | '/tournees/'
+    | '/transferts/'
+    | '/utilisateurs/'
+    | '/absences/$absenceId/modifier'
+    | '/admin/audit-paiements/$auditId'
+    | '/clients/$clientId/modifier'
+    | '/commandes/$commandeId/modifier'
+    | '/conges/$congeId/modifier'
+    | '/contrats/$contratId/modifier'
+    | '/employes/$employeId/modifier'
+    | '/evaluations/$evaluationId/modifier'
+    | '/livraison-suivi/$commandeRef/remise'
+    | '/livraison-suivi/tournees/$tourneeId'
+    | '/stock/$produitId/mouvements'
+    | '/utilisateurs/$userId/modifier'
+    | '/api/public/hooks/alert'
+    | '/api/public/hooks/run-schedules'
+    | '/commandes/$commandeId/'
+    | '/employes/$employeId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/mcp'
+    | '/presentation'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
+    | '/acces-refuse'
+    | '/alertes-stock'
+    | '/approbations'
+    | '/audit'
+    | '/backup'
+    | '/balance'
+    | '/bi-analytics'
+    | '/bons-livraison'
+    | '/catalogue-integrite'
+    | '/centre-documents'
+    | '/compta-dashboard'
+    | '/conges-en-cours'
+    | '/dashboard'
+    | '/dashboard-global'
+    | '/dashboard-logistique'
+    | '/departements'
+    | '/depots'
+    | '/documentation'
+    | '/documents-impression'
+    | '/ecritures-comptables'
+    | '/etat-compte-clients'
+    | '/etats-comptables'
+    | '/exercices'
+    | '/expeditions'
+    | '/exports'
+    | '/file-storage'
+    | '/finances'
+    | '/fleet'
+    | '/fne'
+    | '/fne-logs'
+    | '/fne-nouvelle'
+    | '/fne-settings'
+    | '/fonctions'
+    | '/grand-livre'
+    | '/historique-envois'
+    | '/import-donnees'
+    | '/livreurs'
+    | '/logistics-costs'
+    | '/missions'
+    | '/modeles-documents'
+    | '/mon-dashboard'
+    | '/notifications'
+    | '/paie-dashboard'
+    | '/paie-declarations'
+    | '/paie-exports'
+    | '/paie-generation'
+    | '/paie-historique'
+    | '/paie-parametres'
+    | '/paie-rapports'
+    | '/paie-rubriques'
+    | '/parametres'
+    | '/plan-comptable'
+    | '/profil'
+    | '/rapports-comptables'
+    | '/rapports-logistique'
+    | '/rh-dashboard'
+    | '/roles-permissions'
+    | '/stock'
+    | '/workflow-approvals'
+    | '/workflows-definitions'
+    | '/carton/$colisId'
+    | '/.mcp/invoke-tool/$tool'
+    | '/absences/nouveau'
+    | '/achats/$achatId'
+    | '/achats/nouveau'
+    | '/admin/audit-paiements'
+    | '/admin/data-quality'
+    | '/admin/google-drive'
+    | '/admin/perf'
+    | '/admin/rpc-errors'
+    | '/admin/sante-systeme'
+    | '/admin/slo'
+    | '/bon-de-sortie/$tourneeId'
+    | '/bon-de-tournee/$tourneeId'
+    | '/clients/$clientId'
+    | '/clients/dashboard'
+    | '/clients/nouveau'
+    | '/colisage/$blId'
+    | '/colisage/responsables'
+    | '/commandes/nouvelle'
+    | '/comptabilite/audit'
+    | '/comptabilite/fec'
+    | '/comptabilite/nouvelle'
+    | '/conges/nouveau'
+    | '/contrats/$contratId'
+    | '/contrats/nouveau'
+    | '/employes/nouveau'
+    | '/evaluations/nouveau'
+    | '/exercices/comparatif'
+    | '/exercices/journal'
+    | '/exercices/rapport'
+    | '/factures/$factureId'
+    | '/fne-detail/$factureId'
+    | '/fournisseurs/$fournisseurId'
+    | '/incidents/$incidentId'
+    | '/incidents/nouveau'
+    | '/inventaires/$inventaireId'
+    | '/inventaires/nouveau-physique'
+    | '/livraison-suivi/$commandeRef'
+    | '/livraison-suivi/tournees'
+    | '/mfa/backup-codes'
+    | '/mfa/enroll'
+    | '/paie/$bulletinId'
+    | '/paie/nouveau'
+    | '/paiements/$paiementId'
+    | '/paiements/nouveau'
+    | '/parametres/zones-livraison'
+    | '/produits/$produitId'
+    | '/proformas/$proformaId'
+    | '/rapports/analyse'
+    | '/retours/$retourId'
+    | '/retours/nouveau'
+    | '/specimens/$specimenId'
+    | '/specimens/nouveau'
+    | '/stock/audit'
+    | '/tournees-bl/$tourneeId'
+    | '/tournees/$tourneeId'
+    | '/tournees/nouvelle'
+    | '/transferts/$transfertId'
+    | '/transferts/nouveau'
+    | '/utilisateurs/nouveau'
+    | '/utilisateurs/production'
+    | '/absences'
+    | '/achats'
+    | '/clients'
+    | '/colisage'
+    | '/commandes'
+    | '/comptabilite'
+    | '/conges'
+    | '/contrats'
+    | '/employes'
+    | '/evaluations'
+    | '/factures'
+    | '/fournisseurs'
+    | '/incidents'
+    | '/inventaires'
+    | '/livraison-suivi'
+    | '/paie'
+    | '/paiements'
+    | '/produits'
+    | '/proformas'
+    | '/rapports'
+    | '/retours'
+    | '/specimens'
+    | '/tournees'
+    | '/transferts'
+    | '/utilisateurs'
+    | '/absences/$absenceId/modifier'
+    | '/admin/audit-paiements/$auditId'
+    | '/clients/$clientId/modifier'
+    | '/commandes/$commandeId/modifier'
+    | '/conges/$congeId/modifier'
+    | '/contrats/$contratId/modifier'
+    | '/employes/$employeId/modifier'
+    | '/evaluations/$evaluationId/modifier'
+    | '/livraison-suivi/$commandeRef/remise'
+    | '/livraison-suivi/tournees/$tourneeId'
+    | '/stock/$produitId/mouvements'
+    | '/utilisateurs/$userId/modifier'
+    | '/api/public/hooks/alert'
+    | '/api/public/hooks/run-schedules'
+    | '/commandes/$commandeId'
+    | '/employes/$employeId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/mcp'
+    | '/presentation'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
+    | '/_authenticated/absences'
+    | '/_authenticated/acces-refuse'
+    | '/_authenticated/alertes-stock'
+    | '/_authenticated/approbations'
+    | '/_authenticated/audit'
+    | '/_authenticated/backup'
+    | '/_authenticated/balance'
+    | '/_authenticated/bi-analytics'
+    | '/_authenticated/bons-livraison'
+    | '/_authenticated/catalogue-integrite'
+    | '/_authenticated/centre-documents'
+    | '/_authenticated/clients'
+    | '/_authenticated/colisage'
+    | '/_authenticated/commandes'
+    | '/_authenticated/compta-dashboard'
+    | '/_authenticated/comptabilite'
+    | '/_authenticated/conges'
+    | '/_authenticated/conges-en-cours'
+    | '/_authenticated/contrats'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/dashboard-global'
+    | '/_authenticated/dashboard-logistique'
+    | '/_authenticated/departements'
+    | '/_authenticated/depots'
+    | '/_authenticated/documentation'
+    | '/_authenticated/documents-impression'
+    | '/_authenticated/ecritures-comptables'
+    | '/_authenticated/employes'
+    | '/_authenticated/etat-compte-clients'
+    | '/_authenticated/etats-comptables'
+    | '/_authenticated/evaluations'
+    | '/_authenticated/exercices'
+    | '/_authenticated/expeditions'
+    | '/_authenticated/exports'
+    | '/_authenticated/factures'
+    | '/_authenticated/file-storage'
+    | '/_authenticated/finances'
+    | '/_authenticated/fleet'
+    | '/_authenticated/fne'
+    | '/_authenticated/fne-logs'
+    | '/_authenticated/fne-nouvelle'
+    | '/_authenticated/fne-settings'
+    | '/_authenticated/fonctions'
+    | '/_authenticated/fournisseurs'
+    | '/_authenticated/grand-livre'
+    | '/_authenticated/historique-envois'
+    | '/_authenticated/import-donnees'
+    | '/_authenticated/incidents'
+    | '/_authenticated/inventaires'
+    | '/_authenticated/livraison-suivi'
+    | '/_authenticated/livreurs'
+    | '/_authenticated/logistics-costs'
+    | '/_authenticated/missions'
+    | '/_authenticated/modeles-documents'
+    | '/_authenticated/mon-dashboard'
+    | '/_authenticated/notifications'
+    | '/_authenticated/paie'
+    | '/_authenticated/paie-dashboard'
+    | '/_authenticated/paie-declarations'
+    | '/_authenticated/paie-exports'
+    | '/_authenticated/paie-generation'
+    | '/_authenticated/paie-historique'
+    | '/_authenticated/paie-parametres'
+    | '/_authenticated/paie-rapports'
+    | '/_authenticated/paie-rubriques'
+    | '/_authenticated/paiements'
+    | '/_authenticated/parametres'
+    | '/_authenticated/plan-comptable'
+    | '/_authenticated/produits'
+    | '/_authenticated/profil'
+    | '/_authenticated/proformas'
+    | '/_authenticated/rapports'
+    | '/_authenticated/rapports-comptables'
+    | '/_authenticated/rapports-logistique'
+    | '/_authenticated/retours'
+    | '/_authenticated/rh-dashboard'
+    | '/_authenticated/roles-permissions'
+    | '/_authenticated/stock'
+    | '/_authenticated/transferts'
+    | '/_authenticated/workflow-approvals'
+    | '/_authenticated/workflows-definitions'
+    | '/carton/$colisId'
+    | '/.mcp/invoke-tool/$tool'
+    | '/_authenticated/absences/nouveau'
+    | '/_authenticated/achats/$achatId'
+    | '/_authenticated/achats/nouveau'
+    | '/_authenticated/admin/audit-paiements'
+    | '/_authenticated/admin/data-quality'
+    | '/_authenticated/admin/google-drive'
+    | '/_authenticated/admin/perf'
+    | '/_authenticated/admin/rpc-errors'
+    | '/_authenticated/admin/sante-systeme'
+    | '/_authenticated/admin/slo'
+    | '/_authenticated/bon-de-sortie/$tourneeId'
+    | '/_authenticated/bon-de-tournee/$tourneeId'
+    | '/_authenticated/clients/$clientId'
+    | '/_authenticated/clients/dashboard'
+    | '/_authenticated/clients/nouveau'
+    | '/_authenticated/colisage/$blId'
+    | '/_authenticated/colisage/responsables'
+    | '/_authenticated/commandes/$commandeId'
+    | '/_authenticated/commandes/nouvelle'
+    | '/_authenticated/comptabilite/audit'
+    | '/_authenticated/comptabilite/fec'
+    | '/_authenticated/comptabilite/nouvelle'
+    | '/_authenticated/conges/nouveau'
+    | '/_authenticated/contrats/$contratId'
+    | '/_authenticated/contrats/nouveau'
+    | '/_authenticated/employes/nouveau'
+    | '/_authenticated/evaluations/nouveau'
+    | '/_authenticated/exercices/comparatif'
+    | '/_authenticated/exercices/journal'
+    | '/_authenticated/exercices/rapport'
+    | '/_authenticated/factures/$factureId'
+    | '/_authenticated/fne-detail/$factureId'
+    | '/_authenticated/fournisseurs/$fournisseurId'
+    | '/_authenticated/incidents/$incidentId'
+    | '/_authenticated/incidents/nouveau'
+    | '/_authenticated/inventaires/$inventaireId'
+    | '/_authenticated/inventaires/nouveau-physique'
+    | '/_authenticated/livraison-suivi/$commandeRef'
+    | '/_authenticated/livraison-suivi/tournees'
+    | '/_authenticated/mfa/backup-codes'
+    | '/_authenticated/mfa/enroll'
+    | '/_authenticated/paie/$bulletinId'
+    | '/_authenticated/paie/nouveau'
+    | '/_authenticated/paiements/$paiementId'
+    | '/_authenticated/paiements/nouveau'
+    | '/_authenticated/parametres/zones-livraison'
+    | '/_authenticated/produits/$produitId'
+    | '/_authenticated/proformas/$proformaId'
+    | '/_authenticated/rapports/analyse'
+    | '/_authenticated/retours/$retourId'
+    | '/_authenticated/retours/nouveau'
+    | '/_authenticated/specimens/$specimenId'
+    | '/_authenticated/specimens/nouveau'
+    | '/_authenticated/stock/audit'
+    | '/_authenticated/tournees-bl/$tourneeId'
+    | '/_authenticated/tournees/$tourneeId'
+    | '/_authenticated/tournees/nouvelle'
+    | '/_authenticated/transferts/$transfertId'
+    | '/_authenticated/transferts/nouveau'
+    | '/_authenticated/utilisateurs/nouveau'
+    | '/_authenticated/utilisateurs/production'
+    | '/_authenticated/absences/'
+    | '/_authenticated/achats/'
+    | '/_authenticated/clients/'
+    | '/_authenticated/colisage/'
+    | '/_authenticated/commandes/'
+    | '/_authenticated/comptabilite/'
+    | '/_authenticated/conges/'
+    | '/_authenticated/contrats/'
+    | '/_authenticated/employes/'
+    | '/_authenticated/evaluations/'
+    | '/_authenticated/factures/'
+    | '/_authenticated/fournisseurs/'
+    | '/_authenticated/incidents/'
+    | '/_authenticated/inventaires/'
+    | '/_authenticated/livraison-suivi/'
+    | '/_authenticated/paie/'
+    | '/_authenticated/paiements/'
+    | '/_authenticated/produits/'
+    | '/_authenticated/proformas/'
+    | '/_authenticated/rapports/'
+    | '/_authenticated/retours/'
+    | '/_authenticated/specimens/'
+    | '/_authenticated/tournees/'
+    | '/_authenticated/transferts/'
+    | '/_authenticated/utilisateurs/'
+    | '/_authenticated/absences/$absenceId/modifier'
+    | '/_authenticated/admin/audit-paiements/$auditId'
+    | '/_authenticated/clients/$clientId/modifier'
+    | '/_authenticated/commandes/$commandeId/modifier'
+    | '/_authenticated/conges/$congeId/modifier'
+    | '/_authenticated/contrats/$contratId/modifier'
+    | '/_authenticated/employes/$employeId/modifier'
+    | '/_authenticated/evaluations/$evaluationId/modifier'
+    | '/_authenticated/livraison-suivi/$commandeRef/remise'
+    | '/_authenticated/livraison-suivi/tournees/$tourneeId'
+    | '/_authenticated/stock_/$produitId/mouvements'
+    | '/_authenticated/utilisateurs/$userId/modifier'
+    | '/api/public/hooks/alert'
+    | '/api/public/hooks/run-schedules'
+    | '/_authenticated/commandes/$commandeId/'
+    | '/_authenticated/employes/$employeId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  McpRoute: typeof McpRoute
+  PresentationRoute: typeof PresentationRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  CartonColisIdRoute: typeof CartonColisIdRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicHooksAlertRoute: typeof ApiPublicHooksAlertRoute
+  ApiPublicHooksRunSchedulesRoute: typeof ApiPublicHooksRunSchedulesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/presentation': {
+      id: '/presentation'
+      path: '/presentation'
+      fullPath: '/presentation'
+      preLoaderRoute: typeof PresentationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +2479,2077 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/carton/$colisId': {
+      id: '/carton/$colisId'
+      path: '/carton/$colisId'
+      fullPath: '/carton/$colisId'
+      preLoaderRoute: typeof CartonColisIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/workflows-definitions': {
+      id: '/_authenticated/workflows-definitions'
+      path: '/workflows-definitions'
+      fullPath: '/workflows-definitions'
+      preLoaderRoute: typeof AuthenticatedWorkflowsDefinitionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/workflow-approvals': {
+      id: '/_authenticated/workflow-approvals'
+      path: '/workflow-approvals'
+      fullPath: '/workflow-approvals'
+      preLoaderRoute: typeof AuthenticatedWorkflowApprovalsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/transferts': {
+      id: '/_authenticated/transferts'
+      path: '/transferts'
+      fullPath: '/transferts'
+      preLoaderRoute: typeof AuthenticatedTransfertsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stock': {
+      id: '/_authenticated/stock'
+      path: '/stock'
+      fullPath: '/stock'
+      preLoaderRoute: typeof AuthenticatedStockRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/roles-permissions': {
+      id: '/_authenticated/roles-permissions'
+      path: '/roles-permissions'
+      fullPath: '/roles-permissions'
+      preLoaderRoute: typeof AuthenticatedRolesPermissionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rh-dashboard': {
+      id: '/_authenticated/rh-dashboard'
+      path: '/rh-dashboard'
+      fullPath: '/rh-dashboard'
+      preLoaderRoute: typeof AuthenticatedRhDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/retours': {
+      id: '/_authenticated/retours'
+      path: '/retours'
+      fullPath: '/retours'
+      preLoaderRoute: typeof AuthenticatedRetoursRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rapports-logistique': {
+      id: '/_authenticated/rapports-logistique'
+      path: '/rapports-logistique'
+      fullPath: '/rapports-logistique'
+      preLoaderRoute: typeof AuthenticatedRapportsLogistiqueRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rapports-comptables': {
+      id: '/_authenticated/rapports-comptables'
+      path: '/rapports-comptables'
+      fullPath: '/rapports-comptables'
+      preLoaderRoute: typeof AuthenticatedRapportsComptablesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rapports': {
+      id: '/_authenticated/rapports'
+      path: '/rapports'
+      fullPath: '/rapports'
+      preLoaderRoute: typeof AuthenticatedRapportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/proformas': {
+      id: '/_authenticated/proformas'
+      path: '/proformas'
+      fullPath: '/proformas'
+      preLoaderRoute: typeof AuthenticatedProformasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/produits': {
+      id: '/_authenticated/produits'
+      path: '/produits'
+      fullPath: '/produits'
+      preLoaderRoute: typeof AuthenticatedProduitsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/plan-comptable': {
+      id: '/_authenticated/plan-comptable'
+      path: '/plan-comptable'
+      fullPath: '/plan-comptable'
+      preLoaderRoute: typeof AuthenticatedPlanComptableRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/parametres': {
+      id: '/_authenticated/parametres'
+      path: '/parametres'
+      fullPath: '/parametres'
+      preLoaderRoute: typeof AuthenticatedParametresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paiements': {
+      id: '/_authenticated/paiements'
+      path: '/paiements'
+      fullPath: '/paiements'
+      preLoaderRoute: typeof AuthenticatedPaiementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paie-rubriques': {
+      id: '/_authenticated/paie-rubriques'
+      path: '/paie-rubriques'
+      fullPath: '/paie-rubriques'
+      preLoaderRoute: typeof AuthenticatedPaieRubriquesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paie-rapports': {
+      id: '/_authenticated/paie-rapports'
+      path: '/paie-rapports'
+      fullPath: '/paie-rapports'
+      preLoaderRoute: typeof AuthenticatedPaieRapportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paie-parametres': {
+      id: '/_authenticated/paie-parametres'
+      path: '/paie-parametres'
+      fullPath: '/paie-parametres'
+      preLoaderRoute: typeof AuthenticatedPaieParametresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paie-historique': {
+      id: '/_authenticated/paie-historique'
+      path: '/paie-historique'
+      fullPath: '/paie-historique'
+      preLoaderRoute: typeof AuthenticatedPaieHistoriqueRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paie-generation': {
+      id: '/_authenticated/paie-generation'
+      path: '/paie-generation'
+      fullPath: '/paie-generation'
+      preLoaderRoute: typeof AuthenticatedPaieGenerationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paie-exports': {
+      id: '/_authenticated/paie-exports'
+      path: '/paie-exports'
+      fullPath: '/paie-exports'
+      preLoaderRoute: typeof AuthenticatedPaieExportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paie-declarations': {
+      id: '/_authenticated/paie-declarations'
+      path: '/paie-declarations'
+      fullPath: '/paie-declarations'
+      preLoaderRoute: typeof AuthenticatedPaieDeclarationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paie-dashboard': {
+      id: '/_authenticated/paie-dashboard'
+      path: '/paie-dashboard'
+      fullPath: '/paie-dashboard'
+      preLoaderRoute: typeof AuthenticatedPaieDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/paie': {
+      id: '/_authenticated/paie'
+      path: '/paie'
+      fullPath: '/paie'
+      preLoaderRoute: typeof AuthenticatedPaieRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mon-dashboard': {
+      id: '/_authenticated/mon-dashboard'
+      path: '/mon-dashboard'
+      fullPath: '/mon-dashboard'
+      preLoaderRoute: typeof AuthenticatedMonDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/modeles-documents': {
+      id: '/_authenticated/modeles-documents'
+      path: '/modeles-documents'
+      fullPath: '/modeles-documents'
+      preLoaderRoute: typeof AuthenticatedModelesDocumentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/missions': {
+      id: '/_authenticated/missions'
+      path: '/missions'
+      fullPath: '/missions'
+      preLoaderRoute: typeof AuthenticatedMissionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics-costs': {
+      id: '/_authenticated/logistics-costs'
+      path: '/logistics-costs'
+      fullPath: '/logistics-costs'
+      preLoaderRoute: typeof AuthenticatedLogisticsCostsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/livreurs': {
+      id: '/_authenticated/livreurs'
+      path: '/livreurs'
+      fullPath: '/livreurs'
+      preLoaderRoute: typeof AuthenticatedLivreursRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/livraison-suivi': {
+      id: '/_authenticated/livraison-suivi'
+      path: '/livraison-suivi'
+      fullPath: '/livraison-suivi'
+      preLoaderRoute: typeof AuthenticatedLivraisonSuiviRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/inventaires': {
+      id: '/_authenticated/inventaires'
+      path: '/inventaires'
+      fullPath: '/inventaires'
+      preLoaderRoute: typeof AuthenticatedInventairesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/incidents': {
+      id: '/_authenticated/incidents'
+      path: '/incidents'
+      fullPath: '/incidents'
+      preLoaderRoute: typeof AuthenticatedIncidentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/import-donnees': {
+      id: '/_authenticated/import-donnees'
+      path: '/import-donnees'
+      fullPath: '/import-donnees'
+      preLoaderRoute: typeof AuthenticatedImportDonneesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/historique-envois': {
+      id: '/_authenticated/historique-envois'
+      path: '/historique-envois'
+      fullPath: '/historique-envois'
+      preLoaderRoute: typeof AuthenticatedHistoriqueEnvoisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/grand-livre': {
+      id: '/_authenticated/grand-livre'
+      path: '/grand-livre'
+      fullPath: '/grand-livre'
+      preLoaderRoute: typeof AuthenticatedGrandLivreRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fournisseurs': {
+      id: '/_authenticated/fournisseurs'
+      path: '/fournisseurs'
+      fullPath: '/fournisseurs'
+      preLoaderRoute: typeof AuthenticatedFournisseursRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fonctions': {
+      id: '/_authenticated/fonctions'
+      path: '/fonctions'
+      fullPath: '/fonctions'
+      preLoaderRoute: typeof AuthenticatedFonctionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fne-settings': {
+      id: '/_authenticated/fne-settings'
+      path: '/fne-settings'
+      fullPath: '/fne-settings'
+      preLoaderRoute: typeof AuthenticatedFneSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fne-nouvelle': {
+      id: '/_authenticated/fne-nouvelle'
+      path: '/fne-nouvelle'
+      fullPath: '/fne-nouvelle'
+      preLoaderRoute: typeof AuthenticatedFneNouvelleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fne-logs': {
+      id: '/_authenticated/fne-logs'
+      path: '/fne-logs'
+      fullPath: '/fne-logs'
+      preLoaderRoute: typeof AuthenticatedFneLogsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fne': {
+      id: '/_authenticated/fne'
+      path: '/fne'
+      fullPath: '/fne'
+      preLoaderRoute: typeof AuthenticatedFneRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/fleet': {
+      id: '/_authenticated/fleet'
+      path: '/fleet'
+      fullPath: '/fleet'
+      preLoaderRoute: typeof AuthenticatedFleetRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/finances': {
+      id: '/_authenticated/finances'
+      path: '/finances'
+      fullPath: '/finances'
+      preLoaderRoute: typeof AuthenticatedFinancesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/file-storage': {
+      id: '/_authenticated/file-storage'
+      path: '/file-storage'
+      fullPath: '/file-storage'
+      preLoaderRoute: typeof AuthenticatedFileStorageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/factures': {
+      id: '/_authenticated/factures'
+      path: '/factures'
+      fullPath: '/factures'
+      preLoaderRoute: typeof AuthenticatedFacturesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/exports': {
+      id: '/_authenticated/exports'
+      path: '/exports'
+      fullPath: '/exports'
+      preLoaderRoute: typeof AuthenticatedExportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/expeditions': {
+      id: '/_authenticated/expeditions'
+      path: '/expeditions'
+      fullPath: '/expeditions'
+      preLoaderRoute: typeof AuthenticatedExpeditionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/exercices': {
+      id: '/_authenticated/exercices'
+      path: '/exercices'
+      fullPath: '/exercices'
+      preLoaderRoute: typeof AuthenticatedExercicesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/evaluations': {
+      id: '/_authenticated/evaluations'
+      path: '/evaluations'
+      fullPath: '/evaluations'
+      preLoaderRoute: typeof AuthenticatedEvaluationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/etats-comptables': {
+      id: '/_authenticated/etats-comptables'
+      path: '/etats-comptables'
+      fullPath: '/etats-comptables'
+      preLoaderRoute: typeof AuthenticatedEtatsComptablesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/etat-compte-clients': {
+      id: '/_authenticated/etat-compte-clients'
+      path: '/etat-compte-clients'
+      fullPath: '/etat-compte-clients'
+      preLoaderRoute: typeof AuthenticatedEtatCompteClientsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/employes': {
+      id: '/_authenticated/employes'
+      path: '/employes'
+      fullPath: '/employes'
+      preLoaderRoute: typeof AuthenticatedEmployesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ecritures-comptables': {
+      id: '/_authenticated/ecritures-comptables'
+      path: '/ecritures-comptables'
+      fullPath: '/ecritures-comptables'
+      preLoaderRoute: typeof AuthenticatedEcrituresComptablesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/documents-impression': {
+      id: '/_authenticated/documents-impression'
+      path: '/documents-impression'
+      fullPath: '/documents-impression'
+      preLoaderRoute: typeof AuthenticatedDocumentsImpressionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/documentation': {
+      id: '/_authenticated/documentation'
+      path: '/documentation'
+      fullPath: '/documentation'
+      preLoaderRoute: typeof AuthenticatedDocumentationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/depots': {
+      id: '/_authenticated/depots'
+      path: '/depots'
+      fullPath: '/depots'
+      preLoaderRoute: typeof AuthenticatedDepotsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/departements': {
+      id: '/_authenticated/departements'
+      path: '/departements'
+      fullPath: '/departements'
+      preLoaderRoute: typeof AuthenticatedDepartementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard-logistique': {
+      id: '/_authenticated/dashboard-logistique'
+      path: '/dashboard-logistique'
+      fullPath: '/dashboard-logistique'
+      preLoaderRoute: typeof AuthenticatedDashboardLogistiqueRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard-global': {
+      id: '/_authenticated/dashboard-global'
+      path: '/dashboard-global'
+      fullPath: '/dashboard-global'
+      preLoaderRoute: typeof AuthenticatedDashboardGlobalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/contrats': {
+      id: '/_authenticated/contrats'
+      path: '/contrats'
+      fullPath: '/contrats'
+      preLoaderRoute: typeof AuthenticatedContratsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/conges-en-cours': {
+      id: '/_authenticated/conges-en-cours'
+      path: '/conges-en-cours'
+      fullPath: '/conges-en-cours'
+      preLoaderRoute: typeof AuthenticatedCongesEnCoursRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/conges': {
+      id: '/_authenticated/conges'
+      path: '/conges'
+      fullPath: '/conges'
+      preLoaderRoute: typeof AuthenticatedCongesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/comptabilite': {
+      id: '/_authenticated/comptabilite'
+      path: '/comptabilite'
+      fullPath: '/comptabilite'
+      preLoaderRoute: typeof AuthenticatedComptabiliteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/compta-dashboard': {
+      id: '/_authenticated/compta-dashboard'
+      path: '/compta-dashboard'
+      fullPath: '/compta-dashboard'
+      preLoaderRoute: typeof AuthenticatedComptaDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/commandes': {
+      id: '/_authenticated/commandes'
+      path: '/commandes'
+      fullPath: '/commandes'
+      preLoaderRoute: typeof AuthenticatedCommandesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/colisage': {
+      id: '/_authenticated/colisage'
+      path: '/colisage'
+      fullPath: '/colisage'
+      preLoaderRoute: typeof AuthenticatedColisageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/clients': {
+      id: '/_authenticated/clients'
+      path: '/clients'
+      fullPath: '/clients'
+      preLoaderRoute: typeof AuthenticatedClientsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/centre-documents': {
+      id: '/_authenticated/centre-documents'
+      path: '/centre-documents'
+      fullPath: '/centre-documents'
+      preLoaderRoute: typeof AuthenticatedCentreDocumentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/catalogue-integrite': {
+      id: '/_authenticated/catalogue-integrite'
+      path: '/catalogue-integrite'
+      fullPath: '/catalogue-integrite'
+      preLoaderRoute: typeof AuthenticatedCatalogueIntegriteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bons-livraison': {
+      id: '/_authenticated/bons-livraison'
+      path: '/bons-livraison'
+      fullPath: '/bons-livraison'
+      preLoaderRoute: typeof AuthenticatedBonsLivraisonRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bi-analytics': {
+      id: '/_authenticated/bi-analytics'
+      path: '/bi-analytics'
+      fullPath: '/bi-analytics'
+      preLoaderRoute: typeof AuthenticatedBiAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/balance': {
+      id: '/_authenticated/balance'
+      path: '/balance'
+      fullPath: '/balance'
+      preLoaderRoute: typeof AuthenticatedBalanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/backup': {
+      id: '/_authenticated/backup'
+      path: '/backup'
+      fullPath: '/backup'
+      preLoaderRoute: typeof AuthenticatedBackupRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/audit': {
+      id: '/_authenticated/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuthenticatedAuditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/approbations': {
+      id: '/_authenticated/approbations'
+      path: '/approbations'
+      fullPath: '/approbations'
+      preLoaderRoute: typeof AuthenticatedApprobationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/alertes-stock': {
+      id: '/_authenticated/alertes-stock'
+      path: '/alertes-stock'
+      fullPath: '/alertes-stock'
+      preLoaderRoute: typeof AuthenticatedAlertesStockRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/acces-refuse': {
+      id: '/_authenticated/acces-refuse'
+      path: '/acces-refuse'
+      fullPath: '/acces-refuse'
+      preLoaderRoute: typeof AuthenticatedAccesRefuseRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/absences': {
+      id: '/_authenticated/absences'
+      path: '/absences'
+      fullPath: '/absences'
+      preLoaderRoute: typeof AuthenticatedAbsencesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/utilisateurs/': {
+      id: '/_authenticated/utilisateurs/'
+      path: '/utilisateurs'
+      fullPath: '/utilisateurs/'
+      preLoaderRoute: typeof AuthenticatedUtilisateursIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/transferts/': {
+      id: '/_authenticated/transferts/'
+      path: '/'
+      fullPath: '/transferts/'
+      preLoaderRoute: typeof AuthenticatedTransfertsIndexRouteImport
+      parentRoute: typeof AuthenticatedTransfertsRoute
+    }
+    '/_authenticated/tournees/': {
+      id: '/_authenticated/tournees/'
+      path: '/tournees'
+      fullPath: '/tournees/'
+      preLoaderRoute: typeof AuthenticatedTourneesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/specimens/': {
+      id: '/_authenticated/specimens/'
+      path: '/specimens'
+      fullPath: '/specimens/'
+      preLoaderRoute: typeof AuthenticatedSpecimensIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/retours/': {
+      id: '/_authenticated/retours/'
+      path: '/'
+      fullPath: '/retours/'
+      preLoaderRoute: typeof AuthenticatedRetoursIndexRouteImport
+      parentRoute: typeof AuthenticatedRetoursRoute
+    }
+    '/_authenticated/rapports/': {
+      id: '/_authenticated/rapports/'
+      path: '/'
+      fullPath: '/rapports/'
+      preLoaderRoute: typeof AuthenticatedRapportsIndexRouteImport
+      parentRoute: typeof AuthenticatedRapportsRoute
+    }
+    '/_authenticated/proformas/': {
+      id: '/_authenticated/proformas/'
+      path: '/'
+      fullPath: '/proformas/'
+      preLoaderRoute: typeof AuthenticatedProformasIndexRouteImport
+      parentRoute: typeof AuthenticatedProformasRoute
+    }
+    '/_authenticated/produits/': {
+      id: '/_authenticated/produits/'
+      path: '/'
+      fullPath: '/produits/'
+      preLoaderRoute: typeof AuthenticatedProduitsIndexRouteImport
+      parentRoute: typeof AuthenticatedProduitsRoute
+    }
+    '/_authenticated/paiements/': {
+      id: '/_authenticated/paiements/'
+      path: '/'
+      fullPath: '/paiements/'
+      preLoaderRoute: typeof AuthenticatedPaiementsIndexRouteImport
+      parentRoute: typeof AuthenticatedPaiementsRoute
+    }
+    '/_authenticated/paie/': {
+      id: '/_authenticated/paie/'
+      path: '/'
+      fullPath: '/paie/'
+      preLoaderRoute: typeof AuthenticatedPaieIndexRouteImport
+      parentRoute: typeof AuthenticatedPaieRoute
+    }
+    '/_authenticated/livraison-suivi/': {
+      id: '/_authenticated/livraison-suivi/'
+      path: '/'
+      fullPath: '/livraison-suivi/'
+      preLoaderRoute: typeof AuthenticatedLivraisonSuiviIndexRouteImport
+      parentRoute: typeof AuthenticatedLivraisonSuiviRoute
+    }
+    '/_authenticated/inventaires/': {
+      id: '/_authenticated/inventaires/'
+      path: '/'
+      fullPath: '/inventaires/'
+      preLoaderRoute: typeof AuthenticatedInventairesIndexRouteImport
+      parentRoute: typeof AuthenticatedInventairesRoute
+    }
+    '/_authenticated/incidents/': {
+      id: '/_authenticated/incidents/'
+      path: '/'
+      fullPath: '/incidents/'
+      preLoaderRoute: typeof AuthenticatedIncidentsIndexRouteImport
+      parentRoute: typeof AuthenticatedIncidentsRoute
+    }
+    '/_authenticated/fournisseurs/': {
+      id: '/_authenticated/fournisseurs/'
+      path: '/'
+      fullPath: '/fournisseurs/'
+      preLoaderRoute: typeof AuthenticatedFournisseursIndexRouteImport
+      parentRoute: typeof AuthenticatedFournisseursRoute
+    }
+    '/_authenticated/factures/': {
+      id: '/_authenticated/factures/'
+      path: '/'
+      fullPath: '/factures/'
+      preLoaderRoute: typeof AuthenticatedFacturesIndexRouteImport
+      parentRoute: typeof AuthenticatedFacturesRoute
+    }
+    '/_authenticated/evaluations/': {
+      id: '/_authenticated/evaluations/'
+      path: '/'
+      fullPath: '/evaluations/'
+      preLoaderRoute: typeof AuthenticatedEvaluationsIndexRouteImport
+      parentRoute: typeof AuthenticatedEvaluationsRoute
+    }
+    '/_authenticated/employes/': {
+      id: '/_authenticated/employes/'
+      path: '/'
+      fullPath: '/employes/'
+      preLoaderRoute: typeof AuthenticatedEmployesIndexRouteImport
+      parentRoute: typeof AuthenticatedEmployesRoute
+    }
+    '/_authenticated/contrats/': {
+      id: '/_authenticated/contrats/'
+      path: '/'
+      fullPath: '/contrats/'
+      preLoaderRoute: typeof AuthenticatedContratsIndexRouteImport
+      parentRoute: typeof AuthenticatedContratsRoute
+    }
+    '/_authenticated/conges/': {
+      id: '/_authenticated/conges/'
+      path: '/'
+      fullPath: '/conges/'
+      preLoaderRoute: typeof AuthenticatedCongesIndexRouteImport
+      parentRoute: typeof AuthenticatedCongesRoute
+    }
+    '/_authenticated/comptabilite/': {
+      id: '/_authenticated/comptabilite/'
+      path: '/'
+      fullPath: '/comptabilite/'
+      preLoaderRoute: typeof AuthenticatedComptabiliteIndexRouteImport
+      parentRoute: typeof AuthenticatedComptabiliteRoute
+    }
+    '/_authenticated/commandes/': {
+      id: '/_authenticated/commandes/'
+      path: '/'
+      fullPath: '/commandes/'
+      preLoaderRoute: typeof AuthenticatedCommandesIndexRouteImport
+      parentRoute: typeof AuthenticatedCommandesRoute
+    }
+    '/_authenticated/colisage/': {
+      id: '/_authenticated/colisage/'
+      path: '/'
+      fullPath: '/colisage/'
+      preLoaderRoute: typeof AuthenticatedColisageIndexRouteImport
+      parentRoute: typeof AuthenticatedColisageRoute
+    }
+    '/_authenticated/clients/': {
+      id: '/_authenticated/clients/'
+      path: '/'
+      fullPath: '/clients/'
+      preLoaderRoute: typeof AuthenticatedClientsIndexRouteImport
+      parentRoute: typeof AuthenticatedClientsRoute
+    }
+    '/_authenticated/achats/': {
+      id: '/_authenticated/achats/'
+      path: '/achats'
+      fullPath: '/achats/'
+      preLoaderRoute: typeof AuthenticatedAchatsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/absences/': {
+      id: '/_authenticated/absences/'
+      path: '/'
+      fullPath: '/absences/'
+      preLoaderRoute: typeof AuthenticatedAbsencesIndexRouteImport
+      parentRoute: typeof AuthenticatedAbsencesRoute
+    }
+    '/_authenticated/utilisateurs/production': {
+      id: '/_authenticated/utilisateurs/production'
+      path: '/utilisateurs/production'
+      fullPath: '/utilisateurs/production'
+      preLoaderRoute: typeof AuthenticatedUtilisateursProductionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/utilisateurs/nouveau': {
+      id: '/_authenticated/utilisateurs/nouveau'
+      path: '/utilisateurs/nouveau'
+      fullPath: '/utilisateurs/nouveau'
+      preLoaderRoute: typeof AuthenticatedUtilisateursNouveauRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/transferts/nouveau': {
+      id: '/_authenticated/transferts/nouveau'
+      path: '/nouveau'
+      fullPath: '/transferts/nouveau'
+      preLoaderRoute: typeof AuthenticatedTransfertsNouveauRouteImport
+      parentRoute: typeof AuthenticatedTransfertsRoute
+    }
+    '/_authenticated/transferts/$transfertId': {
+      id: '/_authenticated/transferts/$transfertId'
+      path: '/$transfertId'
+      fullPath: '/transferts/$transfertId'
+      preLoaderRoute: typeof AuthenticatedTransfertsTransfertIdRouteImport
+      parentRoute: typeof AuthenticatedTransfertsRoute
+    }
+    '/_authenticated/tournees/nouvelle': {
+      id: '/_authenticated/tournees/nouvelle'
+      path: '/tournees/nouvelle'
+      fullPath: '/tournees/nouvelle'
+      preLoaderRoute: typeof AuthenticatedTourneesNouvelleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tournees/$tourneeId': {
+      id: '/_authenticated/tournees/$tourneeId'
+      path: '/tournees/$tourneeId'
+      fullPath: '/tournees/$tourneeId'
+      preLoaderRoute: typeof AuthenticatedTourneesTourneeIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tournees-bl/$tourneeId': {
+      id: '/_authenticated/tournees-bl/$tourneeId'
+      path: '/tournees-bl/$tourneeId'
+      fullPath: '/tournees-bl/$tourneeId'
+      preLoaderRoute: typeof AuthenticatedTourneesBlTourneeIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stock/audit': {
+      id: '/_authenticated/stock/audit'
+      path: '/audit'
+      fullPath: '/stock/audit'
+      preLoaderRoute: typeof AuthenticatedStockAuditRouteImport
+      parentRoute: typeof AuthenticatedStockRoute
+    }
+    '/_authenticated/specimens/nouveau': {
+      id: '/_authenticated/specimens/nouveau'
+      path: '/specimens/nouveau'
+      fullPath: '/specimens/nouveau'
+      preLoaderRoute: typeof AuthenticatedSpecimensNouveauRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/specimens/$specimenId': {
+      id: '/_authenticated/specimens/$specimenId'
+      path: '/specimens/$specimenId'
+      fullPath: '/specimens/$specimenId'
+      preLoaderRoute: typeof AuthenticatedSpecimensSpecimenIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/retours/nouveau': {
+      id: '/_authenticated/retours/nouveau'
+      path: '/nouveau'
+      fullPath: '/retours/nouveau'
+      preLoaderRoute: typeof AuthenticatedRetoursNouveauRouteImport
+      parentRoute: typeof AuthenticatedRetoursRoute
+    }
+    '/_authenticated/retours/$retourId': {
+      id: '/_authenticated/retours/$retourId'
+      path: '/$retourId'
+      fullPath: '/retours/$retourId'
+      preLoaderRoute: typeof AuthenticatedRetoursRetourIdRouteImport
+      parentRoute: typeof AuthenticatedRetoursRoute
+    }
+    '/_authenticated/rapports/analyse': {
+      id: '/_authenticated/rapports/analyse'
+      path: '/analyse'
+      fullPath: '/rapports/analyse'
+      preLoaderRoute: typeof AuthenticatedRapportsAnalyseRouteImport
+      parentRoute: typeof AuthenticatedRapportsRoute
+    }
+    '/_authenticated/proformas/$proformaId': {
+      id: '/_authenticated/proformas/$proformaId'
+      path: '/$proformaId'
+      fullPath: '/proformas/$proformaId'
+      preLoaderRoute: typeof AuthenticatedProformasProformaIdRouteImport
+      parentRoute: typeof AuthenticatedProformasRoute
+    }
+    '/_authenticated/produits/$produitId': {
+      id: '/_authenticated/produits/$produitId'
+      path: '/$produitId'
+      fullPath: '/produits/$produitId'
+      preLoaderRoute: typeof AuthenticatedProduitsProduitIdRouteImport
+      parentRoute: typeof AuthenticatedProduitsRoute
+    }
+    '/_authenticated/parametres/zones-livraison': {
+      id: '/_authenticated/parametres/zones-livraison'
+      path: '/zones-livraison'
+      fullPath: '/parametres/zones-livraison'
+      preLoaderRoute: typeof AuthenticatedParametresZonesLivraisonRouteImport
+      parentRoute: typeof AuthenticatedParametresRoute
+    }
+    '/_authenticated/paiements/nouveau': {
+      id: '/_authenticated/paiements/nouveau'
+      path: '/nouveau'
+      fullPath: '/paiements/nouveau'
+      preLoaderRoute: typeof AuthenticatedPaiementsNouveauRouteImport
+      parentRoute: typeof AuthenticatedPaiementsRoute
+    }
+    '/_authenticated/paiements/$paiementId': {
+      id: '/_authenticated/paiements/$paiementId'
+      path: '/$paiementId'
+      fullPath: '/paiements/$paiementId'
+      preLoaderRoute: typeof AuthenticatedPaiementsPaiementIdRouteImport
+      parentRoute: typeof AuthenticatedPaiementsRoute
+    }
+    '/_authenticated/paie/nouveau': {
+      id: '/_authenticated/paie/nouveau'
+      path: '/nouveau'
+      fullPath: '/paie/nouveau'
+      preLoaderRoute: typeof AuthenticatedPaieNouveauRouteImport
+      parentRoute: typeof AuthenticatedPaieRoute
+    }
+    '/_authenticated/paie/$bulletinId': {
+      id: '/_authenticated/paie/$bulletinId'
+      path: '/$bulletinId'
+      fullPath: '/paie/$bulletinId'
+      preLoaderRoute: typeof AuthenticatedPaieBulletinIdRouteImport
+      parentRoute: typeof AuthenticatedPaieRoute
+    }
+    '/_authenticated/mfa/enroll': {
+      id: '/_authenticated/mfa/enroll'
+      path: '/mfa/enroll'
+      fullPath: '/mfa/enroll'
+      preLoaderRoute: typeof AuthenticatedMfaEnrollRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/mfa/backup-codes': {
+      id: '/_authenticated/mfa/backup-codes'
+      path: '/mfa/backup-codes'
+      fullPath: '/mfa/backup-codes'
+      preLoaderRoute: typeof AuthenticatedMfaBackupCodesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/livraison-suivi/tournees': {
+      id: '/_authenticated/livraison-suivi/tournees'
+      path: '/tournees'
+      fullPath: '/livraison-suivi/tournees'
+      preLoaderRoute: typeof AuthenticatedLivraisonSuiviTourneesRouteImport
+      parentRoute: typeof AuthenticatedLivraisonSuiviRoute
+    }
+    '/_authenticated/livraison-suivi/$commandeRef': {
+      id: '/_authenticated/livraison-suivi/$commandeRef'
+      path: '/$commandeRef'
+      fullPath: '/livraison-suivi/$commandeRef'
+      preLoaderRoute: typeof AuthenticatedLivraisonSuiviCommandeRefRouteImport
+      parentRoute: typeof AuthenticatedLivraisonSuiviRoute
+    }
+    '/_authenticated/inventaires/nouveau-physique': {
+      id: '/_authenticated/inventaires/nouveau-physique'
+      path: '/nouveau-physique'
+      fullPath: '/inventaires/nouveau-physique'
+      preLoaderRoute: typeof AuthenticatedInventairesNouveauPhysiqueRouteImport
+      parentRoute: typeof AuthenticatedInventairesRoute
+    }
+    '/_authenticated/inventaires/$inventaireId': {
+      id: '/_authenticated/inventaires/$inventaireId'
+      path: '/$inventaireId'
+      fullPath: '/inventaires/$inventaireId'
+      preLoaderRoute: typeof AuthenticatedInventairesInventaireIdRouteImport
+      parentRoute: typeof AuthenticatedInventairesRoute
+    }
+    '/_authenticated/incidents/nouveau': {
+      id: '/_authenticated/incidents/nouveau'
+      path: '/nouveau'
+      fullPath: '/incidents/nouveau'
+      preLoaderRoute: typeof AuthenticatedIncidentsNouveauRouteImport
+      parentRoute: typeof AuthenticatedIncidentsRoute
+    }
+    '/_authenticated/incidents/$incidentId': {
+      id: '/_authenticated/incidents/$incidentId'
+      path: '/$incidentId'
+      fullPath: '/incidents/$incidentId'
+      preLoaderRoute: typeof AuthenticatedIncidentsIncidentIdRouteImport
+      parentRoute: typeof AuthenticatedIncidentsRoute
+    }
+    '/_authenticated/fournisseurs/$fournisseurId': {
+      id: '/_authenticated/fournisseurs/$fournisseurId'
+      path: '/$fournisseurId'
+      fullPath: '/fournisseurs/$fournisseurId'
+      preLoaderRoute: typeof AuthenticatedFournisseursFournisseurIdRouteImport
+      parentRoute: typeof AuthenticatedFournisseursRoute
+    }
+    '/_authenticated/fne-detail/$factureId': {
+      id: '/_authenticated/fne-detail/$factureId'
+      path: '/fne-detail/$factureId'
+      fullPath: '/fne-detail/$factureId'
+      preLoaderRoute: typeof AuthenticatedFneDetailFactureIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/factures/$factureId': {
+      id: '/_authenticated/factures/$factureId'
+      path: '/$factureId'
+      fullPath: '/factures/$factureId'
+      preLoaderRoute: typeof AuthenticatedFacturesFactureIdRouteImport
+      parentRoute: typeof AuthenticatedFacturesRoute
+    }
+    '/_authenticated/exercices/rapport': {
+      id: '/_authenticated/exercices/rapport'
+      path: '/rapport'
+      fullPath: '/exercices/rapport'
+      preLoaderRoute: typeof AuthenticatedExercicesRapportRouteImport
+      parentRoute: typeof AuthenticatedExercicesRoute
+    }
+    '/_authenticated/exercices/journal': {
+      id: '/_authenticated/exercices/journal'
+      path: '/journal'
+      fullPath: '/exercices/journal'
+      preLoaderRoute: typeof AuthenticatedExercicesJournalRouteImport
+      parentRoute: typeof AuthenticatedExercicesRoute
+    }
+    '/_authenticated/exercices/comparatif': {
+      id: '/_authenticated/exercices/comparatif'
+      path: '/comparatif'
+      fullPath: '/exercices/comparatif'
+      preLoaderRoute: typeof AuthenticatedExercicesComparatifRouteImport
+      parentRoute: typeof AuthenticatedExercicesRoute
+    }
+    '/_authenticated/evaluations/nouveau': {
+      id: '/_authenticated/evaluations/nouveau'
+      path: '/nouveau'
+      fullPath: '/evaluations/nouveau'
+      preLoaderRoute: typeof AuthenticatedEvaluationsNouveauRouteImport
+      parentRoute: typeof AuthenticatedEvaluationsRoute
+    }
+    '/_authenticated/employes/nouveau': {
+      id: '/_authenticated/employes/nouveau'
+      path: '/nouveau'
+      fullPath: '/employes/nouveau'
+      preLoaderRoute: typeof AuthenticatedEmployesNouveauRouteImport
+      parentRoute: typeof AuthenticatedEmployesRoute
+    }
+    '/_authenticated/contrats/nouveau': {
+      id: '/_authenticated/contrats/nouveau'
+      path: '/nouveau'
+      fullPath: '/contrats/nouveau'
+      preLoaderRoute: typeof AuthenticatedContratsNouveauRouteImport
+      parentRoute: typeof AuthenticatedContratsRoute
+    }
+    '/_authenticated/contrats/$contratId': {
+      id: '/_authenticated/contrats/$contratId'
+      path: '/$contratId'
+      fullPath: '/contrats/$contratId'
+      preLoaderRoute: typeof AuthenticatedContratsContratIdRouteImport
+      parentRoute: typeof AuthenticatedContratsRoute
+    }
+    '/_authenticated/conges/nouveau': {
+      id: '/_authenticated/conges/nouveau'
+      path: '/nouveau'
+      fullPath: '/conges/nouveau'
+      preLoaderRoute: typeof AuthenticatedCongesNouveauRouteImport
+      parentRoute: typeof AuthenticatedCongesRoute
+    }
+    '/_authenticated/comptabilite/nouvelle': {
+      id: '/_authenticated/comptabilite/nouvelle'
+      path: '/nouvelle'
+      fullPath: '/comptabilite/nouvelle'
+      preLoaderRoute: typeof AuthenticatedComptabiliteNouvelleRouteImport
+      parentRoute: typeof AuthenticatedComptabiliteRoute
+    }
+    '/_authenticated/comptabilite/fec': {
+      id: '/_authenticated/comptabilite/fec'
+      path: '/fec'
+      fullPath: '/comptabilite/fec'
+      preLoaderRoute: typeof AuthenticatedComptabiliteFecRouteImport
+      parentRoute: typeof AuthenticatedComptabiliteRoute
+    }
+    '/_authenticated/comptabilite/audit': {
+      id: '/_authenticated/comptabilite/audit'
+      path: '/audit'
+      fullPath: '/comptabilite/audit'
+      preLoaderRoute: typeof AuthenticatedComptabiliteAuditRouteImport
+      parentRoute: typeof AuthenticatedComptabiliteRoute
+    }
+    '/_authenticated/commandes/nouvelle': {
+      id: '/_authenticated/commandes/nouvelle'
+      path: '/nouvelle'
+      fullPath: '/commandes/nouvelle'
+      preLoaderRoute: typeof AuthenticatedCommandesNouvelleRouteImport
+      parentRoute: typeof AuthenticatedCommandesRoute
+    }
+    '/_authenticated/commandes/$commandeId': {
+      id: '/_authenticated/commandes/$commandeId'
+      path: '/$commandeId'
+      fullPath: '/commandes/$commandeId'
+      preLoaderRoute: typeof AuthenticatedCommandesCommandeIdRouteImport
+      parentRoute: typeof AuthenticatedCommandesRoute
+    }
+    '/_authenticated/colisage/responsables': {
+      id: '/_authenticated/colisage/responsables'
+      path: '/responsables'
+      fullPath: '/colisage/responsables'
+      preLoaderRoute: typeof AuthenticatedColisageResponsablesRouteImport
+      parentRoute: typeof AuthenticatedColisageRoute
+    }
+    '/_authenticated/colisage/$blId': {
+      id: '/_authenticated/colisage/$blId'
+      path: '/$blId'
+      fullPath: '/colisage/$blId'
+      preLoaderRoute: typeof AuthenticatedColisageBlIdRouteImport
+      parentRoute: typeof AuthenticatedColisageRoute
+    }
+    '/_authenticated/clients/nouveau': {
+      id: '/_authenticated/clients/nouveau'
+      path: '/nouveau'
+      fullPath: '/clients/nouveau'
+      preLoaderRoute: typeof AuthenticatedClientsNouveauRouteImport
+      parentRoute: typeof AuthenticatedClientsRoute
+    }
+    '/_authenticated/clients/dashboard': {
+      id: '/_authenticated/clients/dashboard'
+      path: '/dashboard'
+      fullPath: '/clients/dashboard'
+      preLoaderRoute: typeof AuthenticatedClientsDashboardRouteImport
+      parentRoute: typeof AuthenticatedClientsRoute
+    }
+    '/_authenticated/clients/$clientId': {
+      id: '/_authenticated/clients/$clientId'
+      path: '/$clientId'
+      fullPath: '/clients/$clientId'
+      preLoaderRoute: typeof AuthenticatedClientsClientIdRouteImport
+      parentRoute: typeof AuthenticatedClientsRoute
+    }
+    '/_authenticated/bon-de-tournee/$tourneeId': {
+      id: '/_authenticated/bon-de-tournee/$tourneeId'
+      path: '/bon-de-tournee/$tourneeId'
+      fullPath: '/bon-de-tournee/$tourneeId'
+      preLoaderRoute: typeof AuthenticatedBonDeTourneeTourneeIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bon-de-sortie/$tourneeId': {
+      id: '/_authenticated/bon-de-sortie/$tourneeId'
+      path: '/bon-de-sortie/$tourneeId'
+      fullPath: '/bon-de-sortie/$tourneeId'
+      preLoaderRoute: typeof AuthenticatedBonDeSortieTourneeIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/slo': {
+      id: '/_authenticated/admin/slo'
+      path: '/admin/slo'
+      fullPath: '/admin/slo'
+      preLoaderRoute: typeof AuthenticatedAdminSloRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/sante-systeme': {
+      id: '/_authenticated/admin/sante-systeme'
+      path: '/admin/sante-systeme'
+      fullPath: '/admin/sante-systeme'
+      preLoaderRoute: typeof AuthenticatedAdminSanteSystemeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/rpc-errors': {
+      id: '/_authenticated/admin/rpc-errors'
+      path: '/admin/rpc-errors'
+      fullPath: '/admin/rpc-errors'
+      preLoaderRoute: typeof AuthenticatedAdminRpcErrorsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/perf': {
+      id: '/_authenticated/admin/perf'
+      path: '/admin/perf'
+      fullPath: '/admin/perf'
+      preLoaderRoute: typeof AuthenticatedAdminPerfRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/google-drive': {
+      id: '/_authenticated/admin/google-drive'
+      path: '/admin/google-drive'
+      fullPath: '/admin/google-drive'
+      preLoaderRoute: typeof AuthenticatedAdminGoogleDriveRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/data-quality': {
+      id: '/_authenticated/admin/data-quality'
+      path: '/admin/data-quality'
+      fullPath: '/admin/data-quality'
+      preLoaderRoute: typeof AuthenticatedAdminDataQualityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/audit-paiements': {
+      id: '/_authenticated/admin/audit-paiements'
+      path: '/admin/audit-paiements'
+      fullPath: '/admin/audit-paiements'
+      preLoaderRoute: typeof AuthenticatedAdminAuditPaiementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/achats/nouveau': {
+      id: '/_authenticated/achats/nouveau'
+      path: '/achats/nouveau'
+      fullPath: '/achats/nouveau'
+      preLoaderRoute: typeof AuthenticatedAchatsNouveauRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/achats/$achatId': {
+      id: '/_authenticated/achats/$achatId'
+      path: '/achats/$achatId'
+      fullPath: '/achats/$achatId'
+      preLoaderRoute: typeof AuthenticatedAchatsAchatIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/absences/nouveau': {
+      id: '/_authenticated/absences/nouveau'
+      path: '/nouveau'
+      fullPath: '/absences/nouveau'
+      preLoaderRoute: typeof AuthenticatedAbsencesNouveauRouteImport
+      parentRoute: typeof AuthenticatedAbsencesRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/employes/$employeId/': {
+      id: '/_authenticated/employes/$employeId/'
+      path: '/$employeId'
+      fullPath: '/employes/$employeId/'
+      preLoaderRoute: typeof AuthenticatedEmployesEmployeIdIndexRouteImport
+      parentRoute: typeof AuthenticatedEmployesRoute
+    }
+    '/_authenticated/commandes/$commandeId/': {
+      id: '/_authenticated/commandes/$commandeId/'
+      path: '/'
+      fullPath: '/commandes/$commandeId/'
+      preLoaderRoute: typeof AuthenticatedCommandesCommandeIdIndexRouteImport
+      parentRoute: typeof AuthenticatedCommandesCommandeIdRoute
+    }
+    '/api/public/hooks/run-schedules': {
+      id: '/api/public/hooks/run-schedules'
+      path: '/api/public/hooks/run-schedules'
+      fullPath: '/api/public/hooks/run-schedules'
+      preLoaderRoute: typeof ApiPublicHooksRunSchedulesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/alert': {
+      id: '/api/public/hooks/alert'
+      path: '/api/public/hooks/alert'
+      fullPath: '/api/public/hooks/alert'
+      preLoaderRoute: typeof ApiPublicHooksAlertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/utilisateurs/$userId/modifier': {
+      id: '/_authenticated/utilisateurs/$userId/modifier'
+      path: '/utilisateurs/$userId/modifier'
+      fullPath: '/utilisateurs/$userId/modifier'
+      preLoaderRoute: typeof AuthenticatedUtilisateursUserIdModifierRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stock_/$produitId/mouvements': {
+      id: '/_authenticated/stock_/$produitId/mouvements'
+      path: '/stock/$produitId/mouvements'
+      fullPath: '/stock/$produitId/mouvements'
+      preLoaderRoute: typeof AuthenticatedStockProduitIdMouvementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/livraison-suivi/tournees/$tourneeId': {
+      id: '/_authenticated/livraison-suivi/tournees/$tourneeId'
+      path: '/$tourneeId'
+      fullPath: '/livraison-suivi/tournees/$tourneeId'
+      preLoaderRoute: typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRouteImport
+      parentRoute: typeof AuthenticatedLivraisonSuiviTourneesRoute
+    }
+    '/_authenticated/livraison-suivi/$commandeRef/remise': {
+      id: '/_authenticated/livraison-suivi/$commandeRef/remise'
+      path: '/remise'
+      fullPath: '/livraison-suivi/$commandeRef/remise'
+      preLoaderRoute: typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRouteImport
+      parentRoute: typeof AuthenticatedLivraisonSuiviCommandeRefRoute
+    }
+    '/_authenticated/evaluations/$evaluationId/modifier': {
+      id: '/_authenticated/evaluations/$evaluationId/modifier'
+      path: '/$evaluationId/modifier'
+      fullPath: '/evaluations/$evaluationId/modifier'
+      preLoaderRoute: typeof AuthenticatedEvaluationsEvaluationIdModifierRouteImport
+      parentRoute: typeof AuthenticatedEvaluationsRoute
+    }
+    '/_authenticated/employes/$employeId/modifier': {
+      id: '/_authenticated/employes/$employeId/modifier'
+      path: '/$employeId/modifier'
+      fullPath: '/employes/$employeId/modifier'
+      preLoaderRoute: typeof AuthenticatedEmployesEmployeIdModifierRouteImport
+      parentRoute: typeof AuthenticatedEmployesRoute
+    }
+    '/_authenticated/contrats/$contratId/modifier': {
+      id: '/_authenticated/contrats/$contratId/modifier'
+      path: '/modifier'
+      fullPath: '/contrats/$contratId/modifier'
+      preLoaderRoute: typeof AuthenticatedContratsContratIdModifierRouteImport
+      parentRoute: typeof AuthenticatedContratsContratIdRoute
+    }
+    '/_authenticated/conges/$congeId/modifier': {
+      id: '/_authenticated/conges/$congeId/modifier'
+      path: '/$congeId/modifier'
+      fullPath: '/conges/$congeId/modifier'
+      preLoaderRoute: typeof AuthenticatedCongesCongeIdModifierRouteImport
+      parentRoute: typeof AuthenticatedCongesRoute
+    }
+    '/_authenticated/commandes/$commandeId/modifier': {
+      id: '/_authenticated/commandes/$commandeId/modifier'
+      path: '/modifier'
+      fullPath: '/commandes/$commandeId/modifier'
+      preLoaderRoute: typeof AuthenticatedCommandesCommandeIdModifierRouteImport
+      parentRoute: typeof AuthenticatedCommandesCommandeIdRoute
+    }
+    '/_authenticated/clients/$clientId/modifier': {
+      id: '/_authenticated/clients/$clientId/modifier'
+      path: '/modifier'
+      fullPath: '/clients/$clientId/modifier'
+      preLoaderRoute: typeof AuthenticatedClientsClientIdModifierRouteImport
+      parentRoute: typeof AuthenticatedClientsClientIdRoute
+    }
+    '/_authenticated/admin/audit-paiements/$auditId': {
+      id: '/_authenticated/admin/audit-paiements/$auditId'
+      path: '/$auditId'
+      fullPath: '/admin/audit-paiements/$auditId'
+      preLoaderRoute: typeof AuthenticatedAdminAuditPaiementsAuditIdRouteImport
+      parentRoute: typeof AuthenticatedAdminAuditPaiementsRoute
+    }
+    '/_authenticated/absences/$absenceId/modifier': {
+      id: '/_authenticated/absences/$absenceId/modifier'
+      path: '/$absenceId/modifier'
+      fullPath: '/absences/$absenceId/modifier'
+      preLoaderRoute: typeof AuthenticatedAbsencesAbsenceIdModifierRouteImport
+      parentRoute: typeof AuthenticatedAbsencesRoute
+    }
   }
 }
 
+interface AuthenticatedAbsencesRouteChildren {
+  AuthenticatedAbsencesNouveauRoute: typeof AuthenticatedAbsencesNouveauRoute
+  AuthenticatedAbsencesIndexRoute: typeof AuthenticatedAbsencesIndexRoute
+  AuthenticatedAbsencesAbsenceIdModifierRoute: typeof AuthenticatedAbsencesAbsenceIdModifierRoute
+}
+
+const AuthenticatedAbsencesRouteChildren: AuthenticatedAbsencesRouteChildren = {
+  AuthenticatedAbsencesNouveauRoute: AuthenticatedAbsencesNouveauRoute,
+  AuthenticatedAbsencesIndexRoute: AuthenticatedAbsencesIndexRoute,
+  AuthenticatedAbsencesAbsenceIdModifierRoute:
+    AuthenticatedAbsencesAbsenceIdModifierRoute,
+}
+
+const AuthenticatedAbsencesRouteWithChildren =
+  AuthenticatedAbsencesRoute._addFileChildren(
+    AuthenticatedAbsencesRouteChildren,
+  )
+
+interface AuthenticatedClientsClientIdRouteChildren {
+  AuthenticatedClientsClientIdModifierRoute: typeof AuthenticatedClientsClientIdModifierRoute
+}
+
+const AuthenticatedClientsClientIdRouteChildren: AuthenticatedClientsClientIdRouteChildren =
+  {
+    AuthenticatedClientsClientIdModifierRoute:
+      AuthenticatedClientsClientIdModifierRoute,
+  }
+
+const AuthenticatedClientsClientIdRouteWithChildren =
+  AuthenticatedClientsClientIdRoute._addFileChildren(
+    AuthenticatedClientsClientIdRouteChildren,
+  )
+
+interface AuthenticatedClientsRouteChildren {
+  AuthenticatedClientsClientIdRoute: typeof AuthenticatedClientsClientIdRouteWithChildren
+  AuthenticatedClientsDashboardRoute: typeof AuthenticatedClientsDashboardRoute
+  AuthenticatedClientsNouveauRoute: typeof AuthenticatedClientsNouveauRoute
+  AuthenticatedClientsIndexRoute: typeof AuthenticatedClientsIndexRoute
+}
+
+const AuthenticatedClientsRouteChildren: AuthenticatedClientsRouteChildren = {
+  AuthenticatedClientsClientIdRoute:
+    AuthenticatedClientsClientIdRouteWithChildren,
+  AuthenticatedClientsDashboardRoute: AuthenticatedClientsDashboardRoute,
+  AuthenticatedClientsNouveauRoute: AuthenticatedClientsNouveauRoute,
+  AuthenticatedClientsIndexRoute: AuthenticatedClientsIndexRoute,
+}
+
+const AuthenticatedClientsRouteWithChildren =
+  AuthenticatedClientsRoute._addFileChildren(AuthenticatedClientsRouteChildren)
+
+interface AuthenticatedColisageRouteChildren {
+  AuthenticatedColisageBlIdRoute: typeof AuthenticatedColisageBlIdRoute
+  AuthenticatedColisageResponsablesRoute: typeof AuthenticatedColisageResponsablesRoute
+  AuthenticatedColisageIndexRoute: typeof AuthenticatedColisageIndexRoute
+}
+
+const AuthenticatedColisageRouteChildren: AuthenticatedColisageRouteChildren = {
+  AuthenticatedColisageBlIdRoute: AuthenticatedColisageBlIdRoute,
+  AuthenticatedColisageResponsablesRoute:
+    AuthenticatedColisageResponsablesRoute,
+  AuthenticatedColisageIndexRoute: AuthenticatedColisageIndexRoute,
+}
+
+const AuthenticatedColisageRouteWithChildren =
+  AuthenticatedColisageRoute._addFileChildren(
+    AuthenticatedColisageRouteChildren,
+  )
+
+interface AuthenticatedCommandesCommandeIdRouteChildren {
+  AuthenticatedCommandesCommandeIdModifierRoute: typeof AuthenticatedCommandesCommandeIdModifierRoute
+  AuthenticatedCommandesCommandeIdIndexRoute: typeof AuthenticatedCommandesCommandeIdIndexRoute
+}
+
+const AuthenticatedCommandesCommandeIdRouteChildren: AuthenticatedCommandesCommandeIdRouteChildren =
+  {
+    AuthenticatedCommandesCommandeIdModifierRoute:
+      AuthenticatedCommandesCommandeIdModifierRoute,
+    AuthenticatedCommandesCommandeIdIndexRoute:
+      AuthenticatedCommandesCommandeIdIndexRoute,
+  }
+
+const AuthenticatedCommandesCommandeIdRouteWithChildren =
+  AuthenticatedCommandesCommandeIdRoute._addFileChildren(
+    AuthenticatedCommandesCommandeIdRouteChildren,
+  )
+
+interface AuthenticatedCommandesRouteChildren {
+  AuthenticatedCommandesCommandeIdRoute: typeof AuthenticatedCommandesCommandeIdRouteWithChildren
+  AuthenticatedCommandesNouvelleRoute: typeof AuthenticatedCommandesNouvelleRoute
+  AuthenticatedCommandesIndexRoute: typeof AuthenticatedCommandesIndexRoute
+}
+
+const AuthenticatedCommandesRouteChildren: AuthenticatedCommandesRouteChildren =
+  {
+    AuthenticatedCommandesCommandeIdRoute:
+      AuthenticatedCommandesCommandeIdRouteWithChildren,
+    AuthenticatedCommandesNouvelleRoute: AuthenticatedCommandesNouvelleRoute,
+    AuthenticatedCommandesIndexRoute: AuthenticatedCommandesIndexRoute,
+  }
+
+const AuthenticatedCommandesRouteWithChildren =
+  AuthenticatedCommandesRoute._addFileChildren(
+    AuthenticatedCommandesRouteChildren,
+  )
+
+interface AuthenticatedComptabiliteRouteChildren {
+  AuthenticatedComptabiliteAuditRoute: typeof AuthenticatedComptabiliteAuditRoute
+  AuthenticatedComptabiliteFecRoute: typeof AuthenticatedComptabiliteFecRoute
+  AuthenticatedComptabiliteNouvelleRoute: typeof AuthenticatedComptabiliteNouvelleRoute
+  AuthenticatedComptabiliteIndexRoute: typeof AuthenticatedComptabiliteIndexRoute
+}
+
+const AuthenticatedComptabiliteRouteChildren: AuthenticatedComptabiliteRouteChildren =
+  {
+    AuthenticatedComptabiliteAuditRoute: AuthenticatedComptabiliteAuditRoute,
+    AuthenticatedComptabiliteFecRoute: AuthenticatedComptabiliteFecRoute,
+    AuthenticatedComptabiliteNouvelleRoute:
+      AuthenticatedComptabiliteNouvelleRoute,
+    AuthenticatedComptabiliteIndexRoute: AuthenticatedComptabiliteIndexRoute,
+  }
+
+const AuthenticatedComptabiliteRouteWithChildren =
+  AuthenticatedComptabiliteRoute._addFileChildren(
+    AuthenticatedComptabiliteRouteChildren,
+  )
+
+interface AuthenticatedCongesRouteChildren {
+  AuthenticatedCongesNouveauRoute: typeof AuthenticatedCongesNouveauRoute
+  AuthenticatedCongesIndexRoute: typeof AuthenticatedCongesIndexRoute
+  AuthenticatedCongesCongeIdModifierRoute: typeof AuthenticatedCongesCongeIdModifierRoute
+}
+
+const AuthenticatedCongesRouteChildren: AuthenticatedCongesRouteChildren = {
+  AuthenticatedCongesNouveauRoute: AuthenticatedCongesNouveauRoute,
+  AuthenticatedCongesIndexRoute: AuthenticatedCongesIndexRoute,
+  AuthenticatedCongesCongeIdModifierRoute:
+    AuthenticatedCongesCongeIdModifierRoute,
+}
+
+const AuthenticatedCongesRouteWithChildren =
+  AuthenticatedCongesRoute._addFileChildren(AuthenticatedCongesRouteChildren)
+
+interface AuthenticatedContratsContratIdRouteChildren {
+  AuthenticatedContratsContratIdModifierRoute: typeof AuthenticatedContratsContratIdModifierRoute
+}
+
+const AuthenticatedContratsContratIdRouteChildren: AuthenticatedContratsContratIdRouteChildren =
+  {
+    AuthenticatedContratsContratIdModifierRoute:
+      AuthenticatedContratsContratIdModifierRoute,
+  }
+
+const AuthenticatedContratsContratIdRouteWithChildren =
+  AuthenticatedContratsContratIdRoute._addFileChildren(
+    AuthenticatedContratsContratIdRouteChildren,
+  )
+
+interface AuthenticatedContratsRouteChildren {
+  AuthenticatedContratsContratIdRoute: typeof AuthenticatedContratsContratIdRouteWithChildren
+  AuthenticatedContratsNouveauRoute: typeof AuthenticatedContratsNouveauRoute
+  AuthenticatedContratsIndexRoute: typeof AuthenticatedContratsIndexRoute
+}
+
+const AuthenticatedContratsRouteChildren: AuthenticatedContratsRouteChildren = {
+  AuthenticatedContratsContratIdRoute:
+    AuthenticatedContratsContratIdRouteWithChildren,
+  AuthenticatedContratsNouveauRoute: AuthenticatedContratsNouveauRoute,
+  AuthenticatedContratsIndexRoute: AuthenticatedContratsIndexRoute,
+}
+
+const AuthenticatedContratsRouteWithChildren =
+  AuthenticatedContratsRoute._addFileChildren(
+    AuthenticatedContratsRouteChildren,
+  )
+
+interface AuthenticatedEmployesRouteChildren {
+  AuthenticatedEmployesNouveauRoute: typeof AuthenticatedEmployesNouveauRoute
+  AuthenticatedEmployesIndexRoute: typeof AuthenticatedEmployesIndexRoute
+  AuthenticatedEmployesEmployeIdModifierRoute: typeof AuthenticatedEmployesEmployeIdModifierRoute
+  AuthenticatedEmployesEmployeIdIndexRoute: typeof AuthenticatedEmployesEmployeIdIndexRoute
+}
+
+const AuthenticatedEmployesRouteChildren: AuthenticatedEmployesRouteChildren = {
+  AuthenticatedEmployesNouveauRoute: AuthenticatedEmployesNouveauRoute,
+  AuthenticatedEmployesIndexRoute: AuthenticatedEmployesIndexRoute,
+  AuthenticatedEmployesEmployeIdModifierRoute:
+    AuthenticatedEmployesEmployeIdModifierRoute,
+  AuthenticatedEmployesEmployeIdIndexRoute:
+    AuthenticatedEmployesEmployeIdIndexRoute,
+}
+
+const AuthenticatedEmployesRouteWithChildren =
+  AuthenticatedEmployesRoute._addFileChildren(
+    AuthenticatedEmployesRouteChildren,
+  )
+
+interface AuthenticatedEvaluationsRouteChildren {
+  AuthenticatedEvaluationsNouveauRoute: typeof AuthenticatedEvaluationsNouveauRoute
+  AuthenticatedEvaluationsIndexRoute: typeof AuthenticatedEvaluationsIndexRoute
+  AuthenticatedEvaluationsEvaluationIdModifierRoute: typeof AuthenticatedEvaluationsEvaluationIdModifierRoute
+}
+
+const AuthenticatedEvaluationsRouteChildren: AuthenticatedEvaluationsRouteChildren =
+  {
+    AuthenticatedEvaluationsNouveauRoute: AuthenticatedEvaluationsNouveauRoute,
+    AuthenticatedEvaluationsIndexRoute: AuthenticatedEvaluationsIndexRoute,
+    AuthenticatedEvaluationsEvaluationIdModifierRoute:
+      AuthenticatedEvaluationsEvaluationIdModifierRoute,
+  }
+
+const AuthenticatedEvaluationsRouteWithChildren =
+  AuthenticatedEvaluationsRoute._addFileChildren(
+    AuthenticatedEvaluationsRouteChildren,
+  )
+
+interface AuthenticatedExercicesRouteChildren {
+  AuthenticatedExercicesComparatifRoute: typeof AuthenticatedExercicesComparatifRoute
+  AuthenticatedExercicesJournalRoute: typeof AuthenticatedExercicesJournalRoute
+  AuthenticatedExercicesRapportRoute: typeof AuthenticatedExercicesRapportRoute
+}
+
+const AuthenticatedExercicesRouteChildren: AuthenticatedExercicesRouteChildren =
+  {
+    AuthenticatedExercicesComparatifRoute:
+      AuthenticatedExercicesComparatifRoute,
+    AuthenticatedExercicesJournalRoute: AuthenticatedExercicesJournalRoute,
+    AuthenticatedExercicesRapportRoute: AuthenticatedExercicesRapportRoute,
+  }
+
+const AuthenticatedExercicesRouteWithChildren =
+  AuthenticatedExercicesRoute._addFileChildren(
+    AuthenticatedExercicesRouteChildren,
+  )
+
+interface AuthenticatedFacturesRouteChildren {
+  AuthenticatedFacturesFactureIdRoute: typeof AuthenticatedFacturesFactureIdRoute
+  AuthenticatedFacturesIndexRoute: typeof AuthenticatedFacturesIndexRoute
+}
+
+const AuthenticatedFacturesRouteChildren: AuthenticatedFacturesRouteChildren = {
+  AuthenticatedFacturesFactureIdRoute: AuthenticatedFacturesFactureIdRoute,
+  AuthenticatedFacturesIndexRoute: AuthenticatedFacturesIndexRoute,
+}
+
+const AuthenticatedFacturesRouteWithChildren =
+  AuthenticatedFacturesRoute._addFileChildren(
+    AuthenticatedFacturesRouteChildren,
+  )
+
+interface AuthenticatedFournisseursRouteChildren {
+  AuthenticatedFournisseursFournisseurIdRoute: typeof AuthenticatedFournisseursFournisseurIdRoute
+  AuthenticatedFournisseursIndexRoute: typeof AuthenticatedFournisseursIndexRoute
+}
+
+const AuthenticatedFournisseursRouteChildren: AuthenticatedFournisseursRouteChildren =
+  {
+    AuthenticatedFournisseursFournisseurIdRoute:
+      AuthenticatedFournisseursFournisseurIdRoute,
+    AuthenticatedFournisseursIndexRoute: AuthenticatedFournisseursIndexRoute,
+  }
+
+const AuthenticatedFournisseursRouteWithChildren =
+  AuthenticatedFournisseursRoute._addFileChildren(
+    AuthenticatedFournisseursRouteChildren,
+  )
+
+interface AuthenticatedIncidentsRouteChildren {
+  AuthenticatedIncidentsIncidentIdRoute: typeof AuthenticatedIncidentsIncidentIdRoute
+  AuthenticatedIncidentsNouveauRoute: typeof AuthenticatedIncidentsNouveauRoute
+  AuthenticatedIncidentsIndexRoute: typeof AuthenticatedIncidentsIndexRoute
+}
+
+const AuthenticatedIncidentsRouteChildren: AuthenticatedIncidentsRouteChildren =
+  {
+    AuthenticatedIncidentsIncidentIdRoute:
+      AuthenticatedIncidentsIncidentIdRoute,
+    AuthenticatedIncidentsNouveauRoute: AuthenticatedIncidentsNouveauRoute,
+    AuthenticatedIncidentsIndexRoute: AuthenticatedIncidentsIndexRoute,
+  }
+
+const AuthenticatedIncidentsRouteWithChildren =
+  AuthenticatedIncidentsRoute._addFileChildren(
+    AuthenticatedIncidentsRouteChildren,
+  )
+
+interface AuthenticatedInventairesRouteChildren {
+  AuthenticatedInventairesInventaireIdRoute: typeof AuthenticatedInventairesInventaireIdRoute
+  AuthenticatedInventairesNouveauPhysiqueRoute: typeof AuthenticatedInventairesNouveauPhysiqueRoute
+  AuthenticatedInventairesIndexRoute: typeof AuthenticatedInventairesIndexRoute
+}
+
+const AuthenticatedInventairesRouteChildren: AuthenticatedInventairesRouteChildren =
+  {
+    AuthenticatedInventairesInventaireIdRoute:
+      AuthenticatedInventairesInventaireIdRoute,
+    AuthenticatedInventairesNouveauPhysiqueRoute:
+      AuthenticatedInventairesNouveauPhysiqueRoute,
+    AuthenticatedInventairesIndexRoute: AuthenticatedInventairesIndexRoute,
+  }
+
+const AuthenticatedInventairesRouteWithChildren =
+  AuthenticatedInventairesRoute._addFileChildren(
+    AuthenticatedInventairesRouteChildren,
+  )
+
+interface AuthenticatedLivraisonSuiviCommandeRefRouteChildren {
+  AuthenticatedLivraisonSuiviCommandeRefRemiseRoute: typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRoute
+}
+
+const AuthenticatedLivraisonSuiviCommandeRefRouteChildren: AuthenticatedLivraisonSuiviCommandeRefRouteChildren =
+  {
+    AuthenticatedLivraisonSuiviCommandeRefRemiseRoute:
+      AuthenticatedLivraisonSuiviCommandeRefRemiseRoute,
+  }
+
+const AuthenticatedLivraisonSuiviCommandeRefRouteWithChildren =
+  AuthenticatedLivraisonSuiviCommandeRefRoute._addFileChildren(
+    AuthenticatedLivraisonSuiviCommandeRefRouteChildren,
+  )
+
+interface AuthenticatedLivraisonSuiviTourneesRouteChildren {
+  AuthenticatedLivraisonSuiviTourneesTourneeIdRoute: typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
+}
+
+const AuthenticatedLivraisonSuiviTourneesRouteChildren: AuthenticatedLivraisonSuiviTourneesRouteChildren =
+  {
+    AuthenticatedLivraisonSuiviTourneesTourneeIdRoute:
+      AuthenticatedLivraisonSuiviTourneesTourneeIdRoute,
+  }
+
+const AuthenticatedLivraisonSuiviTourneesRouteWithChildren =
+  AuthenticatedLivraisonSuiviTourneesRoute._addFileChildren(
+    AuthenticatedLivraisonSuiviTourneesRouteChildren,
+  )
+
+interface AuthenticatedLivraisonSuiviRouteChildren {
+  AuthenticatedLivraisonSuiviCommandeRefRoute: typeof AuthenticatedLivraisonSuiviCommandeRefRouteWithChildren
+  AuthenticatedLivraisonSuiviTourneesRoute: typeof AuthenticatedLivraisonSuiviTourneesRouteWithChildren
+  AuthenticatedLivraisonSuiviIndexRoute: typeof AuthenticatedLivraisonSuiviIndexRoute
+}
+
+const AuthenticatedLivraisonSuiviRouteChildren: AuthenticatedLivraisonSuiviRouteChildren =
+  {
+    AuthenticatedLivraisonSuiviCommandeRefRoute:
+      AuthenticatedLivraisonSuiviCommandeRefRouteWithChildren,
+    AuthenticatedLivraisonSuiviTourneesRoute:
+      AuthenticatedLivraisonSuiviTourneesRouteWithChildren,
+    AuthenticatedLivraisonSuiviIndexRoute:
+      AuthenticatedLivraisonSuiviIndexRoute,
+  }
+
+const AuthenticatedLivraisonSuiviRouteWithChildren =
+  AuthenticatedLivraisonSuiviRoute._addFileChildren(
+    AuthenticatedLivraisonSuiviRouteChildren,
+  )
+
+interface AuthenticatedPaieRouteChildren {
+  AuthenticatedPaieBulletinIdRoute: typeof AuthenticatedPaieBulletinIdRoute
+  AuthenticatedPaieNouveauRoute: typeof AuthenticatedPaieNouveauRoute
+  AuthenticatedPaieIndexRoute: typeof AuthenticatedPaieIndexRoute
+}
+
+const AuthenticatedPaieRouteChildren: AuthenticatedPaieRouteChildren = {
+  AuthenticatedPaieBulletinIdRoute: AuthenticatedPaieBulletinIdRoute,
+  AuthenticatedPaieNouveauRoute: AuthenticatedPaieNouveauRoute,
+  AuthenticatedPaieIndexRoute: AuthenticatedPaieIndexRoute,
+}
+
+const AuthenticatedPaieRouteWithChildren =
+  AuthenticatedPaieRoute._addFileChildren(AuthenticatedPaieRouteChildren)
+
+interface AuthenticatedPaiementsRouteChildren {
+  AuthenticatedPaiementsPaiementIdRoute: typeof AuthenticatedPaiementsPaiementIdRoute
+  AuthenticatedPaiementsNouveauRoute: typeof AuthenticatedPaiementsNouveauRoute
+  AuthenticatedPaiementsIndexRoute: typeof AuthenticatedPaiementsIndexRoute
+}
+
+const AuthenticatedPaiementsRouteChildren: AuthenticatedPaiementsRouteChildren =
+  {
+    AuthenticatedPaiementsPaiementIdRoute:
+      AuthenticatedPaiementsPaiementIdRoute,
+    AuthenticatedPaiementsNouveauRoute: AuthenticatedPaiementsNouveauRoute,
+    AuthenticatedPaiementsIndexRoute: AuthenticatedPaiementsIndexRoute,
+  }
+
+const AuthenticatedPaiementsRouteWithChildren =
+  AuthenticatedPaiementsRoute._addFileChildren(
+    AuthenticatedPaiementsRouteChildren,
+  )
+
+interface AuthenticatedParametresRouteChildren {
+  AuthenticatedParametresZonesLivraisonRoute: typeof AuthenticatedParametresZonesLivraisonRoute
+}
+
+const AuthenticatedParametresRouteChildren: AuthenticatedParametresRouteChildren =
+  {
+    AuthenticatedParametresZonesLivraisonRoute:
+      AuthenticatedParametresZonesLivraisonRoute,
+  }
+
+const AuthenticatedParametresRouteWithChildren =
+  AuthenticatedParametresRoute._addFileChildren(
+    AuthenticatedParametresRouteChildren,
+  )
+
+interface AuthenticatedProduitsRouteChildren {
+  AuthenticatedProduitsProduitIdRoute: typeof AuthenticatedProduitsProduitIdRoute
+  AuthenticatedProduitsIndexRoute: typeof AuthenticatedProduitsIndexRoute
+}
+
+const AuthenticatedProduitsRouteChildren: AuthenticatedProduitsRouteChildren = {
+  AuthenticatedProduitsProduitIdRoute: AuthenticatedProduitsProduitIdRoute,
+  AuthenticatedProduitsIndexRoute: AuthenticatedProduitsIndexRoute,
+}
+
+const AuthenticatedProduitsRouteWithChildren =
+  AuthenticatedProduitsRoute._addFileChildren(
+    AuthenticatedProduitsRouteChildren,
+  )
+
+interface AuthenticatedProformasRouteChildren {
+  AuthenticatedProformasProformaIdRoute: typeof AuthenticatedProformasProformaIdRoute
+  AuthenticatedProformasIndexRoute: typeof AuthenticatedProformasIndexRoute
+}
+
+const AuthenticatedProformasRouteChildren: AuthenticatedProformasRouteChildren =
+  {
+    AuthenticatedProformasProformaIdRoute:
+      AuthenticatedProformasProformaIdRoute,
+    AuthenticatedProformasIndexRoute: AuthenticatedProformasIndexRoute,
+  }
+
+const AuthenticatedProformasRouteWithChildren =
+  AuthenticatedProformasRoute._addFileChildren(
+    AuthenticatedProformasRouteChildren,
+  )
+
+interface AuthenticatedRapportsRouteChildren {
+  AuthenticatedRapportsAnalyseRoute: typeof AuthenticatedRapportsAnalyseRoute
+  AuthenticatedRapportsIndexRoute: typeof AuthenticatedRapportsIndexRoute
+}
+
+const AuthenticatedRapportsRouteChildren: AuthenticatedRapportsRouteChildren = {
+  AuthenticatedRapportsAnalyseRoute: AuthenticatedRapportsAnalyseRoute,
+  AuthenticatedRapportsIndexRoute: AuthenticatedRapportsIndexRoute,
+}
+
+const AuthenticatedRapportsRouteWithChildren =
+  AuthenticatedRapportsRoute._addFileChildren(
+    AuthenticatedRapportsRouteChildren,
+  )
+
+interface AuthenticatedRetoursRouteChildren {
+  AuthenticatedRetoursRetourIdRoute: typeof AuthenticatedRetoursRetourIdRoute
+  AuthenticatedRetoursNouveauRoute: typeof AuthenticatedRetoursNouveauRoute
+  AuthenticatedRetoursIndexRoute: typeof AuthenticatedRetoursIndexRoute
+}
+
+const AuthenticatedRetoursRouteChildren: AuthenticatedRetoursRouteChildren = {
+  AuthenticatedRetoursRetourIdRoute: AuthenticatedRetoursRetourIdRoute,
+  AuthenticatedRetoursNouveauRoute: AuthenticatedRetoursNouveauRoute,
+  AuthenticatedRetoursIndexRoute: AuthenticatedRetoursIndexRoute,
+}
+
+const AuthenticatedRetoursRouteWithChildren =
+  AuthenticatedRetoursRoute._addFileChildren(AuthenticatedRetoursRouteChildren)
+
+interface AuthenticatedStockRouteChildren {
+  AuthenticatedStockAuditRoute: typeof AuthenticatedStockAuditRoute
+}
+
+const AuthenticatedStockRouteChildren: AuthenticatedStockRouteChildren = {
+  AuthenticatedStockAuditRoute: AuthenticatedStockAuditRoute,
+}
+
+const AuthenticatedStockRouteWithChildren =
+  AuthenticatedStockRoute._addFileChildren(AuthenticatedStockRouteChildren)
+
+interface AuthenticatedTransfertsRouteChildren {
+  AuthenticatedTransfertsTransfertIdRoute: typeof AuthenticatedTransfertsTransfertIdRoute
+  AuthenticatedTransfertsNouveauRoute: typeof AuthenticatedTransfertsNouveauRoute
+  AuthenticatedTransfertsIndexRoute: typeof AuthenticatedTransfertsIndexRoute
+}
+
+const AuthenticatedTransfertsRouteChildren: AuthenticatedTransfertsRouteChildren =
+  {
+    AuthenticatedTransfertsTransfertIdRoute:
+      AuthenticatedTransfertsTransfertIdRoute,
+    AuthenticatedTransfertsNouveauRoute: AuthenticatedTransfertsNouveauRoute,
+    AuthenticatedTransfertsIndexRoute: AuthenticatedTransfertsIndexRoute,
+  }
+
+const AuthenticatedTransfertsRouteWithChildren =
+  AuthenticatedTransfertsRoute._addFileChildren(
+    AuthenticatedTransfertsRouteChildren,
+  )
+
+interface AuthenticatedAdminAuditPaiementsRouteChildren {
+  AuthenticatedAdminAuditPaiementsAuditIdRoute: typeof AuthenticatedAdminAuditPaiementsAuditIdRoute
+}
+
+const AuthenticatedAdminAuditPaiementsRouteChildren: AuthenticatedAdminAuditPaiementsRouteChildren =
+  {
+    AuthenticatedAdminAuditPaiementsAuditIdRoute:
+      AuthenticatedAdminAuditPaiementsAuditIdRoute,
+  }
+
+const AuthenticatedAdminAuditPaiementsRouteWithChildren =
+  AuthenticatedAdminAuditPaiementsRoute._addFileChildren(
+    AuthenticatedAdminAuditPaiementsRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAbsencesRoute: typeof AuthenticatedAbsencesRouteWithChildren
+  AuthenticatedAccesRefuseRoute: typeof AuthenticatedAccesRefuseRoute
+  AuthenticatedAlertesStockRoute: typeof AuthenticatedAlertesStockRoute
+  AuthenticatedApprobationsRoute: typeof AuthenticatedApprobationsRoute
+  AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
+  AuthenticatedBackupRoute: typeof AuthenticatedBackupRoute
+  AuthenticatedBalanceRoute: typeof AuthenticatedBalanceRoute
+  AuthenticatedBiAnalyticsRoute: typeof AuthenticatedBiAnalyticsRoute
+  AuthenticatedBonsLivraisonRoute: typeof AuthenticatedBonsLivraisonRoute
+  AuthenticatedCatalogueIntegriteRoute: typeof AuthenticatedCatalogueIntegriteRoute
+  AuthenticatedCentreDocumentsRoute: typeof AuthenticatedCentreDocumentsRoute
+  AuthenticatedClientsRoute: typeof AuthenticatedClientsRouteWithChildren
+  AuthenticatedColisageRoute: typeof AuthenticatedColisageRouteWithChildren
+  AuthenticatedCommandesRoute: typeof AuthenticatedCommandesRouteWithChildren
+  AuthenticatedComptaDashboardRoute: typeof AuthenticatedComptaDashboardRoute
+  AuthenticatedComptabiliteRoute: typeof AuthenticatedComptabiliteRouteWithChildren
+  AuthenticatedCongesRoute: typeof AuthenticatedCongesRouteWithChildren
+  AuthenticatedCongesEnCoursRoute: typeof AuthenticatedCongesEnCoursRoute
+  AuthenticatedContratsRoute: typeof AuthenticatedContratsRouteWithChildren
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDashboardGlobalRoute: typeof AuthenticatedDashboardGlobalRoute
+  AuthenticatedDashboardLogistiqueRoute: typeof AuthenticatedDashboardLogistiqueRoute
+  AuthenticatedDepartementsRoute: typeof AuthenticatedDepartementsRoute
+  AuthenticatedDepotsRoute: typeof AuthenticatedDepotsRoute
+  AuthenticatedDocumentationRoute: typeof AuthenticatedDocumentationRoute
+  AuthenticatedDocumentsImpressionRoute: typeof AuthenticatedDocumentsImpressionRoute
+  AuthenticatedEcrituresComptablesRoute: typeof AuthenticatedEcrituresComptablesRoute
+  AuthenticatedEmployesRoute: typeof AuthenticatedEmployesRouteWithChildren
+  AuthenticatedEtatCompteClientsRoute: typeof AuthenticatedEtatCompteClientsRoute
+  AuthenticatedEtatsComptablesRoute: typeof AuthenticatedEtatsComptablesRoute
+  AuthenticatedEvaluationsRoute: typeof AuthenticatedEvaluationsRouteWithChildren
+  AuthenticatedExercicesRoute: typeof AuthenticatedExercicesRouteWithChildren
+  AuthenticatedExpeditionsRoute: typeof AuthenticatedExpeditionsRoute
+  AuthenticatedExportsRoute: typeof AuthenticatedExportsRoute
+  AuthenticatedFacturesRoute: typeof AuthenticatedFacturesRouteWithChildren
+  AuthenticatedFileStorageRoute: typeof AuthenticatedFileStorageRoute
+  AuthenticatedFinancesRoute: typeof AuthenticatedFinancesRoute
+  AuthenticatedFleetRoute: typeof AuthenticatedFleetRoute
+  AuthenticatedFneRoute: typeof AuthenticatedFneRoute
+  AuthenticatedFneLogsRoute: typeof AuthenticatedFneLogsRoute
+  AuthenticatedFneNouvelleRoute: typeof AuthenticatedFneNouvelleRoute
+  AuthenticatedFneSettingsRoute: typeof AuthenticatedFneSettingsRoute
+  AuthenticatedFonctionsRoute: typeof AuthenticatedFonctionsRoute
+  AuthenticatedFournisseursRoute: typeof AuthenticatedFournisseursRouteWithChildren
+  AuthenticatedGrandLivreRoute: typeof AuthenticatedGrandLivreRoute
+  AuthenticatedHistoriqueEnvoisRoute: typeof AuthenticatedHistoriqueEnvoisRoute
+  AuthenticatedImportDonneesRoute: typeof AuthenticatedImportDonneesRoute
+  AuthenticatedIncidentsRoute: typeof AuthenticatedIncidentsRouteWithChildren
+  AuthenticatedInventairesRoute: typeof AuthenticatedInventairesRouteWithChildren
+  AuthenticatedLivraisonSuiviRoute: typeof AuthenticatedLivraisonSuiviRouteWithChildren
+  AuthenticatedLivreursRoute: typeof AuthenticatedLivreursRoute
+  AuthenticatedLogisticsCostsRoute: typeof AuthenticatedLogisticsCostsRoute
+  AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
+  AuthenticatedModelesDocumentsRoute: typeof AuthenticatedModelesDocumentsRoute
+  AuthenticatedMonDashboardRoute: typeof AuthenticatedMonDashboardRoute
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedPaieRoute: typeof AuthenticatedPaieRouteWithChildren
+  AuthenticatedPaieDashboardRoute: typeof AuthenticatedPaieDashboardRoute
+  AuthenticatedPaieDeclarationsRoute: typeof AuthenticatedPaieDeclarationsRoute
+  AuthenticatedPaieExportsRoute: typeof AuthenticatedPaieExportsRoute
+  AuthenticatedPaieGenerationRoute: typeof AuthenticatedPaieGenerationRoute
+  AuthenticatedPaieHistoriqueRoute: typeof AuthenticatedPaieHistoriqueRoute
+  AuthenticatedPaieParametresRoute: typeof AuthenticatedPaieParametresRoute
+  AuthenticatedPaieRapportsRoute: typeof AuthenticatedPaieRapportsRoute
+  AuthenticatedPaieRubriquesRoute: typeof AuthenticatedPaieRubriquesRoute
+  AuthenticatedPaiementsRoute: typeof AuthenticatedPaiementsRouteWithChildren
+  AuthenticatedParametresRoute: typeof AuthenticatedParametresRouteWithChildren
+  AuthenticatedPlanComptableRoute: typeof AuthenticatedPlanComptableRoute
+  AuthenticatedProduitsRoute: typeof AuthenticatedProduitsRouteWithChildren
+  AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
+  AuthenticatedProformasRoute: typeof AuthenticatedProformasRouteWithChildren
+  AuthenticatedRapportsRoute: typeof AuthenticatedRapportsRouteWithChildren
+  AuthenticatedRapportsComptablesRoute: typeof AuthenticatedRapportsComptablesRoute
+  AuthenticatedRapportsLogistiqueRoute: typeof AuthenticatedRapportsLogistiqueRoute
+  AuthenticatedRetoursRoute: typeof AuthenticatedRetoursRouteWithChildren
+  AuthenticatedRhDashboardRoute: typeof AuthenticatedRhDashboardRoute
+  AuthenticatedRolesPermissionsRoute: typeof AuthenticatedRolesPermissionsRoute
+  AuthenticatedStockRoute: typeof AuthenticatedStockRouteWithChildren
+  AuthenticatedTransfertsRoute: typeof AuthenticatedTransfertsRouteWithChildren
+  AuthenticatedWorkflowApprovalsRoute: typeof AuthenticatedWorkflowApprovalsRoute
+  AuthenticatedWorkflowsDefinitionsRoute: typeof AuthenticatedWorkflowsDefinitionsRoute
+  AuthenticatedAchatsAchatIdRoute: typeof AuthenticatedAchatsAchatIdRoute
+  AuthenticatedAchatsNouveauRoute: typeof AuthenticatedAchatsNouveauRoute
+  AuthenticatedAdminAuditPaiementsRoute: typeof AuthenticatedAdminAuditPaiementsRouteWithChildren
+  AuthenticatedAdminDataQualityRoute: typeof AuthenticatedAdminDataQualityRoute
+  AuthenticatedAdminGoogleDriveRoute: typeof AuthenticatedAdminGoogleDriveRoute
+  AuthenticatedAdminPerfRoute: typeof AuthenticatedAdminPerfRoute
+  AuthenticatedAdminRpcErrorsRoute: typeof AuthenticatedAdminRpcErrorsRoute
+  AuthenticatedAdminSanteSystemeRoute: typeof AuthenticatedAdminSanteSystemeRoute
+  AuthenticatedAdminSloRoute: typeof AuthenticatedAdminSloRoute
+  AuthenticatedBonDeSortieTourneeIdRoute: typeof AuthenticatedBonDeSortieTourneeIdRoute
+  AuthenticatedBonDeTourneeTourneeIdRoute: typeof AuthenticatedBonDeTourneeTourneeIdRoute
+  AuthenticatedFneDetailFactureIdRoute: typeof AuthenticatedFneDetailFactureIdRoute
+  AuthenticatedMfaBackupCodesRoute: typeof AuthenticatedMfaBackupCodesRoute
+  AuthenticatedMfaEnrollRoute: typeof AuthenticatedMfaEnrollRoute
+  AuthenticatedSpecimensSpecimenIdRoute: typeof AuthenticatedSpecimensSpecimenIdRoute
+  AuthenticatedSpecimensNouveauRoute: typeof AuthenticatedSpecimensNouveauRoute
+  AuthenticatedTourneesBlTourneeIdRoute: typeof AuthenticatedTourneesBlTourneeIdRoute
+  AuthenticatedTourneesTourneeIdRoute: typeof AuthenticatedTourneesTourneeIdRoute
+  AuthenticatedTourneesNouvelleRoute: typeof AuthenticatedTourneesNouvelleRoute
+  AuthenticatedUtilisateursNouveauRoute: typeof AuthenticatedUtilisateursNouveauRoute
+  AuthenticatedUtilisateursProductionRoute: typeof AuthenticatedUtilisateursProductionRoute
+  AuthenticatedAchatsIndexRoute: typeof AuthenticatedAchatsIndexRoute
+  AuthenticatedSpecimensIndexRoute: typeof AuthenticatedSpecimensIndexRoute
+  AuthenticatedTourneesIndexRoute: typeof AuthenticatedTourneesIndexRoute
+  AuthenticatedUtilisateursIndexRoute: typeof AuthenticatedUtilisateursIndexRoute
+  AuthenticatedStockProduitIdMouvementsRoute: typeof AuthenticatedStockProduitIdMouvementsRoute
+  AuthenticatedUtilisateursUserIdModifierRoute: typeof AuthenticatedUtilisateursUserIdModifierRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAbsencesRoute: AuthenticatedAbsencesRouteWithChildren,
+  AuthenticatedAccesRefuseRoute: AuthenticatedAccesRefuseRoute,
+  AuthenticatedAlertesStockRoute: AuthenticatedAlertesStockRoute,
+  AuthenticatedApprobationsRoute: AuthenticatedApprobationsRoute,
+  AuthenticatedAuditRoute: AuthenticatedAuditRoute,
+  AuthenticatedBackupRoute: AuthenticatedBackupRoute,
+  AuthenticatedBalanceRoute: AuthenticatedBalanceRoute,
+  AuthenticatedBiAnalyticsRoute: AuthenticatedBiAnalyticsRoute,
+  AuthenticatedBonsLivraisonRoute: AuthenticatedBonsLivraisonRoute,
+  AuthenticatedCatalogueIntegriteRoute: AuthenticatedCatalogueIntegriteRoute,
+  AuthenticatedCentreDocumentsRoute: AuthenticatedCentreDocumentsRoute,
+  AuthenticatedClientsRoute: AuthenticatedClientsRouteWithChildren,
+  AuthenticatedColisageRoute: AuthenticatedColisageRouteWithChildren,
+  AuthenticatedCommandesRoute: AuthenticatedCommandesRouteWithChildren,
+  AuthenticatedComptaDashboardRoute: AuthenticatedComptaDashboardRoute,
+  AuthenticatedComptabiliteRoute: AuthenticatedComptabiliteRouteWithChildren,
+  AuthenticatedCongesRoute: AuthenticatedCongesRouteWithChildren,
+  AuthenticatedCongesEnCoursRoute: AuthenticatedCongesEnCoursRoute,
+  AuthenticatedContratsRoute: AuthenticatedContratsRouteWithChildren,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDashboardGlobalRoute: AuthenticatedDashboardGlobalRoute,
+  AuthenticatedDashboardLogistiqueRoute: AuthenticatedDashboardLogistiqueRoute,
+  AuthenticatedDepartementsRoute: AuthenticatedDepartementsRoute,
+  AuthenticatedDepotsRoute: AuthenticatedDepotsRoute,
+  AuthenticatedDocumentationRoute: AuthenticatedDocumentationRoute,
+  AuthenticatedDocumentsImpressionRoute: AuthenticatedDocumentsImpressionRoute,
+  AuthenticatedEcrituresComptablesRoute: AuthenticatedEcrituresComptablesRoute,
+  AuthenticatedEmployesRoute: AuthenticatedEmployesRouteWithChildren,
+  AuthenticatedEtatCompteClientsRoute: AuthenticatedEtatCompteClientsRoute,
+  AuthenticatedEtatsComptablesRoute: AuthenticatedEtatsComptablesRoute,
+  AuthenticatedEvaluationsRoute: AuthenticatedEvaluationsRouteWithChildren,
+  AuthenticatedExercicesRoute: AuthenticatedExercicesRouteWithChildren,
+  AuthenticatedExpeditionsRoute: AuthenticatedExpeditionsRoute,
+  AuthenticatedExportsRoute: AuthenticatedExportsRoute,
+  AuthenticatedFacturesRoute: AuthenticatedFacturesRouteWithChildren,
+  AuthenticatedFileStorageRoute: AuthenticatedFileStorageRoute,
+  AuthenticatedFinancesRoute: AuthenticatedFinancesRoute,
+  AuthenticatedFleetRoute: AuthenticatedFleetRoute,
+  AuthenticatedFneRoute: AuthenticatedFneRoute,
+  AuthenticatedFneLogsRoute: AuthenticatedFneLogsRoute,
+  AuthenticatedFneNouvelleRoute: AuthenticatedFneNouvelleRoute,
+  AuthenticatedFneSettingsRoute: AuthenticatedFneSettingsRoute,
+  AuthenticatedFonctionsRoute: AuthenticatedFonctionsRoute,
+  AuthenticatedFournisseursRoute: AuthenticatedFournisseursRouteWithChildren,
+  AuthenticatedGrandLivreRoute: AuthenticatedGrandLivreRoute,
+  AuthenticatedHistoriqueEnvoisRoute: AuthenticatedHistoriqueEnvoisRoute,
+  AuthenticatedImportDonneesRoute: AuthenticatedImportDonneesRoute,
+  AuthenticatedIncidentsRoute: AuthenticatedIncidentsRouteWithChildren,
+  AuthenticatedInventairesRoute: AuthenticatedInventairesRouteWithChildren,
+  AuthenticatedLivraisonSuiviRoute:
+    AuthenticatedLivraisonSuiviRouteWithChildren,
+  AuthenticatedLivreursRoute: AuthenticatedLivreursRoute,
+  AuthenticatedLogisticsCostsRoute: AuthenticatedLogisticsCostsRoute,
+  AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
+  AuthenticatedModelesDocumentsRoute: AuthenticatedModelesDocumentsRoute,
+  AuthenticatedMonDashboardRoute: AuthenticatedMonDashboardRoute,
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedPaieRoute: AuthenticatedPaieRouteWithChildren,
+  AuthenticatedPaieDashboardRoute: AuthenticatedPaieDashboardRoute,
+  AuthenticatedPaieDeclarationsRoute: AuthenticatedPaieDeclarationsRoute,
+  AuthenticatedPaieExportsRoute: AuthenticatedPaieExportsRoute,
+  AuthenticatedPaieGenerationRoute: AuthenticatedPaieGenerationRoute,
+  AuthenticatedPaieHistoriqueRoute: AuthenticatedPaieHistoriqueRoute,
+  AuthenticatedPaieParametresRoute: AuthenticatedPaieParametresRoute,
+  AuthenticatedPaieRapportsRoute: AuthenticatedPaieRapportsRoute,
+  AuthenticatedPaieRubriquesRoute: AuthenticatedPaieRubriquesRoute,
+  AuthenticatedPaiementsRoute: AuthenticatedPaiementsRouteWithChildren,
+  AuthenticatedParametresRoute: AuthenticatedParametresRouteWithChildren,
+  AuthenticatedPlanComptableRoute: AuthenticatedPlanComptableRoute,
+  AuthenticatedProduitsRoute: AuthenticatedProduitsRouteWithChildren,
+  AuthenticatedProfilRoute: AuthenticatedProfilRoute,
+  AuthenticatedProformasRoute: AuthenticatedProformasRouteWithChildren,
+  AuthenticatedRapportsRoute: AuthenticatedRapportsRouteWithChildren,
+  AuthenticatedRapportsComptablesRoute: AuthenticatedRapportsComptablesRoute,
+  AuthenticatedRapportsLogistiqueRoute: AuthenticatedRapportsLogistiqueRoute,
+  AuthenticatedRetoursRoute: AuthenticatedRetoursRouteWithChildren,
+  AuthenticatedRhDashboardRoute: AuthenticatedRhDashboardRoute,
+  AuthenticatedRolesPermissionsRoute: AuthenticatedRolesPermissionsRoute,
+  AuthenticatedStockRoute: AuthenticatedStockRouteWithChildren,
+  AuthenticatedTransfertsRoute: AuthenticatedTransfertsRouteWithChildren,
+  AuthenticatedWorkflowApprovalsRoute: AuthenticatedWorkflowApprovalsRoute,
+  AuthenticatedWorkflowsDefinitionsRoute:
+    AuthenticatedWorkflowsDefinitionsRoute,
+  AuthenticatedAchatsAchatIdRoute: AuthenticatedAchatsAchatIdRoute,
+  AuthenticatedAchatsNouveauRoute: AuthenticatedAchatsNouveauRoute,
+  AuthenticatedAdminAuditPaiementsRoute:
+    AuthenticatedAdminAuditPaiementsRouteWithChildren,
+  AuthenticatedAdminDataQualityRoute: AuthenticatedAdminDataQualityRoute,
+  AuthenticatedAdminGoogleDriveRoute: AuthenticatedAdminGoogleDriveRoute,
+  AuthenticatedAdminPerfRoute: AuthenticatedAdminPerfRoute,
+  AuthenticatedAdminRpcErrorsRoute: AuthenticatedAdminRpcErrorsRoute,
+  AuthenticatedAdminSanteSystemeRoute: AuthenticatedAdminSanteSystemeRoute,
+  AuthenticatedAdminSloRoute: AuthenticatedAdminSloRoute,
+  AuthenticatedBonDeSortieTourneeIdRoute:
+    AuthenticatedBonDeSortieTourneeIdRoute,
+  AuthenticatedBonDeTourneeTourneeIdRoute:
+    AuthenticatedBonDeTourneeTourneeIdRoute,
+  AuthenticatedFneDetailFactureIdRoute: AuthenticatedFneDetailFactureIdRoute,
+  AuthenticatedMfaBackupCodesRoute: AuthenticatedMfaBackupCodesRoute,
+  AuthenticatedMfaEnrollRoute: AuthenticatedMfaEnrollRoute,
+  AuthenticatedSpecimensSpecimenIdRoute: AuthenticatedSpecimensSpecimenIdRoute,
+  AuthenticatedSpecimensNouveauRoute: AuthenticatedSpecimensNouveauRoute,
+  AuthenticatedTourneesBlTourneeIdRoute: AuthenticatedTourneesBlTourneeIdRoute,
+  AuthenticatedTourneesTourneeIdRoute: AuthenticatedTourneesTourneeIdRoute,
+  AuthenticatedTourneesNouvelleRoute: AuthenticatedTourneesNouvelleRoute,
+  AuthenticatedUtilisateursNouveauRoute: AuthenticatedUtilisateursNouveauRoute,
+  AuthenticatedUtilisateursProductionRoute:
+    AuthenticatedUtilisateursProductionRoute,
+  AuthenticatedAchatsIndexRoute: AuthenticatedAchatsIndexRoute,
+  AuthenticatedSpecimensIndexRoute: AuthenticatedSpecimensIndexRoute,
+  AuthenticatedTourneesIndexRoute: AuthenticatedTourneesIndexRoute,
+  AuthenticatedUtilisateursIndexRoute: AuthenticatedUtilisateursIndexRoute,
+  AuthenticatedStockProduitIdMouvementsRoute:
+    AuthenticatedStockProduitIdMouvementsRoute,
+  AuthenticatedUtilisateursUserIdModifierRoute:
+    AuthenticatedUtilisateursUserIdModifierRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  McpRoute: McpRoute,
+  PresentationRoute: PresentationRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  CartonColisIdRoute: CartonColisIdRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicHooksAlertRoute: ApiPublicHooksAlertRoute,
+  ApiPublicHooksRunSchedulesRoute: ApiPublicHooksRunSchedulesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

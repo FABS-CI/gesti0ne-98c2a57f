@@ -1,0 +1,61 @@
+name: Audit Facturation → Paiements → Comptes clients
+
+on:
+  pull_request:
+    paths:
+      - "src/lib/paiement*"
+      - "src/lib/facturation-workflow*"
+      - "src/lib/pdf-comparatif*"
+      - "src/routes/_authenticated/paiements*"
+      - "src/routes/_authenticated/clients*"
+      - "src/routes/_authenticated/admin.audit-paiements*"
+      - "supabase/migrations/**"
+      - "scripts/audit-facturation.sh"
+      - "scripts/test-rls-audit.sql"
+      - ".github/workflows/audit-facturation.yml"
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: latest }
+      - run: bun install --frozen-lockfile
+
+      - name: Audit Facturation (typecheck + vitest + RLS static)
+        id: audit
+        run: |
+          set -o pipefail
+          mkdir -p artifacts
+          bash scripts/audit-facturation.sh 2>&1 | tee artifacts/audit-facturation.log
+
+      - name: Résumé KPI (extrait des tests workflow)
+        if: always()
+        run: |
+          {
+            echo "# Résumé KPI — workflow Facturation → Paiements → Comptes clients"
+            echo ""
+            echo "Commit: \`${GITHUB_SHA}\`"
+            echo "Date:   $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo ""
+            echo "## Tests"
+            grep -E "Test Files|Tests|PASS:|FAIL" artifacts/audit-facturation.log || true
+          } > artifacts/kpi-summary.md
+          cat artifacts/kpi-summary.md
+
+      - name: Upload artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-facturation-${{ github.run_id }}
+          path: artifacts/
+          retention-days: 30
+
+      - name: Échec si audit KO
+        if: steps.audit.outcome != 'success'
+        run: |
+          echo "::error::Audit KPI/RLS Facturation → Paiements a échoué"
+          exit 1

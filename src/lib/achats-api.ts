@@ -1,0 +1,197 @@
+import { supabase } from "@/integrations/supabase/client";
+import { callRpc } from "@/lib/rpc";
+
+export const STATUTS_ACHAT = [
+  { value: "brouillon", label: "Brouillon", color: "#94A3B8" },
+  { value: "commande", label: "Commandé", color: "#3B82F6" },
+  { value: "recu", label: "Reçu", color: "#F97316" },
+  { value: "paye", label: "Payé", color: "#10B981" },
+  { value: "annule", label: "Annulé", color: "#EF4444" },
+] as const;
+
+export const STATUT_ACHAT_LABEL: Record<string, { label: string; color: string }> =
+  Object.fromEntries(STATUTS_ACHAT.map((s) => [s.value, { label: s.label, color: s.color }]));
+
+export type Achat = {
+  achat_id: string;
+  reference: string;
+  fournisseur_id: string | null;
+  libelle: string;
+  montant: number;
+  statut: string;
+  date_achat: string;
+  notes: string | null;
+  reference_fournisseur: string | null;
+  created_by: string | null;
+  created_by_nom: string | null;
+  created_at: string;
+  updated_at: string;
+  fournisseurs?: { raison_sociale: string } | null;
+};
+
+export type AchatLigne = {
+  ligne_id: string;
+  achat_id: string;
+  produit_id: string | null;
+  reference_produit: string | null;
+  designation: string;
+  quantite: number;
+  prix_unitaire: number;
+  total_ligne: number;
+  created_at: string;
+};
+
+export type ApprovisionnementLigneInput = {
+  produit_id: string | null;
+  reference_produit?: string | null;
+  designation: string;
+  quantite: number;
+  prix_unitaire: number;
+};
+
+export type ApprovisionnementInput = {
+  fournisseur_id: string;
+  depot_id: string;
+  date_achat: string;
+  reference_fournisseur?: string | null;
+  notes?: string | null;
+  lignes: ApprovisionnementLigneInput[];
+};
+
+export type AchatInput = {
+  fournisseur_id?: string | null;
+  libelle: string;
+  montant: number;
+  statut: string;
+  date_achat: string;
+  notes?: string | null;
+};
+
+export async function listAchats(q?: string, statut?: string, exerciceId?: string | null) {
+  let query = supabase.from("achats").select("*, fournisseurs(raison_sociale)");
+  if (exerciceId) query = query.eq("exercice_id", exerciceId);
+  if (q) query = query.or(`libelle.ilike.%${q}%,reference.ilike.%${q}%`);
+  if (statut) query = query.eq("statut", statut);
+  query = query.order("date_achat", { ascending: false });
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data ?? []) as Achat[];
+}
+
+export async function createAchat(input: AchatInput) {
+  const { data, error } = await supabase.from("achats").insert(input).select().single();
+  if (error) throw error;
+  return data as Achat;
+}
+
+export async function updateAchat(id: string, input: AchatInput) {
+  const { data, error } = await supabase
+    .from("achats")
+    .update(input)
+    .eq("achat_id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as Achat;
+}
+
+export async function deleteAchat(id: string, motif?: string | null) {
+  const { error } = await supabase.rpc("supprimer_achat" as never, {
+    _achat_id: id,
+    _motif: motif ?? "",
+  } as never);
+  if (error) throw error;
+}
+
+export async function confirmerAchat(id: string) {
+  const { error } = await callRpc("confirmer_achat", { _achat_id: id });
+  if (error) throw error;
+}
+
+export async function receptionnerAchat(id: string) {
+  const { error } = await supabase.rpc("receptionner_achat", { _achat_id: id });
+  if (error) throw error;
+}
+
+export async function payerAchat(id: string) {
+  const { error } = await supabase.rpc("payer_achat", { _achat_id: id });
+  if (error) throw error;
+}
+
+export async function getAchat(id: string) {
+  const { data, error } = await supabase
+    .from("achats")
+    .select("*, fournisseurs(raison_sociale)")
+    .eq("achat_id", id)
+    .single();
+  if (error) throw error;
+  return data as Achat;
+}
+
+export async function getAchatLignes(achatId: string) {
+  const { data, error } = await supabase
+    .from("achat_lignes")
+    .select("*")
+    .eq("achat_id", achatId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as AchatLigne[];
+}
+
+export async function listAchatLignesByAchats(achatIds: string[]) {
+  if (achatIds.length === 0) return {} as Record<string, AchatLigne[]>;
+  const { data, error } = await supabase.from("achat_lignes").select("*").in("achat_id", achatIds);
+  if (error) throw error;
+  const map: Record<string, AchatLigne[]> = {};
+  (data ?? []).forEach((l) => {
+    const k = l.achat_id;
+    if (!map[k]) map[k] = [];
+    map[k].push(l as AchatLigne);
+  });
+  return map;
+}
+
+export async function creerApprovisionnement(input: ApprovisionnementInput) {
+  const payload = {
+    fournisseur_id: input.fournisseur_id,
+    depot_id: input.depot_id,
+    date_achat: input.date_achat,
+    reference_fournisseur: input.reference_fournisseur ?? null,
+    notes: input.notes ?? null,
+    lignes: input.lignes.map((l) => ({
+      produit_id: l.produit_id,
+      reference_produit: l.reference_produit ?? null,
+      designation: l.designation,
+      quantite: l.quantite,
+      prix_unitaire: l.prix_unitaire,
+    })),
+  };
+  const { data, error } = await callRpc("enregistrer_approvisionnement", {
+    _payload: payload,
+  });
+  if (error) throw error;
+  return data as Achat;
+}
+
+export async function modifierApprovisionnement(id: string, input: ApprovisionnementInput) {
+  const payload = {
+    fournisseur_id: input.fournisseur_id,
+    depot_id: input.depot_id,
+    date_achat: input.date_achat,
+    reference_fournisseur: input.reference_fournisseur ?? null,
+    notes: input.notes ?? null,
+    lignes: input.lignes.map((l) => ({
+      produit_id: l.produit_id,
+      reference_produit: l.reference_produit ?? null,
+      designation: l.designation,
+      quantite: l.quantite,
+      prix_unitaire: l.prix_unitaire,
+    })),
+  };
+  const { data, error } = await supabase.rpc("modifier_approvisionnement" as never, {
+    _achat_id: id,
+    _payload: payload,
+  } as never);
+  if (error) throw error;
+  return data as Achat;
+}

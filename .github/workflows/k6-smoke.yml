@@ -1,0 +1,45 @@
+name: k6 smoke load test
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  k6-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg \
+            --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" \
+            | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install -y k6
+
+      - name: Run k6 smoke scenario only
+        env:
+          SUPABASE_URL:       ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY:  ${{ secrets.SUPABASE_ANON_KEY }}
+          TEST_EMAIL:         ${{ secrets.K6_TEST_EMAIL }}
+          TEST_PASSWORD:      ${{ secrets.K6_TEST_PASSWORD }}
+          TEST_CLIENT_ID:     ${{ secrets.K6_TEST_CLIENT_ID }}
+          BASE_URL:           ${{ secrets.K6_BASE_URL }}
+        # PR = smoke uniquement (30s / 5 VUs). Le scénario "ramp" reste dispo
+        # en manuel via workflow_dispatch en supprimant --exclude-scenarios.
+        run: k6 run --exclude-scenarios=ramp scripts/load/k6-smoke.js
+
+      - name: Upload k6 summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-summary
+          path: |
+            summary.html
+            summary.json
+          if-no-files-found: ignore

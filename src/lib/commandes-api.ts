@@ -1,0 +1,218 @@
+import { supabase } from "@/integrations/supabase/client";
+import { callRpc } from "@/lib/rpc";
+import { getDepotDefautId } from "@/lib/parametres-api";
+
+export const STATUTS_COMMANDE = [
+  { value: "brouillon", label: "Brouillon", color: "#64748B" },
+  { value: "en_attente_validation", label: "En attente de validation", color: "#F59E0B" },
+  { value: "validee", label: "Validée", color: "#3B82F6" },
+  { value: "facturee", label: "Facturée", color: "#8B5CF6" },
+  { value: "livree", label: "Livrée", color: "#10B981" },
+  { value: "annulee", label: "Annulée", color: "#EF4444" },
+] as const;
+
+export const STATUT_LABEL: Record<string, { label: string; color: string }> = Object.fromEntries(
+  STATUTS_COMMANDE.map((s) => [s.value, { label: s.label, color: s.color }]),
+);
+
+export type CommandeLigne = {
+  ligne_id?: string;
+  produit_id?: string | null;
+  reference_produit?: string | null;
+  designation: string;
+  quantite: number;
+  prix_unitaire: number;
+  remise_pct?: number;
+  montant_remise?: number;
+  total_ligne: number;
+  total_ht_ligne?: number;
+};
+
+export type Commande = {
+  commande_id: string;
+  reference: string;
+  numero: string | null;
+  client_id: string | null;
+  client_nom: string | null;
+  etablissement: string | null;
+  representant_nom: string | null;
+  telephone: string | null;
+  ville: string | null;
+  adresse: string | null;
+  observations: string | null;
+  statut: string;
+  date_commande: string;
+  remise: number;
+  nb_produits: number;
+  total_quantite: number;
+  total_ht_brut: number;
+  total_remises_lignes: number;
+  total_ht_net: number;
+  remise_globale_pct: number;
+  remise_globale_montant: number;
+  taux_tva: number;
+  montant_tva: number;
+  montant_ttc: number;
+  net_a_payer: number;
+  montant_total: number;
+  commercial_id: string | null;
+  commercial_nom: string | null;
+  created_by: string | null;
+  created_by_nom: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+// === RPC-based API (Phase 1+) ===
+
+export type CreerCommandeLignePayload = {
+  produit_id: string;
+  reference_produit?: string | null;
+  designation: string;
+  quantite: number;
+  prix_unitaire: number;
+  remise_pct?: number;
+};
+
+export type CreerCommandePayload = {
+  date_commande: string;
+  client_id: string;
+  etablissement?: string | null;
+  representant_nom?: string | null;
+  telephone?: string | null;
+  ville?: string | null;
+  adresse?: string | null;
+  observations?: string | null;
+  remise_globale_pct?: number;
+  taux_tva?: number;
+  depot_id?: string | null;
+  lignes: CreerCommandeLignePayload[];
+};
+
+export async function creerCommande(payload: CreerCommandePayload) {
+  const depot_id = payload.depot_id ?? (await getDepotDefautId());
+  const { data, error } = await callRpc("creer_commande", {
+    _payload: { ...payload, depot_id } as never,
+  });
+  if (error) throw new Error(error.message);
+  return data as unknown as Commande;
+}
+
+export async function modifierCommande(commandeId: string, payload: Partial<CreerCommandePayload>) {
+  const { assertPermission } = await import("@/lib/rbac-api");
+  await assertPermission("commandes.modifier");
+  const { data, error } = await supabase.rpc("modifier_commande", {
+    _commande_id: commandeId,
+    _payload: payload as never,
+  });
+  if (error) throw new Error(error.message);
+  return data as unknown as Commande;
+}
+
+export async function soumettreCommande(commandeId: string) {
+  const { assertPermission } = await import("@/lib/rbac-api");
+  await assertPermission("commandes.soumettre");
+  const { error } = await supabase.rpc("soumettre_commande", { _commande_id: commandeId });
+  if (error) throw new Error(error.message);
+}
+
+export async function genererProformaCommande(commandeId: string) {
+  const { assertPermission } = await import("@/lib/rbac-api");
+  await assertPermission("commandes.generer_proforma");
+  const { data, error } = await supabase.rpc("generer_proforma_commande", {
+    _commande_id: commandeId,
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export type ListCommandesParams = {
+  q?: string;
+  statut?: string;
+  page?: number;
+  pageSize?: number;
+  reference?: string;
+  client?: string;
+  telephone?: string;
+  commercial?: string;
+  ville?: string;
+  dateDu?: string;
+  dateAu?: string;
+  montantMin?: number;
+  montantMax?: number;
+  exerciceId?: string | null;
+};
+
+export async function listCommandes(params: ListCommandesParams = {}) {
+  const {
+    q,
+    statut,
+    page = 1,
+    pageSize = 20,
+    reference,
+    client,
+    telephone,
+    commercial,
+    ville,
+    dateDu,
+    dateAu,
+    montantMin,
+    montantMax,
+    exerciceId,
+  } = params;
+  let query = supabase.from("commandes").select("*", { count: "estimated" });
+
+  if (exerciceId) query = query.eq("exercice_id", exerciceId);
+  if (q) query = query.or(`reference.ilike.%${q}%,client_nom.ilike.%${q}%`);
+  if (statut) query = query.eq("statut", statut);
+  if (reference) query = query.ilike("reference", `%${reference}%`);
+  if (client) query = query.ilike("client_nom", `%${client}%`);
+  if (telephone) query = query.ilike("telephone", `%${telephone}%`);
+  if (commercial) query = query.ilike("commercial_nom", `%${commercial}%`);
+  if (ville) query = query.ilike("ville", `%${ville}%`);
+  if (dateDu) query = query.gte("date_commande", dateDu);
+  if (dateAu) query = query.lte("date_commande", dateAu);
+  if (montantMin !== undefined) query = query.gte("montant_total", montantMin);
+  if (montantMax !== undefined) query = query.lte("montant_total", montantMax);
+
+  const from = (page - 1) * pageSize;
+  query = query.order("created_at", { ascending: false }).range(from, from + pageSize - 1);
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+  return { items: (data ?? []) as Commande[], total: count ?? 0, page, pageSize };
+}
+
+export async function getCommandeLignes(commandeId: string) {
+  const { data, error } = await supabase
+    .from("commande_lignes")
+    .select("*")
+    .eq("commande_id", commandeId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as Required<CommandeLigne>[];
+}
+
+export async function deleteCommande(id: string, motif?: string | null) {
+  const { assertPermission } = await import("@/lib/rbac-api");
+  await assertPermission("commandes.supprimer");
+  const { data, error } = await supabase.rpc("supprimer_commande_definitif", {
+    _commande_id: id,
+    _motif: motif ?? undefined,
+  });
+  if (error) {
+    throw new Error(error.message);
+  }
+  return (data ?? {}) as Record<string, number>;
+}
+
+export async function getCommande(id: string) {
+  const { data, error } = await supabase
+    .from("commandes")
+    .select("*")
+    .eq("commande_id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data as Commande | null;
+}

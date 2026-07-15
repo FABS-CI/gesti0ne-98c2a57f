@@ -1,0 +1,64 @@
+import { useQuery } from "@tanstack/react-query";
+import { getProduit } from "@/lib/produits-api";
+import { listMouvements } from "@/lib/stock-api";
+import { getStocksParDepot } from "@/lib/depots-api";
+import {
+  getProduitAchats,
+  getProduitInventaires,
+  getProduitVentes,
+  getProduitStats,
+  getStockHistory,
+} from "@/lib/produits-360-api";
+
+export function useProduitDetail(produitId: string) {
+  const produitQ = useQuery({
+    queryKey: ["produit", produitId],
+    queryFn: () => getProduit(produitId),
+  });
+  const produit = produitQ.data;
+
+  const mouvementsQ = useQuery({
+    queryKey: ["produit-mouvements", produitId],
+    queryFn: () => listMouvements(produitId),
+  });
+  const ventesQ = useQuery({
+    queryKey: ["produit-ventes", produitId],
+    queryFn: () => getProduitVentes(produitId),
+  });
+  const statsQ = useQuery({
+    queryKey: ["produit-stats", produitId, produit?.prix_achat, produit?.stock],
+    queryFn: () => getProduitStats(produitId, produit!.prix_achat, produit!.stock),
+    enabled: !!produit,
+  });
+  const historyQ = useQuery({
+    queryKey: ["produit-history", produitId, produit?.stock],
+    queryFn: () => getStockHistory(produitId, produit!.stock, 90),
+    enabled: !!produit,
+  });
+  const stocksDepotsQ = useQuery({
+    queryKey: ["produit-stocks-depots", produitId],
+    queryFn: () => getStocksParDepot(produitId),
+  });
+  const achatsQ = useQuery({
+    queryKey: ["produit-achats", produitId, produit?.titre, produit?.reference],
+    queryFn: () => getProduitAchats({ titre: produit!.titre, reference: produit!.reference }),
+    enabled: !!produit,
+  });
+  const inventairesQ = useQuery({
+    queryKey: ["produit-inventaires", produitId, produit?.titre, produit?.reference],
+    queryFn: () => getProduitInventaires({ titre: produit!.titre, reference: produit!.reference }),
+    enabled: !!produit,
+  });
+
+  return {
+    produit,
+    isLoading: produitQ.isLoading,
+    mouvements: mouvementsQ.data ?? [],
+    ventes: ventesQ.data ?? [],
+    stats: statsQ.data,
+    history: historyQ.data ?? [],
+    stocksDepots: stocksDepotsQ.data ?? [],
+    achats: achatsQ.data ?? [],
+    inventaires: inventairesQ.data ?? [],
+  };
+}

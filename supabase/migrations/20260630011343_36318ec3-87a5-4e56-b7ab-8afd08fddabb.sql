@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.ajuster_stock_depot(uuid, uuid, integer, text);

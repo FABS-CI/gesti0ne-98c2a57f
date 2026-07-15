@@ -1,0 +1,1 @@
+CREATE POLICY "Super admins can insert alerts" ON public.incident_alerts FOR INSERT TO authenticated WITH CHECK (has_role(auth.uid(), 'super_admin'::app_role));

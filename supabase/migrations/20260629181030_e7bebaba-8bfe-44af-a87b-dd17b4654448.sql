@@ -1,0 +1,1 @@
+ALTER TABLE public.stocks_depots ADD COLUMN IF NOT EXISTS seuil_alerte integer NOT NULL DEFAULT 0;

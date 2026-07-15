@@ -63,73 +63,85 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --background: oklch(0.97 0.005 247);
+  --foreground: oklch(0.21 0.04 250);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.21 0.04 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --popover-foreground: oklch(0.21 0.04 250);
+  --primary: oklch(0.55 0.22 258);
+  --primary-foreground: oklch(0.99 0.003 247);
+  --secondary: oklch(0.95 0.01 247);
+  --secondary-foreground: oklch(0.27 0.06 255);
+  --muted: oklch(0.95 0.01 247);
+  --muted-foreground: oklch(0.52 0.03 257);
+  --accent: oklch(0.63 0.21 41);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.55 0.22 27);
+  --destructive-foreground: oklch(0.99 0.003 247);
+  --border: oklch(0.9 0.01 255);
+  --input: oklch(0.9 0.01 255);
+  --ring: oklch(0.55 0.22 258);
+  --chart-1: oklch(0.55 0.22 258);
+  --chart-2: oklch(0.63 0.21 41);
+  --chart-3: oklch(0.6 0.118 184.704);
+  --chart-4: oklch(0.55 0.16 145);
+  --chart-5: oklch(0.65 0.2 300);
+  --sidebar: oklch(0.21 0.05 258);
+  --sidebar-foreground: oklch(0.92 0.01 247);
+  --sidebar-primary: oklch(0.63 0.21 41);
+  --sidebar-primary-foreground: oklch(0.99 0.003 247);
+  --sidebar-accent: oklch(0.28 0.05 258);
+  --sidebar-accent-foreground: oklch(0.99 0.003 247);
+  --sidebar-border: oklch(0.3 0.04 258);
+  --sidebar-ring: oklch(0.63 0.21 41);
 }
 
+/* MODE SOMBRE — thème officiel FABS ERP v10 (palette enterprise) */
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --background: #0b1220;
+  --foreground: #e2e8f0;
+  --card: #1e293b;
+  --card-foreground: #e2e8f0;
+  --popover: #1e293b;
+  --popover-foreground: #e2e8f0;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #e2e8f0;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #233146;
+  --accent-foreground: #e2e8f0;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #334155;
+  --input: #334155;
+  --ring: #f97316;
+  --chart-1: #f97316;
+  --chart-2: #14b8a6;
+  --chart-3: #3b82f6;
+  --chart-4: #8b5cf6;
+  --chart-5: #f59e0b;
+  --sidebar: #111827;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #e2e8f0;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #f97316;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      color 0.2s ease;
+  }
 }
 
 @layer base {
@@ -137,8 +149,58 @@
     border-color: var(--color-border);
   }
 
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+/* Hide the "Edit with Lovable" badge on published deployments */
+#lovable-badge,
+a[href*="lovable.dev"][target="_blank"],
+[id^="lovable-badge"],
+[class*="lovable-badge"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ------------------------------------------------------------------
+ * Design System — Responsive Table
+ * Fige la première colonne sur mobile pour les matrices RBAC, etc.
+ * ------------------------------------------------------------------ */
+.responsive-table--sticky table thead th:first-child,
+.responsive-table--sticky table tbody td:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--color-card);
+  z-index: 1;
+  box-shadow: 1px 0 0 var(--color-border);
+}
+
+/* ------------------------------------------------------------------
+ * Print — hide app chrome (sidebar/topbar/banner) so A4 impressions
+ * (étiquettes colisage, factures, etc.) occupent toute la page.
+ * ------------------------------------------------------------------ */
+@media print {
+  [data-slot="sidebar"],
+  [data-slot="sidebar-wrapper"] > .group.peer,
+  .group.peer[data-sidebar],
+  aside[data-sidebar],
+  .app-shell-sidebar,
+  .app-shell-header,
+  .app-shell-banner {
+    display: none !important;
+  }
+  .app-shell-main {
+    padding: 0 !important;
+    overflow: visible !important;
   }
 }

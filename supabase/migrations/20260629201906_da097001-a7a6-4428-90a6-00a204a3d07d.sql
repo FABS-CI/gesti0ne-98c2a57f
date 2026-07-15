@@ -1,0 +1,2 @@
+ALTER TABLE public.proformas ADD COLUMN IF NOT EXISTS commande_id uuid REFERENCES public.commandes(commande_id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_proformas_commande_id ON public.proformas(commande_id);

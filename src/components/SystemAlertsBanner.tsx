@@ -1,0 +1,79 @@
+import { useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
+import { AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useUserRoles } from "@/hooks/use-user-roles";
+
+/**
+ * Bannière globale d'alertes système :
+ * - Interroge incident_alerts (source LIKE 'health.%', non résolues) toutes les 60s
+ * - Affiche une bannière rouge sticky avec le nombre d'incidents actifs
+ * - Émet un toast quand une nouvelle alerte apparaît
+ * Visible uniquement pour les super-admins.
+ */
+export function SystemAlertsBanner() {
+  const { isSuperAdmin } = useUserRoles();
+  const seen = useRef<Set<string>>(new Set());
+  const initialized = useRef(false);
+
+  const { data } = useQuery({
+    queryKey: ["system-alerts-banner"],
+    enabled: isSuperAdmin,
+    refetchInterval: 60_000,
+    staleTime: 55_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("incident_alerts")
+        .select("id, title, severity, message, created_at, source")
+        .eq("resolved", false)
+        .like("source", "health.%")
+        .order("created_at", { ascending: false })
+        .limit(20);
+      if (error) return [];
+      return data ?? [];
+    },
+  });
+
+  useEffect(() => {
+    if (!data) return;
+    if (!initialized.current) {
+      data.forEach((a) => seen.current.add(a.id));
+      initialized.current = true;
+      return;
+    }
+    for (const a of data) {
+      if (!seen.current.has(a.id)) {
+        seen.current.add(a.id);
+        toast.error(a.title, { description: a.message ?? undefined, duration: 10_000 });
+      }
+    }
+  }, [data]);
+
+  if (!isSuperAdmin || !data || data.length === 0) return null;
+
+  const critical = data.filter((a) => a.severity === "critical").length;
+  return (
+    <div className="bg-destructive/10 border-b border-destructive/30 px-4 py-2">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-sm text-destructive">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          <span className="font-medium">
+            {data.length} incident{data.length > 1 ? "s" : ""} actif{data.length > 1 ? "s" : ""}
+            {critical > 0 && ` (${critical} critique${critical > 1 ? "s" : ""})`}
+          </span>
+          <span className="hidden md:inline text-muted-foreground truncate max-w-[50ch]">
+            · {data[0].title}
+          </span>
+        </div>
+        <Link
+          to="/admin/sante-systeme"
+          className="text-xs font-medium underline text-destructive hover:opacity-80"
+        >
+          Voir la santé du système →
+        </Link>
+      </div>
+    </div>
+  );
+}
