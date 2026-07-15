@@ -624,7 +624,81 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_produits: {
+        Row: {
+          actif: boolean | null
+          auteur: string | null
+          categorie: string | null
+          categorie_id: string | null
+          cover_path: string | null
+          cover_thumb_path: string | null
+          cover_updated_at: string | null
+          created_at: string | null
+          editeur: string | null
+          isbn: string | null
+          matiere: string | null
+          niveau: string | null
+          niveau_ordre: number | null
+          pin_order: number | null
+          prix_achat: number | null
+          prix_vente: number | null
+          produit_id: string | null
+          reference: string | null
+          seuil_alerte: number | null
+          stock: number | null
+          titre: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          actif?: boolean | null
+          auteur?: string | null
+          categorie?: string | null
+          categorie_id?: string | null
+          cover_path?: string | null
+          cover_thumb_path?: string | null
+          cover_updated_at?: string | null
+          created_at?: string | null
+          editeur?: string | null
+          isbn?: string | null
+          matiere?: string | null
+          niveau?: string | null
+          niveau_ordre?: number | null
+          pin_order?: number | null
+          prix_achat?: number | null
+          prix_vente?: number | null
+          produit_id?: string | null
+          reference?: string | null
+          seuil_alerte?: number | null
+          stock?: never
+          titre?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          actif?: boolean | null
+          auteur?: string | null
+          categorie?: string | null
+          categorie_id?: string | null
+          cover_path?: string | null
+          cover_thumb_path?: string | null
+          cover_updated_at?: string | null
+          created_at?: string | null
+          editeur?: string | null
+          isbn?: string | null
+          matiere?: string | null
+          niveau?: string | null
+          niveau_ordre?: number | null
+          pin_order?: number | null
+          prix_achat?: number | null
+          prix_vente?: number | null
+          produit_id?: string | null
+          reference?: string | null
+          seuil_alerte?: number | null
+          stock?: never
+          titre?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       assert_permission: { Args: { _perm: string }; Returns: undefined }
