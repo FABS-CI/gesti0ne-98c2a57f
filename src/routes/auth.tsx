@@ -52,7 +52,7 @@ function AuthPage() {
     );
   }
 
-  function withAuthTimeout<T>(promise: Promise<T>, ms = 6500): Promise<T> {
+  function withAuthTimeout<T>(promise: Promise<T>, ms = 3500): Promise<T> {
     return new Promise((resolve, reject) => {
       const timeoutId = window.setTimeout(() => {
         reject(new Error("auth_client_timeout"));
