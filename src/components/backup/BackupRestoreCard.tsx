@@ -29,19 +29,55 @@ import {
 
 // Mapping table -> colonne clé primaire (utilisée comme cible de conflit upsert)
 const PK_MAP: Record<string, string> = {
+  profiles: "id",
+  rbac_roles: "id",
+  rbac_permissions: "code",
+  rbac_role_permissions: "role_id,permission_code",
+  user_roles: "id",
+  rbac_user_roles: "id",
   clients: "client_id",
+  fournisseurs: "fournisseur_id",
   produits: "produit_id",
+  employes: "employe_id",
   commandes: "commande_id",
   commande_lignes: "ligne_id",
-  transactions: "transaction_id",
   factures: "facture_id",
   paiements: "paiement_id",
-  fournisseurs: "fournisseur_id",
+  paiement_annulations_audit: "id",
   achats: "achat_id",
-  employes: "employe_id",
-  conges: "conge_id",
+  achat_lignes: "ligne_id",
+  transactions: "transaction_id",
   stock_mouvements: "mouvement_id",
+  conges: "conge_id",
+  audit_logs: "id",
+  rbac_audit_log: "id",
 };
+
+// Ordre de restauration respectant les dépendances FK
+const RESTORE_ORDER = [
+  "profiles",
+  "rbac_roles",
+  "rbac_permissions",
+  "rbac_role_permissions",
+  "user_roles",
+  "rbac_user_roles",
+  "clients",
+  "fournisseurs",
+  "produits",
+  "employes",
+  "commandes",
+  "commande_lignes",
+  "factures",
+  "paiements",
+  "paiement_annulations_audit",
+  "achats",
+  "achat_lignes",
+  "transactions",
+  "stock_mouvements",
+  "conges",
+  "audit_logs",
+  "rbac_audit_log",
+];
 
 type Analysis = {
   table: string;
