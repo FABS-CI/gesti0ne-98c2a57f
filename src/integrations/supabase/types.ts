@@ -14,6 +14,180 @@ export type Database = {
   }
   public: {
     Tables: {
+      clients: {
+        Row: {
+          actif: boolean
+          adresse: string | null
+          bp: string | null
+          categorie: string | null
+          client_id: string
+          commune: string | null
+          contact_principal: string | null
+          created_at: string
+          delai_paiement: number | null
+          email: string | null
+          mode_paiement: string | null
+          motif_blocage: string | null
+          nif: string | null
+          nom: string
+          notes: string | null
+          pays: string | null
+          plafond_credit: number | null
+          quartier: string | null
+          reference: string | null
+          regime_fiscal: string | null
+          remise_habituelle: number | null
+          representant: string | null
+          secteur_activite: string | null
+          solde: number | null
+          solde_points: number | null
+          statut: string | null
+          telephone: string | null
+          telephone2: string | null
+          type_client: string | null
+          updated_at: string
+          ville: string | null
+        }
+        Insert: {
+          actif?: boolean
+          adresse?: string | null
+          bp?: string | null
+          categorie?: string | null
+          client_id?: string
+          commune?: string | null
+          contact_principal?: string | null
+          created_at?: string
+          delai_paiement?: number | null
+          email?: string | null
+          mode_paiement?: string | null
+          motif_blocage?: string | null
+          nif?: string | null
+          nom: string
+          notes?: string | null
+          pays?: string | null
+          plafond_credit?: number | null
+          quartier?: string | null
+          reference?: string | null
+          regime_fiscal?: string | null
+          remise_habituelle?: number | null
+          representant?: string | null
+          secteur_activite?: string | null
+          solde?: number | null
+          solde_points?: number | null
+          statut?: string | null
+          telephone?: string | null
+          telephone2?: string | null
+          type_client?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Update: {
+          actif?: boolean
+          adresse?: string | null
+          bp?: string | null
+          categorie?: string | null
+          client_id?: string
+          commune?: string | null
+          contact_principal?: string | null
+          created_at?: string
+          delai_paiement?: number | null
+          email?: string | null
+          mode_paiement?: string | null
+          motif_blocage?: string | null
+          nif?: string | null
+          nom?: string
+          notes?: string | null
+          pays?: string | null
+          plafond_credit?: number | null
+          quartier?: string | null
+          reference?: string | null
+          regime_fiscal?: string | null
+          remise_habituelle?: number | null
+          representant?: string | null
+          secteur_activite?: string | null
+          solde?: number | null
+          solde_points?: number | null
+          statut?: string | null
+          telephone?: string | null
+          telephone2?: string | null
+          type_client?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Relationships: []
+      }
+      produits: {
+        Row: {
+          actif: boolean
+          auteur: string | null
+          categorie: string | null
+          categorie_id: string | null
+          cover_path: string | null
+          cover_thumb_path: string | null
+          cover_updated_at: string | null
+          created_at: string
+          editeur: string | null
+          isbn: string | null
+          matiere: string | null
+          niveau: string | null
+          niveau_ordre: number | null
+          pin_order: number | null
+          prix_achat: number
+          prix_vente: number
+          produit_id: string
+          reference: string | null
+          seuil_alerte: number | null
+          titre: string
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          auteur?: string | null
+          categorie?: string | null
+          categorie_id?: string | null
+          cover_path?: string | null
+          cover_thumb_path?: string | null
+          cover_updated_at?: string | null
+          created_at?: string
+          editeur?: string | null
+          isbn?: string | null
+          matiere?: string | null
+          niveau?: string | null
+          niveau_ordre?: number | null
+          pin_order?: number | null
+          prix_achat?: number
+          prix_vente?: number
+          produit_id?: string
+          reference?: string | null
+          seuil_alerte?: number | null
+          titre: string
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          auteur?: string | null
+          categorie?: string | null
+          categorie_id?: string | null
+          cover_path?: string | null
+          cover_thumb_path?: string | null
+          cover_updated_at?: string | null
+          created_at?: string
+          editeur?: string | null
+          isbn?: string | null
+          matiere?: string | null
+          niveau?: string | null
+          niveau_ordre?: number | null
+          pin_order?: number | null
+          prix_achat?: number
+          prix_vente?: number
+          produit_id?: string
+          reference?: string | null
+          seuil_alerte?: number | null
+          titre?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           actif: boolean
