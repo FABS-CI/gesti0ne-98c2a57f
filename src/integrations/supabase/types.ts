@@ -893,6 +893,10 @@ export type Database = {
         Args: { _context?: Json; _perm: string }
         Returns: undefined
       }
+      purger_anciennes_sauvegardes: {
+        Args: { _retention?: number; _type?: string }
+        Returns: number
+      }
       rbac_bulk_set_permissions: {
         Args: { _accorde: boolean; _codes: string[]; _role_id: string }
         Returns: undefined
