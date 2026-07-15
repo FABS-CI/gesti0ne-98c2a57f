@@ -13,6 +13,7 @@ type Props = {
   onSubmit: (e: React.FormEvent) => void;
   remember: boolean;
   setRemember: (v: boolean) => void;
+  authReady: boolean;
 };
 
 const inputBase: React.CSSProperties = {
@@ -71,9 +72,10 @@ export function LoginForm({
   onSubmit,
   remember,
   setRemember,
+  authReady,
 }: Props) {
   return (
-    <form className="space-y-6" onSubmit={onSubmit}>
+    <form className="space-y-6" onSubmit={onSubmit} action="javascript:void(0)" noValidate>
       {idleTimeout && (
         <div style={alertStyle("#FFF7ED", "#FED7AA", "#9A3412")}>
           <AlertCircle style={{ width: 16, height: 16, flexShrink: 0 }} />
@@ -174,7 +176,7 @@ export function LoginForm({
       <button
         className="fade-up d95"
         type="submit"
-        disabled={submitting}
+        disabled={!authReady || submitting}
         data-testid="login-submit-btn"
         style={{
           width: "100%",
@@ -182,26 +184,28 @@ export function LoginForm({
           alignItems: "center",
           justifyContent: "center",
           gap: 10,
-          background: submitting ? "rgba(255,98,0,0.65)" : "#FF6200",
+          background: !authReady || submitting ? "rgba(255,98,0,0.65)" : "#FF6200",
           color: "#FFFFFF",
           fontWeight: 800,
           fontSize: 20,
           padding: "22px 0",
           borderRadius: 9,
           border: "none",
-          cursor: submitting ? "not-allowed" : "pointer",
+          cursor: !authReady || submitting ? "not-allowed" : "pointer",
           boxShadow: "0 14px 28px rgba(255,98,0,0.28)",
           marginTop: 14,
           transition: "filter 0.2s, transform 0.2s",
         }}
         onMouseEnter={(e) => {
-          if (!submitting) e.currentTarget.style.filter = "brightness(1.06)";
+          if (authReady && !submitting) e.currentTarget.style.filter = "brightness(1.06)";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.filter = "none";
         }}
       >
-        {submitting ? (
+        {!authReady ? (
+          <>Chargement…</>
+        ) : submitting ? (
           <>
             <Loader2 className="h-5 w-5 animate-spin" /> Connexion…
           </>
