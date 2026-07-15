@@ -42,11 +42,32 @@ export const Route = createFileRoute("/_authenticated/backup")({
 });
 
 const TABLES = [
+  // Référentiels / RBAC
+  "profiles",
+  "rbac_roles",
+  "rbac_permissions",
+  "rbac_role_permissions",
+  "user_roles",
+  "rbac_user_roles",
+  // Tiers & catalogue
   "clients",
+  "fournisseurs",
   "produits",
+  "employes",
+  // Transactions métier
   "commandes",
   "commande_lignes",
+  "factures",
+  "paiements",
+  "paiement_annulations_audit",
+  "achats",
+  "achat_lignes",
   "transactions",
+  "stock_mouvements",
+  "conges",
+  // Journaux
+  "audit_logs",
+  "rbac_audit_log",
 ];
 
 type BackupRow = {
