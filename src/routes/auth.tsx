@@ -47,7 +47,28 @@ function AuthPage() {
 
   function isFetchProxyError(err: unknown) {
     const message = err instanceof Error ? err.message : String(err ?? "");
-    return /failed to fetch|networkerror|load failed|fetch/i.test(message);
+    return /failed to fetch|networkerror|load failed|fetch|auth_client_timeout|timeout|délai/i.test(
+      message,
+    );
+  }
+
+  function withAuthTimeout<T>(promise: Promise<T>, ms = 6500): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const timeoutId = window.setTimeout(() => {
+        reject(new Error("auth_client_timeout"));
+      }, ms);
+
+      promise.then(
+        (value) => {
+          window.clearTimeout(timeoutId);
+          resolve(value);
+        },
+        (reason) => {
+          window.clearTimeout(timeoutId);
+          reject(reason);
+        },
+      );
+    });
   }
 
   useEffect(() => {
@@ -92,10 +113,12 @@ function AuthPage() {
     try {
       let signInData: { user?: { id?: string; email?: string | null } | null } = {};
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: emailVal,
-          password: passwordVal,
-        });
+        const { data, error } = await withAuthTimeout(
+          supabase.auth.signInWithPassword({
+            email: emailVal,
+            password: passwordVal,
+          }),
+        );
         if (error) throw error;
         signInData = data;
       } catch (err) {
