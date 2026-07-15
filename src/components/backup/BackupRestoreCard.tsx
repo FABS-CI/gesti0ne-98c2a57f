@@ -198,7 +198,14 @@ export function BackupRestoreCard() {
       toast.error('Tapez exactement "RESTAURER" pour confirmer');
       return;
     }
-    const tables = analysis.filter((a) => selected[a.table] && a.pk && a.rowsInFile > 0);
+    const tables = analysis
+      .filter((a) => selected[a.table] && a.pk && a.rowsInFile > 0)
+      .slice()
+      .sort((a, b) => {
+        const ia = RESTORE_ORDER.indexOf(a.table);
+        const ib = RESTORE_ORDER.indexOf(b.table);
+        return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      });
     if (!tables.length) {
       toast.error("Aucune table sélectionnée avec clé primaire connue");
       return;
