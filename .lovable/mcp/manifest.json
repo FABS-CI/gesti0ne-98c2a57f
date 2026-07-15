@@ -4,12 +4,12 @@
   "path": "/mcp",
   "auth": {
     "type": "oauth",
-    "issuer": "https://ihiguyanstztshretmpg.supabase.co/auth/v1",
+    "issuer": "https://eyaqfhnruidimhnozeig.supabase.co/auth/v1",
     "resource_name": "FabsCI Gestion MCP",
     "accepted_audiences": [
       "authenticated"
     ],
-    "jwks_uri": "https://ihiguyanstztshretmpg.supabase.co/auth/v1/.well-known/jwks.json"
+    "jwks_uri": "https://eyaqfhnruidimhnozeig.supabase.co/auth/v1/.well-known/jwks.json"
   },
   "mcp": {
     "server": {
