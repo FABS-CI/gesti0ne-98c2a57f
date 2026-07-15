@@ -771,6 +771,68 @@ export type Database = {
           },
         ]
       }
+      transactions: {
+        Row: {
+          categorie: string
+          commande_id: string | null
+          created_at: string
+          created_by: string | null
+          date_transaction: string
+          exercice_id: string | null
+          libelle: string
+          mode_paiement: string
+          montant: number
+          notes: string | null
+          reference: string
+          statut: string
+          transaction_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          categorie?: string
+          commande_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_transaction?: string
+          exercice_id?: string | null
+          libelle: string
+          mode_paiement?: string
+          montant?: number
+          notes?: string | null
+          reference?: string
+          statut?: string
+          transaction_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          categorie?: string
+          commande_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_transaction?: string
+          exercice_id?: string | null
+          libelle?: string
+          mode_paiement?: string
+          montant?: number
+          notes?: string | null
+          reference?: string
+          statut?: string
+          transaction_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
