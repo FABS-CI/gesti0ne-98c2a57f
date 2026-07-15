@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          table_name: string | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       backup_schedules: {
         Row: {
           active: boolean
@@ -56,6 +98,81 @@ export type Database = {
           schedule_id?: string
           type_sauvegarde?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      backups: {
+        Row: {
+          backup_id: string
+          created_at: string
+          destination: string
+          destination_ref: string | null
+          destination_url: string | null
+          duree_ms: number | null
+          error: string | null
+          fichier_nom: string | null
+          finished_at: string | null
+          nb_enregistrements: number | null
+          nb_tables: number | null
+          scope: Json | null
+          sha256: string | null
+          started_at: string
+          statut: string
+          taille_octets: number | null
+          type: string
+          updated_at: string
+          user_email: string | null
+          verifie: boolean | null
+          verifie_at: string | null
+          verifie_methode: string | null
+        }
+        Insert: {
+          backup_id?: string
+          created_at?: string
+          destination?: string
+          destination_ref?: string | null
+          destination_url?: string | null
+          duree_ms?: number | null
+          error?: string | null
+          fichier_nom?: string | null
+          finished_at?: string | null
+          nb_enregistrements?: number | null
+          nb_tables?: number | null
+          scope?: Json | null
+          sha256?: string | null
+          started_at?: string
+          statut?: string
+          taille_octets?: number | null
+          type?: string
+          updated_at?: string
+          user_email?: string | null
+          verifie?: boolean | null
+          verifie_at?: string | null
+          verifie_methode?: string | null
+        }
+        Update: {
+          backup_id?: string
+          created_at?: string
+          destination?: string
+          destination_ref?: string | null
+          destination_url?: string | null
+          duree_ms?: number | null
+          error?: string | null
+          fichier_nom?: string | null
+          finished_at?: string | null
+          nb_enregistrements?: number | null
+          nb_tables?: number | null
+          scope?: Json | null
+          sha256?: string | null
+          started_at?: string
+          statut?: string
+          taille_octets?: number | null
+          type?: string
+          updated_at?: string
+          user_email?: string | null
+          verifie?: boolean | null
+          verifie_at?: string | null
+          verifie_methode?: string | null
         }
         Relationships: []
       }
