@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -8,6 +9,7 @@ import fabsLogo from "@/assets/fabs-logo.webp";
 import { LoginStyles } from "@/components/auth/LoginStyles";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { applyRememberPolicy, initRememberPolicyFromStorage } from "@/lib/auth/remember";
+import { signInWithPasswordServer } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -26,6 +28,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const router = useRouter();
+  const signInServer = useServerFn(signInWithPasswordServer);
 
   const prefetchHotRoutes = () => {
     const hot = ["/dashboard", "/commandes", "/factures"] as const;
@@ -41,6 +44,11 @@ function AuthPage() {
   const [error, setError] = useState("");
   const [idleTimeout, setIdleTimeout] = useState(false);
   const [remember, setRemember] = useState(true);
+
+  function isFetchProxyError(err: unknown) {
+    const message = err instanceof Error ? err.message : String(err ?? "");
+    return /failed to fetch|networkerror|load failed|fetch/i.test(message);
+  }
 
   useEffect(() => {
     const reason = new URLSearchParams(window.location.search).get("reason");
@@ -82,11 +90,24 @@ function AuthPage() {
     }
     setSubmitting(true);
     try {
-      const { data: signInData, error } = await supabase.auth.signInWithPassword({
-        email: emailVal,
-        password: passwordVal,
-      });
-      if (error) throw error;
+      let signInData: { user?: { id?: string; email?: string | null } | null } = {};
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: emailVal,
+          password: passwordVal,
+        });
+        if (error) throw error;
+        signInData = data;
+      } catch (err) {
+        if (!isFetchProxyError(err)) throw err;
+        const fallback = await signInServer({ data: { email: emailVal, password: passwordVal } });
+        const { data, error } = await supabase.auth.setSession({
+          access_token: fallback.accessToken,
+          refresh_token: fallback.refreshToken,
+        });
+        if (error) throw error;
+        signInData = { user: data.user ?? fallback.user };
+      }
       try {
         if (remember) {
           localStorage.setItem("auth:remember-email", emailVal);
