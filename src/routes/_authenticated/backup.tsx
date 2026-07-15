@@ -47,13 +47,6 @@ const TABLES = [
   "commandes",
   "commande_lignes",
   "transactions",
-  "factures",
-  "paiements",
-  "fournisseurs",
-  "achats",
-  "employes",
-  "conges",
-  "stock_mouvements",
 ];
 
 type BackupRow = {
@@ -258,7 +251,7 @@ function BackupPage() {
           statut: "echec",
           finished_at: new Date().toISOString(),
           duree_ms: Date.now() - t0,
-          message: (e as Error).message,
+          error: (e as Error).message,
         })
         .eq("backup_id", backupId);
       await logAudit("backup_failed", backupId, { error: (e as Error).message });
