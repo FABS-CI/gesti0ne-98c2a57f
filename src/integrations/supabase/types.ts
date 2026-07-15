@@ -14,47 +14,238 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          actif: boolean
+          avatar_url: string | null
+          created_at: string
+          departement: string | null
+          email: string | null
+          fonction: string | null
+          id: string
+          mfa_enrolled_at: string | null
+          mfa_required: boolean
+          nom_complet: string | null
+          prenom: string | null
+          telephone: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          avatar_url?: string | null
+          created_at?: string
+          departement?: string | null
+          email?: string | null
+          fonction?: string | null
+          id: string
+          mfa_enrolled_at?: string | null
+          mfa_required?: boolean
+          nom_complet?: string | null
+          prenom?: string | null
+          telephone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          avatar_url?: string | null
+          created_at?: string
+          departement?: string | null
+          email?: string | null
+          fonction?: string | null
+          id?: string
+          mfa_enrolled_at?: string | null
+          mfa_required?: boolean
+          nom_complet?: string | null
+          prenom?: string | null
+          telephone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rbac_audit_log: {
+        Row: {
+          action: string
+          apres: Json | null
+          avant: Json | null
+          created_at: string
+          details: Json
+          id: string
+          ip: string | null
+          role_code: string | null
+          role_id: string | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          apres?: Json | null
+          avant?: Json | null
+          created_at?: string
+          details?: Json
+          id?: string
+          ip?: string | null
+          role_code?: string | null
+          role_id?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          apres?: Json | null
+          avant?: Json | null
+          created_at?: string
+          details?: Json
+          id?: string
+          ip?: string | null
+          role_code?: string | null
+          role_id?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      rbac_permissions: {
+        Row: {
+          action: string
+          code: string
+          created_at: string
+          description: string | null
+          libelle: string
+          module: string
+          sous_module: string | null
+        }
+        Insert: {
+          action: string
+          code: string
+          created_at?: string
+          description?: string | null
+          libelle: string
+          module: string
+          sous_module?: string | null
+        }
+        Update: {
+          action?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          libelle?: string
+          module?: string
+          sous_module?: string | null
+        }
+        Relationships: []
+      }
+      rbac_role_permissions: {
+        Row: {
+          accorde: boolean
+          created_at: string
+          permission_code: string
+          role_id: string
+        }
+        Insert: {
+          accorde?: boolean
+          created_at?: string
+          permission_code: string
+          role_id: string
+        }
+        Update: {
+          accorde?: boolean
+          created_at?: string
+          permission_code?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac_role_permissions_permission_code_fkey"
+            columns: ["permission_code"]
+            isOneToOne: false
+            referencedRelation: "rbac_permissions"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "rbac_role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "rbac_roles"
+            referencedColumns: ["role_id"]
+          },
+        ]
+      }
       rbac_roles: {
         Row: {
           actif: boolean
           code: string
           created_at: string
+          description: string | null
+          hierite_de: string | null
           id: string
           libelle: string
+          role_id: string
+          systeme: boolean
+          updated_at: string
         }
         Insert: {
           actif?: boolean
           code: string
           created_at?: string
+          description?: string | null
+          hierite_de?: string | null
           id?: string
           libelle: string
+          role_id?: string
+          systeme?: boolean
+          updated_at?: string
         }
         Update: {
           actif?: boolean
           code?: string
           created_at?: string
+          description?: string | null
+          hierite_de?: string | null
           id?: string
           libelle?: string
+          role_id?: string
+          systeme?: boolean
+          updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "rbac_roles_hierite_de_fkey"
+            columns: ["hierite_de"]
+            isOneToOne: false
+            referencedRelation: "rbac_roles"
+            referencedColumns: ["role_id"]
+          },
+        ]
       }
       rbac_user_roles: {
         Row: {
+          assigned_at: string
+          assigned_by: string | null
           created_at: string
           id: string
-          rbac_role_id: string
+          rbac_role_id: string | null
+          role_id: string
           user_id: string
         }
         Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
           created_at?: string
           id?: string
-          rbac_role_id: string
+          rbac_role_id?: string | null
+          role_id: string
           user_id: string
         }
         Update: {
+          assigned_at?: string
+          assigned_by?: string | null
           created_at?: string
           id?: string
-          rbac_role_id?: string
+          rbac_role_id?: string | null
+          role_id?: string
           user_id?: string
         }
         Relationships: [
@@ -64,6 +255,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rbac_roles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rbac_user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "rbac_roles"
+            referencedColumns: ["role_id"]
           },
         ]
       }
@@ -93,6 +291,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assert_permission: { Args: { _perm: string }; Returns: undefined }
+      has_permission_v2: {
+        Args: { _perm: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -106,6 +309,24 @@ export type Database = {
           permission_code: string
         }[]
       }
+      log_permission_denied: {
+        Args: { _context?: Json; _perm: string }
+        Returns: undefined
+      }
+      rbac_bulk_set_permissions: {
+        Args: { _accorde: boolean; _codes: string[]; _role_id: string }
+        Returns: undefined
+      }
+      rbac_role_ancestors: {
+        Args: { _role_id: string }
+        Returns: {
+          role_id: string
+        }[]
+      }
+      rbac_set_role_permission: {
+        Args: { _accorde: boolean; _code: string; _role_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role:
@@ -118,6 +339,7 @@ export type Database = {
         | "secretariat"
         | "assistante"
         | "service_logistique"
+        | "assistante_comptable"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -255,6 +477,7 @@ export const Constants = {
         "secretariat",
         "assistante",
         "service_logistique",
+        "assistante_comptable",
       ],
     },
   },
