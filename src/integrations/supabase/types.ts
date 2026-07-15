@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      absences: {
+        Row: {
+          absence_id: string
+          created_at: string
+          date_debut: string | null
+          date_fin: string | null
+          employe_id: string | null
+          justifie: boolean
+          motif: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          absence_id?: string
+          created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          employe_id?: string | null
+          justifie?: boolean
+          motif?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          absence_id?: string
+          created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          employe_id?: string | null
+          justifie?: boolean
+          motif?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       achat_lignes: {
         Row: {
           achat_id: string
@@ -117,6 +153,128 @@ export type Database = {
           },
         ]
       }
+      alertes_stock: {
+        Row: {
+          active: boolean
+          alerte_id: string
+          created_at: string
+          depot_id: string | null
+          message: string | null
+          niveau: string | null
+          produit_id: string | null
+          quantite_actuelle: number | null
+          seuil: number | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          alerte_id?: string
+          created_at?: string
+          depot_id?: string | null
+          message?: string | null
+          niveau?: string | null
+          produit_id?: string | null
+          quantite_actuelle?: number | null
+          seuil?: number | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          alerte_id?: string
+          created_at?: string
+          depot_id?: string | null
+          message?: string | null
+          niveau?: string | null
+          produit_id?: string | null
+          quantite_actuelle?: number | null
+          seuil?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      approvisionnement_lignes: {
+        Row: {
+          approvisionnement_id: string
+          created_at: string
+          designation: string | null
+          ligne_id: string
+          prix_unitaire: number | null
+          produit_id: string | null
+          quantite: number | null
+          total_ligne: number | null
+          updated_at: string
+        }
+        Insert: {
+          approvisionnement_id: string
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          prix_unitaire?: number | null
+          produit_id?: string | null
+          quantite?: number | null
+          total_ligne?: number | null
+          updated_at?: string
+        }
+        Update: {
+          approvisionnement_id?: string
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          prix_unitaire?: number | null
+          produit_id?: string | null
+          quantite?: number | null
+          total_ligne?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approvisionnement_lignes_approvisionnement_id_fkey"
+            columns: ["approvisionnement_id"]
+            isOneToOne: false
+            referencedRelation: "approvisionnements"
+            referencedColumns: ["approvisionnement_id"]
+          },
+        ]
+      }
+      approvisionnements: {
+        Row: {
+          approvisionnement_id: string
+          created_at: string
+          date_appro: string | null
+          depot_id: string | null
+          fournisseur_id: string | null
+          montant: number | null
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          approvisionnement_id?: string
+          created_at?: string
+          date_appro?: string | null
+          depot_id?: string | null
+          fournisseur_id?: string | null
+          montant?: number | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approvisionnement_id?: string
+          created_at?: string
+          date_appro?: string | null
+          depot_id?: string | null
+          fournisseur_id?: string | null
+          montant?: number | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -156,6 +314,45 @@ export type Database = {
           user_agent?: string | null
           user_email?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      audit_stock: {
+        Row: {
+          audit_id: string
+          created_at: string
+          date_audit: string | null
+          depot_id: string | null
+          motif: string | null
+          produit_id: string | null
+          quantite_apres: number | null
+          quantite_avant: number | null
+          updated_at: string
+          user_email: string | null
+        }
+        Insert: {
+          audit_id?: string
+          created_at?: string
+          date_audit?: string | null
+          depot_id?: string | null
+          motif?: string | null
+          produit_id?: string | null
+          quantite_apres?: number | null
+          quantite_avant?: number | null
+          updated_at?: string
+          user_email?: string | null
+        }
+        Update: {
+          audit_id?: string
+          created_at?: string
+          date_audit?: string | null
+          depot_id?: string | null
+          motif?: string | null
+          produit_id?: string | null
+          quantite_apres?: number | null
+          quantite_avant?: number | null
+          updated_at?: string
+          user_email?: string | null
         }
         Relationships: []
       }
@@ -279,6 +476,140 @@ export type Database = {
         }
         Relationships: []
       }
+      bons_livraison: {
+        Row: {
+          bon_id: string
+          client_nom: string | null
+          commande_id: string | null
+          created_at: string
+          date_bon: string | null
+          livraison_id: string | null
+          montant: number | null
+          notes: string | null
+          reference: string | null
+          updated_at: string
+        }
+        Insert: {
+          bon_id?: string
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_bon?: string | null
+          livraison_id?: string | null
+          montant?: number | null
+          notes?: string | null
+          reference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bon_id?: string
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_bon?: string | null
+          livraison_id?: string | null
+          montant?: number | null
+          notes?: string | null
+          reference?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      bulletin_lignes: {
+        Row: {
+          base: number | null
+          bulletin_id: string
+          code: string | null
+          created_at: string
+          libelle: string | null
+          ligne_id: string
+          montant: number | null
+          rubrique_id: string | null
+          taux: number | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          base?: number | null
+          bulletin_id: string
+          code?: string | null
+          created_at?: string
+          libelle?: string | null
+          ligne_id?: string
+          montant?: number | null
+          rubrique_id?: string | null
+          taux?: number | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          base?: number | null
+          bulletin_id?: string
+          code?: string | null
+          created_at?: string
+          libelle?: string | null
+          ligne_id?: string
+          montant?: number | null
+          rubrique_id?: string | null
+          taux?: number | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bulletin_lignes_bulletin_id_fkey"
+            columns: ["bulletin_id"]
+            isOneToOne: false
+            referencedRelation: "bulletins_paie"
+            referencedColumns: ["bulletin_id"]
+          },
+        ]
+      }
+      bulletins_paie: {
+        Row: {
+          bulletin_id: string
+          cotisations: number | null
+          created_at: string
+          date_bulletin: string | null
+          employe_id: string | null
+          pdf_url: string | null
+          periode: string | null
+          reference: string | null
+          salaire_brut: number | null
+          salaire_net: number | null
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          bulletin_id?: string
+          cotisations?: number | null
+          created_at?: string
+          date_bulletin?: string | null
+          employe_id?: string | null
+          pdf_url?: string | null
+          periode?: string | null
+          reference?: string | null
+          salaire_brut?: number | null
+          salaire_net?: number | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bulletin_id?: string
+          cotisations?: number | null
+          created_at?: string
+          date_bulletin?: string | null
+          employe_id?: string | null
+          pdf_url?: string | null
+          periode?: string | null
+          reference?: string | null
+          salaire_brut?: number | null
+          salaire_net?: number | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           actif: boolean
@@ -378,6 +709,51 @@ export type Database = {
           type_client?: string | null
           updated_at?: string
           ville?: string | null
+        }
+        Relationships: []
+      }
+      colisages: {
+        Row: {
+          colisage_id: string
+          commande_id: string | null
+          created_at: string
+          date_colisage: string | null
+          nb_colis: number | null
+          notes: string | null
+          poids_total: number | null
+          preparateur_id: string | null
+          reference: string | null
+          responsable_id: string | null
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          colisage_id?: string
+          commande_id?: string | null
+          created_at?: string
+          date_colisage?: string | null
+          nb_colis?: number | null
+          notes?: string | null
+          poids_total?: number | null
+          preparateur_id?: string | null
+          reference?: string | null
+          responsable_id?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          colisage_id?: string
+          commande_id?: string | null
+          created_at?: string
+          date_colisage?: string | null
+          nb_colis?: number | null
+          notes?: string | null
+          poids_total?: number | null
+          preparateur_id?: string | null
+          reference?: string | null
+          responsable_id?: string | null
+          statut?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -595,6 +971,320 @@ export type Database = {
           },
         ]
       }
+      contrats: {
+        Row: {
+          contrat_id: string
+          created_at: string
+          date_debut: string | null
+          date_fin: string | null
+          document_url: string | null
+          employe_id: string | null
+          notes: string | null
+          salaire: number | null
+          statut: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          contrat_id?: string
+          created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          document_url?: string | null
+          employe_id?: string | null
+          notes?: string | null
+          salaire?: number | null
+          statut?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contrat_id?: string
+          created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          document_url?: string | null
+          employe_id?: string | null
+          notes?: string | null
+          salaire?: number | null
+          statut?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      couts_logistiques: {
+        Row: {
+          cout_id: string
+          created_at: string
+          date_cout: string | null
+          libelle: string | null
+          livraison_id: string | null
+          montant: number | null
+          notes: string | null
+          reference: string | null
+          tournee_id: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          cout_id?: string
+          created_at?: string
+          date_cout?: string | null
+          libelle?: string | null
+          livraison_id?: string | null
+          montant?: number | null
+          notes?: string | null
+          reference?: string | null
+          tournee_id?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cout_id?: string
+          created_at?: string
+          date_cout?: string | null
+          libelle?: string | null
+          livraison_id?: string | null
+          montant?: number | null
+          notes?: string | null
+          reference?: string | null
+          tournee_id?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_interactions: {
+        Row: {
+          agent_email: string | null
+          canal: string | null
+          client_id: string | null
+          created_at: string
+          date_interaction: string | null
+          interaction_id: string
+          resume: string | null
+          sujet: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          agent_email?: string | null
+          canal?: string | null
+          client_id?: string | null
+          created_at?: string
+          date_interaction?: string | null
+          interaction_id?: string
+          resume?: string | null
+          sujet?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agent_email?: string | null
+          canal?: string | null
+          client_id?: string | null
+          created_at?: string
+          date_interaction?: string | null
+          interaction_id?: string
+          resume?: string | null
+          sujet?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      declarations_paie: {
+        Row: {
+          created_at: string
+          date_declaration: string | null
+          declaration_id: string
+          montant: number | null
+          notes: string | null
+          periode: string | null
+          reference: string | null
+          statut: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_declaration?: string | null
+          declaration_id?: string
+          montant?: number | null
+          notes?: string | null
+          periode?: string | null
+          reference?: string | null
+          statut?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_declaration?: string | null
+          declaration_id?: string
+          montant?: number | null
+          notes?: string | null
+          periode?: string | null
+          reference?: string | null
+          statut?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      departements: {
+        Row: {
+          actif: boolean
+          code: string | null
+          created_at: string
+          departement_id: string
+          libelle: string
+          responsable: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code?: string | null
+          created_at?: string
+          departement_id?: string
+          libelle: string
+          responsable?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string | null
+          created_at?: string
+          departement_id?: string
+          libelle?: string
+          responsable?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      depots: {
+        Row: {
+          actif: boolean
+          adresse: string | null
+          code: string | null
+          created_at: string
+          depot_id: string
+          nom: string
+          responsable: string | null
+          updated_at: string
+          ville: string | null
+        }
+        Insert: {
+          actif?: boolean
+          adresse?: string | null
+          code?: string | null
+          created_at?: string
+          depot_id?: string
+          nom: string
+          responsable?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Update: {
+          actif?: boolean
+          adresse?: string | null
+          code?: string | null
+          created_at?: string
+          depot_id?: string
+          nom?: string
+          responsable?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Relationships: []
+      }
+      ecriture_lignes: {
+        Row: {
+          compte_id: string | null
+          created_at: string
+          credit: number | null
+          debit: number | null
+          ecriture_id: string
+          libelle: string | null
+          ligne_id: string
+          numero_compte: string | null
+          updated_at: string
+        }
+        Insert: {
+          compte_id?: string | null
+          created_at?: string
+          credit?: number | null
+          debit?: number | null
+          ecriture_id: string
+          libelle?: string | null
+          ligne_id?: string
+          numero_compte?: string | null
+          updated_at?: string
+        }
+        Update: {
+          compte_id?: string | null
+          created_at?: string
+          credit?: number | null
+          debit?: number | null
+          ecriture_id?: string
+          libelle?: string | null
+          ligne_id?: string
+          numero_compte?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ecriture_lignes_ecriture_id_fkey"
+            columns: ["ecriture_id"]
+            isOneToOne: false
+            referencedRelation: "ecritures_comptables"
+            referencedColumns: ["ecriture_id"]
+          },
+        ]
+      }
+      ecritures_comptables: {
+        Row: {
+          created_at: string
+          date_ecriture: string | null
+          ecriture_id: string
+          exercice_id: string | null
+          journal_id: string | null
+          libelle: string | null
+          montant: number | null
+          piece_ref: string | null
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_ecriture?: string | null
+          ecriture_id?: string
+          exercice_id?: string | null
+          journal_id?: string | null
+          libelle?: string | null
+          montant?: number | null
+          piece_ref?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_ecriture?: string | null
+          ecriture_id?: string
+          exercice_id?: string | null
+          journal_id?: string | null
+          libelle?: string | null
+          montant?: number | null
+          piece_ref?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       employes: {
         Row: {
           actif: boolean
@@ -769,6 +1459,75 @@ export type Database = {
         }
         Relationships: []
       }
+      evaluations: {
+        Row: {
+          commentaire: string | null
+          created_at: string
+          date_evaluation: string | null
+          employe_id: string | null
+          evaluateur: string | null
+          evaluation_id: string
+          note: number | null
+          periode: string | null
+          updated_at: string
+        }
+        Insert: {
+          commentaire?: string | null
+          created_at?: string
+          date_evaluation?: string | null
+          employe_id?: string | null
+          evaluateur?: string | null
+          evaluation_id?: string
+          note?: number | null
+          periode?: string | null
+          updated_at?: string
+        }
+        Update: {
+          commentaire?: string | null
+          created_at?: string
+          date_evaluation?: string | null
+          employe_id?: string | null
+          evaluateur?: string | null
+          evaluation_id?: string
+          note?: number | null
+          periode?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      exercices_comptables: {
+        Row: {
+          cloture_le: string | null
+          created_at: string
+          date_debut: string
+          date_fin: string
+          exercice_id: string
+          libelle: string
+          statut: string
+          updated_at: string
+        }
+        Insert: {
+          cloture_le?: string | null
+          created_at?: string
+          date_debut: string
+          date_fin: string
+          exercice_id?: string
+          libelle: string
+          statut?: string
+          updated_at?: string
+        }
+        Update: {
+          cloture_le?: string | null
+          created_at?: string
+          date_debut?: string
+          date_fin?: string
+          exercice_id?: string
+          libelle?: string
+          statut?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       factures: {
         Row: {
           client_id: string | null
@@ -820,6 +1579,75 @@ export type Database = {
         }
         Relationships: []
       }
+      fne_declarations: {
+        Row: {
+          created_at: string
+          date_declaration: string | null
+          facture_id: string | null
+          fne_id: string
+          message: string | null
+          numero_fne: string | null
+          qr_code: string | null
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_declaration?: string | null
+          facture_id?: string | null
+          fne_id?: string
+          message?: string | null
+          numero_fne?: string | null
+          qr_code?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_declaration?: string | null
+          facture_id?: string | null
+          fne_id?: string
+          message?: string | null
+          numero_fne?: string | null
+          qr_code?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fonctions: {
+        Row: {
+          actif: boolean
+          code: string | null
+          created_at: string
+          description: string | null
+          fonction_id: string
+          libelle: string
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code?: string | null
+          created_at?: string
+          description?: string | null
+          fonction_id?: string
+          libelle: string
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string | null
+          created_at?: string
+          description?: string | null
+          fonction_id?: string
+          libelle?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fournisseurs: {
         Row: {
           actif: boolean
@@ -856,6 +1684,284 @@ export type Database = {
           telephone?: string | null
           updated_at?: string
           ville?: string | null
+        }
+        Relationships: []
+      }
+      incidents_stock: {
+        Row: {
+          created_at: string
+          date_incident: string | null
+          depot_id: string | null
+          description: string | null
+          gravite: string | null
+          incident_id: string
+          produit_id: string | null
+          reference: string | null
+          statut: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_incident?: string | null
+          depot_id?: string | null
+          description?: string | null
+          gravite?: string | null
+          incident_id?: string
+          produit_id?: string | null
+          reference?: string | null
+          statut?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_incident?: string | null
+          depot_id?: string | null
+          description?: string | null
+          gravite?: string | null
+          incident_id?: string
+          produit_id?: string | null
+          reference?: string | null
+          statut?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      inventaire_lignes: {
+        Row: {
+          created_at: string
+          designation: string | null
+          ecart: number | null
+          inventaire_id: string
+          ligne_id: string
+          observation: string | null
+          produit_id: string | null
+          quantite_physique: number | null
+          quantite_theorique: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          designation?: string | null
+          ecart?: number | null
+          inventaire_id: string
+          ligne_id?: string
+          observation?: string | null
+          produit_id?: string | null
+          quantite_physique?: number | null
+          quantite_theorique?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          designation?: string | null
+          ecart?: number | null
+          inventaire_id?: string
+          ligne_id?: string
+          observation?: string | null
+          produit_id?: string | null
+          quantite_physique?: number | null
+          quantite_theorique?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventaire_lignes_inventaire_id_fkey"
+            columns: ["inventaire_id"]
+            isOneToOne: false
+            referencedRelation: "inventaires"
+            referencedColumns: ["inventaire_id"]
+          },
+        ]
+      }
+      inventaires: {
+        Row: {
+          created_at: string
+          date_inventaire: string | null
+          depot_id: string | null
+          ecart_total: number | null
+          inventaire_id: string
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_inventaire?: string | null
+          depot_id?: string | null
+          ecart_total?: number | null
+          inventaire_id?: string
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_inventaire?: string | null
+          depot_id?: string | null
+          ecart_total?: number | null
+          inventaire_id?: string
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      journaux_comptables: {
+        Row: {
+          actif: boolean
+          code: string
+          created_at: string
+          journal_id: string
+          libelle: string
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          created_at?: string
+          journal_id?: string
+          libelle: string
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          created_at?: string
+          journal_id?: string
+          libelle?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      livraisons: {
+        Row: {
+          adresse_livraison: string | null
+          colisage_id: string | null
+          commande_id: string | null
+          created_at: string
+          date_livraison: string | null
+          livraison_id: string
+          livreur_id: string | null
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          tournee_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          adresse_livraison?: string | null
+          colisage_id?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_livraison?: string | null
+          livraison_id?: string
+          livreur_id?: string | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          tournee_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          adresse_livraison?: string | null
+          colisage_id?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_livraison?: string | null
+          livraison_id?: string
+          livreur_id?: string | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          tournee_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      livreurs: {
+        Row: {
+          actif: boolean
+          created_at: string
+          livreur_id: string
+          matricule: string | null
+          nom_complet: string
+          permis: string | null
+          telephone: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          created_at?: string
+          livreur_id?: string
+          matricule?: string | null
+          nom_complet: string
+          permis?: string | null
+          telephone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          created_at?: string
+          livreur_id?: string
+          matricule?: string | null
+          nom_complet?: string
+          permis?: string | null
+          telephone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      missions: {
+        Row: {
+          created_at: string
+          date_debut: string | null
+          date_fin: string | null
+          destination: string | null
+          employe_id: string | null
+          libelle: string | null
+          mission_id: string
+          montant: number | null
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          destination?: string | null
+          employe_id?: string | null
+          libelle?: string | null
+          mission_id?: string
+          montant?: number | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_debut?: string | null
+          date_fin?: string | null
+          destination?: string | null
+          employe_id?: string | null
+          libelle?: string | null
+          mission_id?: string
+          montant?: number | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -944,6 +2050,162 @@ export type Database = {
             referencedColumns: ["facture_id"]
           },
         ]
+      }
+      parametres_entreprise: {
+        Row: {
+          categorie: string | null
+          cle: string
+          created_at: string
+          description: string | null
+          parametre_id: string
+          updated_at: string
+          valeur: string | null
+        }
+        Insert: {
+          categorie?: string | null
+          cle: string
+          created_at?: string
+          description?: string | null
+          parametre_id?: string
+          updated_at?: string
+          valeur?: string | null
+        }
+        Update: {
+          categorie?: string | null
+          cle?: string
+          created_at?: string
+          description?: string | null
+          parametre_id?: string
+          updated_at?: string
+          valeur?: string | null
+        }
+        Relationships: []
+      }
+      parametres_paie: {
+        Row: {
+          cle: string
+          created_at: string
+          description: string | null
+          parametre_id: string
+          updated_at: string
+          valeur: string | null
+        }
+        Insert: {
+          cle: string
+          created_at?: string
+          description?: string | null
+          parametre_id?: string
+          updated_at?: string
+          valeur?: string | null
+        }
+        Update: {
+          cle?: string
+          created_at?: string
+          description?: string | null
+          parametre_id?: string
+          updated_at?: string
+          valeur?: string | null
+        }
+        Relationships: []
+      }
+      parametres_systeme: {
+        Row: {
+          categorie: string | null
+          cle: string
+          created_at: string
+          description: string | null
+          parametre_id: string
+          updated_at: string
+          valeur: string | null
+        }
+        Insert: {
+          categorie?: string | null
+          cle: string
+          created_at?: string
+          description?: string | null
+          parametre_id?: string
+          updated_at?: string
+          valeur?: string | null
+        }
+        Update: {
+          categorie?: string | null
+          cle?: string
+          created_at?: string
+          description?: string | null
+          parametre_id?: string
+          updated_at?: string
+          valeur?: string | null
+        }
+        Relationships: []
+      }
+      plan_comptable: {
+        Row: {
+          actif: boolean
+          classe: number | null
+          compte_id: string
+          created_at: string
+          libelle: string
+          numero: string
+          parent_numero: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          classe?: number | null
+          compte_id?: string
+          created_at?: string
+          libelle: string
+          numero: string
+          parent_numero?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          classe?: number | null
+          compte_id?: string
+          created_at?: string
+          libelle?: string
+          numero?: string
+          parent_numero?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      preparateurs: {
+        Row: {
+          actif: boolean
+          created_at: string
+          email: string | null
+          nom_complet: string
+          preparateur_id: string
+          role: string | null
+          telephone: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          created_at?: string
+          email?: string | null
+          nom_complet: string
+          preparateur_id?: string
+          role?: string | null
+          telephone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          created_at?: string
+          email?: string | null
+          nom_complet?: string
+          preparateur_id?: string
+          role?: string | null
+          telephone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       produits: {
         Row: {
@@ -1061,6 +2323,98 @@ export type Database = {
           nom_complet?: string | null
           prenom?: string | null
           telephone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      proforma_lignes: {
+        Row: {
+          created_at: string
+          designation: string | null
+          ligne_id: string
+          prix_unitaire: number | null
+          produit_id: string | null
+          proforma_id: string
+          quantite: number | null
+          reference_produit: string | null
+          total_ligne: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          prix_unitaire?: number | null
+          produit_id?: string | null
+          proforma_id: string
+          quantite?: number | null
+          reference_produit?: string | null
+          total_ligne?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          prix_unitaire?: number | null
+          produit_id?: string | null
+          proforma_id?: string
+          quantite?: number | null
+          reference_produit?: string | null
+          total_ligne?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proforma_lignes_proforma_id_fkey"
+            columns: ["proforma_id"]
+            isOneToOne: false
+            referencedRelation: "proformas"
+            referencedColumns: ["proforma_id"]
+          },
+        ]
+      }
+      proformas: {
+        Row: {
+          client_id: string | null
+          client_nom: string | null
+          commande_id: string | null
+          created_at: string
+          date_proforma: string | null
+          date_validite: string | null
+          montant_total: number | null
+          notes: string | null
+          proforma_id: string
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_proforma?: string | null
+          date_validite?: string | null
+          montant_total?: number | null
+          notes?: string | null
+          proforma_id?: string
+          reference?: string | null
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_proforma?: string | null
+          date_validite?: string | null
+          montant_total?: number | null
+          notes?: string | null
+          proforma_id?: string
+          reference?: string | null
+          statut?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1268,6 +2622,179 @@ export type Database = {
           },
         ]
       }
+      retour_lignes: {
+        Row: {
+          created_at: string
+          designation: string | null
+          ligne_id: string
+          motif: string | null
+          prix_unitaire: number | null
+          produit_id: string | null
+          quantite: number | null
+          retour_id: string
+          total_ligne: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          motif?: string | null
+          prix_unitaire?: number | null
+          produit_id?: string | null
+          quantite?: number | null
+          retour_id: string
+          total_ligne?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          motif?: string | null
+          prix_unitaire?: number | null
+          produit_id?: string | null
+          quantite?: number | null
+          retour_id?: string
+          total_ligne?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retour_lignes_retour_id_fkey"
+            columns: ["retour_id"]
+            isOneToOne: false
+            referencedRelation: "retours"
+            referencedColumns: ["retour_id"]
+          },
+        ]
+      }
+      retours: {
+        Row: {
+          client_id: string | null
+          client_nom: string | null
+          commande_id: string | null
+          created_at: string
+          date_retour: string | null
+          facture_id: string | null
+          montant: number | null
+          motif: string | null
+          notes: string | null
+          reference: string | null
+          retour_id: string
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_retour?: string | null
+          facture_id?: string | null
+          montant?: number | null
+          motif?: string | null
+          notes?: string | null
+          reference?: string | null
+          retour_id?: string
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string
+          date_retour?: string | null
+          facture_id?: string | null
+          montant?: number | null
+          motif?: string | null
+          notes?: string | null
+          reference?: string | null
+          retour_id?: string
+          statut?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rubriques_paie: {
+        Row: {
+          actif: boolean
+          code: string | null
+          created_at: string
+          formule: string | null
+          libelle: string
+          rubrique_id: string
+          taux: number | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code?: string | null
+          created_at?: string
+          formule?: string | null
+          libelle: string
+          rubrique_id?: string
+          taux?: number | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string | null
+          created_at?: string
+          formule?: string | null
+          libelle?: string
+          rubrique_id?: string
+          taux?: number | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      specimens: {
+        Row: {
+          client_id: string | null
+          client_nom: string | null
+          created_at: string
+          date_envoi: string | null
+          notes: string | null
+          produit_id: string | null
+          quantite: number | null
+          reference: string | null
+          specimen_id: string
+          statut: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          client_nom?: string | null
+          created_at?: string
+          date_envoi?: string | null
+          notes?: string | null
+          produit_id?: string | null
+          quantite?: number | null
+          reference?: string | null
+          specimen_id?: string
+          statut?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          client_nom?: string | null
+          created_at?: string
+          date_envoi?: string | null
+          notes?: string | null
+          produit_id?: string | null
+          quantite?: number | null
+          reference?: string | null
+          specimen_id?: string
+          statut?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       stock_mouvements: {
         Row: {
           created_at: string
@@ -1325,6 +2852,48 @@ export type Database = {
           type?: string
           user_id?: string | null
           user_nom?: string | null
+        }
+        Relationships: []
+      }
+      tournees: {
+        Row: {
+          created_at: string
+          date_tournee: string | null
+          distance_km: number | null
+          livreur_id: string | null
+          nb_livraisons: number | null
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          tournee_id: string
+          updated_at: string
+          vehicule_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          date_tournee?: string | null
+          distance_km?: number | null
+          livreur_id?: string | null
+          nb_livraisons?: number | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          tournee_id?: string
+          updated_at?: string
+          vehicule_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          date_tournee?: string | null
+          distance_km?: number | null
+          livreur_id?: string | null
+          nb_livraisons?: number | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          tournee_id?: string
+          updated_at?: string
+          vehicule_id?: string | null
         }
         Relationships: []
       }
@@ -1390,6 +2959,83 @@ export type Database = {
           },
         ]
       }
+      transfert_lignes: {
+        Row: {
+          created_at: string
+          designation: string | null
+          ligne_id: string
+          produit_id: string | null
+          quantite: number | null
+          transfert_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          produit_id?: string | null
+          quantite?: number | null
+          transfert_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          produit_id?: string | null
+          quantite?: number | null
+          transfert_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transfert_lignes_transfert_id_fkey"
+            columns: ["transfert_id"]
+            isOneToOne: false
+            referencedRelation: "transferts"
+            referencedColumns: ["transfert_id"]
+          },
+        ]
+      }
+      transferts: {
+        Row: {
+          created_at: string
+          date_transfert: string | null
+          depot_destination_id: string | null
+          depot_source_id: string | null
+          motif: string | null
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          transfert_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_transfert?: string | null
+          depot_destination_id?: string | null
+          depot_source_id?: string | null
+          motif?: string | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          transfert_id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_transfert?: string | null
+          depot_destination_id?: string | null
+          depot_source_id?: string | null
+          motif?: string | null
+          notes?: string | null
+          reference?: string | null
+          statut?: string | null
+          transfert_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1408,6 +3054,42 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      vehicules: {
+        Row: {
+          actif: boolean
+          capacite: number | null
+          created_at: string
+          immatriculation: string | null
+          marque: string | null
+          modele: string | null
+          type: string | null
+          updated_at: string
+          vehicule_id: string
+        }
+        Insert: {
+          actif?: boolean
+          capacite?: number | null
+          created_at?: string
+          immatriculation?: string | null
+          marque?: string | null
+          modele?: string | null
+          type?: string | null
+          updated_at?: string
+          vehicule_id?: string
+        }
+        Update: {
+          actif?: boolean
+          capacite?: number | null
+          created_at?: string
+          immatriculation?: string | null
+          marque?: string | null
+          modele?: string | null
+          type?: string | null
+          updated_at?: string
+          vehicule_id?: string
         }
         Relationships: []
       }
