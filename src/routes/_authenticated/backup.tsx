@@ -47,13 +47,6 @@ const TABLES = [
   "commandes",
   "commande_lignes",
   "transactions",
-  "factures",
-  "paiements",
-  "fournisseurs",
-  "achats",
-  "employes",
-  "conges",
-  "stock_mouvements",
 ];
 
 type BackupRow = {
