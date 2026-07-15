@@ -123,6 +123,7 @@ import { Route as AuthenticatedColisageIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedClientsIndexRouteImport } from './routes/_authenticated/clients.index'
 import { Route as AuthenticatedAchatsIndexRouteImport } from './routes/_authenticated/achats.index'
 import { Route as AuthenticatedAbsencesIndexRouteImport } from './routes/_authenticated/absences.index'
+import { Route as ApiPublicSeedUsersRouteImport } from './routes/api/public/seed-users'
 import { Route as AuthenticatedUtilisateursProductionRouteImport } from './routes/_authenticated/utilisateurs.production'
 import { Route as AuthenticatedUtilisateursNouveauRouteImport } from './routes/_authenticated/utilisateurs.nouveau'
 import { Route as AuthenticatedTransfertsNouveauRouteImport } from './routes/_authenticated/transferts.nouveau'
@@ -844,6 +845,11 @@ const AuthenticatedAbsencesIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAbsencesRoute,
   } as any)
+const ApiPublicSeedUsersRoute = ApiPublicSeedUsersRouteImport.update({
+  id: '/api/public/seed-users',
+  path: '/api/public/seed-users',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedUtilisateursProductionRoute =
   AuthenticatedUtilisateursProductionRouteImport.update({
     id: '/utilisateurs/production',
@@ -1459,6 +1465,7 @@ export interface FileRoutesByFullPath {
   '/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
   '/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
   '/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
+  '/api/public/seed-users': typeof ApiPublicSeedUsersRoute
   '/absences/': typeof AuthenticatedAbsencesIndexRoute
   '/achats/': typeof AuthenticatedAchatsIndexRoute
   '/clients/': typeof AuthenticatedClientsIndexRoute
@@ -1630,6 +1637,7 @@ export interface FileRoutesByTo {
   '/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
   '/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
   '/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
+  '/api/public/seed-users': typeof ApiPublicSeedUsersRoute
   '/absences': typeof AuthenticatedAbsencesIndexRoute
   '/achats': typeof AuthenticatedAchatsIndexRoute
   '/clients': typeof AuthenticatedClientsIndexRoute
@@ -1825,6 +1833,7 @@ export interface FileRoutesById {
   '/_authenticated/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
   '/_authenticated/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
   '/_authenticated/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
+  '/api/public/seed-users': typeof ApiPublicSeedUsersRoute
   '/_authenticated/absences/': typeof AuthenticatedAbsencesIndexRoute
   '/_authenticated/achats/': typeof AuthenticatedAchatsIndexRoute
   '/_authenticated/clients/': typeof AuthenticatedClientsIndexRoute
@@ -2020,6 +2029,7 @@ export interface FileRouteTypes {
     | '/transferts/nouveau'
     | '/utilisateurs/nouveau'
     | '/utilisateurs/production'
+    | '/api/public/seed-users'
     | '/absences/'
     | '/achats/'
     | '/clients/'
@@ -2191,6 +2201,7 @@ export interface FileRouteTypes {
     | '/transferts/nouveau'
     | '/utilisateurs/nouveau'
     | '/utilisateurs/production'
+    | '/api/public/seed-users'
     | '/absences'
     | '/achats'
     | '/clients'
@@ -2385,6 +2396,7 @@ export interface FileRouteTypes {
     | '/_authenticated/transferts/nouveau'
     | '/_authenticated/utilisateurs/nouveau'
     | '/_authenticated/utilisateurs/production'
+    | '/api/public/seed-users'
     | '/_authenticated/absences/'
     | '/_authenticated/achats/'
     | '/_authenticated/clients/'
@@ -2438,6 +2450,7 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   CartonColisIdRoute: typeof CartonColisIdRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicSeedUsersRoute: typeof ApiPublicSeedUsersRoute
   ApiPublicHooksAlertRoute: typeof ApiPublicHooksAlertRoute
   ApiPublicHooksRunSchedulesRoute: typeof ApiPublicHooksRunSchedulesRoute
 }
@@ -3241,6 +3254,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/absences/'
       preLoaderRoute: typeof AuthenticatedAbsencesIndexRouteImport
       parentRoute: typeof AuthenticatedAbsencesRoute
+    }
+    '/api/public/seed-users': {
+      id: '/api/public/seed-users'
+      path: '/api/public/seed-users'
+      fullPath: '/api/public/seed-users'
+      preLoaderRoute: typeof ApiPublicSeedUsersRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/utilisateurs/production': {
       id: '/_authenticated/utilisateurs/production'
@@ -4548,6 +4568,7 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   CartonColisIdRoute: CartonColisIdRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicSeedUsersRoute: ApiPublicSeedUsersRoute,
   ApiPublicHooksAlertRoute: ApiPublicHooksAlertRoute,
   ApiPublicHooksRunSchedulesRoute: ApiPublicHooksRunSchedulesRoute,
 }
