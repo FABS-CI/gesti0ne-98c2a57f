@@ -16,8 +16,8 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "Espace de connexion de l'ERP des Éditions FABS-CI." },
     ],
     links: [
-      { rel: "preload", as: "image", href: loginBg, fetchpriority: "high" },
-      { rel: "preload", as: "image", href: fabsLogo, fetchpriority: "high" },
+      { rel: "preload", as: "image", href: loginBg, fetchPriority: "high" },
+      { rel: "preload", as: "image", href: fabsLogo, fetchPriority: "high" },
     ],
   }),
   component: AuthPage,
