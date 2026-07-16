@@ -407,7 +407,7 @@ function SectionHeader({
   title,
   color,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   title: string;
   color: string;
 }) {
