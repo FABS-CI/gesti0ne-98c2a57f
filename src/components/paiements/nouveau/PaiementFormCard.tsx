@@ -43,12 +43,8 @@ export function PaiementFormCard({
   const disabled = mode === "confirm";
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Wallet className="h-4 w-4" /> 3. Informations du paiement
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-4 sm:grid-cols-2">
+      <SectionHeader icon={Wallet} title="3. Informations du paiement" color="#10B981" />
+      <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
         {mode === "confirm" && (
           <div className="sm:col-span-2">
             <Alert>
