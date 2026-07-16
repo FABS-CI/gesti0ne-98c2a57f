@@ -7,6 +7,8 @@ import { formatFCFA } from "@/lib/format";
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { buildEtatCompteClientPDF } from "@/lib/pdf/etat-compte-builder";
+import { buildClientHistoriquePDF } from "@/lib/pdf/client-historique-builder";
+import { getClient, getClientRelations } from "@/lib/clients-api";
 import { downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
 import { exportListePDF } from "@/lib/pdf/exportListe";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
@@ -32,6 +34,7 @@ export const Route = createFileRoute("/_authenticated/etat-compte-clients")({
 function EtatComptePage() {
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
+  const [historiqueBusy, setHistoriqueBusy] = useState<string | null>(null);
   const [statutFilter, setStatutFilter] = useState<"tous" | "debiteurs" | "soldes">("tous");
   const q = useDebouncedValue(search, 300);
   const exerciceId = useExerciceConsulteId();
@@ -144,6 +147,22 @@ function EtatComptePage() {
     }
   }
 
+  async function handleHistorique(c: EtatCompteClient) {
+    try {
+      setHistoriqueBusy(c.client_id);
+      const client = await getClient(c.client_id);
+      if (!client) throw new Error("Client introuvable");
+      const rel = await getClientRelations(c.client_id, client.nom);
+      const blob = await buildClientHistoriquePDF(client, rel);
+      downloadBlob(blob, fileNameFor(`Historique_${c.reference}`, c.nom));
+      toast.success(`Historique ${c.nom} généré`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur PDF");
+    } finally {
+      setHistoriqueBusy(null);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -234,7 +253,14 @@ function EtatComptePage() {
         </Select>
       </div>
 
-      <EtatCompteTable clients={clients} isLoading={isLoading} busy={busy} onPdf={handlePdf} />
+      <EtatCompteTable
+        clients={clients}
+        isLoading={isLoading}
+        busy={busy}
+        historiqueBusy={historiqueBusy}
+        onPdf={handlePdf}
+        onHistorique={handleHistorique}
+      />
     </div>
   );
 }

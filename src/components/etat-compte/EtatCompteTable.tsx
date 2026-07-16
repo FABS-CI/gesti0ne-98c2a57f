@@ -1,4 +1,5 @@
-import { FileDown, Loader2, Users } from "lucide-react";
+import { FileDown, FileText, Loader2, Users, Eye, Wallet } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,10 +18,13 @@ type Props = {
   clients: EtatCompteClient[];
   isLoading: boolean;
   busy: string | null;
+  historiqueBusy?: string | null;
   onPdf: (c: EtatCompteClient) => void;
+  onHistorique?: (c: EtatCompteClient) => void;
 };
 
-export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
+export function EtatCompteTable({ clients, isLoading, busy, historiqueBusy, onPdf, onHistorique }: Props) {
+  const navigate = useNavigate();
   return (
     <div className="rounded-lg border">
       <Table>
@@ -30,7 +34,7 @@ export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
             <TableHead>Client</TableHead>
             <TableHead className="text-right">Solde dû</TableHead>
             <TableHead>État</TableHead>
-            <TableHead className="text-right">PDF</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -82,19 +86,54 @@ export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onPdf(c)}
-                      disabled={busy === c.client_id}
-                    >
-                      {busy === c.client_id ? (
-                        <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                      ) : (
-                        <FileDown className="h-3.5 w-3.5 mr-1.5" />
-                      )}
-                      PDF
-                    </Button>
+                    <div className="flex flex-wrap items-center justify-end gap-1.5">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => navigate({ to: "/clients/$clientId", params: { clientId: c.client_id } })}
+                        title="Consulter le solde"
+                      >
+                        <Eye className="h-3.5 w-3.5 mr-1.5" />
+                        Solde
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => navigate({ to: "/paiements/nouveau", search: { client_id: c.client_id } as never })}
+                        title="Imputer un paiement"
+                      >
+                        <Wallet className="h-3.5 w-3.5 mr-1.5" />
+                        Paiement
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onHistorique?.(c)}
+                        disabled={!onHistorique || historiqueBusy === c.client_id}
+                        title="Historique PDF"
+                      >
+                        {historiqueBusy === c.client_id ? (
+                          <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                        ) : (
+                          <FileText className="h-3.5 w-3.5 mr-1.5" />
+                        )}
+                        Historique
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onPdf(c)}
+                        disabled={busy === c.client_id}
+                        title="État de compte PDF"
+                      >
+                        {busy === c.client_id ? (
+                          <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                        ) : (
+                          <FileDown className="h-3.5 w-3.5 mr-1.5" />
+                        )}
+                        PDF
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               );
