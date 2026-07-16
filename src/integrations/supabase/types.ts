@@ -478,39 +478,54 @@ export type Database = {
       }
       bons_livraison: {
         Row: {
-          bon_id: string
+          bl_id: string
+          client_id: string | null
           client_nom: string | null
           commande_id: string | null
           created_at: string
           date_bon: string | null
+          date_emission: string | null
+          date_livraison: string | null
+          exercice_id: string | null
           livraison_id: string | null
           montant: number | null
           notes: string | null
           reference: string | null
+          statut: string
           updated_at: string
         }
         Insert: {
-          bon_id?: string
+          bl_id?: string
+          client_id?: string | null
           client_nom?: string | null
           commande_id?: string | null
           created_at?: string
           date_bon?: string | null
+          date_emission?: string | null
+          date_livraison?: string | null
+          exercice_id?: string | null
           livraison_id?: string | null
           montant?: number | null
           notes?: string | null
           reference?: string | null
+          statut?: string
           updated_at?: string
         }
         Update: {
-          bon_id?: string
+          bl_id?: string
+          client_id?: string | null
           client_nom?: string | null
           commande_id?: string | null
           created_at?: string
           date_bon?: string | null
+          date_emission?: string | null
+          date_livraison?: string | null
+          exercice_id?: string | null
           livraison_id?: string | null
           montant?: number | null
           notes?: string | null
           reference?: string | null
+          statut?: string
           updated_at?: string
         }
         Relationships: []
@@ -711,6 +726,234 @@ export type Database = {
           ville?: string | null
         }
         Relationships: []
+      }
+      colis: {
+        Row: {
+          bl_id: string
+          colis_id: string
+          commune: string | null
+          created_at: string
+          date_colisage: string | null
+          destinataire: string | null
+          gare_depart: string | null
+          gare_responsable: string | null
+          gare_telephone: string | null
+          livreur_nom: string | null
+          livreur_telephone: string | null
+          mode_acheminement: string | null
+          nb_cartons: number | null
+          numero_carton: number | null
+          observations: string | null
+          poids: number | null
+          quartier: string | null
+          reference: string | null
+          responsable_id: string | null
+          responsable_nom: string | null
+          statut: string
+          tournee_id: string | null
+          updated_at: string
+          vehicule: string | null
+          ville_destination: string | null
+          ville_livraison: string | null
+        }
+        Insert: {
+          bl_id: string
+          colis_id?: string
+          commune?: string | null
+          created_at?: string
+          date_colisage?: string | null
+          destinataire?: string | null
+          gare_depart?: string | null
+          gare_responsable?: string | null
+          gare_telephone?: string | null
+          livreur_nom?: string | null
+          livreur_telephone?: string | null
+          mode_acheminement?: string | null
+          nb_cartons?: number | null
+          numero_carton?: number | null
+          observations?: string | null
+          poids?: number | null
+          quartier?: string | null
+          reference?: string | null
+          responsable_id?: string | null
+          responsable_nom?: string | null
+          statut?: string
+          tournee_id?: string | null
+          updated_at?: string
+          vehicule?: string | null
+          ville_destination?: string | null
+          ville_livraison?: string | null
+        }
+        Update: {
+          bl_id?: string
+          colis_id?: string
+          commune?: string | null
+          created_at?: string
+          date_colisage?: string | null
+          destinataire?: string | null
+          gare_depart?: string | null
+          gare_responsable?: string | null
+          gare_telephone?: string | null
+          livreur_nom?: string | null
+          livreur_telephone?: string | null
+          mode_acheminement?: string | null
+          nb_cartons?: number | null
+          numero_carton?: number | null
+          observations?: string | null
+          poids?: number | null
+          quartier?: string | null
+          reference?: string | null
+          responsable_id?: string | null
+          responsable_nom?: string | null
+          statut?: string
+          tournee_id?: string | null
+          updated_at?: string
+          vehicule?: string | null
+          ville_destination?: string | null
+          ville_livraison?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colis_bl_id_fkey"
+            columns: ["bl_id"]
+            isOneToOne: false
+            referencedRelation: "bons_livraison"
+            referencedColumns: ["bl_id"]
+          },
+        ]
+      }
+      colis_lignes: {
+        Row: {
+          colis_id: string
+          created_at: string
+          designation: string | null
+          ligne_id: string
+          produit_id: string | null
+          quantite: number
+          reference_produit: string | null
+        }
+        Insert: {
+          colis_id: string
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          produit_id?: string | null
+          quantite?: number
+          reference_produit?: string | null
+        }
+        Update: {
+          colis_id?: string
+          created_at?: string
+          designation?: string | null
+          ligne_id?: string
+          produit_id?: string | null
+          quantite?: number
+          reference_produit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colis_lignes_colis_id_fkey"
+            columns: ["colis_id"]
+            isOneToOne: false
+            referencedRelation: "colis"
+            referencedColumns: ["colis_id"]
+          },
+        ]
+      }
+      colis_statut_historique: {
+        Row: {
+          ancien_statut: string | null
+          bl_id: string | null
+          colis_id: string | null
+          created_at: string
+          historique_id: string
+          motif: string | null
+          nouveau_statut: string | null
+          user_id: string | null
+          user_nom: string | null
+        }
+        Insert: {
+          ancien_statut?: string | null
+          bl_id?: string | null
+          colis_id?: string | null
+          created_at?: string
+          historique_id?: string
+          motif?: string | null
+          nouveau_statut?: string | null
+          user_id?: string | null
+          user_nom?: string | null
+        }
+        Update: {
+          ancien_statut?: string | null
+          bl_id?: string | null
+          colis_id?: string | null
+          created_at?: string
+          historique_id?: string
+          motif?: string | null
+          nouveau_statut?: string | null
+          user_id?: string | null
+          user_nom?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colis_statut_historique_colis_id_fkey"
+            columns: ["colis_id"]
+            isOneToOne: false
+            referencedRelation: "colis"
+            referencedColumns: ["colis_id"]
+          },
+        ]
+      }
+      colisage_responsables: {
+        Row: {
+          actif: boolean
+          created_at: string
+          created_by: string | null
+          date_affectation: string
+          depot_id: string | null
+          employe_id: string
+          responsable_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          actif?: boolean
+          created_at?: string
+          created_by?: string | null
+          date_affectation?: string
+          depot_id?: string | null
+          employe_id: string
+          responsable_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          actif?: boolean
+          created_at?: string
+          created_by?: string | null
+          date_affectation?: string
+          depot_id?: string | null
+          employe_id?: string
+          responsable_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colisage_responsables_depot_id_fkey"
+            columns: ["depot_id"]
+            isOneToOne: false
+            referencedRelation: "depots"
+            referencedColumns: ["depot_id"]
+          },
+          {
+            foreignKeyName: "colisage_responsables_employe_id_fkey"
+            columns: ["employe_id"]
+            isOneToOne: true
+            referencedRelation: "employes"
+            referencedColumns: ["employe_id"]
+          },
+        ]
       }
       colisages: {
         Row: {
@@ -3332,6 +3575,36 @@ export type Database = {
       }
     }
     Views: {
+      v_colisage_responsables: {
+        Row: {
+          actif: boolean | null
+          date_affectation: string | null
+          depot_id: string | null
+          depot_nom: string | null
+          employe_id: string | null
+          matricule: string | null
+          nom_complet: string | null
+          poste: string | null
+          responsable_id: string | null
+          telephone: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colisage_responsables_depot_id_fkey"
+            columns: ["depot_id"]
+            isOneToOne: false
+            referencedRelation: "depots"
+            referencedColumns: ["depot_id"]
+          },
+          {
+            foreignKeyName: "colisage_responsables_employe_id_fkey"
+            columns: ["employe_id"]
+            isOneToOne: true
+            referencedRelation: "employes"
+            referencedColumns: ["employe_id"]
+          },
+        ]
+      }
       v_produits: {
         Row: {
           actif: boolean | null
@@ -3418,16 +3691,99 @@ export type Database = {
         }
         Returns: undefined
       }
+      annuler_colisage: {
+        Args: { _bl_id: string; _motif: string }
+        Returns: undefined
+      }
       annuler_transfert: { Args: { _transfert_id: string }; Returns: undefined }
       assert_permission: { Args: { _perm: string }; Returns: undefined }
+      creer_colisage: {
+        Args: { _bl_id: string; _payload: Json }
+        Returns: {
+          bl_id: string
+          colis_id: string
+          commune: string | null
+          created_at: string
+          date_colisage: string | null
+          destinataire: string | null
+          gare_depart: string | null
+          gare_responsable: string | null
+          gare_telephone: string | null
+          livreur_nom: string | null
+          livreur_telephone: string | null
+          mode_acheminement: string | null
+          nb_cartons: number | null
+          numero_carton: number | null
+          observations: string | null
+          poids: number | null
+          quartier: string | null
+          reference: string | null
+          responsable_id: string | null
+          responsable_nom: string | null
+          statut: string
+          tournee_id: string | null
+          updated_at: string
+          vehicule: string | null
+          ville_destination: string | null
+          ville_livraison: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "colis"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      creer_colisage_manuel: {
+        Args: { _bl_id: string; _cartons: Json; _payload: Json }
+        Returns: {
+          bl_id: string
+          colis_id: string
+          commune: string | null
+          created_at: string
+          date_colisage: string | null
+          destinataire: string | null
+          gare_depart: string | null
+          gare_responsable: string | null
+          gare_telephone: string | null
+          livreur_nom: string | null
+          livreur_telephone: string | null
+          mode_acheminement: string | null
+          nb_cartons: number | null
+          numero_carton: number | null
+          observations: string | null
+          poids: number | null
+          quartier: string | null
+          reference: string | null
+          responsable_id: string | null
+          responsable_nom: string | null
+          statut: string
+          tournee_id: string | null
+          updated_at: string
+          vehicule: string | null
+          ville_destination: string | null
+          ville_livraison: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "colis"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       definir_depot_principal: {
         Args: { _depot_id: string }
+        Returns: undefined
+      }
+      deverrouiller_colisage: {
+        Args: { _bl_id: string; _motif: string }
         Returns: undefined
       }
       executer_transfert: {
         Args: { _transfert_id: string }
         Returns: undefined
       }
+      get_carton_public: { Args: { _colis_id: string }; Returns: Json }
       has_permission_v2: {
         Args: { _perm: string; _user_id: string }
         Returns: boolean
@@ -3447,6 +3803,10 @@ export type Database = {
       }
       log_permission_denied: {
         Args: { _context?: Json; _perm: string }
+        Returns: undefined
+      }
+      modifier_colis_lignes: {
+        Args: { _colis_id: string; _lignes: Json; _motif: string }
         Returns: undefined
       }
       purger_anciennes_sauvegardes: {
@@ -3470,6 +3830,10 @@ export type Database = {
       receptionner_transfert: {
         Args: { _transfert_id: string }
         Returns: undefined
+      }
+      supprimer_colisage: {
+        Args: { _bl_id: string; _motif: string }
+        Returns: Json
       }
     }
     Enums: {
