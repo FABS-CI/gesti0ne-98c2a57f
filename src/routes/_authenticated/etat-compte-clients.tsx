@@ -7,6 +7,8 @@ import { formatFCFA } from "@/lib/format";
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { buildEtatCompteClientPDF } from "@/lib/pdf/etat-compte-builder";
+import { buildClientHistoriquePDF } from "@/lib/pdf/client-historique-builder";
+import { getClient, getClientRelations } from "@/lib/clients-api";
 import { downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
 import { exportListePDF } from "@/lib/pdf/exportListe";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
