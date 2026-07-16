@@ -284,51 +284,105 @@ export type Database = {
       audit_logs: {
         Row: {
           action: string
+          browser: string | null
+          browser_version: string | null
+          city: string | null
+          correlation_id: string | null
+          country: string | null
+          country_code: string | null
           created_at: string
+          criticite: string | null
           details: Json | null
+          device: string | null
+          duration_ms: number | null
           entity_id: string | null
           entity_type: string | null
+          error_message: string | null
+          http_method: string | null
           id: string
           ip_address: string | null
           module: string | null
           new_values: Json | null
           old_values: Json | null
+          os: string | null
           record_id: string | null
+          screen_resolution: string | null
+          session_id: string | null
+          status: string | null
+          status_code: number | null
           table_name: string | null
+          timezone: string | null
+          url: string | null
           user_agent: string | null
           user_email: string | null
           user_id: string | null
         }
         Insert: {
           action: string
+          browser?: string | null
+          browser_version?: string | null
+          city?: string | null
+          correlation_id?: string | null
+          country?: string | null
+          country_code?: string | null
           created_at?: string
+          criticite?: string | null
           details?: Json | null
+          device?: string | null
+          duration_ms?: number | null
           entity_id?: string | null
           entity_type?: string | null
+          error_message?: string | null
+          http_method?: string | null
           id?: string
           ip_address?: string | null
           module?: string | null
           new_values?: Json | null
           old_values?: Json | null
+          os?: string | null
           record_id?: string | null
+          screen_resolution?: string | null
+          session_id?: string | null
+          status?: string | null
+          status_code?: number | null
           table_name?: string | null
+          timezone?: string | null
+          url?: string | null
           user_agent?: string | null
           user_email?: string | null
           user_id?: string | null
         }
         Update: {
           action?: string
+          browser?: string | null
+          browser_version?: string | null
+          city?: string | null
+          correlation_id?: string | null
+          country?: string | null
+          country_code?: string | null
           created_at?: string
+          criticite?: string | null
           details?: Json | null
+          device?: string | null
+          duration_ms?: number | null
           entity_id?: string | null
           entity_type?: string | null
+          error_message?: string | null
+          http_method?: string | null
           id?: string
           ip_address?: string | null
           module?: string | null
           new_values?: Json | null
           old_values?: Json | null
+          os?: string | null
           record_id?: string | null
+          screen_resolution?: string | null
+          session_id?: string | null
+          status?: string | null
+          status_code?: number | null
           table_name?: string | null
+          timezone?: string | null
+          url?: string | null
           user_agent?: string | null
           user_email?: string | null
           user_id?: string | null
@@ -4102,6 +4156,54 @@ export type Database = {
         }
         Relationships: []
       }
+      security_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_type: string
+          city: string | null
+          country: string | null
+          created_at: string
+          criticite: string
+          id: string
+          ip_address: string | null
+          message: string
+          metadata: Json | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          criticite?: string
+          id?: string
+          ip_address?: string | null
+          message: string
+          metadata?: Json | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type?: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          criticite?: string
+          id?: string
+          ip_address?: string | null
+          message?: string
+          metadata?: Json | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       specimens: {
         Row: {
           client_id: string | null
@@ -4796,11 +4898,20 @@ export type Database = {
       audit_events: {
         Row: {
           action: string | null
+          browser: string | null
+          browser_version: string | null
           changes: Json | null
+          city: string | null
+          correlation_id: string | null
+          country: string | null
+          country_code: string | null
+          criticite: string | null
           details: Json | null
+          device: string | null
           duration_ms: number | null
           entity_id: string | null
           entity_type: string | null
+          error_message: string | null
           http_method: string | null
           id: string | null
           ip_address: string | null
@@ -4808,10 +4919,15 @@ export type Database = {
           new_values: Json | null
           occurred_at: string | null
           old_values: Json | null
+          os: string | null
           record_id: string | null
           record_ref: string | null
-          status: number | null
+          screen_resolution: string | null
+          session_id: string | null
+          status: string | null
+          status_code: number | null
           table_name: string | null
+          timezone: string | null
           url: string | null
           user_agent: string | null
           user_email: string | null
@@ -4819,46 +4935,74 @@ export type Database = {
         }
         Insert: {
           action?: string | null
+          browser?: string | null
+          browser_version?: string | null
           changes?: never
+          city?: string | null
+          correlation_id?: string | null
+          country?: string | null
+          country_code?: string | null
+          criticite?: string | null
           details?: Json | null
-          duration_ms?: never
+          device?: string | null
+          duration_ms?: number | null
           entity_id?: string | null
           entity_type?: string | null
-          http_method?: never
+          error_message?: string | null
+          http_method?: string | null
           id?: string | null
           ip_address?: string | null
           module?: string | null
           new_values?: Json | null
           occurred_at?: string | null
           old_values?: Json | null
+          os?: string | null
           record_id?: string | null
           record_ref?: never
-          status?: never
+          screen_resolution?: string | null
+          session_id?: string | null
+          status?: string | null
+          status_code?: number | null
           table_name?: string | null
-          url?: never
+          timezone?: string | null
+          url?: string | null
           user_agent?: string | null
           user_email?: string | null
           user_id?: string | null
         }
         Update: {
           action?: string | null
+          browser?: string | null
+          browser_version?: string | null
           changes?: never
+          city?: string | null
+          correlation_id?: string | null
+          country?: string | null
+          country_code?: string | null
+          criticite?: string | null
           details?: Json | null
-          duration_ms?: never
+          device?: string | null
+          duration_ms?: number | null
           entity_id?: string | null
           entity_type?: string | null
-          http_method?: never
+          error_message?: string | null
+          http_method?: string | null
           id?: string | null
           ip_address?: string | null
           module?: string | null
           new_values?: Json | null
           occurred_at?: string | null
           old_values?: Json | null
+          os?: string | null
           record_id?: string | null
           record_ref?: never
-          status?: never
+          screen_resolution?: string | null
+          session_id?: string | null
+          status?: string | null
+          status_code?: number | null
           table_name?: string | null
-          url?: never
+          timezone?: string | null
+          url?: string | null
           user_agent?: string | null
           user_email?: string | null
           user_id?: string | null
@@ -5905,16 +6049,33 @@ export type Database = {
       log_audit_event: {
         Args: {
           p_action: string
+          p_browser?: string
+          p_browser_version?: string
+          p_city?: string
+          p_correlation_id?: string
+          p_country?: string
+          p_country_code?: string
+          p_criticite?: string
+          p_device?: string
           p_duration_ms?: number
           p_error_message?: string
+          p_http_method?: string
+          p_ip?: string
           p_metadata?: Json
-          p_module: string
+          p_module?: string
           p_new_values?: Json
           p_old_values?: Json
+          p_os?: string
           p_record_id?: string
           p_record_ref?: string
+          p_screen_resolution?: string
+          p_session_id?: string
           p_status?: string
+          p_status_code?: number
           p_table_name?: string
+          p_timezone?: string
+          p_url?: string
+          p_user_agent?: string
           p_user_email?: string
         }
         Returns: string
