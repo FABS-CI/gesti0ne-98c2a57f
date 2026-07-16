@@ -244,26 +244,32 @@ function PaiementsPage() {
                 </TableRow>
               ) : paiements.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-10 text-center">
-                    <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                      <CreditCard className="h-8 w-8 opacity-50" />
-                      <p>
-                        {hasActiveFilters
+                  <TableCell colSpan={7} className="py-6">
+                    <EmptyState
+                      variant={hasActiveFilters ? "compact" : "rich"}
+                      icon={CreditCard}
+                      title={
+                        hasActiveFilters
                           ? "Aucun paiement ne correspond aux filtres appliqués."
-                          : "Aucun paiement enregistré pour cet exercice."}
-                      </p>
-                      {hasActiveFilters ? (
-                        <Button variant="outline" size="sm" onClick={resetAllFilters}>
-                          <RotateCcw className="mr-2 h-4 w-4" /> Réinitialiser les filtres
-                        </Button>
-                      ) : (
-                        <Button asChild size="sm">
-                          <Link to="/paiements/nouveau">
-                            <Plus className="mr-2 h-4 w-4" /> Nouveau paiement
-                          </Link>
-                        </Button>
-                      )}
-                    </div>
+                          : "Aucun paiement enregistré pour cet exercice."
+                      }
+                      description={
+                        hasActiveFilters
+                          ? undefined
+                          : "Enregistrez un encaissement pour marquer une facture comme payée et alimenter l'état de compte du client."
+                      }
+                      onReset={hasActiveFilters ? resetAllFilters : undefined}
+                      action={
+                        !hasActiveFilters ? (
+                          <Button asChild size="sm">
+                            <Link to="/paiements/nouveau">
+                              <Plus className="mr-2 h-4 w-4" /> Nouveau paiement
+                            </Link>
+                          </Button>
+                        ) : undefined
+                      }
+                      className="border-none"
+                    />
                   </TableCell>
                 </TableRow>
               ) : (
