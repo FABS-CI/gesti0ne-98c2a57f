@@ -291,10 +291,12 @@ export function ColisageForm({
 
   return (
     <Card className="print:hidden">
-      <CardHeader>
-        <CardTitle>{hasColis ? "Refaire le colisage" : "Créer le colisage"}</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <SectionHeader
+        icon={PackageCheck}
+        title={hasColis ? "Refaire le colisage" : "Créer le colisage"}
+        color="#3B82F6"
+      />
+      <CardContent className="pl-5 sm:pl-6">
         <fieldset disabled={!modifiable} className="contents">
           <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-3">
             <div>
