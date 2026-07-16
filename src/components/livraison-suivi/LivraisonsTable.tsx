@@ -2,7 +2,8 @@ import { COMMANDE_REF_SEARCH_DEFAULTS } from "@/lib/route-schemas";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
+import { Trash2, Truck } from "lucide-react";
+import { EmptyState } from "@/components/common/EmptyState";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -63,8 +64,14 @@ export function LivraisonsTable({ rows, isLoading, onAdvance }: Props) {
               </TableRow>
             ) : rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="text-center text-sm text-muted-foreground py-6">
-                  Aucune livraison en cours
+                <TableCell colSpan={10} className="py-6">
+                  <EmptyState
+                    variant="rich"
+                    icon={Truck}
+                    title="Aucune livraison en cours"
+                    description="Les commandes passant au statut « en livraison » s'afficheront ici pour suivre chaque étape jusqu'à la remise au client."
+                    className="border-none"
+                  />
                 </TableCell>
               </TableRow>
             ) : (

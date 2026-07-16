@@ -1,4 +1,5 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Wallet } from "lucide-react";
+import { EmptyState } from "@/components/common/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Can } from "@/components/rbac/Can";
@@ -52,8 +53,14 @@ export function TransactionsTable({ transactions, isLoading, onEdit, onDelete }:
             </TableRow>
           ) : transactions.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
-                Aucune transaction
+              <TableCell colSpan={8} className="py-6">
+                <EmptyState
+                  variant="rich"
+                  icon={Wallet}
+                  title="Aucune transaction enregistrée"
+                  description="Les recettes et dépenses de trésorerie apparaîtront ici pour alimenter votre suivi financier."
+                  className="border-none"
+                />
               </TableCell>
             </TableRow>
           ) : (

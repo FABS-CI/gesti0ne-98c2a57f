@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Eye, Pencil, PowerOff, Package, RotateCcw, Plus } from "lucide-react";
+import { Eye, Pencil, PowerOff, Package, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { EmptyState } from "@/components/common/EmptyState";
 import { formatFCFA } from "@/lib/format";
 import { CATEGORIE_LABEL } from "@/lib/company";
 import type { Produit } from "@/lib/produits-api";
@@ -67,31 +68,30 @@ export function ProduitsTable({
             </TableRow>
           ) : items.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={colSpan} className="py-10 text-center">
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                  <Package className="h-8 w-8 opacity-40" />
-                  {hasActiveFilters ? (
-                    <>
-                      <p className="font-medium">
-                        Aucun produit ne correspond aux filtres appliqués.
-                      </p>
-                      {onResetFilters && (
-                        <Button variant="outline" size="sm" onClick={onResetFilters}>
-                          <RotateCcw className="mr-2 h-4 w-4" /> Réinitialiser les filtres
-                        </Button>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-medium">Aucun produit enregistré.</p>
-                      {canMutate && onCreate && (
-                        <Button size="sm" onClick={onCreate}>
-                          <Plus className="mr-2 h-4 w-4" /> Nouveau produit
-                        </Button>
-                      )}
-                    </>
-                  )}
-                </div>
+              <TableCell colSpan={colSpan} className="py-6">
+                <EmptyState
+                  variant={hasActiveFilters ? "compact" : "rich"}
+                  icon={Package}
+                  title={
+                    hasActiveFilters
+                      ? "Aucun produit ne correspond aux filtres appliqués."
+                      : "Aucun produit enregistré."
+                  }
+                  description={
+                    hasActiveFilters
+                      ? undefined
+                      : "Créez votre catalogue pour commencer à vendre, gérer le stock et suivre les marges."
+                  }
+                  onReset={hasActiveFilters ? onResetFilters : undefined}
+                  action={
+                    !hasActiveFilters && canMutate && onCreate ? (
+                      <Button size="sm" onClick={onCreate}>
+                        <Plus className="mr-2 h-4 w-4" /> Nouveau produit
+                      </Button>
+                    ) : undefined
+                  }
+                  className="border-none"
+                />
               </TableCell>
             </TableRow>
           ) : (
