@@ -212,13 +212,13 @@ function AuditPage() {
       return g
         ? {
             ...u,
-            city: g.city,
-            region: g.region,
-            country: g.country,
-            country_code: g.country_code,
-            isp: g.isp,
-            lat: g.lat,
-            lon: g.lon,
+            city: u.city ?? g.city,
+            region: u.region ?? g.region,
+            country: u.country ?? g.country,
+            country_code: u.country_code ?? g.country_code,
+            isp: u.isp ?? g.isp,
+            lat: u.lat ?? g.lat,
+            lon: u.lon ?? g.lon,
           }
         : u;
     });
