@@ -214,6 +214,7 @@ function ClientDetailPage() {
       </div>
 
       <ClientEditSheet client={client} open={editOpen} onOpenChange={setEditOpen} />
+      <ClientSoldeDialog open={soldeOpen} onOpenChange={setSoldeOpen} client={client} rel={rel} />
 
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
