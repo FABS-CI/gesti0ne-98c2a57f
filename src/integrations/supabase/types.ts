@@ -4756,6 +4756,7 @@ export type Database = {
         Args: { _transfert_id: string }
         Returns: undefined
       }
+      exercice_actif_id: { Args: never; Returns: string }
       exercices_comparatif: {
         Args: { _exercice_ids: string[] }
         Returns: {
