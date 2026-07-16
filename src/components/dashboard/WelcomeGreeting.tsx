@@ -10,26 +10,26 @@ function getGreeting(hour: number) {
   if (hour >= 5 && hour < 12) {
     return {
       Icon: Sun,
-      text: (name: string) =>
-        `Bonjour, ${name} ! Nous vous souhaitons une excellente journée de travail.`,
-      bg: "bg-[linear-gradient(120deg,#0b3d91_0%,#1e6bd6_45%,#f59e0b_100%)]",
+      salutation: (name: string) => `Bonjour, ${name}`,
+      message: "Excellente journée de travail.",
+      bg: "bg-[linear-gradient(120deg,#0b1f4b_0%,#1e3a8a_100%)]",
       iconTint: "text-amber-300",
     };
   }
   if (hour >= 12 && hour < 18) {
     return {
       Icon: CloudSun,
-      text: (name: string) =>
-        `Bon après-midi, ${name} ! Heureux de vous retrouver. Nous vous souhaitons une excellente continuation.`,
-      bg: "bg-[linear-gradient(120deg,#0b3d91_0%,#2563eb_50%,#f97316_100%)]",
+      salutation: (name: string) => `Bon après-midi, ${name}`,
+      message: "Heureux de vous retrouver — bonne continuation.",
+      bg: "bg-[linear-gradient(120deg,#0b1f4b_0%,#1e40af_100%)]",
       iconTint: "text-orange-200",
     };
   }
   return {
     Icon: Moon,
-    text: (name: string) =>
-      `Bonsoir, ${name} ! Bienvenue dans GESTI-one. Nous vous souhaitons une agréable soirée de travail.`,
-    bg: "bg-[linear-gradient(120deg,#0a1f4d_0%,#0b3d91_55%,#c2410c_100%)]",
+    salutation: (name: string) => `Bonsoir, ${name}`,
+    message: "Bienvenue dans GESTI-one — agréable soirée de travail.",
+    bg: "bg-[linear-gradient(120deg,#0a1230_0%,#0b3d91_100%)]",
     iconTint: "text-indigo-200",
   };
 }
