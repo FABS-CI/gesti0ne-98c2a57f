@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, FileDown, Mail, MessageCircle, Pencil, PlusCircle, Wallet } from "lucide-react";
+import { ArrowLeft, FileDown, FileText, Mail, MessageCircle, Pencil, PlusCircle, Wallet, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 import { useClientDetail } from "@/hooks/use-client-detail";
@@ -8,6 +8,8 @@ import { buildEtatCompteLignes } from "@/lib/client-detail-helpers";
 import { TYPE_COLOR } from "@/lib/company";
 import { formatFCFA } from "@/lib/format";
 import { generateEtatCompteClientPDF, downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
+import { buildClientHistoriquePDF } from "@/lib/pdf/client-historique-builder";
+import { ClientSoldeDialog } from "@/components/clients/detail/ClientSoldeDialog";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
