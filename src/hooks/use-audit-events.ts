@@ -10,7 +10,7 @@ export function useAuditEvents(moduleFilter: string, periodFilter: string) {
       let q = supabase
         .from("audit_events")
         .select(
-          "id, user_email, user_id, action, module, table_name, record_id, record_ref, occurred_at, old_values, new_values, changes, ip_address, user_agent, url, http_method, status, duration_ms",
+          "id, user_email, user_id, action, module, table_name, record_id, record_ref, occurred_at, old_values, new_values, changes, ip_address, user_agent, url, http_method, status, status_code, duration_ms, error_message, criticite, session_id, correlation_id, city, country, country_code, browser, browser_version, os, device, screen_resolution, timezone",
         )
         .order("occurred_at", { ascending: false })
         .limit(500);
