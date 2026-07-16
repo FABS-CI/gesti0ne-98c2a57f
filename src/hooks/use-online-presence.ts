@@ -12,6 +12,16 @@ export type OnlinePresence = {
   last_activity: string;
   user_agent: string | null;
   url: string | null;
+  // Enrichissements client (résolus au montage de usePresenceBroadcast)
+  ip: string | null;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  country_code: string | null;
+  isp: string | null;
+  device: string | null;
+  browser: string | null;
+  os: string | null;
 };
 
 /**
