@@ -176,6 +176,16 @@ function AuditPage() {
       merged.prenom = p.prenom ?? merged.prenom;
       merged.fonction = p.fonction ?? merged.fonction;
       merged.connected_at = p.connected_at;
+      // Propage les enrichissements client (IP publique, géo, appareil)
+      merged.ip = merged.ip ?? p.ip ?? null;
+      merged.city = merged.city ?? p.city ?? null;
+      merged.region = merged.region ?? p.region ?? null;
+      merged.country = merged.country ?? p.country ?? null;
+      merged.country_code = merged.country_code ?? p.country_code ?? null;
+      merged.isp = merged.isp ?? p.isp ?? null;
+      merged.device = merged.device ?? p.device ?? null;
+      merged.browser = merged.browser ?? p.browser ?? null;
+      merged.os = merged.os ?? p.os ?? null;
       if (new Date(p.last_activity).getTime() > new Date(merged.last).getTime()) {
         merged.last = p.last_activity;
       }
