@@ -34,6 +34,7 @@ export const Route = createFileRoute("/_authenticated/etat-compte-clients")({
 function EtatComptePage() {
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
+  const [historiqueBusy, setHistoriqueBusy] = useState<string | null>(null);
   const [statutFilter, setStatutFilter] = useState<"tous" | "debiteurs" | "soldes">("tous");
   const q = useDebouncedValue(search, 300);
   const exerciceId = useExerciceConsulteId();
