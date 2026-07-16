@@ -158,18 +158,24 @@ export function ProduitsTable({
                   )}
                   {canMutate && (
                     <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" asChild>
+                      <div className="flex justify-end gap-1 opacity-60 transition-opacity group-hover:opacity-100">
+                        <Button variant="ghost" size="icon" asChild title="Voir">
                           <Link to="/produits/$produitId" params={{ produitId: p.produit_id }}>
                             <Eye className="h-4 w-4" />
                           </Link>
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => onEdit(p)}>
+                        <Button variant="ghost" size="icon" onClick={() => onEdit(p)} title="Modifier">
                           <Pencil className="h-4 w-4" />
                         </Button>
                         {p.actif && (
                           <Can permission="produits.supprimer">
-                            <Button variant="ghost" size="icon" onClick={() => onDisable(p)}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => onDisable(p)}
+                              title="Désactiver"
+                              className="hover:bg-destructive/10"
+                            >
                               <PowerOff className="h-4 w-4 text-destructive" />
                             </Button>
                           </Can>
