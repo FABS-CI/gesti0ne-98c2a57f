@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Inbox, Pencil, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { EmptyState } from "@/components/common/EmptyState";
 import { formatFCFA } from "@/lib/format";
 
 import type { ColumnDef, ResourceConfig, Row } from "./resource-manager-types";
