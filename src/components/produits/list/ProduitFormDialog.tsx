@@ -155,6 +155,7 @@ export function ProduitFormDialog({
               onChange={(e) => setField("prix_achat", Number(e.target.value))}
             />
           </div>
+          <SubHeader icon={Boxes} title="Stock" color="#F97316" />
           <div className="space-y-1.5 opacity-70">
             <Label>Stock</Label>
             <p className="text-xs text-muted-foreground">
