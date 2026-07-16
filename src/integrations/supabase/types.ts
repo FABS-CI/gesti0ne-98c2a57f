@@ -3022,6 +3022,55 @@ export type Database = {
         }
         Relationships: []
       }
+      stocks_depots: {
+        Row: {
+          depot_id: string
+          id: string
+          produit_id: string
+          quantite: number
+          seuil_alerte: number
+          updated_at: string
+        }
+        Insert: {
+          depot_id: string
+          id?: string
+          produit_id: string
+          quantite?: number
+          seuil_alerte?: number
+          updated_at?: string
+        }
+        Update: {
+          depot_id?: string
+          id?: string
+          produit_id?: string
+          quantite?: number
+          seuil_alerte?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stocks_depots_depot_id_fkey"
+            columns: ["depot_id"]
+            isOneToOne: false
+            referencedRelation: "depots"
+            referencedColumns: ["depot_id"]
+          },
+          {
+            foreignKeyName: "stocks_depots_produit_id_fkey"
+            columns: ["produit_id"]
+            isOneToOne: false
+            referencedRelation: "produits"
+            referencedColumns: ["produit_id"]
+          },
+          {
+            foreignKeyName: "stocks_depots_produit_id_fkey"
+            columns: ["produit_id"]
+            isOneToOne: false
+            referencedRelation: "v_produits"
+            referencedColumns: ["produit_id"]
+          },
+        ]
+      }
       tournees: {
         Row: {
           created_at: string
@@ -3133,6 +3182,7 @@ export type Database = {
           ligne_id: string
           produit_id: string | null
           quantite: number | null
+          quantite_recue: number
           transfert_id: string
           updated_at: string
         }
@@ -3142,6 +3192,7 @@ export type Database = {
           ligne_id?: string
           produit_id?: string | null
           quantite?: number | null
+          quantite_recue?: number
           transfert_id: string
           updated_at?: string
         }
@@ -3151,6 +3202,7 @@ export type Database = {
           ligne_id?: string
           produit_id?: string | null
           quantite?: number | null
+          quantite_recue?: number
           transfert_id?: string
           updated_at?: string
         }
@@ -3167,38 +3219,56 @@ export type Database = {
       transferts: {
         Row: {
           created_at: string
+          created_by: string | null
+          date_creation: string | null
+          date_expedition: string | null
+          date_reception: string | null
           date_transfert: string | null
           depot_destination_id: string | null
           depot_source_id: string | null
           motif: string | null
           notes: string | null
+          numero: string | null
           reference: string | null
           statut: string | null
           transfert_id: string
+          transporteur: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
+          date_creation?: string | null
+          date_expedition?: string | null
+          date_reception?: string | null
           date_transfert?: string | null
           depot_destination_id?: string | null
           depot_source_id?: string | null
           motif?: string | null
           notes?: string | null
+          numero?: string | null
           reference?: string | null
           statut?: string | null
           transfert_id?: string
+          transporteur?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
+          created_by?: string | null
+          date_creation?: string | null
+          date_expedition?: string | null
+          date_reception?: string | null
           date_transfert?: string | null
           depot_destination_id?: string | null
           depot_source_id?: string | null
           motif?: string | null
           notes?: string | null
+          numero?: string | null
           reference?: string | null
           statut?: string | null
           transfert_id?: string
+          transporteur?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -3339,7 +3409,25 @@ export type Database = {
       }
     }
     Functions: {
+      ajuster_stock_depot: {
+        Args: {
+          _depot_id: string
+          _motif?: string
+          _nouvelle_quantite: number
+          _produit_id: string
+        }
+        Returns: undefined
+      }
+      annuler_transfert: { Args: { _transfert_id: string }; Returns: undefined }
       assert_permission: { Args: { _perm: string }; Returns: undefined }
+      definir_depot_principal: {
+        Args: { _depot_id: string }
+        Returns: undefined
+      }
+      executer_transfert: {
+        Args: { _transfert_id: string }
+        Returns: undefined
+      }
       has_permission_v2: {
         Args: { _perm: string; _user_id: string }
         Returns: boolean
@@ -3377,6 +3465,10 @@ export type Database = {
       }
       rbac_set_role_permission: {
         Args: { _accorde: boolean; _code: string; _role_id: string }
+        Returns: undefined
+      }
+      receptionner_transfert: {
+        Args: { _transfert_id: string }
         Returns: undefined
       }
     }
