@@ -28,7 +28,7 @@ function CommandeRowInner({
 }: CommandeRowProps) {
   const st = STATUT_LABEL[c.statut];
   return (
-    <TableRow className="transition-colors hover:bg-muted/50">
+    <TableRow className="group transition-colors odd:bg-muted/20 hover:bg-primary/5">
       <TableCell className="font-semibold">{c.reference}</TableCell>
       <TableCell>{c.client_nom || "—"}</TableCell>
       <TableCell className="text-muted-foreground">{c.date_commande}</TableCell>
