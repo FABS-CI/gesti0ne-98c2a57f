@@ -298,7 +298,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* CONTACT */}
         <TabsContent value="contact">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={Phone} title="Contact" color="#0EA5E9" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <Field label="Adresse" full>
                 <Input
                   value={form.adresse ?? ""}
