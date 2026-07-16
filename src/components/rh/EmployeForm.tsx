@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Download, Loader2, Plus, Save, Trash2, Upload, X } from "lucide-react";
+import { ArrowLeft, Banknote, Briefcase, Download, IdCard, Loader2, Phone, Plus, Save, Trash2, Upload, UserCircle2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useConfirmDelete } from "@/hooks/use-confirm-delete";
 
@@ -34,6 +34,7 @@ import { employeSchema, type EmployeFormValues } from "@/lib/employe-form";
 import { EmployeeSearchSelect } from "@/components/search/EmployeeSearchSelect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/section-header";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -204,7 +205,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* IDENTITÉ */}
         <TabsContent value="identite">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={UserCircle2} title="Identité" color="#3B82F6" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <div className="sm:col-span-2 flex items-center gap-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src={photoUrlQ.data ?? undefined} />
@@ -296,7 +298,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* CONTACT */}
         <TabsContent value="contact">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={Phone} title="Contact" color="#0EA5E9" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <Field label="Adresse" full>
                 <Input
                   value={form.adresse ?? ""}
@@ -341,7 +344,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* PROFESSIONNEL */}
         <TabsContent value="professionnel">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={Briefcase} title="Informations professionnelles" color="#8B5CF6" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <Field label="Département *">
                 <Select value={form.departement} onValueChange={(v) => set("departement", v)}>
                   <SelectTrigger>
@@ -448,7 +452,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* FINANCIER */}
         <TabsContent value="financier">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={Banknote} title="Rémunération & paiement" color="#10B981" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <Field label="Salaire de base (FCFA) *">
                 <Input
                   type="number"
@@ -506,7 +511,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* ADMINISTRATIF */}
         <TabsContent value="administratif">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={IdCard} title="Administratif & sécurité sociale" color="#F97316" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <Field label="Niveau d'études" full>
                 <Input
                   value={form.niveau_etudes ?? ""}

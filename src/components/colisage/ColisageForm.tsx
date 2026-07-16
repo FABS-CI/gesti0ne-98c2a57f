@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2, PackageCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/section-header";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -290,10 +291,12 @@ export function ColisageForm({
 
   return (
     <Card className="print:hidden">
-      <CardHeader>
-        <CardTitle>{hasColis ? "Refaire le colisage" : "Créer le colisage"}</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <SectionHeader
+        icon={PackageCheck}
+        title={hasColis ? "Refaire le colisage" : "Créer le colisage"}
+        color="#3B82F6"
+      />
+      <CardContent className="pl-5 sm:pl-6">
         <fieldset disabled={!modifiable} className="contents">
           <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-3">
             <div>
