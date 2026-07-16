@@ -4804,6 +4804,13 @@ export type Database = {
         }[]
       }
       get_slo_metrics: { Args: never; Returns: Json }
+      has_any_role: {
+        Args: {
+          _roles: Database["public"]["Enums"]["app_role"][]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_permission_v2: {
         Args: { _perm: string; _user_id: string }
         Returns: boolean
@@ -4815,6 +4822,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: { _uid: string }; Returns: boolean }
+      is_finance: { Args: { _uid: string }; Returns: boolean }
+      is_hr: { Args: { _uid: string }; Returns: boolean }
+      is_sales: { Args: { _uid: string }; Returns: boolean }
+      is_stock: { Args: { _uid: string }; Returns: boolean }
       list_user_permissions: {
         Args: { _user_id: string }
         Returns: {
