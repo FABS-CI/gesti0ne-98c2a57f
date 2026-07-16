@@ -152,6 +152,9 @@ function ClientDetailPage() {
           >
             <PlusCircle className="mr-2 h-4 w-4" /> Commander
           </Button>
+          <Button variant="outline" onClick={() => setSoldeOpen(true)} disabled={!rel}>
+            <Eye className="mr-2 h-4 w-4" /> Consulter le solde
+          </Button>
           <Button
             variant="secondary"
             onClick={() =>
@@ -163,6 +166,10 @@ function ClientDetailPage() {
           <Button variant="outline" onClick={handleEtatCompte} disabled={generating || !rel}>
             <FileDown className="mr-2 h-4 w-4" />
             {generating ? "Génération…" : "État de compte (PDF)"}
+          </Button>
+          <Button variant="outline" onClick={handleHistoriquePdf} disabled={historiqueBusy || !rel}>
+            <FileText className="mr-2 h-4 w-4" />
+            {historiqueBusy ? "Génération…" : "Historique PDF"}
           </Button>
           <Badge
             style={{ backgroundColor: type?.bg ?? "#CFD8DC", color: type?.color ?? "#0A2540" }}
