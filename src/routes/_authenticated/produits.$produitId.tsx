@@ -98,6 +98,19 @@ function ProduitDetailPage() {
         <Badge variant={enAlerte ? "destructive" : "secondary"}>Stock : {produit.stock}</Badge>
       </div>
 
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <ProductCoverHero produit={produit} />
+        <div className="min-w-0 flex-1 space-y-4">
+          <KpiCards stockValorise={stockValorise} stats={stats} />
+          <InfoCards
+            isbn={produit.isbn}
+            prix_vente={produit.prix_vente}
+            prix_achat={produit.prix_achat}
+            seuil_alerte={produit.seuil_alerte}
+          />
+        </div>
+      </div>
+      {false && (<>
       <KpiCards stockValorise={stockValorise} stats={stats} />
       <InfoCards
         isbn={produit.isbn}
