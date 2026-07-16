@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { trackPresence, untrackPresence } from "@/lib/presence-channel";
 
 /**
- * Publie l'état de présence de l'utilisateur courant sur le canal
- * partagé `app-presence`. Détecte automatiquement les fermetures brutales
- * de navigateur / pertes réseau via la déconnexion websocket côté serveur.
- *
- * Le canal utilise Supabase Realtime Presence : chaque client "track()" ses
- * infos, tous les autres clients abonnés reçoivent les changements en direct.
+ * Publie l'état de présence de l'utilisateur courant sur le canal partagé
+ * `app-presence` via le singleton `presence-channel`. Cela garantit qu'un
+ * seul canal Realtime est ouvert, que ses handlers `.on('presence', …)`
+ * sont enregistrés avant `subscribe()`, et que les observers
+ * (`useOnlinePresence`) peuvent s'y greffer sans conflit.
  */
 export function usePresenceBroadcast(user: {
   id: string;
@@ -23,22 +23,17 @@ export function usePresenceBroadcast(user: {
     const userAgent =
       typeof navigator !== "undefined" ? navigator.userAgent : null;
 
-    // Récupère nom/prénom/fonction depuis profiles (best-effort).
     let profile: {
       nom_complet: string | null;
       prenom: string | null;
       fonction: string | null;
     } = { nom_complet: null, prenom: null, fonction: null };
 
-    const channel = supabase.channel("app-presence", {
-      config: { presence: { key: user.id } },
-    });
-
     const publish = () => {
       if (cancelled) return;
-      void channel.track({
+      void trackPresence(user.id, {
         user_id: user.id,
-        email: user.email,
+        email: user.email!,
         nom_complet: profile.nom_complet,
         prenom: profile.prenom,
         fonction: profile.fonction,
@@ -49,18 +44,18 @@ export function usePresenceBroadcast(user: {
       });
     };
 
-    channel.subscribe(async (status) => {
-      if (status !== "SUBSCRIBED" || cancelled) return;
+    // Récupère le profil puis publie une première fois.
+    (async () => {
       const { data } = await supabase
         .from("profiles")
         .select("nom_complet, prenom, fonction")
         .eq("id", user.id)
         .maybeSingle();
+      if (cancelled) return;
       if (data) profile = data;
       publish();
-    });
+    })();
 
-    // Marque l'activité utilisateur
     const bump = () => {
       lastActivityRef.current = Date.now();
     };
@@ -69,16 +64,10 @@ export function usePresenceBroadcast(user: {
       document.addEventListener(e, bump, { passive: true }),
     );
 
-    // Republie l'état toutes les 30 s pour rafraîchir last_activity
     const interval = window.setInterval(publish, 30_000);
 
-    // Nettoie la présence lors de la fermeture / navigation
     const onLeave = () => {
-      try {
-        void channel.untrack();
-      } catch {
-        /* noop */
-      }
+      void untrackPresence();
     };
     window.addEventListener("pagehide", onLeave);
     window.addEventListener("beforeunload", onLeave);
@@ -90,7 +79,6 @@ export function usePresenceBroadcast(user: {
       window.removeEventListener("pagehide", onLeave);
       window.removeEventListener("beforeunload", onLeave);
       onLeave();
-      supabase.removeChannel(channel);
     };
   }, [user?.id, user?.email]);
 }
