@@ -511,7 +511,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* ADMINISTRATIF */}
         <TabsContent value="administratif">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={IdCard} title="Administratif & sécurité sociale" color="#F97316" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <Field label="Niveau d'études" full>
                 <Input
                   value={form.niveau_etudes ?? ""}
