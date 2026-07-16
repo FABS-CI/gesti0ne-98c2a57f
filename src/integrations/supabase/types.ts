@@ -2371,6 +2371,13 @@ export type Database = {
             referencedColumns: ["gare_id"]
           },
           {
+            foreignKeyName: "livraisons_livreur_id_fkey"
+            columns: ["livreur_id"]
+            isOneToOne: false
+            referencedRelation: "livreurs"
+            referencedColumns: ["livreur_id"]
+          },
+          {
             foreignKeyName: "livraisons_transporteur_id_fkey"
             columns: ["transporteur_id"]
             isOneToOne: false
