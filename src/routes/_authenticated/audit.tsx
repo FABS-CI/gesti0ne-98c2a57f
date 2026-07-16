@@ -293,7 +293,7 @@ function AuditPage() {
         <ShieldAlert className="h-10 w-10 text-destructive" />
         <h1 className="text-xl font-bold">Accès restreint</h1>
         <p className="max-w-md text-sm text-muted-foreground">
-          Le journal d'audit est réservé à la direction et à la comptabilité.
+          Le journal d'audit est réservé au Super Administrateur.
         </p>
       </div>
     );
