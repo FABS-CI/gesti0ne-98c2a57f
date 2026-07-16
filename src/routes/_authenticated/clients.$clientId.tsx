@@ -41,6 +41,8 @@ function ClientDetailPage() {
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [historiqueBusy, setHistoriqueBusy] = useState(false);
+  const [soldeOpen, setSoldeOpen] = useState(false);
   const { has } = usePermissions();
   const canSeeSolde = has("clients.voir_ca");
 
