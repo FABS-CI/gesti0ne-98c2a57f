@@ -196,8 +196,9 @@ function DataQualityPage() {
                     <Badge variant="destructive">{d.nb}</Badge>
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
-                    {d.noms.join(" • ")}
+                    {(d.noms ?? []).join(" • ")}
                   </TableCell>
+
                   <TableCell className="text-right">
                     <Button
                       size="sm"

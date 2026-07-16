@@ -271,9 +271,15 @@ function RootComponent() {
       dehydrateOptions: {
         shouldDehydrateQuery: (query) => {
           const first = query.queryKey?.[0];
+          // Ne jamais persister une requête en cours (status='pending') :
+          // sa `promise` non résolue casse persistQueryClientRestore avec
+          // "promise.then is not a function" au prochain démarrage.
+          if (query.state.status !== "success") return false;
           return typeof first === "string" && PERSISTED_QUERY_KEYS.has(first);
         },
       },
+      buster: "v2",
+
     });
     return () => unsubscribe();
   }, [queryClient]);

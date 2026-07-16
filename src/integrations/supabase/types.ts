@@ -21,8 +21,10 @@ export type Database = {
           date_debut: string | null
           date_fin: string | null
           employe_id: string | null
+          employe_nom: string | null
           justifie: boolean
           motif: string | null
+          statut: string
           type: string | null
           updated_at: string
         }
@@ -32,8 +34,10 @@ export type Database = {
           date_debut?: string | null
           date_fin?: string | null
           employe_id?: string | null
+          employe_nom?: string | null
           justifie?: boolean
           motif?: string | null
+          statut?: string
           type?: string | null
           updated_at?: string
         }
@@ -43,8 +47,10 @@ export type Database = {
           date_debut?: string | null
           date_fin?: string | null
           employe_id?: string | null
+          employe_nom?: string | null
           justifie?: boolean
           motif?: string | null
+          statut?: string
           type?: string | null
           updated_at?: string
         }
@@ -642,6 +648,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      categories_produits: {
+        Row: {
+          actif: boolean
+          categorie_id: string
+          code: string | null
+          created_at: string
+          description: string | null
+          libelle: string
+          parent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          categorie_id?: string
+          code?: string | null
+          created_at?: string
+          description?: string | null
+          libelle: string
+          parent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          categorie_id?: string
+          code?: string | null
+          created_at?: string
+          description?: string | null
+          libelle?: string
+          parent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_produits_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories_produits"
+            referencedColumns: ["categorie_id"]
+          },
+        ]
       }
       clients: {
         Row: {
@@ -1252,6 +1299,7 @@ export type Database = {
           date_fin: string | null
           document_url: string | null
           employe_id: string | null
+          employe_nom: string | null
           notes: string | null
           salaire: number | null
           statut: string | null
@@ -1265,6 +1313,7 @@ export type Database = {
           date_fin?: string | null
           document_url?: string | null
           employe_id?: string | null
+          employe_nom?: string | null
           notes?: string | null
           salaire?: number | null
           statut?: string | null
@@ -1278,6 +1327,7 @@ export type Database = {
           date_fin?: string | null
           document_url?: string | null
           employe_id?: string | null
+          employe_nom?: string | null
           notes?: string | null
           salaire?: number | null
           statut?: string | null
@@ -1413,6 +1463,7 @@ export type Database = {
           created_at: string
           departement_id: string
           libelle: string
+          nom: string | null
           responsable: string | null
           updated_at: string
         }
@@ -1422,6 +1473,7 @@ export type Database = {
           created_at?: string
           departement_id?: string
           libelle: string
+          nom?: string | null
           responsable?: string | null
           updated_at?: string
         }
@@ -1431,6 +1483,7 @@ export type Database = {
           created_at?: string
           departement_id?: string
           libelle?: string
+          nom?: string | null
           responsable?: string | null
           updated_at?: string
         }
@@ -1508,9 +1561,137 @@ export type Database = {
         }
         Relationships: []
       }
+      document_settings: {
+        Row: {
+          created_at: string
+          logo_url: string | null
+          selected_template: string
+          template_per_type: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          logo_url?: string | null
+          selected_template?: string
+          template_per_type?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          logo_url?: string | null
+          selected_template?: string
+          template_per_type?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      document_template_prefs: {
+        Row: {
+          created_at: string
+          prefs: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          prefs?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          prefs?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      document_templates: {
+        Row: {
+          actif: boolean
+          code: string
+          contenu: Json
+          created_at: string
+          description: string | null
+          id: string
+          libelle: string
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          contenu?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          libelle: string
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          contenu?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          libelle?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json
+          mime_type: string | null
+          taille_octets: number | null
+          titre: string
+          type: string | null
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json
+          mime_type?: string | null
+          taille_octets?: number | null
+          titre: string
+          type?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json
+          mime_type?: string | null
+          taille_octets?: number | null
+          titre?: string
+          type?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       ecriture_lignes: {
         Row: {
+          compte: string | null
           compte_id: string | null
+          compte_libelle: string | null
           created_at: string
           credit: number | null
           debit: number | null
@@ -1521,7 +1702,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          compte?: string | null
           compte_id?: string | null
+          compte_libelle?: string | null
           created_at?: string
           credit?: number | null
           debit?: number | null
@@ -1532,7 +1715,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          compte?: string | null
           compte_id?: string | null
+          compte_libelle?: string | null
           created_at?: string
           credit?: number | null
           debit?: number | null
@@ -1558,7 +1743,9 @@ export type Database = {
           date_ecriture: string | null
           ecriture_id: string
           exercice_id: string | null
+          journal: string | null
           journal_id: string | null
+          lettrage: string | null
           libelle: string | null
           montant: number | null
           piece_ref: string | null
@@ -1571,7 +1758,9 @@ export type Database = {
           date_ecriture?: string | null
           ecriture_id?: string
           exercice_id?: string | null
+          journal?: string | null
           journal_id?: string | null
+          lettrage?: string | null
           libelle?: string | null
           montant?: number | null
           piece_ref?: string | null
@@ -1584,7 +1773,9 @@ export type Database = {
           date_ecriture?: string | null
           ecriture_id?: string
           exercice_id?: string | null
+          journal?: string | null
           journal_id?: string | null
+          lettrage?: string | null
           libelle?: string | null
           montant?: number | null
           piece_ref?: string | null
@@ -1774,6 +1965,7 @@ export type Database = {
           created_at: string
           date_evaluation: string | null
           employe_id: string | null
+          employe_nom: string | null
           evaluateur: string | null
           evaluation_id: string
           note: number | null
@@ -1785,6 +1977,7 @@ export type Database = {
           created_at?: string
           date_evaluation?: string | null
           employe_id?: string | null
+          employe_nom?: string | null
           evaluateur?: string | null
           evaluation_id?: string
           note?: number | null
@@ -1796,6 +1989,7 @@ export type Database = {
           created_at?: string
           date_evaluation?: string | null
           employe_id?: string | null
+          employe_nom?: string | null
           evaluateur?: string | null
           evaluation_id?: string
           note?: number | null
@@ -1807,30 +2001,36 @@ export type Database = {
       exercices_comptables: {
         Row: {
           cloture_le: string | null
+          code: string | null
           created_at: string
           date_debut: string
           date_fin: string
           exercice_id: string
+          is_actif: boolean
           libelle: string
           statut: string
           updated_at: string
         }
         Insert: {
           cloture_le?: string | null
+          code?: string | null
           created_at?: string
           date_debut: string
           date_fin: string
           exercice_id?: string
+          is_actif?: boolean
           libelle: string
           statut?: string
           updated_at?: string
         }
         Update: {
           cloture_le?: string | null
+          code?: string | null
           created_at?: string
           date_debut?: string
           date_fin?: string
           exercice_id?: string
+          is_actif?: boolean
           libelle?: string
           statut?: string
           updated_at?: string
@@ -1984,11 +2184,111 @@ export type Database = {
         }
         Relationships: []
       }
+      fne_factures: {
+        Row: {
+          created_at: string
+          facture_id: string | null
+          fne_ref: string | null
+          id: string
+          metadata: Json
+          qr_code: string | null
+          reference: string | null
+          statut: string
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          facture_id?: string | null
+          fne_ref?: string | null
+          id?: string
+          metadata?: Json
+          qr_code?: string | null
+          reference?: string | null
+          statut?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          facture_id?: string | null
+          fne_ref?: string | null
+          id?: string
+          metadata?: Json
+          qr_code?: string | null
+          reference?: string | null
+          statut?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      fne_logs: {
+        Row: {
+          created_at: string
+          facture_id: string | null
+          id: string
+          message: string | null
+          niveau: string
+          payload: Json
+        }
+        Insert: {
+          created_at?: string
+          facture_id?: string | null
+          id?: string
+          message?: string | null
+          niveau?: string
+          payload?: Json
+        }
+        Update: {
+          created_at?: string
+          facture_id?: string | null
+          id?: string
+          message?: string | null
+          niveau?: string
+          payload?: Json
+        }
+        Relationships: []
+      }
+      fne_settings: {
+        Row: {
+          actif: boolean
+          cle_api: string | null
+          config: Json
+          created_at: string
+          environnement: string
+          id: string
+          identifiant: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          cle_api?: string | null
+          config?: Json
+          created_at?: string
+          environnement?: string
+          id?: string
+          identifiant?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          cle_api?: string | null
+          config?: Json
+          created_at?: string
+          environnement?: string
+          id?: string
+          identifiant?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fonctions: {
         Row: {
           actif: boolean
           code: string | null
           created_at: string
+          departement_id: string | null
           description: string | null
           fonction_id: string
           libelle: string
@@ -1998,6 +2298,7 @@ export type Database = {
           actif?: boolean
           code?: string | null
           created_at?: string
+          departement_id?: string | null
           description?: string | null
           fonction_id?: string
           libelle: string
@@ -2007,12 +2308,21 @@ export type Database = {
           actif?: boolean
           code?: string | null
           created_at?: string
+          departement_id?: string | null
           description?: string | null
           fonction_id?: string
           libelle?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fonctions_departement_id_fkey"
+            columns: ["departement_id"]
+            isOneToOne: false
+            referencedRelation: "departements"
+            referencedColumns: ["departement_id"]
+          },
+        ]
       }
       fournisseurs: {
         Row: {
@@ -2093,6 +2403,90 @@ export type Database = {
             referencedColumns: ["transporteur_id"]
           },
         ]
+      }
+      historique_envois: {
+        Row: {
+          created_at: string
+          destinataire: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          message: string | null
+          metadata: Json
+          reference: string | null
+          sent_by: string | null
+          statut: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          destinataire?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json
+          reference?: string | null
+          sent_by?: string | null
+          statut?: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          destinataire?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          message?: string | null
+          metadata?: Json
+          reference?: string | null
+          sent_by?: string | null
+          statut?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      incident_alerts: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          metadata: Json
+          resolved: boolean
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          source: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          source?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          source?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       incidents_stock: {
         Row: {
@@ -2635,6 +3029,36 @@ export type Database = {
           },
         ]
       }
+      login_history: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          ip: string | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          ip?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       missions: {
         Row: {
           created_at: string
@@ -2976,6 +3400,39 @@ export type Database = {
         }
         Relationships: []
       }
+      perf_query_log: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          error: string | null
+          id: string
+          metadata: Json
+          query_key: string | null
+          route: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          id?: string
+          metadata?: Json
+          query_key?: string | null
+          route?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          error?: string | null
+          id?: string
+          metadata?: Json
+          query_key?: string | null
+          route?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
       plan_comptable: {
         Row: {
           actif: boolean
@@ -3110,6 +3567,7 @@ export type Database = {
           produit_id: string
           reference: string | null
           seuil_alerte: number | null
+          stock: number | null
           titre: string
           updated_at: string
         }
@@ -3133,6 +3591,7 @@ export type Database = {
           produit_id?: string
           reference?: string | null
           seuil_alerte?: number | null
+          stock?: number | null
           titre: string
           updated_at?: string
         }
@@ -3156,6 +3615,7 @@ export type Database = {
           produit_id?: string
           reference?: string | null
           seuil_alerte?: number | null
+          stock?: number | null
           titre?: string
           updated_at?: string
         }
@@ -3546,6 +4006,13 @@ export type Database = {
             foreignKeyName: "retour_lignes_retour_id_fkey"
             columns: ["retour_id"]
             isOneToOne: false
+            referencedRelation: "bons_retour"
+            referencedColumns: ["retour_id"]
+          },
+          {
+            foreignKeyName: "retour_lignes_retour_id_fkey"
+            columns: ["retour_id"]
+            isOneToOne: false
             referencedRelation: "retours"
             referencedColumns: ["retour_id"]
           },
@@ -3900,6 +4367,13 @@ export type Database = {
             referencedRelation: "depots"
             referencedColumns: ["depot_id"]
           },
+          {
+            foreignKeyName: "tournees_vehicule_id_fkey"
+            columns: ["vehicule_id"]
+            isOneToOne: false
+            referencedRelation: "vehicules"
+            referencedColumns: ["vehicule_id"]
+          },
         ]
       }
       transactions: {
@@ -4060,7 +4534,22 @@ export type Database = {
           transporteur?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transferts_depot_destination_id_fkey"
+            columns: ["depot_destination_id"]
+            isOneToOne: false
+            referencedRelation: "depots"
+            referencedColumns: ["depot_id"]
+          },
+          {
+            foreignKeyName: "transferts_depot_source_id_fkey"
+            columns: ["depot_source_id"]
+            isOneToOne: false
+            referencedRelation: "depots"
+            referencedColumns: ["depot_id"]
+          },
+        ]
       }
       transporteurs: {
         Row: {
@@ -4095,6 +4584,57 @@ export type Database = {
         }
         Relationships: []
       }
+      user_action_stats: {
+        Row: {
+          action_key: string
+          created_at: string
+          hidden: boolean
+          href: string | null
+          icon: string | null
+          id: string
+          label: string | null
+          last_used_at: string | null
+          module: string | null
+          pinned: boolean
+          sort_order: number
+          updated_at: string
+          usage_count: number
+          user_id: string
+        }
+        Insert: {
+          action_key: string
+          created_at?: string
+          hidden?: boolean
+          href?: string | null
+          icon?: string | null
+          id?: string
+          label?: string | null
+          last_used_at?: string | null
+          module?: string | null
+          pinned?: boolean
+          sort_order?: number
+          updated_at?: string
+          usage_count?: number
+          user_id: string
+        }
+        Update: {
+          action_key?: string
+          created_at?: string
+          hidden?: boolean
+          href?: string | null
+          icon?: string | null
+          id?: string
+          label?: string | null
+          last_used_at?: string | null
+          module?: string | null
+          pinned?: boolean
+          sort_order?: number
+          updated_at?: string
+          usage_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -4121,9 +4661,13 @@ export type Database = {
           actif: boolean
           capacite: number | null
           created_at: string
+          date_expiration_assurance: string | null
+          date_expiration_visite_technique: string | null
+          date_prochain_entretien: string | null
           immatriculation: string | null
           marque: string | null
           modele: string | null
+          statut: string
           type: string | null
           updated_at: string
           vehicule_id: string
@@ -4132,9 +4676,13 @@ export type Database = {
           actif?: boolean
           capacite?: number | null
           created_at?: string
+          date_expiration_assurance?: string | null
+          date_expiration_visite_technique?: string | null
+          date_prochain_entretien?: string | null
           immatriculation?: string | null
           marque?: string | null
           modele?: string | null
+          statut?: string
           type?: string | null
           updated_at?: string
           vehicule_id?: string
@@ -4143,17 +4691,384 @@ export type Database = {
           actif?: boolean
           capacite?: number | null
           created_at?: string
+          date_expiration_assurance?: string | null
+          date_expiration_visite_technique?: string | null
+          date_prochain_entretien?: string | null
           immatriculation?: string | null
           marque?: string | null
           modele?: string | null
+          statut?: string
           type?: string | null
           updated_at?: string
           vehicule_id?: string
         }
         Relationships: []
       }
+      workflow_approvals: {
+        Row: {
+          approbateur_id: string | null
+          approbateur_nom: string | null
+          commentaire: string | null
+          created_at: string
+          decided_at: string | null
+          demandeur_id: string | null
+          demandeur_nom: string | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          metadata: Json
+          reference: string | null
+          statut: string
+          updated_at: string
+          workflow_code: string
+        }
+        Insert: {
+          approbateur_id?: string | null
+          approbateur_nom?: string | null
+          commentaire?: string | null
+          created_at?: string
+          decided_at?: string | null
+          demandeur_id?: string | null
+          demandeur_nom?: string | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json
+          reference?: string | null
+          statut?: string
+          updated_at?: string
+          workflow_code: string
+        }
+        Update: {
+          approbateur_id?: string | null
+          approbateur_nom?: string | null
+          commentaire?: string | null
+          created_at?: string
+          decided_at?: string | null
+          demandeur_id?: string | null
+          demandeur_nom?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json
+          reference?: string | null
+          statut?: string
+          updated_at?: string
+          workflow_code?: string
+        }
+        Relationships: []
+      }
+      workflows_definitions: {
+        Row: {
+          actif: boolean
+          code: string
+          config: Json
+          created_at: string
+          description: string | null
+          id: string
+          libelle: string
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          config?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          libelle: string
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          config?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          libelle?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
+      audit_events: {
+        Row: {
+          action: string | null
+          created_at: string | null
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string | null
+          ip_address: string | null
+          module: string | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          table_name: string | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action?: string | null
+          created_at?: string | null
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string | null
+          ip_address?: string | null
+          module?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string | null
+          created_at?: string | null
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string | null
+          ip_address?: string | null
+          module?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      bons_retour: {
+        Row: {
+          client_id: string | null
+          client_nom: string | null
+          commande_id: string | null
+          created_at: string | null
+          date_retour: string | null
+          facture_id: string | null
+          montant: number | null
+          motif: string | null
+          notes: string | null
+          reference: string | null
+          retour_id: string | null
+          statut: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string | null
+          date_retour?: string | null
+          facture_id?: string | null
+          montant?: number | null
+          motif?: string | null
+          notes?: string | null
+          reference?: string | null
+          retour_id?: string | null
+          statut?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          client_nom?: string | null
+          commande_id?: string | null
+          created_at?: string | null
+          date_retour?: string | null
+          facture_id?: string | null
+          montant?: number | null
+          motif?: string | null
+          notes?: string | null
+          reference?: string | null
+          retour_id?: string | null
+          statut?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      exercices: {
+        Row: {
+          cloture_le: string | null
+          code: string | null
+          created_at: string | null
+          date_debut: string | null
+          date_fin: string | null
+          exercice_id: string | null
+          is_actif: boolean | null
+          libelle: string | null
+          statut: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cloture_le?: string | null
+          code?: string | null
+          created_at?: string | null
+          date_debut?: string | null
+          date_fin?: string | null
+          exercice_id?: string | null
+          is_actif?: boolean | null
+          libelle?: string | null
+          statut?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cloture_le?: string | null
+          code?: string | null
+          created_at?: string | null
+          date_debut?: string | null
+          date_fin?: string | null
+          exercice_id?: string | null
+          is_actif?: boolean | null
+          libelle?: string | null
+          statut?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      incidents: {
+        Row: {
+          created_at: string | null
+          date_incident: string | null
+          depot_id: string | null
+          description: string | null
+          gravite: string | null
+          incident_id: string | null
+          produit_id: string | null
+          reference: string | null
+          statut: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_incident?: string | null
+          depot_id?: string | null
+          description?: string | null
+          gravite?: string | null
+          incident_id?: string | null
+          produit_id?: string | null
+          reference?: string | null
+          statut?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date_incident?: string | null
+          depot_id?: string | null
+          description?: string | null
+          gravite?: string | null
+          incident_id?: string | null
+          produit_id?: string | null
+          reference?: string | null
+          statut?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      paie_parametres: {
+        Row: {
+          cle: string | null
+          created_at: string | null
+          description: string | null
+          parametre_id: string | null
+          updated_at: string | null
+          valeur: string | null
+        }
+        Insert: {
+          cle?: string | null
+          created_at?: string | null
+          description?: string | null
+          parametre_id?: string | null
+          updated_at?: string | null
+          valeur?: string | null
+        }
+        Update: {
+          cle?: string | null
+          created_at?: string | null
+          description?: string | null
+          parametre_id?: string | null
+          updated_at?: string | null
+          valeur?: string | null
+        }
+        Relationships: []
+      }
+      paie_rubriques: {
+        Row: {
+          actif: boolean | null
+          code: string | null
+          created_at: string | null
+          formule: string | null
+          libelle: string | null
+          rubrique_id: string | null
+          taux: number | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          actif?: boolean | null
+          code?: string | null
+          created_at?: string | null
+          formule?: string | null
+          libelle?: string | null
+          rubrique_id?: string | null
+          taux?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          actif?: boolean | null
+          code?: string | null
+          created_at?: string | null
+          formule?: string | null
+          libelle?: string | null
+          rubrique_id?: string | null
+          taux?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      parametres: {
+        Row: {
+          categorie: string | null
+          cle: string | null
+          created_at: string | null
+          description: string | null
+          parametre_id: string | null
+          updated_at: string | null
+          valeur: string | null
+        }
+        Insert: {
+          categorie?: string | null
+          cle?: string | null
+          created_at?: string | null
+          description?: string | null
+          parametre_id?: string | null
+          updated_at?: string | null
+          valeur?: string | null
+        }
+        Update: {
+          categorie?: string | null
+          cle?: string | null
+          created_at?: string | null
+          description?: string | null
+          parametre_id?: string | null
+          updated_at?: string | null
+          valeur?: string | null
+        }
+        Relationships: []
+      }
       v_colisage_responsables: {
         Row: {
           actif: boolean | null
@@ -4256,6 +5171,39 @@ export type Database = {
           stock?: never
           titre?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      v_rpc_errors_recent: {
+        Row: {
+          created_at: string | null
+          duration_ms: number | null
+          error: string | null
+          id: string | null
+          metadata: Json | null
+          query_key: string | null
+          route: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_ms?: number | null
+          error?: string | null
+          id?: string | null
+          metadata?: Json | null
+          query_key?: string | null
+          route?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_ms?: number | null
+          error?: string | null
+          id?: string | null
+          metadata?: Json | null
+          query_key?: string | null
+          route?: string | null
+          status?: string | null
         }
         Relationships: []
       }
