@@ -98,7 +98,7 @@ export function ClientsTable({
                 return (
                   <TableRow
                     key={c.client_id}
-                    className="hover:bg-[#F97316]/10 cursor-pointer"
+                    className="group cursor-pointer transition-colors odd:bg-muted/20 hover:bg-primary/5"
                     onClick={() =>
                       navigate({ to: "/clients/$clientId", params: { clientId: c.client_id } })
                     }
