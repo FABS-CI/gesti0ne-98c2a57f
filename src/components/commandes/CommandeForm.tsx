@@ -6,7 +6,7 @@ import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/rea
 import { invalidateCommande } from "@/lib/cache-invalidation";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Save } from "lucide-react";
+import { Info, Percent, Save, User } from "lucide-react";
 import { usePermissions } from "@/hooks/use-permissions";
 
 import { Button } from "@/components/ui/button";
@@ -324,8 +324,14 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-6 min-w-0">
           {/* 1. Client */}
-          <section className="rounded-md border bg-card p-4 sm:p-5 space-y-4">
-            <h2 className="text-base sm:text-lg font-semibold">1. Client</h2>
+          <section className="relative overflow-hidden rounded-md border bg-card p-4 pl-5 sm:p-5 sm:pl-6 space-y-4">
+            <span aria-hidden className="absolute inset-y-0 left-0 w-1" style={{ backgroundColor: "#3B82F6" }} />
+            <h2 className="flex items-center gap-2 text-base sm:text-lg font-semibold">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-white shadow-sm" style={{ backgroundColor: "#3B82F6" }}>
+                <User className="h-4 w-4" />
+              </span>
+              1. Client
+            </h2>
             <div>
               <Label className="mb-1 block text-xs sm:text-sm">
                 Rechercher par établissement, représentant, ville ou téléphone
@@ -383,8 +389,14 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
           </section>
 
           {/* 2. Infos commande */}
-          <section className="rounded-md border bg-card p-4 sm:p-5 space-y-4">
-            <h2 className="text-base sm:text-lg font-semibold">2. Informations</h2>
+          <section className="relative overflow-hidden rounded-md border bg-card p-4 pl-5 sm:p-5 sm:pl-6 space-y-4">
+            <span aria-hidden className="absolute inset-y-0 left-0 w-1" style={{ backgroundColor: "#8B5CF6" }} />
+            <h2 className="flex items-center gap-2 text-base sm:text-lg font-semibold">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-white shadow-sm" style={{ backgroundColor: "#8B5CF6" }}>
+                <Info className="h-4 w-4" />
+              </span>
+              2. Informations
+            </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <Label htmlFor="date_commande" className="text-xs">
@@ -426,8 +438,14 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
           />
 
           {/* 4. Remise globale */}
-          <section className="rounded-md border bg-card p-4 sm:p-5 space-y-3">
-            <h2 className="text-base sm:text-lg font-semibold">4. Remise globale</h2>
+          <section className="relative overflow-hidden rounded-md border bg-card p-4 pl-5 sm:p-5 sm:pl-6 space-y-3">
+            <span aria-hidden className="absolute inset-y-0 left-0 w-1" style={{ backgroundColor: "#10B981" }} />
+            <h2 className="flex items-center gap-2 text-base sm:text-lg font-semibold">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-white shadow-sm" style={{ backgroundColor: "#10B981" }}>
+                <Percent className="h-4 w-4" />
+              </span>
+              4. Remise globale
+            </h2>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="remise_globale_pct" className="text-xs">
