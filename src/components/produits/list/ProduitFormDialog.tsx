@@ -138,6 +138,7 @@ export function ProduitFormDialog({
               onChange={(e) => setField("editeur", e.target.value)}
             />
           </div>
+          <SubHeader icon={Coins} title="Prix" color="#10B981" />
           <div className="space-y-1.5">
             <Label>Prix de vente</Label>
             <Input
