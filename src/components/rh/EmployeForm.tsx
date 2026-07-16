@@ -452,7 +452,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* FINANCIER */}
         <TabsContent value="financier">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={Banknote} title="Rémunération & paiement" color="#10B981" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <Field label="Salaire de base (FCFA) *">
                 <Input
                   type="number"
