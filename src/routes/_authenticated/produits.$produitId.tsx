@@ -29,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/produits/$produitId")({
 
 function ProduitDetailPage() {
   const { produitId } = Route.useParams();
+  const queryClient = useQueryClient();
   const { hasRole, hasAny } = useUserRoles();
   const isAssistanteOnly =
     (hasRole("assistante") || hasRole("comptable") || hasRole("secretariat")) &&
