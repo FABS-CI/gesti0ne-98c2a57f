@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Banknote, Briefcase, Download, IdCard, Loader2, Phone, Plus, Save, ShieldCheck, Trash2, Upload, UserCircle2, X } from "lucide-react";
+import { ArrowLeft, Banknote, Briefcase, Download, IdCard, Loader2, Phone, Plus, Save, Trash2, Upload, UserCircle2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useConfirmDelete } from "@/hooks/use-confirm-delete";
 
