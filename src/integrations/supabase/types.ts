@@ -279,8 +279,12 @@ export type Database = {
         Row: {
           action: string
           created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
           id: string
           ip_address: string | null
+          module: string | null
           new_values: Json | null
           old_values: Json | null
           record_id: string | null
@@ -292,8 +296,12 @@ export type Database = {
         Insert: {
           action: string
           created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
           id?: string
           ip_address?: string | null
+          module?: string | null
           new_values?: Json | null
           old_values?: Json | null
           record_id?: string | null
@@ -305,8 +313,12 @@ export type Database = {
         Update: {
           action?: string
           created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
           id?: string
           ip_address?: string | null
+          module?: string | null
           new_values?: Json | null
           old_values?: Json | null
           record_id?: string | null
@@ -4293,8 +4305,137 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      annuler_retour: {
+        Args: { _motif?: string; _retour_id: string }
+        Returns: undefined
+      }
+      annuler_specimen: {
+        Args: { _motif?: string; _specimen_id: string }
+        Returns: undefined
+      }
       annuler_transfert: { Args: { _transfert_id: string }; Returns: undefined }
+      annuler_validation_tournee: {
+        Args: { _motif?: string; _tournee_id: string }
+        Returns: undefined
+      }
       assert_permission: { Args: { _perm: string }; Returns: undefined }
+      audit_compta_factures_paiements: {
+        Args: never
+        Returns: {
+          detail: string
+          facture_id: string
+          montant: number
+          reference: string
+          type: string
+        }[]
+      }
+      audit_compta_soldes_clients: {
+        Args: never
+        Returns: {
+          client_id: string
+          ecart: number
+          nom: string
+          solde_calcule: number
+          solde_stocke: number
+        }[]
+      }
+      audit_events_by_module: {
+        Args: { p_days?: number }
+        Returns: {
+          module: string
+          total: number
+        }[]
+      }
+      audit_events_daily: {
+        Args: { p_days?: number }
+        Returns: {
+          day: string
+          error: number
+          info: number
+          total: number
+          warning: number
+        }[]
+      }
+      audit_events_list: {
+        Args: {
+          p_action?: string
+          p_module?: string
+          p_page?: number
+          p_page_size?: number
+          p_period_days?: number
+          p_search?: string
+          p_user_email?: string
+        }
+        Returns: {
+          action: string
+          created_at: string
+          details: Json
+          entity_id: string
+          entity_type: string
+          id: string
+          module: string
+          user_id: string
+        }[]
+      }
+      audit_events_stats: {
+        Args: {
+          p_action?: string
+          p_module?: string
+          p_period_days?: number
+          p_search?: string
+          p_user_email?: string
+        }
+        Returns: Json
+      }
+      audit_finances_anomalies: {
+        Args: never
+        Returns: {
+          detail: string
+          montant: number
+          type: string
+        }[]
+      }
+      audit_stats_v2: { Args: never; Returns: Json }
+      audit_stock_anomalies: {
+        Args: never
+        Returns: {
+          depot_id: string
+          detail: string
+          produit_id: string
+          quantite: number
+          type: string
+        }[]
+      }
+      client_historique: {
+        Args: { _client_id: string }
+        Returns: {
+          categorie: string
+          commande_id: string
+          commande_reference: string
+          commande_statut: string
+          date_commande: string
+          niveau: string
+          prix_unitaire: number
+          produit_id: string
+          produit_titre: string
+          quantite: number
+          reference_produit: string
+          remise_pct: number
+          total_ligne: number
+        }[]
+      }
+      clients_facets: { Args: never; Returns: Json }
+      cloturer_tournee: { Args: { _tournee_id: string }; Returns: undefined }
+      compta_balance: {
+        Args: { p_exercice_id?: string; p_from?: string; p_to?: string }
+        Returns: {
+          credit: number
+          debit: number
+          libelle: string
+          numero_compte: string
+          solde: number
+        }[]
+      }
       convertir_commande_en_bl: {
         Args: {
           _adresse_livraison?: string
@@ -4443,6 +4584,125 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      creer_inventaire_global: {
+        Args: { _payload: Json }
+        Returns: {
+          created_at: string
+          date_inventaire: string | null
+          depot_id: string | null
+          ecart_total: number | null
+          inventaire_id: string
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "inventaires"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      creer_inventaire_physique: {
+        Args: { _payload: Json }
+        Returns: {
+          created_at: string
+          date_inventaire: string | null
+          depot_id: string | null
+          ecart_total: number | null
+          inventaire_id: string
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "inventaires"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      creer_inventaire_theorique: {
+        Args: { _payload: Json }
+        Returns: {
+          created_at: string
+          date_inventaire: string | null
+          depot_id: string | null
+          ecart_total: number | null
+          inventaire_id: string
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "inventaires"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      creer_retour: {
+        Args: { _payload: Json }
+        Returns: {
+          client_id: string | null
+          client_nom: string | null
+          commande_id: string | null
+          created_at: string
+          date_retour: string | null
+          facture_id: string | null
+          montant: number | null
+          motif: string | null
+          notes: string | null
+          reference: string | null
+          retour_id: string
+          statut: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "retours"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      creer_specimen: {
+        Args: { _payload: Json }
+        Returns: {
+          client_id: string | null
+          client_nom: string | null
+          created_at: string
+          date_envoi: string | null
+          notes: string | null
+          produit_id: string | null
+          quantite: number | null
+          reference: string | null
+          specimen_id: string
+          statut: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "specimens"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      crm_dashboard: { Args: { _from?: string; _to?: string }; Returns: Json }
+      dashboard_client_stats: {
+        Args: never
+        Returns: {
+          actifs: number
+          solde_total: number
+          total: number
+        }[]
+      }
+      dashboard_overview_full: {
+        Args: { _exercice_id: string; _periode_jours?: number }
+        Returns: Json
+      }
       definir_depot_principal: {
         Args: { _depot_id: string }
         Returns: undefined
@@ -4489,6 +4749,17 @@ export type Database = {
         Args: { _transfert_id: string }
         Returns: undefined
       }
+      exercices_comparatif: {
+        Args: { _exercice_ids: string[] }
+        Returns: {
+          ca: number
+          exercice_id: string
+          libelle: string
+          montant_paye: number
+          nb_commandes: number
+          nb_factures: number
+        }[]
+      }
       factures_impayees_client: {
         Args: { _client_id: string }
         Returns: {
@@ -4522,6 +4793,17 @@ export type Database = {
         Returns: Json
       }
       get_carton_public: { Args: { _colis_id: string }; Returns: Json }
+      get_lignes_retournables: {
+        Args: { _commande_id: string }
+        Returns: {
+          designation: string
+          prix_unitaire: number
+          produit_id: string
+          quantite_disponible: number
+          reference_produit: string
+        }[]
+      }
+      get_slo_metrics: { Args: never; Returns: Json }
       has_permission_v2: {
         Args: { _perm: string; _user_id: string }
         Returns: boolean
@@ -4634,9 +4916,55 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      log_audit_event: {
+        Args: {
+          p_action: string
+          p_duration_ms?: number
+          p_error_message?: string
+          p_metadata?: Json
+          p_module: string
+          p_new_values?: Json
+          p_old_values?: Json
+          p_record_id?: string
+          p_record_ref?: string
+          p_status?: string
+          p_table_name?: string
+          p_user_email?: string
+        }
+        Returns: string
+      }
       log_permission_denied: {
         Args: { _context?: Json; _perm: string }
         Returns: undefined
+      }
+      log_user_login: {
+        Args: { _email?: string; _ip?: string; _ua?: string }
+        Returns: undefined
+      }
+      modifier_approvisionnement: {
+        Args: { _achat_id: string; _payload: Json }
+        Returns: {
+          achat_id: string
+          created_at: string
+          created_by: string | null
+          created_by_nom: string | null
+          date_achat: string
+          depot_id: string | null
+          fournisseur_id: string | null
+          libelle: string
+          montant: number
+          notes: string | null
+          reference: string
+          reference_fournisseur: string | null
+          statut: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "achats"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       modifier_colis_lignes: {
         Args: { _colis_id: string; _lignes: Json; _motif: string }
@@ -4688,9 +5016,36 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      payer_achat: { Args: { _achat_id: string }; Returns: undefined }
+      preview_cloture_exercice: {
+        Args: { _exercice_id: string }
+        Returns: Json
+      }
       purger_anciennes_sauvegardes: {
         Args: { _retention?: number; _type?: string }
         Returns: number
+      }
+      rapport_agregat: {
+        Args: { _dimension?: string; _filtres?: Json }
+        Returns: Json
+      }
+      rapport_clients_produit: { Args: { _filtres?: Json }; Returns: Json }
+      rapport_evolution: { Args: { _filtres?: Json }; Returns: Json }
+      rapport_flop_produits: { Args: { _filtres?: Json }; Returns: Json }
+      rapport_kpi: { Args: { _filtres?: Json }; Returns: Json }
+      rapport_produits: {
+        Args: {
+          _filtres?: Json
+          _limit?: number
+          _offset?: number
+          _sens?: string
+          _tri?: string
+        }
+        Returns: Json
+      }
+      rapport_top_produits: {
+        Args: { _filtres?: Json; _limit?: number }
+        Returns: Json
       }
       rbac_bulk_set_permissions: {
         Args: { _accorde: boolean; _codes: string[]; _role_id: string }
@@ -4706,8 +5061,19 @@ export type Database = {
         Args: { _accorde: boolean; _code: string; _role_id: string }
         Returns: undefined
       }
+      recalculer_solde_client: { Args: { _client_id: string }; Returns: number }
+      recalculer_soldes_global_clients: { Args: never; Returns: number }
+      receptionner_achat: { Args: { _achat_id: string }; Returns: undefined }
       receptionner_transfert: {
         Args: { _transfert_id: string }
+        Returns: undefined
+      }
+      refuser_tournee_couts: {
+        Args: { _motif: string; _tournee_id: string }
+        Returns: undefined
+      }
+      regulariser_inventaire: {
+        Args: { _inventaire_id: string }
         Returns: undefined
       }
       rejeter_paiement: {
@@ -4744,7 +5110,49 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      renumber_employes_matricules: {
+        Args: { _prefix?: string }
+        Returns: number
+      }
+      report_bl_orphelins: {
+        Args: never
+        Returns: {
+          bl_id: string
+          motif: string
+          reference: string
+        }[]
+      }
+      report_client_duplicates: {
+        Args: never
+        Returns: {
+          nb: number
+          nom: string
+          telephone: string
+        }[]
+      }
+      report_stock_ecarts: {
+        Args: never
+        Returns: {
+          designation: string
+          ecart: number
+          produit_id: string
+        }[]
+      }
+      restore_employe: { Args: { _employe_id: string }; Returns: undefined }
+      search_clients_crm: {
+        Args: { _filters?: Json; _limit?: number; _offset?: number }
+        Returns: Json
+      }
+      soft_delete_employe: { Args: { _employe_id: string }; Returns: undefined }
       soumettre_commande: { Args: { _commande_id: string }; Returns: undefined }
+      supprimer_achat: {
+        Args: { _achat_id: string; _motif?: string }
+        Returns: undefined
+      }
+      supprimer_client: {
+        Args: { _client_id: string; _motif?: string }
+        Returns: Json
+      }
       supprimer_colisage: {
         Args: { _bl_id: string; _motif: string }
         Returns: Json
@@ -4753,9 +5161,17 @@ export type Database = {
         Args: { _commande_id: string; _motif?: string }
         Returns: Json
       }
+      supprimer_employe: {
+        Args: { _employe_id: string; _motif?: string }
+        Returns: Json
+      }
       supprimer_facture_definitif: {
         Args: { _facture_id: string; _motif?: string }
         Returns: Json
+      }
+      supprimer_fournisseur: {
+        Args: { _fournisseur_id: string; _motif?: string }
+        Returns: undefined
       }
       supprimer_livraison_suivi: {
         Args: { _id: string; _motif?: string }
@@ -4765,9 +5181,28 @@ export type Database = {
         Args: { _motif: string; _paiement_id: string }
         Returns: Json
       }
+      supprimer_produit: {
+        Args: { _motif?: string; _produit_id: string }
+        Returns: Json
+      }
       supprimer_proforma_definitif: {
         Args: { _motif?: string; _proforma_id: string }
         Returns: Json
+      }
+      supprimer_tournee: {
+        Args: { _motif?: string; _tournee_id: string }
+        Returns: Json
+      }
+      sync_rbac_matrix: { Args: never; Returns: Json }
+      track_user_action: {
+        Args: {
+          _action_key: string
+          _href?: string
+          _icon?: string
+          _label?: string
+          _module?: string
+        }
+        Returns: undefined
       }
       valider_commande: {
         Args: { _commande_id: string }
@@ -4775,6 +5210,34 @@ export type Database = {
           bl_reference: string
           facture_reference: string
         }[]
+      }
+      valider_decaissement_tournee: {
+        Args: {
+          _commentaire?: string
+          _mode_reglement?: string
+          _tournee_id: string
+        }
+        Returns: undefined
+      }
+      valider_inventaire_physique: {
+        Args: { _inventaire_id: string; _lignes: Json }
+        Returns: {
+          created_at: string
+          date_inventaire: string | null
+          depot_id: string | null
+          ecart_total: number | null
+          inventaire_id: string
+          notes: string | null
+          reference: string | null
+          statut: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "inventaires"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       valider_paiement: {
         Args: { _commentaire?: string; _paiement_id: string }
