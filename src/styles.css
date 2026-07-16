@@ -1,4 +1,5 @@
 @import "tailwindcss" source(none);
+@import "@fontsource-variable/inter";
 @source "../src";
 @import "tw-animate-css";
 
@@ -19,6 +20,8 @@
  */
 
 @theme inline {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -158,7 +161,18 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
   }
+
+  h1, h2, h3, h4 {
+    letter-spacing: -0.015em;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+  }
+  h1 { letter-spacing: -0.025em; }
 }
 
 /* Hide the "Edit with Lovable" badge on published deployments */
