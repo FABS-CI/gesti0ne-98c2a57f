@@ -1,3 +1,5 @@
+import type { ComponentType } from "react";
+import { BookOpen, Boxes, Coins, Tags } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,6 +20,36 @@ import {
 import { CATEGORIES_PRODUIT } from "@/lib/company";
 import type { Produit, ProduitInput } from "@/lib/produits-api";
 import { ProductCoverSection } from "@/components/produits/ProductCoverSection";
+
+function SubHeader({
+  icon: Icon,
+  title,
+  color,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  title: string;
+  color: string;
+}) {
+  return (
+    <div className="relative sm:col-span-2 rounded-md bg-muted/30 pl-5 pr-3 py-2 mt-2">
+      <span
+        aria-hidden
+        className="absolute inset-y-0 left-0 w-1 rounded-l-md"
+        style={{ backgroundColor: color }}
+      />
+      <div className="flex items-center gap-2 text-sm font-semibold">
+        <span
+          className="grid h-6 w-6 shrink-0 place-items-center rounded text-white shadow-sm"
+          style={{ backgroundColor: color }}
+        >
+          <Icon className="h-3.5 w-3.5" />
+        </span>
+        {title}
+      </div>
+    </div>
+  );
+}
+
 
 interface Props {
   open: boolean;
