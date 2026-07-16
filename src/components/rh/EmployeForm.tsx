@@ -205,7 +205,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* IDENTITÉ */}
         <TabsContent value="identite">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={UserCircle2} title="Identité" color="#3B82F6" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <div className="sm:col-span-2 flex items-center gap-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src={photoUrlQ.data ?? undefined} />
