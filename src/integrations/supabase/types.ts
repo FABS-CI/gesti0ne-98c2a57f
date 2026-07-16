@@ -1167,33 +1167,69 @@ export type Database = {
         Row: {
           actif: boolean
           adresse: string | null
+          capacite: number | null
           code: string | null
+          code_postal: string | null
+          commune: string | null
           created_at: string
           depot_id: string
+          description: string | null
+          is_principal: boolean
+          latitude: number | null
+          longitude: number | null
           nom: string
+          pays: string | null
+          quartier: string | null
           responsable: string | null
+          responsable_email: string | null
+          telephone: string | null
+          type_depot: string
           updated_at: string
           ville: string | null
         }
         Insert: {
           actif?: boolean
           adresse?: string | null
+          capacite?: number | null
           code?: string | null
+          code_postal?: string | null
+          commune?: string | null
           created_at?: string
           depot_id?: string
+          description?: string | null
+          is_principal?: boolean
+          latitude?: number | null
+          longitude?: number | null
           nom: string
+          pays?: string | null
+          quartier?: string | null
           responsable?: string | null
+          responsable_email?: string | null
+          telephone?: string | null
+          type_depot?: string
           updated_at?: string
           ville?: string | null
         }
         Update: {
           actif?: boolean
           adresse?: string | null
+          capacite?: number | null
           code?: string | null
+          code_postal?: string | null
+          commune?: string | null
           created_at?: string
           depot_id?: string
+          description?: string | null
+          is_principal?: boolean
+          latitude?: number | null
+          longitude?: number | null
           nom?: string
+          pays?: string | null
+          quartier?: string | null
           responsable?: string | null
+          responsable_email?: string | null
+          telephone?: string | null
+          type_depot?: string
           updated_at?: string
           ville?: string | null
         }
