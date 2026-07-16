@@ -26,9 +26,15 @@ export const ProductCoverHero = memo(function ProductCoverHero({ produit, classN
     let cancelled = false;
     setFailed(false);
     setThumbUrl(null);
+    setFullUrl(null);
     if (!hasCover) return;
     getCoverUrl(produit, "thumb")
-      .then((u) => !cancelled && setThumbUrl(u))
+      .then((u) => {
+        if (cancelled) return;
+        if (!u) return setThumbUrl(null);
+        const bust = produit.cover_updated_at ? `&v=${encodeURIComponent(produit.cover_updated_at)}` : "";
+        setThumbUrl(u + bust);
+      })
       .catch(() => !cancelled && setThumbUrl(null));
     return () => {
       cancelled = true;
