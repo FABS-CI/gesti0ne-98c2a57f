@@ -110,14 +110,6 @@ function ProduitDetailPage() {
           />
         </div>
       </div>
-      {false && (<>
-      <KpiCards stockValorise={stockValorise} stats={stats} />
-      <InfoCards
-        isbn={produit.isbn}
-        prix_vente={produit.prix_vente}
-        prix_achat={produit.prix_achat}
-        seuil_alerte={produit.seuil_alerte}
-      />
 
       <Tabs defaultValue="infos">
         <TabsList>
