@@ -253,7 +253,14 @@ function EtatComptePage() {
         </Select>
       </div>
 
-      <EtatCompteTable clients={clients} isLoading={isLoading} busy={busy} onPdf={handlePdf} />
+      <EtatCompteTable
+        clients={clients}
+        isLoading={isLoading}
+        busy={busy}
+        historiqueBusy={historiqueBusy}
+        onPdf={handlePdf}
+        onHistorique={handleHistorique}
+      />
     </div>
   );
 }
