@@ -138,6 +138,7 @@ import { Route as AuthenticatedRetoursNouveauRouteImport } from './routes/_authe
 import { Route as AuthenticatedRetoursRetourIdRouteImport } from './routes/_authenticated/retours.$retourId'
 import { Route as AuthenticatedRapportsAnalyseRouteImport } from './routes/_authenticated/rapports.analyse'
 import { Route as AuthenticatedProformasProformaIdRouteImport } from './routes/_authenticated/proformas.$proformaId'
+import { Route as AuthenticatedProduitsAlertesRouteImport } from './routes/_authenticated/produits.alertes'
 import { Route as AuthenticatedProduitsProduitIdRouteImport } from './routes/_authenticated/produits.$produitId'
 import { Route as AuthenticatedParametresZonesLivraisonRouteImport } from './routes/_authenticated/parametres.zones-livraison'
 import { Route as AuthenticatedPaiementsNouveauRouteImport } from './routes/_authenticated/paiements.nouveau'
@@ -933,6 +934,12 @@ const AuthenticatedProformasProformaIdRoute =
     path: '/$proformaId',
     getParentRoute: () => AuthenticatedProformasRoute,
   } as any)
+const AuthenticatedProduitsAlertesRoute =
+  AuthenticatedProduitsAlertesRouteImport.update({
+    id: '/alertes',
+    path: '/alertes',
+    getParentRoute: () => AuthenticatedProduitsRoute,
+  } as any)
 const AuthenticatedProduitsProduitIdRoute =
   AuthenticatedProduitsProduitIdRouteImport.update({
     id: '/$produitId',
@@ -1451,6 +1458,7 @@ export interface FileRoutesByFullPath {
   '/paiements/nouveau': typeof AuthenticatedPaiementsNouveauRoute
   '/parametres/zones-livraison': typeof AuthenticatedParametresZonesLivraisonRoute
   '/produits/$produitId': typeof AuthenticatedProduitsProduitIdRoute
+  '/produits/alertes': typeof AuthenticatedProduitsAlertesRoute
   '/proformas/$proformaId': typeof AuthenticatedProformasProformaIdRoute
   '/rapports/analyse': typeof AuthenticatedRapportsAnalyseRoute
   '/retours/$retourId': typeof AuthenticatedRetoursRetourIdRoute
@@ -1623,6 +1631,7 @@ export interface FileRoutesByTo {
   '/paiements/nouveau': typeof AuthenticatedPaiementsNouveauRoute
   '/parametres/zones-livraison': typeof AuthenticatedParametresZonesLivraisonRoute
   '/produits/$produitId': typeof AuthenticatedProduitsProduitIdRoute
+  '/produits/alertes': typeof AuthenticatedProduitsAlertesRoute
   '/proformas/$proformaId': typeof AuthenticatedProformasProformaIdRoute
   '/rapports/analyse': typeof AuthenticatedRapportsAnalyseRoute
   '/retours/$retourId': typeof AuthenticatedRetoursRetourIdRoute
@@ -1819,6 +1828,7 @@ export interface FileRoutesById {
   '/_authenticated/paiements/nouveau': typeof AuthenticatedPaiementsNouveauRoute
   '/_authenticated/parametres/zones-livraison': typeof AuthenticatedParametresZonesLivraisonRoute
   '/_authenticated/produits/$produitId': typeof AuthenticatedProduitsProduitIdRoute
+  '/_authenticated/produits/alertes': typeof AuthenticatedProduitsAlertesRoute
   '/_authenticated/proformas/$proformaId': typeof AuthenticatedProformasProformaIdRoute
   '/_authenticated/rapports/analyse': typeof AuthenticatedRapportsAnalyseRoute
   '/_authenticated/retours/$retourId': typeof AuthenticatedRetoursRetourIdRoute
@@ -2015,6 +2025,7 @@ export interface FileRouteTypes {
     | '/paiements/nouveau'
     | '/parametres/zones-livraison'
     | '/produits/$produitId'
+    | '/produits/alertes'
     | '/proformas/$proformaId'
     | '/rapports/analyse'
     | '/retours/$retourId'
@@ -2187,6 +2198,7 @@ export interface FileRouteTypes {
     | '/paiements/nouveau'
     | '/parametres/zones-livraison'
     | '/produits/$produitId'
+    | '/produits/alertes'
     | '/proformas/$proformaId'
     | '/rapports/analyse'
     | '/retours/$retourId'
@@ -2382,6 +2394,7 @@ export interface FileRouteTypes {
     | '/_authenticated/paiements/nouveau'
     | '/_authenticated/parametres/zones-livraison'
     | '/_authenticated/produits/$produitId'
+    | '/_authenticated/produits/alertes'
     | '/_authenticated/proformas/$proformaId'
     | '/_authenticated/rapports/analyse'
     | '/_authenticated/retours/$retourId'
@@ -3360,6 +3373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProformasProformaIdRouteImport
       parentRoute: typeof AuthenticatedProformasRoute
     }
+    '/_authenticated/produits/alertes': {
+      id: '/_authenticated/produits/alertes'
+      path: '/alertes'
+      fullPath: '/produits/alertes'
+      preLoaderRoute: typeof AuthenticatedProduitsAlertesRouteImport
+      parentRoute: typeof AuthenticatedProduitsRoute
+    }
     '/_authenticated/produits/$produitId': {
       id: '/_authenticated/produits/$produitId'
       path: '/$produitId'
@@ -4219,11 +4239,13 @@ const AuthenticatedParametresRouteWithChildren =
 
 interface AuthenticatedProduitsRouteChildren {
   AuthenticatedProduitsProduitIdRoute: typeof AuthenticatedProduitsProduitIdRoute
+  AuthenticatedProduitsAlertesRoute: typeof AuthenticatedProduitsAlertesRoute
   AuthenticatedProduitsIndexRoute: typeof AuthenticatedProduitsIndexRoute
 }
 
 const AuthenticatedProduitsRouteChildren: AuthenticatedProduitsRouteChildren = {
   AuthenticatedProduitsProduitIdRoute: AuthenticatedProduitsProduitIdRoute,
+  AuthenticatedProduitsAlertesRoute: AuthenticatedProduitsAlertesRoute,
   AuthenticatedProduitsIndexRoute: AuthenticatedProduitsIndexRoute,
 }
 
