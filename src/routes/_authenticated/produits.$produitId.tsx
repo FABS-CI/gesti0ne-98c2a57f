@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ProductCoverActions } from "@/components/produits/ProductCoverActions";
 import { ArrowLeft } from "lucide-react";
 import { buildProduitHistorique } from "@/lib/produits-360-api";
 import { Button } from "@/components/ui/button";
