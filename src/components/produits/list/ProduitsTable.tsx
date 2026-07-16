@@ -100,7 +100,7 @@ export function ProduitsTable({
               return (
                 <TableRow
                   key={p.produit_id}
-                  className={canMutate ? "hover:bg-[#F97316]/10 cursor-pointer" : ""}
+                  className={`group transition-colors odd:bg-muted/20 ${canMutate ? "cursor-pointer hover:bg-primary/5" : ""} ${low ? "border-l-2 border-l-red-500/60" : ""}`}
                   onClick={
                     canMutate
                       ? () =>
