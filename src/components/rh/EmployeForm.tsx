@@ -344,7 +344,8 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
         {/* PROFESSIONNEL */}
         <TabsContent value="professionnel">
           <Card>
-            <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <SectionHeader icon={Briefcase} title="Informations professionnelles" color="#8B5CF6" />
+            <CardContent className="grid gap-4 sm:grid-cols-2 pl-5 sm:pl-6">
               <Field label="Département *">
                 <Select value={form.departement} onValueChange={(v) => set("departement", v)}>
                   <SelectTrigger>
