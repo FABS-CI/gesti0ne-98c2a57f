@@ -192,9 +192,9 @@ function AuditPage() {
       return {
         ...u,
         ip: u.ip ?? info?.ip_address ?? null,
-        device: info?.device ?? ua.device,
-        browser: ua.browser,
-        os: ua.os,
+        device: u.device ?? info?.device ?? ua.device,
+        browser: u.browser ?? ua.browser,
+        os: u.os ?? ua.os,
       };
     });
   }, [baseConnectedUsers, loginMap]);
