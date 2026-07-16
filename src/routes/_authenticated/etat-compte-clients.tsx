@@ -147,6 +147,24 @@ function EtatComptePage() {
     }
   }
 
+  async function handleHistorique(c: EtatCompteClient) {
+    try {
+      setHistoriqueBusy(c.client_id);
+      const [client, rel] = await Promise.all([
+        getClient(c.client_id),
+        getClientRelations(c.client_id),
+      ]);
+      if (!client) throw new Error("Client introuvable");
+      const blob = await buildClientHistoriquePDF(client, rel);
+      downloadBlob(blob, fileNameFor(`Historique_${c.reference}`, c.nom));
+      toast.success(`Historique ${c.nom} généré`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erreur PDF");
+    } finally {
+      setHistoriqueBusy(null);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
