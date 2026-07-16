@@ -5,7 +5,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useBlocker, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { AlertTriangle, Loader2, RotateCcw, Save, X } from "lucide-react";
+import {
+  AlertTriangle,
+  Banknote,
+  Building2,
+  FileText,
+  Handshake,
+  Loader2,
+  MapPin,
+  Phone,
+  Receipt,
+  RotateCcw,
+  Save,
+  StickyNote,
+  Truck,
+  UserCircle2,
+  X,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
