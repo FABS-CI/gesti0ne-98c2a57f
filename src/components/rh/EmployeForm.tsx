@@ -34,6 +34,7 @@ import { employeSchema, type EmployeFormValues } from "@/lib/employe-form";
 import { EmployeeSearchSelect } from "@/components/search/EmployeeSearchSelect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/section-header";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
