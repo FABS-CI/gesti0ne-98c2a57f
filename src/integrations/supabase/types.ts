@@ -2330,6 +2330,50 @@ export type Database = {
         }
         Relationships: []
       }
+      preparateurs_colisage: {
+        Row: {
+          actif: boolean
+          created_at: string
+          depot_id: string | null
+          nom: string
+          observations: string | null
+          poste: string | null
+          preparateur_id: string
+          telephone: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          created_at?: string
+          depot_id?: string | null
+          nom: string
+          observations?: string | null
+          poste?: string | null
+          preparateur_id?: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          created_at?: string
+          depot_id?: string | null
+          nom?: string
+          observations?: string | null
+          poste?: string | null
+          preparateur_id?: string
+          telephone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "preparateurs_colisage_depot_id_fkey"
+            columns: ["depot_id"]
+            isOneToOne: false
+            referencedRelation: "depots"
+            referencedColumns: ["depot_id"]
+          },
+        ]
+      }
       produits: {
         Row: {
           actif: boolean
