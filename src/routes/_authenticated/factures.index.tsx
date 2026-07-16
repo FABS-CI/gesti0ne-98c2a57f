@@ -12,6 +12,7 @@ import { exportListePDF } from "@/lib/pdf/exportListe";
 import { listFacturesPaginated, STATUTS_FACTURE, STATUT_FACTURE_LABEL } from "@/lib/factures-api";
 import { supabase } from "@/integrations/supabase/client";
 import { FneRowActions } from "@/components/fne/FneRowActions";
+import { EmptyState } from "@/components/common/EmptyState";
 import type { FNEStatus } from "@/lib/fne-api";
 
 import { formatFCFA } from "@/lib/format";
