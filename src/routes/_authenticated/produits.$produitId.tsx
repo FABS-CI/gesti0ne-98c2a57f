@@ -17,6 +17,7 @@ import { AchatsTab } from "@/components/produits/detail/AchatsTab";
 import { InventairesTab } from "@/components/produits/detail/InventairesTab";
 import { HistoriqueTab } from "@/components/produits/detail/HistoriqueTab";
 import { DepotsStockTab } from "@/components/produits/detail/DepotsStockTab";
+import { ProductCoverHero } from "@/components/produits/ProductCoverHero";
 
 const StockAreaChart = lazy(() => import("@/components/charts/StockAreaChart"));
 
