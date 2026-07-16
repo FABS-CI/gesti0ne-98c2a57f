@@ -150,11 +150,9 @@ function EtatComptePage() {
   async function handleHistorique(c: EtatCompteClient) {
     try {
       setHistoriqueBusy(c.client_id);
-      const [client, rel] = await Promise.all([
-        getClient(c.client_id),
-        getClientRelations(c.client_id),
-      ]);
+      const client = await getClient(c.client_id);
       if (!client) throw new Error("Client introuvable");
+      const rel = await getClientRelations(c.client_id, client.nom);
       const blob = await buildClientHistoriquePDF(client, rel);
       downloadBlob(blob, fileNameFor(`Historique_${c.reference}`, c.nom));
       toast.success(`Historique ${c.nom} généré`);
