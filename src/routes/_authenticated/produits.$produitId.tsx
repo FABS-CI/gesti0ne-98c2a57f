@@ -17,6 +17,7 @@ import { AchatsTab } from "@/components/produits/detail/AchatsTab";
 import { InventairesTab } from "@/components/produits/detail/InventairesTab";
 import { HistoriqueTab } from "@/components/produits/detail/HistoriqueTab";
 import { DepotsStockTab } from "@/components/produits/detail/DepotsStockTab";
+import { ProductCoverHero } from "@/components/produits/ProductCoverHero";
 
 const StockAreaChart = lazy(() => import("@/components/charts/StockAreaChart"));
 
@@ -97,13 +98,18 @@ function ProduitDetailPage() {
         <Badge variant={enAlerte ? "destructive" : "secondary"}>Stock : {produit.stock}</Badge>
       </div>
 
-      <KpiCards stockValorise={stockValorise} stats={stats} />
-      <InfoCards
-        isbn={produit.isbn}
-        prix_vente={produit.prix_vente}
-        prix_achat={produit.prix_achat}
-        seuil_alerte={produit.seuil_alerte}
-      />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <ProductCoverHero produit={produit} />
+        <div className="min-w-0 flex-1 space-y-4">
+          <KpiCards stockValorise={stockValorise} stats={stats} />
+          <InfoCards
+            isbn={produit.isbn}
+            prix_vente={produit.prix_vente}
+            prix_achat={produit.prix_achat}
+            seuil_alerte={produit.seuil_alerte}
+          />
+        </div>
+      </div>
 
       <Tabs defaultValue="infos">
         <TabsList>
