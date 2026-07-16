@@ -49,6 +49,24 @@ export const CRITICITE_STYLE: Record<
   },
 };
 
+/** ISO alpha-2 → emoji drapeau (ex : "CI" → "🇨🇮"). */
+export function countryFlag(code?: string | null): string {
+  if (!code || code.length !== 2) return "";
+  const cc = code.toUpperCase();
+  if (!/^[A-Z]{2}$/.test(cc)) return "";
+  const A = 0x1f1e6;
+  return String.fromCodePoint(A + cc.charCodeAt(0) - 65, A + cc.charCodeAt(1) - 65);
+}
+
+/** Couleur pour un navigateur donné (badge de la Chronologie / Détail). */
+export const BROWSER_STYLE: Record<string, string> = {
+  Chrome: "bg-yellow-100 text-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-200",
+  Edge: "bg-sky-100 text-sky-800 dark:bg-sky-950/40 dark:text-sky-200",
+  Firefox: "bg-orange-100 text-orange-800 dark:bg-orange-950/40 dark:text-orange-200",
+  Safari: "bg-slate-100 text-slate-800 dark:bg-slate-800/60 dark:text-slate-200",
+  Opera: "bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-200",
+};
+
 /** Couleur du badge résultat succès/erreur/annulé. */
 export const STATUS_STYLE: Record<string, { label: string; className: string }> = {
   success: {

@@ -7,7 +7,15 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { ACTION_LABEL, ACTION_VARIANT, type AuditRow } from "@/lib/audit-helpers";
+import {
+  ACTION_LABEL,
+  ACTION_VARIANT,
+  BROWSER_STYLE,
+  CRITICITE_STYLE,
+  STATUS_STYLE,
+  countryFlag,
+  type AuditRow,
+} from "@/lib/audit-helpers";
 
 type Props = { selected: AuditRow | null; onClose: () => void };
 
@@ -65,8 +73,91 @@ export function EventDetailDialog({ selected, onClose }: Props) {
                 label="Durée"
                 value={selected.duration_ms != null ? `${selected.duration_ms} ms` : null}
               />
-              <Meta label="Statut" value={selected.status} />
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Statut
+                </div>
+                <div className="font-mono text-xs">
+                  {selected.status ? (
+                    <span
+                      className={`inline-flex rounded px-1.5 py-0.5 text-xs font-medium ${
+                        STATUS_STYLE[selected.status]?.className ?? ""
+                      }`}
+                    >
+                      {STATUS_STYLE[selected.status]?.label ?? selected.status}
+                    </span>
+                  ) : (
+                    "—"
+                  )}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Niveau
+                </div>
+                <div className="font-mono text-xs">
+                  {selected.criticite ? (
+                    <span
+                      className={`inline-flex rounded px-1.5 py-0.5 text-xs font-medium ${
+                        CRITICITE_STYLE[selected.criticite]?.className ?? ""
+                      }`}
+                    >
+                      {CRITICITE_STYLE[selected.criticite]?.label ?? selected.criticite}
+                    </span>
+                  ) : (
+                    "—"
+                  )}
+                </div>
+              </div>
+              <div className="col-span-2 rounded border bg-muted/20 p-2">
+                <div className="mb-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Appareil / Localisation
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  {selected.browser && (
+                    <span
+                      className={`inline-flex rounded px-1.5 py-0.5 font-medium ${
+                        BROWSER_STYLE[selected.browser] ?? "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {selected.browser} {selected.browser_version ?? ""}
+                    </span>
+                  )}
+                  {selected.os && (
+                    <span className="inline-flex rounded bg-muted px-1.5 py-0.5 text-muted-foreground">
+                      {selected.os}
+                    </span>
+                  )}
+                  {selected.device && (
+                    <span className="inline-flex rounded bg-muted px-1.5 py-0.5 text-muted-foreground">
+                      {selected.device}
+                    </span>
+                  )}
+                  {selected.country_code && (
+                    <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5">
+                      <span className="text-sm leading-none">
+                        {countryFlag(selected.country_code)}
+                      </span>
+                      {[selected.city, selected.country].filter(Boolean).join(", ") ||
+                        selected.country_code}
+                    </span>
+                  )}
+                  {selected.screen_resolution && (
+                    <span className="text-muted-foreground">
+                      Écran : {selected.screen_resolution}
+                    </span>
+                  )}
+                  {selected.timezone && (
+                    <span className="text-muted-foreground">Fuseau : {selected.timezone}</span>
+                  )}
+                </div>
+              </div>
+              <Meta label="Session" value={selected.session_id} />
+              <Meta label="Corrélation" value={selected.correlation_id} />
               <Meta label="User agent" value={selected.user_agent} className="col-span-2" />
+              {selected.error_message && (
+                <Meta label="Erreur" value={selected.error_message} className="col-span-2" />
+              )}
             </div>
             {selected.changes ? (
               <div className="sm:col-span-2">

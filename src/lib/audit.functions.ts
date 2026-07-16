@@ -1,6 +1,6 @@
 // @ts-nocheck — schema temporarily reduced after reset; types.ts regenerates when tables come back.
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeader, getRequestIP } from "@tanstack/react-start/server";
+import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -91,19 +91,27 @@ export const logAuditEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw) => InputSchema.parse(raw))
   .handler(async ({ data, context }) => {
-    const ua = getRequestHeader("user-agent") ?? undefined;
-    // Cloudflare geo headers (disponibles quand l'app est servie via CF Workers)
-    const cfCountry = getRequestHeader("cf-ipcountry") ?? undefined;
-    const cfCity = getRequestHeader("cf-ipcity") ?? undefined;
-    const cfCountryName = getRequestHeader("cf-ipcountry-name") ?? undefined;
+    let ua: string | undefined;
+    let cfCountry: string | undefined;
+    let cfCity: string | undefined;
+    let cfCountryName: string | undefined;
     let ip: string | undefined;
     try {
+      const req = getRequest();
+      const h = req.headers;
+      const get = (k: string) => h.get(k) ?? undefined;
+      ua = get("user-agent");
+      cfCountry = get("cf-ipcountry");
+      cfCity = get("cf-ipcity");
+      cfCountryName = get("cf-ipcountry-name");
+      const xff = get("x-forwarded-for");
       ip =
-        getRequestHeader("cf-connecting-ip") ??
-        getRequestIP({ xForwardedFor: true }) ??
-        undefined;
+        get("cf-connecting-ip") ??
+        get("true-client-ip") ??
+        get("x-real-ip") ??
+        (xff ? xff.split(",")[0]!.trim() : undefined);
     } catch {
-      ip = undefined;
+      // pas de contexte requête (rare)
     }
     const parsed = parseUA(ua);
 

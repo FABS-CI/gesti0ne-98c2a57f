@@ -13,8 +13,10 @@ import { Eye, Monitor, Smartphone, Tablet } from "lucide-react";
 import {
   ACTION_LABEL,
   ACTION_VARIANT,
+  BROWSER_STYLE,
   CRITICITE_STYLE,
   STATUS_STYLE,
+  countryFlag,
   type AuditRow,
 } from "@/lib/audit-helpers";
 
@@ -84,15 +86,30 @@ const Row = React.memo(function Row({
       <TableCell className="text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5">
           <DeviceIcon device={r.device} />
-          <span className="truncate max-w-[110px]" title={navigateur}>
-            {navigateur || "—"}
-          </span>
+          {r.browser ? (
+            <span
+              className={`inline-flex rounded px-1.5 py-0.5 text-[10px] font-medium ${
+                BROWSER_STYLE[r.browser] ?? "bg-muted text-muted-foreground"
+              }`}
+              title={navigateur}
+            >
+              {r.browser}
+              {r.browser_version ? ` ${r.browser_version.split(".")[0]}` : ""}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">—</span>
+          )}
         </div>
         <div className="text-[10px] text-muted-foreground">{r.os ?? ""}</div>
       </TableCell>
       <TableCell className="text-xs">
         <div className="font-mono">{r.ip_address ?? "—"}</div>
-        {localisation && <div className="text-muted-foreground">{localisation}</div>}
+        {(r.country_code || localisation) && (
+          <div className="text-muted-foreground flex items-center gap-1">
+            {r.country_code && <span className="text-sm leading-none">{countryFlag(r.country_code)}</span>}
+            <span>{localisation || r.country_code}</span>
+          </div>
+        )}
       </TableCell>
       <TableCell className="text-xs text-muted-foreground">
         {r.duration_ms != null ? `${r.duration_ms} ms` : "—"}
@@ -118,8 +135,105 @@ export function ChronologieTab({
 }: Props) {
   const showPager = page && pageSize && totalCount !== undefined && onPageChange;
   const totalPages = showPager ? Math.max(1, Math.ceil(totalCount / pageSize)) : 1;
+
+  const [deviceFilter, setDeviceFilter] = React.useState<string>("");
+  const [countryFilter, setCountryFilter] = React.useState<string>("");
+  const [browserFilter, setBrowserFilter] = React.useState<string>("");
+
+  const devices = React.useMemo(
+    () => Array.from(new Set(rows.map((r) => r.device).filter(Boolean))) as string[],
+    [rows],
+  );
+  const countries = React.useMemo(
+    () =>
+      Array.from(
+        new Set(
+          rows
+            .map((r) => (r.country_code ? `${r.country_code}|${r.country ?? r.country_code}` : null))
+            .filter(Boolean) as string[],
+        ),
+      ),
+    [rows],
+  );
+  const browsers = React.useMemo(
+    () => Array.from(new Set(rows.map((r) => r.browser).filter(Boolean))) as string[],
+    [rows],
+  );
+
+  const filteredRows = React.useMemo(() => {
+    return rows.filter((r) => {
+      if (deviceFilter && r.device !== deviceFilter) return false;
+      if (countryFilter && r.country_code !== countryFilter) return false;
+      if (browserFilter && r.browser !== browserFilter) return false;
+      return true;
+    });
+  }, [rows, deviceFilter, countryFilter, browserFilter]);
+
+  const hasSubFilter = !!(deviceFilter || countryFilter || browserFilter);
+
   return (
     <div className="rounded-lg border bg-card overflow-x-auto">
+      <div className="flex flex-wrap items-center gap-2 border-b bg-muted/30 px-3 py-2 text-xs">
+        <span className="text-muted-foreground">Filtrer :</span>
+        <select
+          className="rounded border bg-background px-2 py-1"
+          value={deviceFilter}
+          onChange={(e) => setDeviceFilter(e.target.value)}
+        >
+          <option value="">Tous appareils</option>
+          {devices.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
+        <select
+          className="rounded border bg-background px-2 py-1"
+          value={countryFilter}
+          onChange={(e) => setCountryFilter(e.target.value)}
+        >
+          <option value="">Tous pays</option>
+          {countries.map((c) => {
+            const [code, name] = c.split("|");
+            return (
+              <option key={code} value={code}>
+                {countryFlag(code)} {name}
+              </option>
+            );
+          })}
+        </select>
+        <select
+          className="rounded border bg-background px-2 py-1"
+          value={browserFilter}
+          onChange={(e) => setBrowserFilter(e.target.value)}
+        >
+          <option value="">Tous navigateurs</option>
+          {browsers.map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
+        </select>
+        {hasSubFilter && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7"
+            onClick={() => {
+              setDeviceFilter("");
+              setCountryFilter("");
+              setBrowserFilter("");
+            }}
+          >
+            Réinitialiser
+          </Button>
+        )}
+        {hasSubFilter && (
+          <span className="ml-auto text-muted-foreground">
+            {filteredRows.length} / {rows.length} sur cette page
+          </span>
+        )}
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -143,14 +257,16 @@ export function ChronologieTab({
                 Chargement…
               </TableCell>
             </TableRow>
-          ) : rows.length === 0 ? (
+          ) : filteredRows.length === 0 ? (
             <TableRow>
               <TableCell colSpan={11} className="py-10 text-center text-muted-foreground">
                 Aucun événement
               </TableCell>
             </TableRow>
           ) : (
-            rows.map((r) => <Row key={r.id} r={r} onSelect={onSelect} onUserClick={onUserClick} />)
+            filteredRows.map((r) => (
+              <Row key={r.id} r={r} onSelect={onSelect} onUserClick={onUserClick} />
+            ))
           )}
         </TableBody>
       </Table>
