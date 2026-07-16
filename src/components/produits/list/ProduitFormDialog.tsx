@@ -89,7 +89,9 @@ export function ProduitFormDialog({
           <ProductCoverSection produit={produit} onChanged={onCoverChanged} />
         )}
         <div className="grid gap-4 py-2 sm:grid-cols-2">
+          <SubHeader icon={BookOpen} title="Général" color="#3B82F6" />
           <div className="space-y-1.5 sm:col-span-2">
+
             <Label>Titre *</Label>
             <Input value={form.titre} onChange={(e) => setField("titre", e.target.value)} />
           </div>
