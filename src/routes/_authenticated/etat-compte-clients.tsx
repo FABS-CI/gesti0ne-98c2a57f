@@ -119,6 +119,7 @@ function EtatComptePage() {
         { label: "Clients débiteurs", valeur: String(nbDebiteurs) },
         { label: "Clients soldés", valeur: String(nbSoldes) },
         { label: "Total dû", valeur: `${formatFCFA(totalDuExport)} FCFA` },
+        { label: "Généré le", valeur: new Date().toLocaleString("fr-FR") },
       ],
       filename: `etat_compte_clients_${statutFilter}`,
     });

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, FileDown, Mail, MessageCircle, Pencil, PlusCircle, Wallet } from "lucide-react";
+import { ArrowLeft, FileDown, FileText, Mail, MessageCircle, Pencil, PlusCircle, Wallet, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 import { useClientDetail } from "@/hooks/use-client-detail";
@@ -8,6 +8,8 @@ import { buildEtatCompteLignes } from "@/lib/client-detail-helpers";
 import { TYPE_COLOR } from "@/lib/company";
 import { formatFCFA } from "@/lib/format";
 import { generateEtatCompteClientPDF, downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
+import { buildClientHistoriquePDF } from "@/lib/pdf/client-historique-builder";
+import { ClientSoldeDialog } from "@/components/clients/detail/ClientSoldeDialog";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +41,8 @@ function ClientDetailPage() {
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [historiqueBusy, setHistoriqueBusy] = useState(false);
+  const [soldeOpen, setSoldeOpen] = useState(false);
   const { has } = usePermissions();
   const canSeeSolde = has("clients.voir_ca");
 
@@ -107,6 +111,21 @@ function ClientDetailPage() {
     }
   }
 
+  async function handleHistoriquePdf() {
+    if (!client || !rel) return;
+    setHistoriqueBusy(true);
+    try {
+      const blob = await buildClientHistoriquePDF(client, rel);
+      downloadBlob(blob, fileNameFor(`HISTORIQUE_${client.reference}`, client.nom));
+      toast.success("Historique généré");
+    } catch (e) {
+      toast.error("Échec de la génération de l'historique");
+      console.error(e);
+    } finally {
+      setHistoriqueBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -133,6 +152,9 @@ function ClientDetailPage() {
           >
             <PlusCircle className="mr-2 h-4 w-4" /> Commander
           </Button>
+          <Button variant="outline" onClick={() => setSoldeOpen(true)} disabled={!rel}>
+            <Eye className="mr-2 h-4 w-4" /> Consulter le solde
+          </Button>
           <Button
             variant="secondary"
             onClick={() =>
@@ -144,6 +166,10 @@ function ClientDetailPage() {
           <Button variant="outline" onClick={handleEtatCompte} disabled={generating || !rel}>
             <FileDown className="mr-2 h-4 w-4" />
             {generating ? "Génération…" : "État de compte (PDF)"}
+          </Button>
+          <Button variant="outline" onClick={handleHistoriquePdf} disabled={historiqueBusy || !rel}>
+            <FileText className="mr-2 h-4 w-4" />
+            {historiqueBusy ? "Génération…" : "Historique PDF"}
           </Button>
           <Badge
             style={{ backgroundColor: type?.bg ?? "#CFD8DC", color: type?.color ?? "#0A2540" }}
@@ -188,6 +214,7 @@ function ClientDetailPage() {
       </div>
 
       <ClientEditSheet client={client} open={editOpen} onOpenChange={setEditOpen} />
+      <ClientSoldeDialog open={soldeOpen} onOpenChange={setSoldeOpen} client={client} rel={rel} />
 
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

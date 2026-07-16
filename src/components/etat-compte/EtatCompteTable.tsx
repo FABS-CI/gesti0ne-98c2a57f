@@ -28,7 +28,6 @@ export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
           <TableRow>
             <TableHead>Référence</TableHead>
             <TableHead>Client</TableHead>
-            <TableHead className="text-right">Plafond crédit</TableHead>
             <TableHead className="text-right">Solde dû</TableHead>
             <TableHead>État</TableHead>
             <TableHead className="text-right">PDF</TableHead>
@@ -37,13 +36,13 @@ export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+              <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
                 Chargement...
               </TableCell>
             </TableRow>
           ) : clients.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="py-6">
+              <TableCell colSpan={5} className="py-6">
                 <EmptyState
                   variant="rich"
                   icon={Users}
@@ -61,9 +60,6 @@ export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
                 <TableRow key={c.client_id}>
                   <TableCell className="font-mono text-xs">{c.reference}</TableCell>
                   <TableCell className="font-medium">{c.nom}</TableCell>
-                  <TableCell className="text-right">
-                    {formatFCFA(Number(c.plafond_credit))}
-                  </TableCell>
                   <TableCell
                     className="text-right font-semibold"
                     style={{ color: solde > 0 ? "#EF4444" : "#10B981" }}
