@@ -2786,43 +2786,79 @@ export type Database = {
       }
       paiements: {
         Row: {
+          banque: string | null
           client_nom: string | null
+          commentaire_validation: string | null
           created_at: string
+          cree_par: string | null
           date_paiement: string
+          exercice_id: string | null
           facture_id: string | null
           mode_paiement: string
           montant: number
+          motif_rejet: string | null
           notes: string | null
+          num_transaction: string | null
+          observations: string | null
           paiement_id: string
           reference: string
+          reference_paiement: string | null
+          rejete_le: string | null
+          rejete_par: string | null
           statut: string
           updated_at: string
+          valide_le: string | null
+          valide_par: string | null
         }
         Insert: {
+          banque?: string | null
           client_nom?: string | null
+          commentaire_validation?: string | null
           created_at?: string
+          cree_par?: string | null
           date_paiement?: string
+          exercice_id?: string | null
           facture_id?: string | null
           mode_paiement?: string
           montant?: number
+          motif_rejet?: string | null
           notes?: string | null
+          num_transaction?: string | null
+          observations?: string | null
           paiement_id?: string
           reference?: string
+          reference_paiement?: string | null
+          rejete_le?: string | null
+          rejete_par?: string | null
           statut?: string
           updated_at?: string
+          valide_le?: string | null
+          valide_par?: string | null
         }
         Update: {
+          banque?: string | null
           client_nom?: string | null
+          commentaire_validation?: string | null
           created_at?: string
+          cree_par?: string | null
           date_paiement?: string
+          exercice_id?: string | null
           facture_id?: string | null
           mode_paiement?: string
           montant?: number
+          motif_rejet?: string | null
           notes?: string | null
+          num_transaction?: string | null
+          observations?: string | null
           paiement_id?: string
           reference?: string
+          reference_paiement?: string | null
+          rejete_le?: string | null
+          rejete_par?: string | null
           statut?: string
           updated_at?: string
+          valide_le?: string | null
+          valide_par?: string | null
         }
         Relationships: [
           {
@@ -4206,6 +4242,10 @@ export type Database = {
       }
     }
     Functions: {
+      _next_ref: {
+        Args: { _col: string; _prefix: string; _table: unknown }
+        Returns: string
+      }
       ajuster_stock_depot: {
         Args: {
           _depot_id: string
@@ -4219,8 +4259,62 @@ export type Database = {
         Args: { _bl_id: string; _motif: string }
         Returns: undefined
       }
+      annuler_paiement: {
+        Args: { _notes?: string; _paiement_id: string; _raison: string }
+        Returns: {
+          banque: string | null
+          client_nom: string | null
+          commentaire_validation: string | null
+          created_at: string
+          cree_par: string | null
+          date_paiement: string
+          exercice_id: string | null
+          facture_id: string | null
+          mode_paiement: string
+          montant: number
+          motif_rejet: string | null
+          notes: string | null
+          num_transaction: string | null
+          observations: string | null
+          paiement_id: string
+          reference: string
+          reference_paiement: string | null
+          rejete_le: string | null
+          rejete_par: string | null
+          statut: string
+          updated_at: string
+          valide_le: string | null
+          valide_par: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "paiements"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       annuler_transfert: { Args: { _transfert_id: string }; Returns: undefined }
       assert_permission: { Args: { _perm: string }; Returns: undefined }
+      convertir_commande_en_bl: {
+        Args: {
+          _adresse_livraison?: string
+          _commande_id: string
+          _date_livraison?: string
+          _decrementer_stock?: boolean
+          _nb_colis: number
+          _poids_total?: number
+          _signataire?: string
+          _transporteur?: string
+        }
+        Returns: {
+          bl_id: string
+          reference: string
+        }[]
+      }
+      convertir_proforma_en_commande: {
+        Args: { _proforma_id: string }
+        Returns: string
+      }
       creer_colisage: {
         Args: { _bl_id: string; _payload: Json }
         Returns: {
@@ -4303,6 +4397,52 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      creer_commande: {
+        Args: { _payload: Json }
+        Returns: {
+          adresse: string | null
+          client_id: string | null
+          client_nom: string | null
+          commande_id: string
+          commercial_id: string | null
+          commercial_nom: string | null
+          created_at: string
+          created_by: string | null
+          created_by_nom: string | null
+          date_commande: string
+          depot_id: string | null
+          etablissement: string | null
+          exercice_id: string | null
+          montant_total: number
+          montant_ttc: number
+          montant_tva: number
+          nb_produits: number
+          net_a_payer: number
+          notes: string | null
+          numero: string | null
+          observations: string | null
+          reference: string | null
+          remise: number
+          remise_globale_montant: number
+          remise_globale_pct: number
+          representant_nom: string | null
+          statut: string
+          taux_tva: number
+          telephone: string | null
+          total_ht_brut: number
+          total_ht_net: number
+          total_quantite: number
+          total_remises_lignes: number
+          updated_at: string
+          ville: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "commandes"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       definir_depot_principal: {
         Args: { _depot_id: string }
         Returns: undefined
@@ -4311,11 +4451,76 @@ export type Database = {
         Args: { _bl_id: string; _motif: string }
         Returns: undefined
       }
+      enregistrer_paiement: {
+        Args: { _payload: Json }
+        Returns: {
+          banque: string | null
+          client_nom: string | null
+          commentaire_validation: string | null
+          created_at: string
+          cree_par: string | null
+          date_paiement: string
+          exercice_id: string | null
+          facture_id: string | null
+          mode_paiement: string
+          montant: number
+          motif_rejet: string | null
+          notes: string | null
+          num_transaction: string | null
+          observations: string | null
+          paiement_id: string
+          reference: string
+          reference_paiement: string | null
+          rejete_le: string | null
+          rejete_par: string | null
+          statut: string
+          updated_at: string
+          valide_le: string | null
+          valide_par: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "paiements"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       executer_transfert: {
         Args: { _transfert_id: string }
         Returns: undefined
       }
+      factures_impayees_client: {
+        Args: { _client_id: string }
+        Returns: {
+          date_facture: string
+          facture_id: string
+          montant_paye: number
+          montant_total: number
+          reference: string
+          solde: number
+          statut: string
+        }[]
+      }
+      factures_list_paginated: {
+        Args: {
+          _date_au?: string
+          _date_du?: string
+          _exercice_id?: string
+          _page?: number
+          _page_size?: number
+          _q?: string
+          _statut?: string
+        }
+        Returns: {
+          items: Json
+          total: number
+        }[]
+      }
       finaliser_tournee: { Args: { _tournee_id: string }; Returns: Json }
+      generer_proforma_commande: {
+        Args: { _commande_id: string }
+        Returns: Json
+      }
       get_carton_public: { Args: { _colis_id: string }; Returns: Json }
       has_permission_v2: {
         Args: { _perm: string; _user_id: string }
@@ -4437,6 +4642,52 @@ export type Database = {
         Args: { _colis_id: string; _lignes: Json; _motif: string }
         Returns: undefined
       }
+      modifier_commande: {
+        Args: { _commande_id: string; _payload: Json }
+        Returns: {
+          adresse: string | null
+          client_id: string | null
+          client_nom: string | null
+          commande_id: string
+          commercial_id: string | null
+          commercial_nom: string | null
+          created_at: string
+          created_by: string | null
+          created_by_nom: string | null
+          date_commande: string
+          depot_id: string | null
+          etablissement: string | null
+          exercice_id: string | null
+          montant_total: number
+          montant_ttc: number
+          montant_tva: number
+          nb_produits: number
+          net_a_payer: number
+          notes: string | null
+          numero: string | null
+          observations: string | null
+          reference: string | null
+          remise: number
+          remise_globale_montant: number
+          remise_globale_pct: number
+          representant_nom: string | null
+          statut: string
+          taux_tva: number
+          telephone: string | null
+          total_ht_brut: number
+          total_ht_net: number
+          total_quantite: number
+          total_remises_lignes: number
+          updated_at: string
+          ville: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "commandes"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       purger_anciennes_sauvegardes: {
         Args: { _retention?: number; _type?: string }
         Returns: number
@@ -4459,13 +4710,105 @@ export type Database = {
         Args: { _transfert_id: string }
         Returns: undefined
       }
+      rejeter_paiement: {
+        Args: { _motif: string; _paiement_id: string }
+        Returns: {
+          banque: string | null
+          client_nom: string | null
+          commentaire_validation: string | null
+          created_at: string
+          cree_par: string | null
+          date_paiement: string
+          exercice_id: string | null
+          facture_id: string | null
+          mode_paiement: string
+          montant: number
+          motif_rejet: string | null
+          notes: string | null
+          num_transaction: string | null
+          observations: string | null
+          paiement_id: string
+          reference: string
+          reference_paiement: string | null
+          rejete_le: string | null
+          rejete_par: string | null
+          statut: string
+          updated_at: string
+          valide_le: string | null
+          valide_par: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "paiements"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      soumettre_commande: { Args: { _commande_id: string }; Returns: undefined }
       supprimer_colisage: {
         Args: { _bl_id: string; _motif: string }
+        Returns: Json
+      }
+      supprimer_commande_definitif: {
+        Args: { _commande_id: string; _motif?: string }
+        Returns: Json
+      }
+      supprimer_facture_definitif: {
+        Args: { _facture_id: string; _motif?: string }
         Returns: Json
       }
       supprimer_livraison_suivi: {
         Args: { _id: string; _motif?: string }
         Returns: Json
+      }
+      supprimer_paiement_definitif: {
+        Args: { _motif: string; _paiement_id: string }
+        Returns: Json
+      }
+      supprimer_proforma_definitif: {
+        Args: { _motif?: string; _proforma_id: string }
+        Returns: Json
+      }
+      valider_commande: {
+        Args: { _commande_id: string }
+        Returns: {
+          bl_reference: string
+          facture_reference: string
+        }[]
+      }
+      valider_paiement: {
+        Args: { _commentaire?: string; _paiement_id: string }
+        Returns: {
+          banque: string | null
+          client_nom: string | null
+          commentaire_validation: string | null
+          created_at: string
+          cree_par: string | null
+          date_paiement: string
+          exercice_id: string | null
+          facture_id: string | null
+          mode_paiement: string
+          montant: number
+          motif_rejet: string | null
+          notes: string | null
+          num_transaction: string | null
+          observations: string | null
+          paiement_id: string
+          reference: string
+          reference_paiement: string | null
+          rejete_le: string | null
+          rejete_par: string | null
+          statut: string
+          updated_at: string
+          valide_le: string | null
+          valide_par: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "paiements"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
     }
     Enums: {
