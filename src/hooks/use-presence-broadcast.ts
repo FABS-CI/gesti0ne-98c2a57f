@@ -1,6 +1,43 @@
 import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackPresence, untrackPresence } from "@/lib/presence-channel";
+import { parseUserAgent } from "@/lib/ua-parse";
+
+type Geo = {
+  ip: string | null;
+  city: string | null;
+  region: string | null;
+  country: string | null;
+  country_code: string | null;
+  isp: string | null;
+};
+
+async function fetchOwnGeo(): Promise<Geo> {
+  const empty: Geo = {
+    ip: null,
+    city: null,
+    region: null,
+    country: null,
+    country_code: null,
+    isp: null,
+  };
+  try {
+    const r = await fetch("https://ipwho.is/");
+    if (!r.ok) return empty;
+    const j = await r.json();
+    if (!j || j.success === false) return empty;
+    return {
+      ip: j.ip ?? null,
+      city: j.city ?? null,
+      region: j.region ?? null,
+      country: j.country ?? null,
+      country_code: j.country_code ?? null,
+      isp: j.connection?.isp ?? null,
+    };
+  } catch {
+    return empty;
+  }
+}
 
 /**
  * Publie l'état de présence de l'utilisateur courant sur le canal partagé
@@ -22,12 +59,22 @@ export function usePresenceBroadcast(user: {
     const connectedAt = new Date().toISOString();
     const userAgent =
       typeof navigator !== "undefined" ? navigator.userAgent : null;
+    const parsed = parseUserAgent(userAgent);
 
     let profile: {
       nom_complet: string | null;
       prenom: string | null;
       fonction: string | null;
     } = { nom_complet: null, prenom: null, fonction: null };
+
+    let geo: Geo = {
+      ip: null,
+      city: null,
+      region: null,
+      country: null,
+      country_code: null,
+      isp: null,
+    };
 
     const publish = () => {
       if (cancelled) return;
@@ -41,18 +88,31 @@ export function usePresenceBroadcast(user: {
         last_activity: new Date(lastActivityRef.current).toISOString(),
         user_agent: userAgent,
         url: typeof window !== "undefined" ? window.location.pathname : null,
+        ip: geo.ip,
+        city: geo.city,
+        region: geo.region,
+        country: geo.country,
+        country_code: geo.country_code,
+        isp: geo.isp,
+        device: parsed.device === "Inconnu" ? null : parsed.device,
+        browser: parsed.browser === "—" ? null : parsed.browser,
+        os: parsed.os === "—" ? null : parsed.os,
       });
     };
 
-    // Récupère le profil puis publie une première fois.
+    // Récupère le profil + la géoloc IP puis publie.
     (async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("nom_complet, prenom, fonction")
-        .eq("id", user.id)
-        .maybeSingle();
+      const [{ data }, g] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("nom_complet, prenom, fonction")
+          .eq("id", user.id)
+          .maybeSingle(),
+        fetchOwnGeo(),
+      ]);
       if (cancelled) return;
       if (data) profile = data;
+      geo = g;
       publish();
     })();
 
