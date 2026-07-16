@@ -99,7 +99,10 @@ export function WelcomeGreeting() {
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <p className="text-base font-semibold leading-tight sm:text-lg">{g.text(name)}</p>
+          <p className="text-lg font-bold leading-tight tracking-tight sm:text-xl">
+            {g.salutation(name)}
+          </p>
+          <p className="mt-0.5 text-sm text-white/80">{g.message}</p>
         </div>
         <g.Icon className={`h-7 w-7 shrink-0 ${g.iconTint}`} aria-hidden />
       </div>
