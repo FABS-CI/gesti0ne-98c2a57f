@@ -48,7 +48,7 @@ export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
                   variant="rich"
                   icon={Users}
                   title="Aucun client à afficher"
-                  description="Les clients ayant un solde ou une activité sur l'exercice apparaîtront ici."
+                  description="Aucun client ne correspond à la recherche ou au filtre sélectionné."
                   className="border-none"
                 />
               </TableCell>
