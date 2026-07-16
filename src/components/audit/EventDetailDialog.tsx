@@ -7,7 +7,15 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { ACTION_LABEL, ACTION_VARIANT, type AuditRow } from "@/lib/audit-helpers";
+import {
+  ACTION_LABEL,
+  ACTION_VARIANT,
+  BROWSER_STYLE,
+  CRITICITE_STYLE,
+  STATUS_STYLE,
+  countryFlag,
+  type AuditRow,
+} from "@/lib/audit-helpers";
 
 type Props = { selected: AuditRow | null; onClose: () => void };
 
