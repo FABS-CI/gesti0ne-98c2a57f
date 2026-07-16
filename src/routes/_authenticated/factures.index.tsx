@@ -12,6 +12,7 @@ import { exportListePDF } from "@/lib/pdf/exportListe";
 import { listFacturesPaginated, STATUTS_FACTURE, STATUT_FACTURE_LABEL } from "@/lib/factures-api";
 import { supabase } from "@/integrations/supabase/client";
 import { FneRowActions } from "@/components/fne/FneRowActions";
+import { EmptyState } from "@/components/common/EmptyState";
 import type { FNEStatus } from "@/lib/fne-api";
 
 import { formatFCFA } from "@/lib/format";
@@ -319,22 +320,30 @@ function FacturesPage() {
                 </TableRow>
               ) : factures.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="py-10 text-center">
-                    <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                      <FileText className="h-8 w-8 opacity-50" />
-                      <p>
-                        {hasActiveFilters
-                          ? "Aucune facture ne correspond aux filtres appliqués."
-                          : "Aucune facture pour cet exercice."}
-                      </p>
-                      {hasActiveFilters && (
-                        <Button variant="outline" size="sm" onClick={resetAllFilters}>
-                          <RotateCcw className="mr-2 h-4 w-4" /> Réinitialiser les filtres
-                        </Button>
-                      )}
-                    </div>
+                  <TableCell colSpan={10} className="py-6">
+                    {hasActiveFilters ? (
+                      <EmptyState
+                        icon={FileText}
+                        title="Aucune facture ne correspond aux filtres"
+                        description="Ajuste tes critères ou réinitialise pour retrouver l'ensemble des factures de l'exercice."
+                        onReset={resetAllFilters}
+                      />
+                    ) : (
+                      <EmptyState
+                        variant="rich"
+                        icon={FileText}
+                        title="Aucune facture pour cet exercice"
+                        description="Les factures sont générées automatiquement quand tu valides une commande. Crée d'abord une commande pour voir apparaître ta première facture ici."
+                        hints={
+                          <span className="rounded-full border bg-card px-2.5 py-1 text-xs text-muted-foreground">
+                            Cycle · Commande → Bon de livraison → Facture → Paiement
+                          </span>
+                        }
+                      />
+                    )}
                   </TableCell>
                 </TableRow>
+
               ) : (
                 factures.map((f) => {
                   const statutMeta = STATUT_FACTURE_LABEL[f.statut];
