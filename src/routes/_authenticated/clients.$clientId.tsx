@@ -111,6 +111,21 @@ function ClientDetailPage() {
     }
   }
 
+  async function handleHistoriquePdf() {
+    if (!client || !rel) return;
+    setHistoriqueBusy(true);
+    try {
+      const blob = await buildClientHistoriquePDF(client, rel);
+      downloadBlob(blob, fileNameFor(`HISTORIQUE_${client.reference}`, client.nom));
+      toast.success("Historique généré");
+    } catch (e) {
+      toast.error("Échec de la génération de l'historique");
+      console.error(e);
+    } finally {
+      setHistoriqueBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
