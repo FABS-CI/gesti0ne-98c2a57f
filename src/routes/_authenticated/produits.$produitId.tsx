@@ -106,7 +106,10 @@ function ProduitDetailPage() {
           <ProductCoverHero produit={produit} />
           <ProductCoverActions
             produit={produit}
-            onChanged={() => {
+            onChanged={(updated) => {
+              if (updated) {
+                queryClient.setQueryData(["produit", produitId], updated);
+              }
               queryClient.invalidateQueries({ queryKey: ["produit", produitId] });
             }}
           />
