@@ -28,7 +28,6 @@ export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
           <TableRow>
             <TableHead>Référence</TableHead>
             <TableHead>Client</TableHead>
-            <TableHead className="text-right">Plafond crédit</TableHead>
             <TableHead className="text-right">Solde dû</TableHead>
             <TableHead>État</TableHead>
             <TableHead className="text-right">PDF</TableHead>
