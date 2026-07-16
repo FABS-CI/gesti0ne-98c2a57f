@@ -217,11 +217,6 @@ export function ClientForm({ clientId }: ClientFormProps) {
 
         <div className="grid gap-6 lg:grid-cols-2">
           {/* 1. IDENTITÉ */}
-          <Card>
-            <CardHeader><CardTitle>Identité</CardTitle></CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* 1. IDENTITÉ */}
           <Card className="overflow-hidden">
             <SectionHeader icon={UserCircle2} title="Identité" color="#3B82F6" />
             <CardContent className="grid gap-4 sm:grid-cols-2">
