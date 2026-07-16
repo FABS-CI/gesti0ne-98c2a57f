@@ -116,9 +116,10 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
                 .select("client_id, montant")
                 .eq("exercice_id", exerciceId)
                 .in("client_id", batch),
-            )
+            ).catch(() => [] as OuvertureRow[])
           : Promise.resolve([] as OuvertureRow[]),
       ]);
+
 
       const byClient = new Map<
         string,
