@@ -1,4 +1,5 @@
-import { FileDown, Loader2 } from "lucide-react";
+import { FileDown, Loader2, Users } from "lucide-react";
+import { EmptyState } from "@/components/common/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,8 +43,14 @@ export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
             </TableRow>
           ) : clients.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                Aucun client
+              <TableCell colSpan={6} className="py-6">
+                <EmptyState
+                  variant="rich"
+                  icon={Users}
+                  title="Aucun client à afficher"
+                  description="Les clients ayant un solde ou une activité sur l'exercice apparaîtront ici."
+                  className="border-none"
+                />
               </TableCell>
             </TableRow>
           ) : (

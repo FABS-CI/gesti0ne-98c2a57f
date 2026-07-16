@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Eye, Pencil, PowerOff, RotateCcw, UserPlus } from "lucide-react";
+import { Eye, Pencil, PowerOff, UserPlus, Users } from "lucide-react";
+import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -65,31 +66,30 @@ export function ClientsTable({
               </TableRow>
             ) : items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={colSpan} className="py-12 text-center">
-                  <div className="mx-auto flex max-w-md flex-col items-center gap-3">
-                    <p className="text-sm text-muted-foreground">
-                      {hasActiveFilters
+                <TableCell colSpan={colSpan} className="py-6">
+                  <EmptyState
+                    variant={hasActiveFilters ? "compact" : "rich"}
+                    icon={Users}
+                    title={
+                      hasActiveFilters
                         ? "Aucun client ne correspond aux filtres appliqués."
-                        : "Aucun client enregistré pour le moment."}
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-2">
-                      {hasActiveFilters && onResetFilters && (
-                        <Button variant="outline" size="sm" onClick={onResetFilters}>
-                          <RotateCcw className="mr-2 h-4 w-4" />
-                          Réinitialiser les filtres
+                        : "Aucun client enregistré pour le moment."
+                    }
+                    description={
+                      hasActiveFilters
+                        ? undefined
+                        : "Ajoutez vos clients pour émettre commandes, factures et suivre leur solde en temps réel."
+                    }
+                    onReset={hasActiveFilters ? onResetFilters : undefined}
+                    action={
+                      !hasActiveFilters && !readOnly ? (
+                        <Button size="sm" onClick={() => navigate({ to: "/clients/nouveau" })}>
+                          <UserPlus className="mr-2 h-4 w-4" /> Créer un client
                         </Button>
-                      )}
-                      {!readOnly && !hasActiveFilters && (
-                        <Button
-                          size="sm"
-                          onClick={() => navigate({ to: "/clients/nouveau" })}
-                        >
-                          <UserPlus className="mr-2 h-4 w-4" />
-                          Créer un client
-                        </Button>
-                      )}
-                    </div>
-                  </div>
+                      ) : undefined
+                    }
+                    className="border-none"
+                  />
                 </TableCell>
               </TableRow>
             ) : (

@@ -1,4 +1,5 @@
-import { MapPin, Pencil, Star, Trash2 } from "lucide-react";
+import { MapPin, Pencil, Star, Trash2, Warehouse } from "lucide-react";
+import { EmptyState } from "@/components/common/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Can } from "@/components/rbac/Can";
@@ -50,8 +51,14 @@ export function DepotsTable({ isLoading, items, stockCounts, onEdit, onPromote, 
               </TableRow>
             ) : items.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="py-8 text-center text-muted-foreground">
-                  Aucun dépôt
+                <TableCell colSpan={10} className="py-6">
+                  <EmptyState
+                    variant="rich"
+                    icon={Warehouse}
+                    title="Aucun dépôt configuré"
+                    description="Créez au moins un dépôt pour stocker vos produits et permettre entrées, sorties et transferts."
+                    className="border-none"
+                  />
                 </TableCell>
               </TableRow>
             ) : (
