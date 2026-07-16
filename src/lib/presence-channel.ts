@@ -55,9 +55,10 @@ function ensureChannel(key?: string): RealtimeChannel {
     subscribed = false;
     presenceKey = null;
   }
-  if (!channel) {
+  let ch = channel;
+  if (!ch) {
     presenceKey = key ?? null;
-    const ch = supabase.channel(
+    ch = supabase.channel(
       "app-presence",
       key ? { config: { presence: { key } } } : undefined,
     );
@@ -68,9 +69,9 @@ function ensureChannel(key?: string): RealtimeChannel {
   }
   if (!subscribed) {
     subscribed = true;
-    channel.subscribe();
+    ch.subscribe();
   }
-  return channel;
+  return ch;
 }
 
 /** Abonne un listener aux changements de présence. Retourne un unsubscribe. */
