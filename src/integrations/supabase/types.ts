@@ -1965,6 +1965,93 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          modules_desactives: string[]
+          notifs_navigateur: boolean
+          son_active: boolean
+          types_desactives: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          modules_desactives?: string[]
+          notifs_navigateur?: boolean
+          son_active?: boolean
+          types_desactives?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          modules_desactives?: string[]
+          notifs_navigateur?: boolean
+          son_active?: boolean
+          types_desactives?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          date_notification: string
+          document_id: string | null
+          document_reference: string | null
+          document_type: string | null
+          lien: string | null
+          lu: boolean
+          message: string | null
+          module: string | null
+          notification_id: string
+          priorite: string | null
+          role_cible: string | null
+          titre: string
+          type_notification: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          date_notification?: string
+          document_id?: string | null
+          document_reference?: string | null
+          document_type?: string | null
+          lien?: string | null
+          lu?: boolean
+          message?: string | null
+          module?: string | null
+          notification_id?: string
+          priorite?: string | null
+          role_cible?: string | null
+          titre: string
+          type_notification?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          date_notification?: string
+          document_id?: string | null
+          document_reference?: string | null
+          document_type?: string | null
+          lien?: string | null
+          lu?: boolean
+          message?: string | null
+          module?: string | null
+          notification_id?: string
+          priorite?: string | null
+          role_cible?: string | null
+          titre?: string
+          type_notification?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       paiement_annulations_audit: {
         Row: {
           annule_le: string
