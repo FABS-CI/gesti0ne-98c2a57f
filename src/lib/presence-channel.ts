@@ -57,14 +57,14 @@ function ensureChannel(key?: string): RealtimeChannel {
   }
   if (!channel) {
     presenceKey = key ?? null;
-    channel = supabase.channel(
+    const ch = supabase.channel(
       "app-presence",
       key ? { config: { presence: { key } } } : undefined,
     );
-    channel
-      .on("presence", { event: "sync" }, notify)
+    ch.on("presence", { event: "sync" }, notify)
       .on("presence", { event: "join" }, notify)
       .on("presence", { event: "leave" }, notify);
+    channel = ch;
   }
   if (!subscribed) {
     subscribed = true;
