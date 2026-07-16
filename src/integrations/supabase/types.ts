@@ -5906,6 +5906,7 @@ export type Database = {
         }[]
       }
       finaliser_tournee: { Args: { _tournee_id: string }; Returns: Json }
+      generate_client_reference: { Args: never; Returns: string }
       generer_proforma_commande: {
         Args: { _commande_id: string }
         Returns: Json
