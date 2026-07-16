@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ProductCoverActions } from "@/components/produits/ProductCoverActions";
 import { ArrowLeft } from "lucide-react";
 import { buildProduitHistorique } from "@/lib/produits-360-api";
 import { Button } from "@/components/ui/button";
@@ -27,6 +29,7 @@ export const Route = createFileRoute("/_authenticated/produits/$produitId")({
 
 function ProduitDetailPage() {
   const { produitId } = Route.useParams();
+  const queryClient = useQueryClient();
   const { hasRole, hasAny } = useUserRoles();
   const isAssistanteOnly =
     (hasRole("assistante") || hasRole("comptable") || hasRole("secretariat")) &&
@@ -99,7 +102,15 @@ function ProduitDetailPage() {
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <ProductCoverHero produit={produit} />
+        <div className="flex flex-col items-center gap-3 sm:items-start">
+          <ProductCoverHero produit={produit} />
+          <ProductCoverActions
+            produit={produit}
+            onChanged={() => {
+              queryClient.invalidateQueries({ queryKey: ["produit", produitId] });
+            }}
+          />
+        </div>
         <div className="min-w-0 flex-1 space-y-4">
           <KpiCards stockValorise={stockValorise} stats={stats} />
           <InfoCards
@@ -110,6 +121,7 @@ function ProduitDetailPage() {
           />
         </div>
       </div>
+
 
       <Tabs defaultValue="infos">
         <TabsList>
