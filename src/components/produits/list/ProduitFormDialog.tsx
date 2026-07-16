@@ -110,9 +110,11 @@ export function ProduitFormDialog({
               </SelectContent>
             </Select>
           </div>
+          <SubHeader icon={Tags} title="Classification" color="#8B5CF6" />
           <div className="space-y-1.5">
             <Label>ISBN</Label>
             <Input value={form.isbn ?? ""} onChange={(e) => setField("isbn", e.target.value)} />
+
           </div>
           <div className="space-y-1.5">
             <Label>Niveau</Label>
