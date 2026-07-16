@@ -4796,51 +4796,69 @@ export type Database = {
       audit_events: {
         Row: {
           action: string | null
-          created_at: string | null
+          changes: Json | null
           details: Json | null
+          duration_ms: number | null
           entity_id: string | null
           entity_type: string | null
+          http_method: string | null
           id: string | null
           ip_address: string | null
           module: string | null
           new_values: Json | null
+          occurred_at: string | null
           old_values: Json | null
           record_id: string | null
+          record_ref: string | null
+          status: number | null
           table_name: string | null
+          url: string | null
           user_agent: string | null
           user_email: string | null
           user_id: string | null
         }
         Insert: {
           action?: string | null
-          created_at?: string | null
+          changes?: never
           details?: Json | null
+          duration_ms?: never
           entity_id?: string | null
           entity_type?: string | null
+          http_method?: never
           id?: string | null
           ip_address?: string | null
           module?: string | null
           new_values?: Json | null
+          occurred_at?: string | null
           old_values?: Json | null
           record_id?: string | null
+          record_ref?: never
+          status?: never
           table_name?: string | null
+          url?: never
           user_agent?: string | null
           user_email?: string | null
           user_id?: string | null
         }
         Update: {
           action?: string | null
-          created_at?: string | null
+          changes?: never
           details?: Json | null
+          duration_ms?: never
           entity_id?: string | null
           entity_type?: string | null
+          http_method?: never
           id?: string | null
           ip_address?: string | null
           module?: string | null
           new_values?: Json | null
+          occurred_at?: string | null
           old_values?: Json | null
           record_id?: string | null
+          record_ref?: never
+          status?: never
           table_name?: string | null
+          url?: never
           user_agent?: string | null
           user_email?: string | null
           user_id?: string | null
