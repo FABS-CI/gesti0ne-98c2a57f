@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useConfirmDelete } from "@/hooks/use-confirm-delete";
+import { EmptyState } from "@/components/common/EmptyState";
 
 import { authRouteHead } from "@/lib/route-head";
 export const Route = createFileRoute("/_authenticated/conges/")({
@@ -119,8 +120,14 @@ function CongesListPage() {
               </TableRow>
             ) : conges.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
-                  Aucune demande
+                <TableCell colSpan={7} className="py-6">
+                  <EmptyState
+                    variant="rich"
+                    icon={CalendarDays}
+                    title="Aucune demande de congé"
+                    description="Les demandes soumises par vos employés apparaîtront ici, prêtes à être approuvées ou refusées."
+                    className="border-none"
+                  />
                 </TableCell>
               </TableRow>
             ) : (

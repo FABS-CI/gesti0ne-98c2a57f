@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EmptyState } from "@/components/common/EmptyState";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   component: NotificationsCentre,
@@ -211,7 +212,12 @@ function NotificationsCentre() {
         {isLoading ? (
           <p className="py-8 text-center text-muted-foreground">Chargement…</p>
         ) : notifs.length === 0 ? (
-          <p className="py-8 text-center text-muted-foreground">Aucune notification</p>
+          <EmptyState
+            variant="rich"
+            icon={Bell}
+            title="Vous êtes à jour"
+            description="Aucune notification à afficher. Les alertes stock, échéances et activités importantes s'afficheront ici."
+          />
         ) : (
           notifs.map((n) => (
             <NotificationRow

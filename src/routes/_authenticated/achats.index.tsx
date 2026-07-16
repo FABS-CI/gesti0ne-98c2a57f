@@ -342,11 +342,17 @@ function ApprovisionnementsPage() {
                 <TableRow>
                   <TableCell colSpan={9} className="py-6">
                     <EmptyState
+                      variant={hasActiveFilters ? "compact" : "rich"}
                       icon={ShoppingBag}
                       title={
                         hasActiveFilters
                           ? "Aucun approvisionnement ne correspond aux filtres appliqués."
                           : "Aucun approvisionnement pour cet exercice."
+                      }
+                      description={
+                        hasActiveFilters
+                          ? undefined
+                          : "Enregistrez vos approvisionnements pour tracer les entrées en stock, coûts d'achat et dettes fournisseurs."
                       }
                       onReset={hasActiveFilters ? resetAllFilters : undefined}
                       action={

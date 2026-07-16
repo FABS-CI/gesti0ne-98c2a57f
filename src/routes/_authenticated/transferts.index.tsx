@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useConfirmDelete } from "@/hooks/use-confirm-delete";
+import { EmptyState } from "@/components/common/EmptyState";
 
 import { authRouteHead } from "@/lib/route-head";
 export const Route = createFileRoute("/_authenticated/transferts/")({
@@ -144,8 +145,14 @@ function TransfertsPage() {
                 </TableRow>
               ) : transferts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
-                    Aucun transfert
+                  <TableCell colSpan={7} className="py-6">
+                    <EmptyState
+                      variant="rich"
+                      icon={ArrowRightLeft}
+                      title="Aucun transfert enregistré"
+                      description="Déplacez du stock entre vos dépôts en créant un transfert : sortie automatique côté source, entrée à la réception."
+                      className="border-none"
+                    />
                   </TableCell>
                 </TableRow>
               ) : (

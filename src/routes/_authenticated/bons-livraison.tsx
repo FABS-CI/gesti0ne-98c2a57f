@@ -36,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EmptyState } from "@/components/common/EmptyState";
 import {
   listBonsLivraisonAColiser,
   STATUTS_BL,
@@ -186,20 +187,22 @@ function BonsLivraisonListPage() {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center py-10">
-                      <div className="flex flex-col items-center gap-3 text-muted-foreground">
-                        <Truck className="h-8 w-8 opacity-50" />
-                        <p>
-                          {hasActiveFilters
+                    <TableCell colSpan={9} className="py-6">
+                      <EmptyState
+                        variant={hasActiveFilters ? "compact" : "rich"}
+                        icon={Truck}
+                        title={
+                          hasActiveFilters
                             ? "Aucun bon de livraison ne correspond aux filtres."
-                            : "Aucun bon de livraison pour cet exercice."}
-                        </p>
-                        {hasActiveFilters && (
-                          <Button variant="outline" size="sm" onClick={resetFilters}>
-                            <RotateCcw className="mr-2 h-4 w-4" /> Réinitialiser les filtres
-                          </Button>
-                        )}
-                      </div>
+                            : "Aucun bon de livraison pour cet exercice."
+                        }
+                        description={
+                          hasActiveFilters
+                            ? undefined
+                            : "Les BL apparaîtront ici dès qu'une commande sera préparée pour livraison."
+                        }
+                        onReset={hasActiveFilters ? resetFilters : undefined}
+                      />
                     </TableCell>
                   </TableRow>
                 ) : (

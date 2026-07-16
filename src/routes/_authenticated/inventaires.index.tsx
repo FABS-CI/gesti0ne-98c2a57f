@@ -298,11 +298,17 @@ function InventairesPage() {
                 <TableRow>
                   <TableCell colSpan={9} className="py-6">
                     <EmptyState
+                      variant={hasActiveFilters ? "compact" : "rich"}
                       icon={ClipboardList}
                       title={
                         hasActiveFilters
                           ? "Aucun inventaire ne correspond aux filtres appliqués."
                           : "Aucun inventaire pour cet exercice."
+                      }
+                      description={
+                        hasActiveFilters
+                          ? undefined
+                          : "Lancez un inventaire physique pour recaler vos stocks et détecter les écarts par dépôt."
                       }
                       onReset={hasActiveFilters ? resetAllFilters : undefined}
                       className="border-none"

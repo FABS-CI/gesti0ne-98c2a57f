@@ -38,6 +38,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { PaiementsEnAttenteCard } from "@/components/paiements/PaiementsEnAttenteCard";
+import { EmptyState } from "@/components/common/EmptyState";
 import {
   Table,
   TableBody,
