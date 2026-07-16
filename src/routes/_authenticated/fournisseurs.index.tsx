@@ -254,11 +254,17 @@ function FournisseursPage() {
                 <TableRow>
                   <TableCell colSpan={7} className="py-10 text-center">
                     <EmptyState
+                      variant={hasActiveFilters ? "compact" : "rich"}
                       icon={Truck}
                       title={
                         hasActiveFilters
                           ? "Aucun fournisseur ne correspond aux filtres appliqués."
                           : "Aucun fournisseur enregistré."
+                      }
+                      description={
+                        hasActiveFilters
+                          ? undefined
+                          : "Créez vos fournisseurs pour tracer les approvisionnements, les factures d'achat et les paiements sortants."
                       }
                       onReset={hasActiveFilters ? resetAllFilters : undefined}
                       action={

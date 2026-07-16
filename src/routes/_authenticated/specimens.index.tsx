@@ -237,11 +237,17 @@ function SpecimensListPage() {
                 <TableRow>
                   <TableCell colSpan={10} className="py-6">
                     <EmptyState
+                      variant={hasActiveFilters ? "compact" : "rich"}
                       icon={Gift}
                       title={
                         hasActiveFilters
                           ? "Aucun spécimen ne correspond aux filtres appliqués."
                           : "Aucun spécimen enregistré."
+                      }
+                      description={
+                        hasActiveFilters
+                          ? undefined
+                          : "Enregistrez les échantillons remis aux prescripteurs pour tracer coûts marketing et retombées commerciales."
                       }
                       onReset={hasActiveFilters ? resetAllFilters : undefined}
                       className="border-none"

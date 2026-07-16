@@ -1,4 +1,4 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Inbox, Pencil, Trash2 } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { EmptyState } from "@/components/common/EmptyState";
 import { formatFCFA } from "@/lib/format";
 
 import type { ColumnDef, ResourceConfig, Row } from "./resource-manager-types";
@@ -64,11 +65,14 @@ export function ResourceTable({ config, rows, isLoading, onEdit, onDelete }: Pro
             </TableRow>
           ) : rows.length === 0 ? (
             <TableRow>
-              <TableCell
-                colSpan={config.columns.length + 1}
-                className="py-8 text-center text-muted-foreground"
-              >
-                Aucun élément
+              <TableCell colSpan={config.columns.length + 1} className="py-6">
+                <EmptyState
+                  variant="rich"
+                  icon={Inbox}
+                  title="Aucun élément pour le moment"
+                  description="Créez votre premier enregistrement pour commencer à alimenter cette liste."
+                  className="border-none"
+                />
               </TableCell>
             </TableRow>
           ) : (

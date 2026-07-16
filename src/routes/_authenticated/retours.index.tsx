@@ -35,6 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { EmptyState } from "@/components/common/EmptyState";
 
 import {
   listRetours,
@@ -215,25 +216,30 @@ function RetoursListPage() {
         {isLoading ? (
           <Skeleton className="h-64 w-full" />
         ) : retours.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 py-12 text-muted-foreground">
-            <RotateCcw className="h-8 w-8 opacity-50" />
-            <p>
-              {hasActiveFilters
+          <EmptyState
+            variant={hasActiveFilters ? "compact" : "rich"}
+            icon={RotateCcw}
+            title={
+              hasActiveFilters
                 ? "Aucun retour ne correspond aux filtres appliqués."
-                : "Aucun retour enregistré pour cet exercice."}
-            </p>
-            {hasActiveFilters ? (
-              <Button variant="outline" size="sm" onClick={resetFilters}>
-                <RotateCcw className="mr-2 h-4 w-4" /> Réinitialiser les filtres
-              </Button>
-            ) : (
-              <Can permission="retours.creer">
-                <Button size="sm" onClick={() => navigate({ to: "/retours/nouveau" })}>
-                  <Plus className="mr-2 h-4 w-4" /> Nouveau retour
-                </Button>
-              </Can>
-            )}
-          </div>
+                : "Aucun retour enregistré pour cet exercice."
+            }
+            description={
+              hasActiveFilters
+                ? undefined
+                : "Enregistrez un retour pour créditer le client, réintégrer le stock ou déclencher un avoir."
+            }
+            onReset={hasActiveFilters ? resetFilters : undefined}
+            action={
+              !hasActiveFilters ? (
+                <Can permission="retours.creer">
+                  <Button size="sm" onClick={() => navigate({ to: "/retours/nouveau" })}>
+                    <Plus className="mr-2 h-4 w-4" /> Nouveau retour
+                  </Button>
+                </Can>
+              ) : undefined
+            }
+          />
         ) : (
           <>
             <div className="overflow-x-auto">

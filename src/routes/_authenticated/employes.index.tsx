@@ -35,6 +35,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
+import { EmptyState } from "@/components/common/EmptyState";
 import {
   Table,
   TableBody,
@@ -234,21 +235,23 @@ function EmployesPage() {
               </TableRow>
             ) : employes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="py-10 text-center">
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <Users2 className="h-8 w-8 opacity-40" />
-                    {q ? (
-                      <>
-                        <p className="font-medium">
-                          Aucun employé ne correspond à votre recherche.
-                        </p>
-                        <Button variant="outline" size="sm" onClick={() => setSearch("")}>
-                          <RotateCcw className="mr-2 h-4 w-4" /> Réinitialiser la recherche
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <p className="font-medium">Aucun employé enregistré.</p>
+                <TableCell colSpan={8} className="py-6">
+                  <EmptyState
+                    variant={q ? "compact" : "rich"}
+                    icon={Users2}
+                    title={
+                      q
+                        ? "Aucun employé ne correspond à votre recherche."
+                        : "Aucun employé enregistré."
+                    }
+                    description={
+                      q
+                        ? undefined
+                        : "Ajoutez vos collaborateurs pour gérer paies, absences, congés et documents RH."
+                    }
+                    onReset={q ? () => setSearch("") : undefined}
+                    action={
+                      !q ? (
                         <Can permission="rh.creer">
                           <Button asChild size="sm">
                             <Link to="/employes/nouveau">
@@ -256,9 +259,10 @@ function EmployesPage() {
                             </Link>
                           </Button>
                         </Can>
-                      </>
-                    )}
-                  </div>
+                      ) : undefined
+                    }
+                    className="border-none"
+                  />
                 </TableCell>
               </TableRow>
             ) : (

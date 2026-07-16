@@ -30,6 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { EmptyState } from "@/components/common/EmptyState";
 
 export const Route = createFileRoute("/_authenticated/conges-en-cours")({
   component: CongesEnCoursPage,
@@ -290,8 +291,14 @@ function CongesEnCoursPage() {
               </TableRow>
             ) : paged.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="py-8 text-center text-muted-foreground">
-                  Aucun employé en congé actuellement.
+                <TableCell colSpan={9} className="py-6">
+                  <EmptyState
+                    variant="rich"
+                    icon={Plane}
+                    title="Aucun employé en congé actuellement"
+                    description="Personne n'est absent au titre d'un congé approuvé sur la période sélectionnée."
+                    className="border-none"
+                  />
                 </TableCell>
               </TableRow>
             ) : (

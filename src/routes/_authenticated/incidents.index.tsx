@@ -293,11 +293,17 @@ function IncidentsPage() {
                 <TableRow>
                   <TableCell colSpan={9} className="py-6">
                     <EmptyState
+                      variant={hasActiveFilters ? "compact" : "rich"}
                       icon={AlertTriangle}
                       title={
                         hasActiveFilters
                           ? "Aucun incident ne correspond aux filtres appliqués."
                           : "Aucun incident enregistré."
+                      }
+                      description={
+                        hasActiveFilters
+                          ? undefined
+                          : "Consignez les incidents (livraison, qualité, sécurité) pour les tracer, les affecter et les résoudre."
                       }
                       onReset={hasActiveFilters ? resetAllFilters : undefined}
                       action={
