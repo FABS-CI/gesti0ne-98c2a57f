@@ -12,6 +12,7 @@ import {
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { CommandeRow } from "@/components/commandes/CommandeRow";
 import { CommandeCard } from "@/components/commandes/CommandeCard";
+import { EmptyState } from "@/components/common/EmptyState";
 import type { Commande } from "@/lib/commandes-api";
 
 export function CommandesTable({
@@ -41,28 +42,47 @@ export function CommandesTable({
   validerPending: boolean;
   onDelete: (c: Commande) => void;
 }) {
-  const emptyState =
-    q || statut !== "all" ? (
-      <div className="flex flex-col items-center gap-2 text-muted-foreground">
-        <ShoppingCart className="h-8 w-8 opacity-40" />
-        <p className="font-medium">Aucune commande ne correspond aux filtres</p>
-        <Button variant="outline" size="sm" onClick={onResetFilters}>
-          Réinitialiser les filtres
-        </Button>
-      </div>
-    ) : (
-      <div className="flex flex-col items-center gap-2 text-muted-foreground">
-        <ShoppingCart className="h-8 w-8 opacity-40" />
-        <p className="font-medium">Aucune commande pour le moment</p>
-        {!readOnly && (
-          <Button asChild size="sm">
+  const hasFilters = Boolean(q) || statut !== "all";
+  const emptyState = hasFilters ? (
+    <EmptyState
+      icon={ShoppingCart}
+      title="Aucune commande ne correspond aux filtres"
+      description="Modifie ta recherche ou réinitialise les filtres pour retrouver tes commandes."
+      onReset={onResetFilters}
+    />
+  ) : (
+    <EmptyState
+      variant="rich"
+      icon={ShoppingCart}
+      title="Aucune commande pour le moment"
+      description="Commence par créer une commande à partir d'un client. Elle générera automatiquement bon de livraison, facture et paiements."
+      action={
+        !readOnly ? (
+          <Button asChild>
             <Link to="/commandes/nouvelle">
               <Plus className="mr-2 h-4 w-4" /> Créer la première commande
             </Link>
           </Button>
-        )}
-      </div>
-    );
+        ) : undefined
+      }
+      hints={
+        !readOnly ? (
+          <>
+            <span className="rounded-full border bg-card px-2.5 py-1 text-xs text-muted-foreground">
+              Astuce · <kbd className="font-mono">Ctrl</kbd>+<kbd className="font-mono">K</kbd> pour la recherche rapide
+            </span>
+            <Link
+              to="/clients"
+              className="rounded-full border bg-card px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              Voir mes clients →
+            </Link>
+          </>
+        ) : undefined
+      }
+    />
+  );
+
 
   const mobileCards = (
     <div className="space-y-2 p-2">
