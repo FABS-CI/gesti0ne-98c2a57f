@@ -478,6 +478,7 @@ export type Database = {
       }
       bons_livraison: {
         Row: {
+          adresse_livraison: string | null
           bl_id: string
           client_id: string | null
           client_nom: string | null
@@ -492,9 +493,11 @@ export type Database = {
           notes: string | null
           reference: string | null
           statut: string
+          transporteur: string | null
           updated_at: string
         }
         Insert: {
+          adresse_livraison?: string | null
           bl_id?: string
           client_id?: string | null
           client_nom?: string | null
@@ -509,9 +512,11 @@ export type Database = {
           notes?: string | null
           reference?: string | null
           statut?: string
+          transporteur?: string | null
           updated_at?: string
         }
         Update: {
+          adresse_livraison?: string | null
           bl_id?: string
           client_id?: string | null
           client_nom?: string | null
@@ -526,6 +531,7 @@ export type Database = {
           notes?: string | null
           reference?: string | null
           statut?: string
+          transporteur?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -731,9 +737,12 @@ export type Database = {
         Row: {
           bl_id: string
           colis_id: string
+          commande_id: string | null
           commune: string | null
+          contenu: string | null
           created_at: string
           date_colisage: string | null
+          date_envoi: string | null
           destinataire: string | null
           gare_depart: string | null
           gare_responsable: string | null
@@ -751,6 +760,7 @@ export type Database = {
           responsable_nom: string | null
           statut: string
           tournee_id: string | null
+          transporteur: string | null
           updated_at: string
           vehicule: string | null
           ville_destination: string | null
@@ -759,9 +769,12 @@ export type Database = {
         Insert: {
           bl_id: string
           colis_id?: string
+          commande_id?: string | null
           commune?: string | null
+          contenu?: string | null
           created_at?: string
           date_colisage?: string | null
+          date_envoi?: string | null
           destinataire?: string | null
           gare_depart?: string | null
           gare_responsable?: string | null
@@ -779,6 +792,7 @@ export type Database = {
           responsable_nom?: string | null
           statut?: string
           tournee_id?: string | null
+          transporteur?: string | null
           updated_at?: string
           vehicule?: string | null
           ville_destination?: string | null
@@ -787,9 +801,12 @@ export type Database = {
         Update: {
           bl_id?: string
           colis_id?: string
+          commande_id?: string | null
           commune?: string | null
+          contenu?: string | null
           created_at?: string
           date_colisage?: string | null
+          date_envoi?: string | null
           destinataire?: string | null
           gare_depart?: string | null
           gare_responsable?: string | null
@@ -807,6 +824,7 @@ export type Database = {
           responsable_nom?: string | null
           statut?: string
           tournee_id?: string | null
+          transporteur?: string | null
           updated_at?: string
           vehicule?: string | null
           ville_destination?: string | null
@@ -1807,6 +1825,63 @@ export type Database = {
         }
         Relationships: []
       }
+      expeditions: {
+        Row: {
+          bl_id: string | null
+          created_at: string
+          date_arrivee_prevue: string | null
+          date_depart: string | null
+          expedition_id: string
+          notes: string | null
+          reference: string
+          statut: string
+          transporteur: string | null
+          transporteur_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          bl_id?: string | null
+          created_at?: string
+          date_arrivee_prevue?: string | null
+          date_depart?: string | null
+          expedition_id?: string
+          notes?: string | null
+          reference: string
+          statut?: string
+          transporteur?: string | null
+          transporteur_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bl_id?: string | null
+          created_at?: string
+          date_arrivee_prevue?: string | null
+          date_depart?: string | null
+          expedition_id?: string
+          notes?: string | null
+          reference?: string
+          statut?: string
+          transporteur?: string | null
+          transporteur_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expeditions_bl_id_fkey"
+            columns: ["bl_id"]
+            isOneToOne: false
+            referencedRelation: "bons_livraison"
+            referencedColumns: ["bl_id"]
+          },
+          {
+            foreignKeyName: "expeditions_transporteur_id_fkey"
+            columns: ["transporteur_id"]
+            isOneToOne: false
+            referencedRelation: "transporteurs"
+            referencedColumns: ["transporteur_id"]
+          },
+        ]
+      }
       factures: {
         Row: {
           client_id: string | null
@@ -1966,6 +2041,47 @@ export type Database = {
         }
         Relationships: []
       }
+      gares: {
+        Row: {
+          actif: boolean
+          code: string | null
+          created_at: string
+          gare_id: string
+          nom: string
+          transporteur_id: string | null
+          updated_at: string
+          ville: string | null
+        }
+        Insert: {
+          actif?: boolean
+          code?: string | null
+          created_at?: string
+          gare_id?: string
+          nom: string
+          transporteur_id?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Update: {
+          actif?: boolean
+          code?: string | null
+          created_at?: string
+          gare_id?: string
+          nom?: string
+          transporteur_id?: string | null
+          updated_at?: string
+          ville?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gares_transporteur_id_fkey"
+            columns: ["transporteur_id"]
+            isOneToOne: false
+            referencedRelation: "transporteurs"
+            referencedColumns: ["transporteur_id"]
+          },
+        ]
+      }
       incidents_stock: {
         Row: {
           created_at: string
@@ -2123,48 +2239,203 @@ export type Database = {
       }
       livraisons: {
         Row: {
+          adresse: string | null
           adresse_livraison: string | null
+          bl_id: string | null
+          client_id: string | null
+          client_nom: string | null
           colisage_id: string | null
           commande_id: string | null
+          commune: string | null
+          contact_dest: string | null
           created_at: string
           date_livraison: string | null
+          expedition_id: string | null
+          figee: boolean
+          gare_arrivee_id: string | null
+          gare_depart_id: string | null
           livraison_id: string
           livreur_id: string | null
           notes: string | null
           reference: string | null
           statut: string | null
+          telephone_dest: string | null
           tournee_id: string | null
+          transporteur: string | null
+          transporteur_id: string | null
           updated_at: string
+          ville: string | null
         }
         Insert: {
+          adresse?: string | null
           adresse_livraison?: string | null
+          bl_id?: string | null
+          client_id?: string | null
+          client_nom?: string | null
           colisage_id?: string | null
           commande_id?: string | null
+          commune?: string | null
+          contact_dest?: string | null
           created_at?: string
           date_livraison?: string | null
+          expedition_id?: string | null
+          figee?: boolean
+          gare_arrivee_id?: string | null
+          gare_depart_id?: string | null
           livraison_id?: string
           livreur_id?: string | null
           notes?: string | null
           reference?: string | null
           statut?: string | null
+          telephone_dest?: string | null
           tournee_id?: string | null
+          transporteur?: string | null
+          transporteur_id?: string | null
           updated_at?: string
+          ville?: string | null
         }
         Update: {
+          adresse?: string | null
           adresse_livraison?: string | null
+          bl_id?: string | null
+          client_id?: string | null
+          client_nom?: string | null
           colisage_id?: string | null
           commande_id?: string | null
+          commune?: string | null
+          contact_dest?: string | null
           created_at?: string
           date_livraison?: string | null
+          expedition_id?: string | null
+          figee?: boolean
+          gare_arrivee_id?: string | null
+          gare_depart_id?: string | null
           livraison_id?: string
           livreur_id?: string | null
           notes?: string | null
           reference?: string | null
           statut?: string | null
+          telephone_dest?: string | null
           tournee_id?: string | null
+          transporteur?: string | null
+          transporteur_id?: string | null
           updated_at?: string
+          ville?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "livraisons_bl_id_fkey"
+            columns: ["bl_id"]
+            isOneToOne: false
+            referencedRelation: "bons_livraison"
+            referencedColumns: ["bl_id"]
+          },
+          {
+            foreignKeyName: "livraisons_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "livraisons_expedition_id_fkey"
+            columns: ["expedition_id"]
+            isOneToOne: false
+            referencedRelation: "expeditions"
+            referencedColumns: ["expedition_id"]
+          },
+          {
+            foreignKeyName: "livraisons_gare_arrivee_id_fkey"
+            columns: ["gare_arrivee_id"]
+            isOneToOne: false
+            referencedRelation: "gares"
+            referencedColumns: ["gare_id"]
+          },
+          {
+            foreignKeyName: "livraisons_gare_depart_id_fkey"
+            columns: ["gare_depart_id"]
+            isOneToOne: false
+            referencedRelation: "gares"
+            referencedColumns: ["gare_id"]
+          },
+          {
+            foreignKeyName: "livraisons_transporteur_id_fkey"
+            columns: ["transporteur_id"]
+            isOneToOne: false
+            referencedRelation: "transporteurs"
+            referencedColumns: ["transporteur_id"]
+          },
+        ]
+      }
+      livraisons_commande: {
+        Row: {
+          bl_id: string | null
+          commande_id: string | null
+          created_at: string
+          gare_nom: string | null
+          livraison_id: string
+          nb_cartons: number | null
+          quantite_commandee: number | null
+          statut: string | null
+          tournee_id: string | null
+          transporteur: string | null
+          type_livraison: string | null
+          updated_at: string
+          ville_livraison: string | null
+        }
+        Insert: {
+          bl_id?: string | null
+          commande_id?: string | null
+          created_at?: string
+          gare_nom?: string | null
+          livraison_id?: string
+          nb_cartons?: number | null
+          quantite_commandee?: number | null
+          statut?: string | null
+          tournee_id?: string | null
+          transporteur?: string | null
+          type_livraison?: string | null
+          updated_at?: string
+          ville_livraison?: string | null
+        }
+        Update: {
+          bl_id?: string | null
+          commande_id?: string | null
+          created_at?: string
+          gare_nom?: string | null
+          livraison_id?: string
+          nb_cartons?: number | null
+          quantite_commandee?: number | null
+          statut?: string | null
+          tournee_id?: string | null
+          transporteur?: string | null
+          type_livraison?: string | null
+          updated_at?: string
+          ville_livraison?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "livraisons_commande_bl_id_fkey"
+            columns: ["bl_id"]
+            isOneToOne: false
+            referencedRelation: "bons_livraison"
+            referencedColumns: ["bl_id"]
+          },
+          {
+            foreignKeyName: "livraisons_commande_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
+          {
+            foreignKeyName: "livraisons_commande_tournee_id_fkey"
+            columns: ["tournee_id"]
+            isOneToOne: false
+            referencedRelation: "tournees"
+            referencedColumns: ["tournee_id"]
+          },
+        ]
       }
       livreurs: {
         Row: {
@@ -2172,6 +2443,7 @@ export type Database = {
           created_at: string
           livreur_id: string
           matricule: string | null
+          nom: string | null
           nom_complet: string
           permis: string | null
           telephone: string | null
@@ -2182,6 +2454,7 @@ export type Database = {
           created_at?: string
           livreur_id?: string
           matricule?: string | null
+          nom?: string | null
           nom_complet: string
           permis?: string | null
           telephone?: string | null
@@ -2192,12 +2465,156 @@ export type Database = {
           created_at?: string
           livreur_id?: string
           matricule?: string | null
+          nom?: string | null
           nom_complet?: string
           permis?: string | null
           telephone?: string | null
           updated_at?: string
         }
         Relationships: []
+      }
+      livsuivi_commandes: {
+        Row: {
+          cloturee: boolean
+          commande_id: string
+          commentaire_reception: string | null
+          created_at: string
+          derniere_maj: string
+          gare_depot: string | null
+          gare_destination: string | null
+          heure_arrivee: string | null
+          heure_depart: string | null
+          heure_livraison: string | null
+          id: string
+          livreur_nom: string | null
+          nb_cartons: number | null
+          ordre_passage: number | null
+          photo_preuve_url: string | null
+          point_livraison: string | null
+          receptionnaire_nom: string | null
+          receptionnaire_telephone: string | null
+          retour_motif: string | null
+          signature_url: string | null
+          statut: string
+          tournee_id: string | null
+          type_livraison: string
+          updated_at: string
+          vehicule: string | null
+          ville_destination: string | null
+        }
+        Insert: {
+          cloturee?: boolean
+          commande_id: string
+          commentaire_reception?: string | null
+          created_at?: string
+          derniere_maj?: string
+          gare_depot?: string | null
+          gare_destination?: string | null
+          heure_arrivee?: string | null
+          heure_depart?: string | null
+          heure_livraison?: string | null
+          id?: string
+          livreur_nom?: string | null
+          nb_cartons?: number | null
+          ordre_passage?: number | null
+          photo_preuve_url?: string | null
+          point_livraison?: string | null
+          receptionnaire_nom?: string | null
+          receptionnaire_telephone?: string | null
+          retour_motif?: string | null
+          signature_url?: string | null
+          statut?: string
+          tournee_id?: string | null
+          type_livraison?: string
+          updated_at?: string
+          vehicule?: string | null
+          ville_destination?: string | null
+        }
+        Update: {
+          cloturee?: boolean
+          commande_id?: string
+          commentaire_reception?: string | null
+          created_at?: string
+          derniere_maj?: string
+          gare_depot?: string | null
+          gare_destination?: string | null
+          heure_arrivee?: string | null
+          heure_depart?: string | null
+          heure_livraison?: string | null
+          id?: string
+          livreur_nom?: string | null
+          nb_cartons?: number | null
+          ordre_passage?: number | null
+          photo_preuve_url?: string | null
+          point_livraison?: string | null
+          receptionnaire_nom?: string | null
+          receptionnaire_telephone?: string | null
+          retour_motif?: string | null
+          signature_url?: string | null
+          statut?: string
+          tournee_id?: string | null
+          type_livraison?: string
+          updated_at?: string
+          vehicule?: string | null
+          ville_destination?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "livsuivi_commandes_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
+          {
+            foreignKeyName: "livsuivi_commandes_tournee_id_fkey"
+            columns: ["tournee_id"]
+            isOneToOne: false
+            referencedRelation: "tournees"
+            referencedColumns: ["tournee_id"]
+          },
+        ]
+      }
+      livsuivi_historique: {
+        Row: {
+          commentaire: string | null
+          created_at: string
+          etape: string
+          id: string
+          livraison_id: string
+          meta: Json
+          user_id: string | null
+          user_nom: string | null
+        }
+        Insert: {
+          commentaire?: string | null
+          created_at?: string
+          etape: string
+          id?: string
+          livraison_id: string
+          meta?: Json
+          user_id?: string | null
+          user_nom?: string | null
+        }
+        Update: {
+          commentaire?: string | null
+          created_at?: string
+          etape?: string
+          id?: string
+          livraison_id?: string
+          meta?: Json
+          user_id?: string | null
+          user_nom?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "livsuivi_historique_livraison_id_fkey"
+            columns: ["livraison_id"]
+            isOneToOne: false
+            referencedRelation: "livsuivi_commandes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       missions: {
         Row: {
@@ -3316,45 +3733,119 @@ export type Database = {
       }
       tournees: {
         Row: {
+          chauffeur_nom: string | null
+          cout_autres: number | null
+          cout_carburant: number | null
+          cout_expeditions: number | null
+          cout_livraison: number | null
+          cout_manutentions: number | null
+          cout_peages: number | null
+          cout_repas: number | null
+          cout_total: number | null
           created_at: string
           date_tournee: string | null
+          depot_depart_id: string | null
           distance_km: number | null
+          ecriture_id: string | null
+          heure_depart: string | null
           livreur_id: string | null
+          mode_reglement: string | null
+          nb_cartons: number | null
+          nb_clients: number | null
+          nb_colis: number | null
           nb_livraisons: number | null
           notes: string | null
           reference: string | null
+          responsable_nom: string | null
           statut: string | null
           tournee_id: string
+          type_tournee: string | null
           updated_at: string
+          validation_at: string | null
+          validation_by: string | null
+          validation_commentaire: string | null
+          validation_statut: string | null
           vehicule_id: string | null
         }
         Insert: {
+          chauffeur_nom?: string | null
+          cout_autres?: number | null
+          cout_carburant?: number | null
+          cout_expeditions?: number | null
+          cout_livraison?: number | null
+          cout_manutentions?: number | null
+          cout_peages?: number | null
+          cout_repas?: number | null
+          cout_total?: number | null
           created_at?: string
           date_tournee?: string | null
+          depot_depart_id?: string | null
           distance_km?: number | null
+          ecriture_id?: string | null
+          heure_depart?: string | null
           livreur_id?: string | null
+          mode_reglement?: string | null
+          nb_cartons?: number | null
+          nb_clients?: number | null
+          nb_colis?: number | null
           nb_livraisons?: number | null
           notes?: string | null
           reference?: string | null
+          responsable_nom?: string | null
           statut?: string | null
           tournee_id?: string
+          type_tournee?: string | null
           updated_at?: string
+          validation_at?: string | null
+          validation_by?: string | null
+          validation_commentaire?: string | null
+          validation_statut?: string | null
           vehicule_id?: string | null
         }
         Update: {
+          chauffeur_nom?: string | null
+          cout_autres?: number | null
+          cout_carburant?: number | null
+          cout_expeditions?: number | null
+          cout_livraison?: number | null
+          cout_manutentions?: number | null
+          cout_peages?: number | null
+          cout_repas?: number | null
+          cout_total?: number | null
           created_at?: string
           date_tournee?: string | null
+          depot_depart_id?: string | null
           distance_km?: number | null
+          ecriture_id?: string | null
+          heure_depart?: string | null
           livreur_id?: string | null
+          mode_reglement?: string | null
+          nb_cartons?: number | null
+          nb_clients?: number | null
+          nb_colis?: number | null
           nb_livraisons?: number | null
           notes?: string | null
           reference?: string | null
+          responsable_nom?: string | null
           statut?: string | null
           tournee_id?: string
+          type_tournee?: string | null
           updated_at?: string
+          validation_at?: string | null
+          validation_by?: string | null
+          validation_commentaire?: string | null
+          validation_statut?: string | null
           vehicule_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tournees_depot_depart_id_fkey"
+            columns: ["depot_depart_id"]
+            isOneToOne: false
+            referencedRelation: "depots"
+            referencedColumns: ["depot_id"]
+          },
+        ]
       }
       transactions: {
         Row: {
@@ -3512,6 +4003,39 @@ export type Database = {
           statut?: string | null
           transfert_id?: string
           transporteur?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transporteurs: {
+        Row: {
+          actif: boolean
+          contact: string | null
+          created_at: string
+          nom: string
+          telephone: string | null
+          transporteur_id: string
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          contact?: string | null
+          created_at?: string
+          nom: string
+          telephone?: string | null
+          transporteur_id?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          contact?: string | null
+          created_at?: string
+          nom?: string
+          telephone?: string | null
+          transporteur_id?: string
+          type?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -3702,9 +4226,12 @@ export type Database = {
         Returns: {
           bl_id: string
           colis_id: string
+          commande_id: string | null
           commune: string | null
+          contenu: string | null
           created_at: string
           date_colisage: string | null
+          date_envoi: string | null
           destinataire: string | null
           gare_depart: string | null
           gare_responsable: string | null
@@ -3722,6 +4249,7 @@ export type Database = {
           responsable_nom: string | null
           statut: string
           tournee_id: string | null
+          transporteur: string | null
           updated_at: string
           vehicule: string | null
           ville_destination: string | null
@@ -3739,9 +4267,12 @@ export type Database = {
         Returns: {
           bl_id: string
           colis_id: string
+          commande_id: string | null
           commune: string | null
+          contenu: string | null
           created_at: string
           date_colisage: string | null
+          date_envoi: string | null
           destinataire: string | null
           gare_depart: string | null
           gare_responsable: string | null
@@ -3759,6 +4290,7 @@ export type Database = {
           responsable_nom: string | null
           statut: string
           tournee_id: string | null
+          transporteur: string | null
           updated_at: string
           vehicule: string | null
           ville_destination: string | null
@@ -3783,6 +4315,7 @@ export type Database = {
         Args: { _transfert_id: string }
         Returns: undefined
       }
+      finaliser_tournee: { Args: { _tournee_id: string }; Returns: Json }
       get_carton_public: { Args: { _colis_id: string }; Returns: Json }
       has_permission_v2: {
         Args: { _perm: string; _user_id: string }
@@ -3800,6 +4333,101 @@ export type Database = {
         Returns: {
           permission_code: string
         }[]
+      }
+      livsuivi_avancer: {
+        Args: {
+          _commentaire?: string
+          _etape: string
+          _livraison_id: string
+          _meta?: Json
+        }
+        Returns: {
+          cloturee: boolean
+          commande_id: string
+          commentaire_reception: string | null
+          created_at: string
+          derniere_maj: string
+          gare_depot: string | null
+          gare_destination: string | null
+          heure_arrivee: string | null
+          heure_depart: string | null
+          heure_livraison: string | null
+          id: string
+          livreur_nom: string | null
+          nb_cartons: number | null
+          ordre_passage: number | null
+          photo_preuve_url: string | null
+          point_livraison: string | null
+          receptionnaire_nom: string | null
+          receptionnaire_telephone: string | null
+          retour_motif: string | null
+          signature_url: string | null
+          statut: string
+          tournee_id: string | null
+          type_livraison: string
+          updated_at: string
+          vehicule: string | null
+          ville_destination: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "livsuivi_commandes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      livsuivi_avancer_masse: {
+        Args: {
+          _etape: string
+          _filtre_gare?: string
+          _meta?: Json
+          _tournee_id: string
+        }
+        Returns: number
+      }
+      livsuivi_confirmer_reception: {
+        Args: {
+          _commentaire?: string
+          _id: string
+          _photo_url?: string
+          _receptionnaire_nom?: string
+          _receptionnaire_tel?: string
+          _signature_url?: string
+        }
+        Returns: {
+          cloturee: boolean
+          commande_id: string
+          commentaire_reception: string | null
+          created_at: string
+          derniere_maj: string
+          gare_depot: string | null
+          gare_destination: string | null
+          heure_arrivee: string | null
+          heure_depart: string | null
+          heure_livraison: string | null
+          id: string
+          livreur_nom: string | null
+          nb_cartons: number | null
+          ordre_passage: number | null
+          photo_preuve_url: string | null
+          point_livraison: string | null
+          receptionnaire_nom: string | null
+          receptionnaire_telephone: string | null
+          retour_motif: string | null
+          signature_url: string | null
+          statut: string
+          tournee_id: string | null
+          type_livraison: string
+          updated_at: string
+          vehicule: string | null
+          ville_destination: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "livsuivi_commandes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       log_permission_denied: {
         Args: { _context?: Json; _perm: string }
@@ -3833,6 +4461,10 @@ export type Database = {
       }
       supprimer_colisage: {
         Args: { _bl_id: string; _motif: string }
+        Returns: Json
+      }
+      supprimer_livraison_suivi: {
+        Args: { _id: string; _motif?: string }
         Returns: Json
       }
     }
