@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentType } from "react";
 import { useForm } from "react-hook-form";
 import type { Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,7 +7,7 @@ import { useBlocker, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   AlertTriangle,
-  Banknote,
+  Building2,
   Building2,
   FileText,
   Handshake,
