@@ -1,4 +1,5 @@
-import { FileDown, Loader2, Users } from "lucide-react";
+import { FileDown, FileText, Loader2, Users, Eye, Wallet } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,10 +18,13 @@ type Props = {
   clients: EtatCompteClient[];
   isLoading: boolean;
   busy: string | null;
+  historiqueBusy?: string | null;
   onPdf: (c: EtatCompteClient) => void;
+  onHistorique?: (c: EtatCompteClient) => void;
 };
 
-export function EtatCompteTable({ clients, isLoading, busy, onPdf }: Props) {
+export function EtatCompteTable({ clients, isLoading, busy, historiqueBusy, onPdf, onHistorique }: Props) {
+  const navigate = useNavigate();
   return (
     <div className="rounded-lg border">
       <Table>
