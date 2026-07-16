@@ -13,8 +13,10 @@ import { Eye, Monitor, Smartphone, Tablet } from "lucide-react";
 import {
   ACTION_LABEL,
   ACTION_VARIANT,
+  BROWSER_STYLE,
   CRITICITE_STYLE,
   STATUS_STYLE,
+  countryFlag,
   type AuditRow,
 } from "@/lib/audit-helpers";
 
