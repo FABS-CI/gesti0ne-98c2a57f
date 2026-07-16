@@ -16,7 +16,53 @@ export type AuditRow = {
   url: string | null;
   http_method: string | null;
   status: string | null;
+  status_code?: number | null;
   duration_ms: number | null;
+  error_message?: string | null;
+  criticite?: "info" | "warning" | "critical" | null;
+  session_id?: string | null;
+  correlation_id?: string | null;
+  city?: string | null;
+  country?: string | null;
+  country_code?: string | null;
+  browser?: string | null;
+  browser_version?: string | null;
+  os?: string | null;
+  device?: string | null;
+  screen_resolution?: string | null;
+  timezone?: string | null;
+};
+
+/** Couleur du badge selon le niveau de criticité. */
+export const CRITICITE_STYLE: Record<
+  string,
+  { label: string; className: string }
+> = {
+  info: { label: "Info", className: "bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-200" },
+  warning: {
+    label: "Avertissement",
+    className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-200",
+  },
+  critical: {
+    label: "Critique",
+    className: "bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-200",
+  },
+};
+
+/** Couleur du badge résultat succès/erreur/annulé. */
+export const STATUS_STYLE: Record<string, { label: string; className: string }> = {
+  success: {
+    label: "Succès",
+    className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200",
+  },
+  error: {
+    label: "Erreur",
+    className: "bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-200",
+  },
+  cancelled: {
+    label: "Annulé",
+    className: "bg-slate-100 text-slate-800 dark:bg-slate-800/60 dark:text-slate-200",
+  },
 };
 
 export const ACTION_LABEL: Record<string, string> = {
