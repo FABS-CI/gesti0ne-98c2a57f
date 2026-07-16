@@ -1,4 +1,4 @@
-import { AlertTriangle, Plus, Trash2 } from "lucide-react";
+import { AlertTriangle, Package, Plus, Trash2 } from "lucide-react";
 import type { UseFormReturn, FieldArrayWithId } from "react-hook-form";
 import type { UseQueryResult } from "@tanstack/react-query";
 
@@ -53,12 +53,18 @@ export function LignesSection({
 }: Props) {
   const hasOvershoot = overshootIndexes.length > 0;
   return (
-    <section className="rounded-md border bg-card p-4 sm:p-5 space-y-4">
+    <section className="relative overflow-hidden rounded-md border bg-card p-4 pl-5 sm:p-5 sm:pl-6 space-y-4">
+      <span aria-hidden className="absolute inset-y-0 left-0 w-1" style={{ backgroundColor: "#F97316" }} />
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-        <h2 className="truncate text-base sm:text-lg font-semibold">
-          3. Produits{" "}
-          <span className="text-xs font-normal text-muted-foreground">
-            ({totalArticles} art. · {totalQuantite} qté)
+        <h2 className="flex min-w-0 items-center gap-2 truncate text-base sm:text-lg font-semibold">
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-white shadow-sm" style={{ backgroundColor: "#F97316" }}>
+            <Package className="h-4 w-4" />
+          </span>
+          <span className="truncate">
+            3. Produits{" "}
+            <span className="text-xs font-normal text-muted-foreground">
+              ({totalArticles} art. · {totalQuantite} qté)
+            </span>
           </span>
         </h2>
         <Button type="button" variant="outline" size="sm" onClick={addLigne} className="shrink-0">
