@@ -34,7 +34,7 @@ export function EtatCompteTable({ clients, isLoading, busy, historiqueBusy, onPd
             <TableHead>Client</TableHead>
             <TableHead className="text-right">Solde dû</TableHead>
             <TableHead>État</TableHead>
-            <TableHead className="text-right">PDF</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
