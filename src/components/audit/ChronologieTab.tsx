@@ -86,15 +86,30 @@ const Row = React.memo(function Row({
       <TableCell className="text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5">
           <DeviceIcon device={r.device} />
-          <span className="truncate max-w-[110px]" title={navigateur}>
-            {navigateur || "—"}
-          </span>
+          {r.browser ? (
+            <span
+              className={`inline-flex rounded px-1.5 py-0.5 text-[10px] font-medium ${
+                BROWSER_STYLE[r.browser] ?? "bg-muted text-muted-foreground"
+              }`}
+              title={navigateur}
+            >
+              {r.browser}
+              {r.browser_version ? ` ${r.browser_version.split(".")[0]}` : ""}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">—</span>
+          )}
         </div>
         <div className="text-[10px] text-muted-foreground">{r.os ?? ""}</div>
       </TableCell>
       <TableCell className="text-xs">
         <div className="font-mono">{r.ip_address ?? "—"}</div>
-        {localisation && <div className="text-muted-foreground">{localisation}</div>}
+        {(r.country_code || localisation) && (
+          <div className="text-muted-foreground flex items-center gap-1">
+            {r.country_code && <span className="text-sm leading-none">{countryFlag(r.country_code)}</span>}
+            <span>{localisation || r.country_code}</span>
+          </div>
+        )}
       </TableCell>
       <TableCell className="text-xs text-muted-foreground">
         {r.duration_ms != null ? `${r.duration_ms} ms` : "—"}
