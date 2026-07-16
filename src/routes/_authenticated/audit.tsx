@@ -137,12 +137,24 @@ function AuditPage() {
         last_action: r.action,
         ip: r.ip_address,
         count: 0,
+        device: r.device ?? null,
+        browser: r.browser ?? null,
+        os: r.os ?? null,
+        city: r.city ?? null,
+        country: r.country ?? null,
+        country_code: r.country_code ?? null,
       };
       cur.count += 1;
       if (r.occurred_at > cur.last) {
         cur.last = r.occurred_at;
         cur.last_action = r.action;
         cur.ip = r.ip_address ?? cur.ip;
+        cur.device = r.device ?? cur.device;
+        cur.browser = r.browser ?? cur.browser;
+        cur.os = r.os ?? cur.os;
+        cur.city = r.city ?? cur.city;
+        cur.country = r.country ?? cur.country;
+        cur.country_code = r.country_code ?? cur.country_code;
       }
       map.set(key, cur);
     });
@@ -180,9 +192,9 @@ function AuditPage() {
       return {
         ...u,
         ip: u.ip ?? info?.ip_address ?? null,
-        device: info?.device ?? ua.device,
-        browser: ua.browser,
-        os: ua.os,
+        device: u.device ?? info?.device ?? ua.device,
+        browser: u.browser ?? ua.browser,
+        os: u.os ?? ua.os,
       };
     });
   }, [baseConnectedUsers, loginMap]);
@@ -200,13 +212,13 @@ function AuditPage() {
       return g
         ? {
             ...u,
-            city: g.city,
-            region: g.region,
-            country: g.country,
-            country_code: g.country_code,
-            isp: g.isp,
-            lat: g.lat,
-            lon: g.lon,
+            city: u.city ?? g.city,
+            region: u.region ?? g.region,
+            country: u.country ?? g.country,
+            country_code: u.country_code ?? g.country_code,
+            isp: u.isp ?? g.isp,
+            lat: u.lat ?? g.lat,
+            lon: u.lon ?? g.lon,
           }
         : u;
     });

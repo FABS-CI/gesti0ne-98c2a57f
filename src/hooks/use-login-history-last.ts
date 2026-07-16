@@ -23,10 +23,10 @@ export function useLoginHistoryLast() {
       since.setDate(since.getDate() - 7);
       const { data, error } = await supabase
         .from("login_history")
-        .select("email, ip_address, user_agent, device, occurred_at, status")
-        .eq("status", "success")
-        .gte("occurred_at", since.toISOString())
-        .order("occurred_at", { ascending: false })
+        .select("email, ip, user_agent, success, created_at")
+        .eq("success", true)
+        .gte("created_at", since.toISOString())
+        .order("created_at", { ascending: false })
         .limit(500);
       if (error) throw error;
       const map = new Map<string, LoginInfo>();
@@ -35,10 +35,10 @@ export function useLoginHistoryLast() {
         if (!key || map.has(key)) return; // premier = plus récent
         map.set(key, {
           email: r.email ?? "",
-          ip_address: r.ip_address ?? null,
+          ip_address: r.ip ?? null,
           user_agent: r.user_agent ?? null,
-          device: r.device ?? null,
-          occurred_at: r.occurred_at,
+          device: null,
+          occurred_at: r.created_at,
         });
       });
       return map;
