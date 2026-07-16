@@ -98,7 +98,7 @@ export function ClientsTable({
                 return (
                   <TableRow
                     key={c.client_id}
-                    className="hover:bg-[#F97316]/10 cursor-pointer"
+                    className="group cursor-pointer transition-colors odd:bg-muted/20 hover:bg-primary/5"
                     onClick={() =>
                       navigate({ to: "/clients/$clientId", params: { clientId: c.client_id } })
                     }
@@ -139,15 +139,15 @@ export function ClientsTable({
                       )}
                     </TableCell>
                     <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" asChild>
+                      <div className="flex justify-end gap-1 opacity-60 transition-opacity group-hover:opacity-100">
+                        <Button variant="ghost" size="icon" asChild title="Voir">
                           <Link to="/clients/$clientId" params={{ clientId: c.client_id }}>
                             <Eye className="h-4 w-4" />
                           </Link>
                         </Button>
                         {!readOnly && (
                           <>
-                            <Button variant="ghost" size="icon" asChild>
+                            <Button variant="ghost" size="icon" asChild title="Modifier">
                               <Link
                                 to="/clients/$clientId/modifier"
                                 params={{ clientId: c.client_id }}
@@ -157,7 +157,13 @@ export function ClientsTable({
                             </Button>
                             {c.actif && (
                               <Can permission="clients.supprimer">
-                                <Button variant="ghost" size="icon" onClick={() => onDisable(c)}>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onDisable(c)}
+                                  title="Désactiver"
+                                  className="hover:bg-destructive/10"
+                                >
                                   <PowerOff className="h-4 w-4 text-destructive" />
                                 </Button>
                               </Can>
