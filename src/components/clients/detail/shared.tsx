@@ -40,19 +40,29 @@ export function Kpi({
   label,
   value,
   accent,
+  color,
 }: {
   label: string;
   value: React.ReactNode;
   accent?: string;
+  color?: string;
 }) {
+  const bar = color ?? "hsl(var(--primary))";
   return (
-    <Card>
-      <CardHeader className="pb-2">
+    <Card className="relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md">
+      <span
+        aria-hidden
+        className="absolute inset-y-0 left-0 w-1"
+        style={{ backgroundColor: bar }}
+      />
+      <CardHeader className="pb-2 pl-5">
         <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">
           {label}
         </CardTitle>
       </CardHeader>
-      <CardContent className={`text-xl font-bold ${accent ?? ""}`}>{value}</CardContent>
+      <CardContent className={`pl-5 text-xl font-bold tracking-tight ${accent ?? ""}`}>
+        {value}
+      </CardContent>
     </Card>
   );
 }
