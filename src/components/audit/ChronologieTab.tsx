@@ -135,8 +135,105 @@ export function ChronologieTab({
 }: Props) {
   const showPager = page && pageSize && totalCount !== undefined && onPageChange;
   const totalPages = showPager ? Math.max(1, Math.ceil(totalCount / pageSize)) : 1;
+
+  const [deviceFilter, setDeviceFilter] = React.useState<string>("");
+  const [countryFilter, setCountryFilter] = React.useState<string>("");
+  const [browserFilter, setBrowserFilter] = React.useState<string>("");
+
+  const devices = React.useMemo(
+    () => Array.from(new Set(rows.map((r) => r.device).filter(Boolean))) as string[],
+    [rows],
+  );
+  const countries = React.useMemo(
+    () =>
+      Array.from(
+        new Set(
+          rows
+            .map((r) => (r.country_code ? `${r.country_code}|${r.country ?? r.country_code}` : null))
+            .filter(Boolean) as string[],
+        ),
+      ),
+    [rows],
+  );
+  const browsers = React.useMemo(
+    () => Array.from(new Set(rows.map((r) => r.browser).filter(Boolean))) as string[],
+    [rows],
+  );
+
+  const filteredRows = React.useMemo(() => {
+    return rows.filter((r) => {
+      if (deviceFilter && r.device !== deviceFilter) return false;
+      if (countryFilter && r.country_code !== countryFilter) return false;
+      if (browserFilter && r.browser !== browserFilter) return false;
+      return true;
+    });
+  }, [rows, deviceFilter, countryFilter, browserFilter]);
+
+  const hasSubFilter = !!(deviceFilter || countryFilter || browserFilter);
+
   return (
     <div className="rounded-lg border bg-card overflow-x-auto">
+      <div className="flex flex-wrap items-center gap-2 border-b bg-muted/30 px-3 py-2 text-xs">
+        <span className="text-muted-foreground">Filtrer :</span>
+        <select
+          className="rounded border bg-background px-2 py-1"
+          value={deviceFilter}
+          onChange={(e) => setDeviceFilter(e.target.value)}
+        >
+          <option value="">Tous appareils</option>
+          {devices.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
+        <select
+          className="rounded border bg-background px-2 py-1"
+          value={countryFilter}
+          onChange={(e) => setCountryFilter(e.target.value)}
+        >
+          <option value="">Tous pays</option>
+          {countries.map((c) => {
+            const [code, name] = c.split("|");
+            return (
+              <option key={code} value={code}>
+                {countryFlag(code)} {name}
+              </option>
+            );
+          })}
+        </select>
+        <select
+          className="rounded border bg-background px-2 py-1"
+          value={browserFilter}
+          onChange={(e) => setBrowserFilter(e.target.value)}
+        >
+          <option value="">Tous navigateurs</option>
+          {browsers.map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
+        </select>
+        {hasSubFilter && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7"
+            onClick={() => {
+              setDeviceFilter("");
+              setCountryFilter("");
+              setBrowserFilter("");
+            }}
+          >
+            Réinitialiser
+          </Button>
+        )}
+        {hasSubFilter && (
+          <span className="ml-auto text-muted-foreground">
+            {filteredRows.length} / {rows.length} sur cette page
+          </span>
+        )}
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -160,14 +257,16 @@ export function ChronologieTab({
                 Chargement…
               </TableCell>
             </TableRow>
-          ) : rows.length === 0 ? (
+          ) : filteredRows.length === 0 ? (
             <TableRow>
               <TableCell colSpan={11} className="py-10 text-center text-muted-foreground">
                 Aucun événement
               </TableCell>
             </TableRow>
           ) : (
-            rows.map((r) => <Row key={r.id} r={r} onSelect={onSelect} onUserClick={onUserClick} />)
+            filteredRows.map((r) => (
+              <Row key={r.id} r={r} onSelect={onSelect} onUserClick={onUserClick} />
+            ))
           )}
         </TableBody>
       </Table>
