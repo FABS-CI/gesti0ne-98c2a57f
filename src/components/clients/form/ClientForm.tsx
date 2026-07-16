@@ -220,6 +220,11 @@ export function ClientForm({ clientId }: ClientFormProps) {
           <Card>
             <CardHeader><CardTitle>Identité</CardTitle></CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* 1. IDENTITÉ */}
+          <Card className="overflow-hidden">
+            <SectionHeader icon={UserCircle2} title="Identité" color="#3B82F6" />
+            <CardContent className="grid gap-4 sm:grid-cols-2">
               <TextField control={form.control} name="nom" label="Nom" required className="sm:col-span-2" />
               <SelectField
                 control={form.control}
@@ -243,8 +248,8 @@ export function ClientForm({ clientId }: ClientFormProps) {
           </Card>
 
           {/* 2. COORDONNÉES */}
-          <Card>
-            <CardHeader><CardTitle>Coordonnées</CardTitle></CardHeader>
+          <Card className="overflow-hidden">
+            <SectionHeader icon={Phone} title="Coordonnées" color="#0EA5E9" />
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <TextField control={form.control} name="telephone" label="Téléphone principal" />
               <TextField control={form.control} name="telephone2" label="Téléphone secondaire" />
@@ -255,8 +260,8 @@ export function ClientForm({ clientId }: ClientFormProps) {
           </Card>
 
           {/* 3. ADRESSE */}
-          <Card>
-            <CardHeader><CardTitle>Adresse</CardTitle></CardHeader>
+          <Card className="overflow-hidden">
+            <SectionHeader icon={MapPin} title="Adresse" color="#F97316" />
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <TextField control={form.control} name="pays" label="Pays" />
               <TextField control={form.control} name="ville" label="Ville" />
@@ -269,8 +274,8 @@ export function ClientForm({ clientId }: ClientFormProps) {
           </Card>
 
           {/* 4. COMMERCIAL */}
-          <Card>
-            <CardHeader><CardTitle>Informations commerciales</CardTitle></CardHeader>
+          <Card className="overflow-hidden">
+            <SectionHeader icon={Building2} title="Informations commerciales" color="#8B5CF6" />
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <TextField control={form.control} name="zone_commerciale" label="Zone commerciale" />
               <TextField control={form.control} name="secteur_activite" label="Secteur d'activité" />
@@ -281,8 +286,8 @@ export function ClientForm({ clientId }: ClientFormProps) {
           </Card>
 
           {/* 5. FISCAL */}
-          <Card>
-            <CardHeader><CardTitle>Informations fiscales</CardTitle></CardHeader>
+          <Card className="overflow-hidden">
+            <SectionHeader icon={Receipt} title="Informations fiscales" color="#14B8A6" />
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <TextField control={form.control} name="nif" label="NIF" />
               <TextField control={form.control} name="rccm" label="RCCM" />
@@ -300,8 +305,8 @@ export function ClientForm({ clientId }: ClientFormProps) {
           </Card>
 
           {/* 6. CONDITIONS COMMERCIALES */}
-          <Card>
-            <CardHeader><CardTitle>Conditions commerciales</CardTitle></CardHeader>
+          <Card className="overflow-hidden">
+            <SectionHeader icon={Handshake} title="Conditions commerciales" color="#EAB308" />
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <SelectField
                 control={form.control}
@@ -318,8 +323,8 @@ export function ClientForm({ clientId }: ClientFormProps) {
           </Card>
 
           {/* 7. LIVRAISON */}
-          <Card>
-            <CardHeader><CardTitle>Livraison</CardTitle></CardHeader>
+          <Card className="overflow-hidden">
+            <SectionHeader icon={Truck} title="Livraison" color="#EF4444" />
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <TextField control={form.control} name="adresse_livraison" label="Adresse de livraison" className="sm:col-span-2" />
               <TextField control={form.control} name="zone_livraison" label="Zone de livraison" />
@@ -329,8 +334,8 @@ export function ClientForm({ clientId }: ClientFormProps) {
           </Card>
 
           {/* 8. DOCUMENTS (placeholder) */}
-          <Card>
-            <CardHeader><CardTitle>Documents</CardTitle></CardHeader>
+          <Card className="overflow-hidden">
+            <SectionHeader icon={FileText} title="Documents" color="#64748B" />
             <CardContent>
               <p className="text-sm text-muted-foreground">
                 La gestion des pièces jointes (RCCM, NIF, contrat, logo…) sera disponible dans une prochaine mise à jour.
@@ -339,8 +344,8 @@ export function ClientForm({ clientId }: ClientFormProps) {
           </Card>
 
           {/* 9. NOTES */}
-          <Card className="lg:col-span-2">
-            <CardHeader><CardTitle>Notes</CardTitle></CardHeader>
+          <Card className="overflow-hidden lg:col-span-2">
+            <SectionHeader icon={StickyNote} title="Notes" color="#10B981" />
             <CardContent>
               <FormField
                 control={form.control}
