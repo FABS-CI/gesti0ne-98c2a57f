@@ -5828,6 +5828,31 @@ export type Database = {
         Args: { _bl_id: string; _motif: string }
         Returns: undefined
       }
+      enregistrer_approvisionnement: {
+        Args: { _payload: Json }
+        Returns: {
+          achat_id: string
+          created_at: string
+          created_by: string | null
+          created_by_nom: string | null
+          date_achat: string
+          depot_id: string | null
+          fournisseur_id: string | null
+          libelle: string
+          montant: number
+          notes: string | null
+          reference: string
+          reference_fournisseur: string | null
+          statut: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "achats"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       enregistrer_paiement: {
         Args: { _payload: Json }
         Returns: {
