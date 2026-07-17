@@ -8,7 +8,7 @@ export type FabsDocCode = "FC" | "PF" | "BC" | "BL" | "BR" | "AV" | "RP" | "BP" 
 
 /** Par défaut le QR est activé ; les documents internes simples le désactivent. */
 const QR_BY_TYPE: Record<FabsDocCode, boolean> = {
-  FC: true, // Facture
+  FC: false, // Facture — QR retiré à la demande métier
   PF: false, // Proforma (non opposable)
   BC: true, // Bon de commande
   BL: false, // Bon de livraison
