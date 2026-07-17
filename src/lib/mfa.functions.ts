@@ -180,7 +180,7 @@ export const mfaVerify = createServerFn({ method: "POST" })
     const ua = getRequestHeader("user-agent") ?? null;
     await supabase.from("mfa_session_validations").insert({
       user_id: userId,
-      session_token: bearerSessionKey(),
+      session_token: sessionKey(claims, bearerRaw()),
       user_agent: ua,
     });
     return { ok: true };
