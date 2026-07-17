@@ -5,6 +5,10 @@ import { MOIS, type Periode } from "@/lib/dashboard-helpers";
 type DashboardFullRPC = {
   nbCommandes: number;
   caTotal: number | string;
+  montantFacture: number | string;
+  montantEncaisse: number | string;
+  resteAEncaisser: number | string;
+  tauxEncaissement: number | string;
   parStatut: { statut: string; count: number }[];
   caMensuel: { y: number; m: number; ca: number | string; nb: number }[];
   recettes: number | string;
