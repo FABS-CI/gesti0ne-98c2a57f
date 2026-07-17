@@ -705,16 +705,35 @@ function BackupPage() {
                   </li>
                 ))}
               </ul>
-              {binariesResult.drive.url && (
-                <a
-                  href={binariesResult.drive.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-primary hover:underline text-xs"
-                >
-                  <Cloud className="h-3 w-3" /> storage_binaries.zip
-                </a>
-              )}
+              <div className="flex flex-wrap gap-2">
+                {binariesResult.drive.id && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={downloadingId === binariesResult.drive.id}
+                    onClick={() =>
+                      downloadFromDrive(binariesResult.drive.id, "storage_binaries.zip")
+                    }
+                  >
+                    {downloadingId === binariesResult.drive.id ? (
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    ) : (
+                      <Download className="mr-1 h-3 w-3" />
+                    )}
+                    Télécharger storage_binaries.zip
+                  </Button>
+                )}
+                {binariesResult.drive.url && (
+                  <a
+                    href={binariesResult.drive.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline text-xs self-center"
+                  >
+                    <Cloud className="h-3 w-3" /> Ouvrir dans Drive
+                  </a>
+                )}
+              </div>
             </div>
           )}
         </CardContent>
