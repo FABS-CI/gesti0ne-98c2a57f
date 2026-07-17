@@ -124,7 +124,7 @@ export async function listFacturesPaginated(params: {
 }): Promise<ListFacturesPaginatedResult> {
   const { q, statut, exerciceId, adv = {}, page, pageSize } = params;
 
-  // Résolution client/commande → IDs (mêmes règles que listFactures)
+  // Résolution client/commande → IDs
   let clientIds: string[] | null = null;
   if (adv.telephone || adv.commercial || adv.ville) {
     let cq = supabase.from("clients").select("client_id");
@@ -150,37 +150,49 @@ export async function listFacturesPaginated(params: {
       return { items: [], totalCount: 0, sumMontantTotal: 0, sumMontantPaye: 0 };
   }
 
-  const { data, error } = await supabase.rpc("factures_list_paginated", {
-    p_q: q || undefined,
-    p_statut: statut || undefined,
-    p_exercice_id: exerciceId ?? undefined,
-    p_reference: adv.reference || undefined,
-    p_client: adv.client || undefined,
-    p_client_ids: clientIds ?? undefined,
-    p_commande_ids: commandeIds ?? undefined,
-    p_date_du: adv.dateDu || undefined,
-    p_date_au: adv.dateAu || undefined,
-    p_montant_min: adv.montantMin ?? undefined,
-    p_montant_max: adv.montantMax ?? undefined,
-    p_limit: pageSize,
-    p_offset: (page - 1) * pageSize,
-  });
-  if (error) throw error;
-  const rows = (data ?? []) as Array<
-    Facture & {
-      total_count: number;
-      sum_montant_total: number | string;
-      sum_montant_paye: number | string;
-    }
-  >;
-  const first = rows[0];
+  const applyFilters = (qb: any): any => {
+    let query: any = qb;
+    if (exerciceId) query = query.eq("exercice_id", exerciceId);
+    if (q) query = query.or(`reference.ilike.%${q}%,client_nom.ilike.%${q}%`);
+    if (statut) query = query.eq("statut", statut);
+    if (adv.reference) query = query.ilike("reference", `%${adv.reference}%`);
+    if (adv.client) query = query.ilike("client_nom", `%${adv.client}%`);
+    if (clientIds) query = query.in("client_id", clientIds);
+    if (commandeIds) query = query.in("commande_id", commandeIds);
+    if (adv.dateDu) query = query.gte("date_facture", adv.dateDu);
+    if (adv.dateAu) query = query.lte("date_facture", adv.dateAu);
+    if (adv.montantMin !== undefined) query = query.gte("montant_total", adv.montantMin);
+    if (adv.montantMax !== undefined) query = query.lte("montant_total", adv.montantMax);
+    return query;
+  };
+
+  const from = (page - 1) * pageSize;
+  let pageQuery: any = supabase.from("factures").select("*", { count: "estimated" });
+  pageQuery = applyFilters(pageQuery);
+  const { data: items, error: pageErr, count } = await pageQuery
+    .order("created_at", { ascending: false })
+    .range(from, from + pageSize - 1);
+  if (pageErr) throw pageErr;
+
+  // Totaux globaux sur les mêmes filtres
+  let sumQuery: any = supabase.from("factures").select("montant_total, montant_paye");
+  sumQuery = applyFilters(sumQuery);
+  const { data: sumRows, error: sumErr } = await sumQuery;
+  if (sumErr) throw sumErr;
+  const sumMontantTotal = (sumRows ?? []).reduce(
+    (acc: number, r: any) => acc + Number(r.montant_total ?? 0),
+    0,
+  );
+  const sumMontantPaye = (sumRows ?? []).reduce(
+    (acc: number, r: any) => acc + Number(r.montant_paye ?? 0),
+    0,
+  );
+
   return {
-    items: rows.map(
-      ({ total_count: _t, sum_montant_total: _s1, sum_montant_paye: _s2, ...f }) => f as Facture,
-    ),
-    totalCount: Number(first?.total_count ?? 0),
-    sumMontantTotal: Number(first?.sum_montant_total ?? 0),
-    sumMontantPaye: Number(first?.sum_montant_paye ?? 0),
+    items: (items ?? []) as Facture[],
+    totalCount: count ?? (items?.length ?? 0),
+    sumMontantTotal,
+    sumMontantPaye,
   };
 }
 
