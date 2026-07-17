@@ -190,8 +190,26 @@ function AuthPage() {
         console.info("[auth] notif déjà envoyée pour cette session, skip.");
       }
       await router.invalidate();
-      navigate({ to: "/dashboard", replace: true });
+      // Redirection adaptative : envoyer l'utilisateur vers son dashboard
+      // métier le plus pertinent selon ses permissions (H1 audit MEP).
+      let landing: string = "/dashboard";
+      try {
+        const uidForPerm = signInData.user?.id;
+        if (uidForPerm) {
+          const [{ data: rpcPerms }, { data: roleRow }] = await Promise.all([
+            supabase.rpc("list_user_permissions", { _user_id: uidForPerm }),
+            supabase.from("user_roles").select("role").eq("user_id", uidForPerm).eq("role", "super_admin").maybeSingle(),
+          ]);
+          const codes = (rpcPerms ?? []).map((r: { permission_code: string }) => r.permission_code);
+          const { pickLandingRoute } = await import("@/lib/dashboard-landing");
+          landing = pickLandingRoute(codes, !!roleRow);
+        }
+      } catch {
+        /* fallback silencieux sur /dashboard */
+      }
+      navigate({ to: landing as "/dashboard", replace: true });
       setTimeout(prefetchHotRoutes, 0);
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "Échec de l'authentification");
     } finally {
