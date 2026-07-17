@@ -5950,13 +5950,17 @@ export type Database = {
       }
       get_carton_public: { Args: { _colis_id: string }; Returns: Json }
       get_lignes_retournables: {
-        Args: { _commande_id: string }
+        Args: { _facture_id: string }
         Returns: {
           designation: string
           prix_unitaire: number
           produit_id: string
-          quantite_disponible: number
+          qte_deja_retournee: number
+          qte_disponible: number
+          qte_vendue: number
           reference_produit: string
+          remise_pct: number
+          total_ligne: number
         }[]
       }
       get_slo_metrics: { Args: never; Returns: Json }
