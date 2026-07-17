@@ -80,7 +80,7 @@ export function ClientHistoriqueTab({ clientId }: { clientId: string }) {
           { label: "Lignes de commande", value: String(data.length) },
           { label: "Commandes distinctes", value: String(stats.nbCommandes) },
           { label: "Quantité totale", value: String(stats.qte) },
-          { label: "Chiffre d'affaires", value: formatFCFA(stats.ca) },
+          { label: "Montant commandé", value: formatFCFA(stats.ca) },
           { label: "Ticket moyen", value: formatFCFA(stats.ticket) },
         ],
       },
@@ -90,7 +90,7 @@ export function ClientHistoriqueTab({ clientId }: { clientId: string }) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi label="Chiffre d'affaires" value={formatFCFA(stats.ca)} />
+        <Kpi label="Montant commandé" value={formatFCFA(stats.ca)} />
         <Kpi label="Commandes" value={String(stats.nbCommandes)} />
         <Kpi label="Quantité totale" value={String(stats.qte)} />
         <Kpi label="Ticket moyen" value={formatFCFA(stats.ticket)} />
