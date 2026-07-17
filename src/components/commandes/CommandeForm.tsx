@@ -79,6 +79,15 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const canValiderCommande = has("commandes.valider");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<CommandeFormValues | null>(null);
+  const [recap, setRecap] = useState<{
+    commandeId: string;
+    commandeRef: string;
+    factureRef: string | null;
+    factureId: string | null;
+    blRef: string | null;
+    blId: string | null;
+    autoValidated: boolean;
+  } | null>(null);
 
   const form = useForm<CommandeFormValues>({
     resolver: zodResolver(formSchema),
