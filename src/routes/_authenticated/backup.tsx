@@ -90,7 +90,7 @@ const TABLES = [
   "inventaire_lignes",
   "transferts",
   "transfert_lignes",
-  "incidents_stock",
+  "incidents",
   "alertes_stock",
   "audit_stock",
   // Logistique
