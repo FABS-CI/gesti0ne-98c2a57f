@@ -46,7 +46,7 @@ function CommandeNouvellePage() {
         <div>
           <h1 className="text-2xl font-bold">Nouvelle Commande</h1>
           <p className="text-sm text-muted-foreground">
-            Saisie d'une commande client (statut initial : brouillon)
+            Proforma générée automatiquement · Facture &amp; BL si vous avez le droit de validation, sinon commande en attente
           </p>
         </div>
       </div>
