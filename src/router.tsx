@@ -51,7 +51,11 @@ export const getRouter = () => {
     // sinon un mismatch d'hydratation et le preview peut rester masqué par
     // l'overlay d'erreur.
     defaultPendingMs: 3000,
-    defaultPendingMinMs: 300,
+    // Les routes protégées utilisent `ssr: false`. Leur fallback est rendu
+    // côté serveur, mais ne doit pas être artificiellement maintenu pendant
+    // l'hydratation : sinon React reçoit le spinner côté serveur et la vraie
+    // page côté client, ce qui peut laisser la preview bloquée sur le fallback.
+    defaultPendingMinMs: 0,
     defaultPendingComponent: RoutePending,
     defaultErrorComponent: ErrorComponent,
   });
