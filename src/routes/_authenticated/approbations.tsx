@@ -44,17 +44,27 @@ const STATUT_META: Record<Statut, { label: string; color: string }> = {
 };
 
 type Approval = {
-  approval_id: string;
-  reference: string;
-  type_demande: string;
-  demandeur: string;
-  objet: string | null;
-  montant: number | null;
-  date_demande: string;
+  id: string;
+  workflow_code: string | null;
+  entity_type: string | null;
+  reference: string | null;
+  demandeur_nom: string | null;
   statut: string;
-  notes: string | null;
+  commentaire: string | null;
+  metadata: Record<string, unknown> | null;
   created_at: string;
 };
+
+function getMetaString(meta: Record<string, unknown> | null, key: string): string | null {
+  if (!meta) return null;
+  const v = meta[key];
+  return typeof v === "string" ? v : null;
+}
+function getMetaNumber(meta: Record<string, unknown> | null, key: string): number | null {
+  if (!meta) return null;
+  const v = meta[key];
+  return typeof v === "number" ? v : null;
+}
 
 function useApprovals(statut: Statut) {
   return useQuery({
@@ -62,12 +72,14 @@ function useApprovals(statut: Statut) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("workflow_approvals")
-        .select("*")
+        .select(
+          "id, workflow_code, entity_type, reference, demandeur_nom, statut, commentaire, metadata, created_at",
+        )
         .eq("statut", statut)
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
-      return (data ?? []) as Approval[];
+      return (data ?? []) as unknown as Approval[];
     },
   });
 }
@@ -136,7 +148,7 @@ function ApprovalsList({ statut }: { statut: Statut }) {
       <div className="grid gap-3">
         {data.map((row) => (
           <ApprovalCard
-            key={row.approval_id}
+            key={row.id}
             row={row}
             onAction={(action) => setDialog({ row, action })}
           />
@@ -159,6 +171,9 @@ function ApprovalCard({
 }) {
   const meta = STATUT_META[row.statut as Statut] ?? STATUT_META.en_attente;
   const isPending = row.statut === "en_attente";
+  const typeKey = row.entity_type ?? row.workflow_code ?? "autre";
+  const objet = getMetaString(row.metadata, "objet");
+  const montant = getMetaNumber(row.metadata, "montant");
 
   return (
     <Card>
@@ -166,23 +181,25 @@ function ApprovalCard({
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="outline">{TYPE_LABEL[row.type_demande] ?? row.type_demande}</Badge>
-              <span className="font-mono text-xs text-muted-foreground">{row.reference}</span>
+              <Badge variant="outline">{TYPE_LABEL[typeKey] ?? typeKey}</Badge>
+              <span className="font-mono text-xs text-muted-foreground">
+                {row.reference ?? row.id.slice(0, 8)}
+              </span>
               <Badge style={{ background: meta.color, color: "white" }}>{meta.label}</Badge>
             </div>
-            <p className="font-medium mt-2">{row.objet || "—"}</p>
+            <p className="font-medium mt-2">{objet || "—"}</p>
             <div className="flex gap-4 text-xs text-muted-foreground mt-1 flex-wrap">
-              <span>Demandeur : {row.demandeur}</span>
-              {row.montant != null && row.montant > 0 && (
-                <span className="font-semibold text-foreground">{formatFCFA(row.montant)}</span>
+              <span>Demandeur : {row.demandeur_nom ?? "—"}</span>
+              {montant != null && montant > 0 && (
+                <span className="font-semibold text-foreground">{formatFCFA(montant)}</span>
               )}
               <span>
                 {formatDistanceToNow(new Date(row.created_at), { addSuffix: true, locale: fr })}
               </span>
             </div>
-            {row.notes && (
+            {row.commentaire && (
               <p className="text-xs text-muted-foreground mt-2 border-l-2 pl-2 italic">
-                {row.notes}
+                {row.commentaire}
               </p>
             )}
           </div>
@@ -220,6 +237,9 @@ function DecisionDialog({
   const meta = STATUT_META[action];
   const actorName =
     (user?.user_metadata?.nom_complet as string | undefined) || user?.email || "Système";
+  const typeKey = row.entity_type ?? row.workflow_code ?? "autre";
+  const objet = getMetaString(row.metadata, "objet");
+  const montant = getMetaNumber(row.metadata, "montant");
 
   const submit = async () => {
     try {
@@ -227,17 +247,23 @@ function DecisionDialog({
       const decisionNote = `[${isApprove ? "Approuvée" : "Rejetée"} par ${actorName}${
         comment ? ` — ${comment}` : ""
       }]`;
-      const newNotes = [row.notes, decisionNote].filter(Boolean).join("\n");
+      const newCommentaire = [row.commentaire, decisionNote].filter(Boolean).join("\n");
 
       const { error } = await supabase
         .from("workflow_approvals")
-        .update({ statut: action, notes: newNotes })
-        .eq("approval_id", row.approval_id);
+        .update({
+          statut: action,
+          commentaire: newCommentaire,
+          approbateur_id: user?.id ?? null,
+          approbateur_nom: actorName,
+          decided_at: new Date().toISOString(),
+        })
+        .eq("id", row.id);
       if (error) throw error;
 
       await supabase.from("notifications").insert({
-        titre: `Demande ${row.reference} ${isApprove ? "approuvée" : "rejetée"}`,
-        message: `${TYPE_LABEL[row.type_demande] ?? row.type_demande} de ${row.demandeur}${
+        titre: `Demande ${row.reference ?? row.id.slice(0, 8)} ${isApprove ? "approuvée" : "rejetée"}`,
+        message: `${TYPE_LABEL[typeKey] ?? typeKey} de ${row.demandeur_nom ?? "—"}${
           comment ? ` — ${comment}` : ""
         }`,
         type_notification: isApprove ? "succes" : "alerte",
@@ -260,24 +286,24 @@ function DecisionDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {isApprove ? "Approuver" : "Rejeter"} la demande {row.reference}
+            {isApprove ? "Approuver" : "Rejeter"} la demande {row.reference ?? row.id.slice(0, 8)}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div className="rounded-md border p-3 text-sm space-y-1">
             <p>
               <span className="text-muted-foreground">Type :</span>{" "}
-              {TYPE_LABEL[row.type_demande] ?? row.type_demande}
+              {TYPE_LABEL[typeKey] ?? typeKey}
             </p>
             <p>
-              <span className="text-muted-foreground">Demandeur :</span> {row.demandeur}
+              <span className="text-muted-foreground">Demandeur :</span> {row.demandeur_nom ?? "—"}
             </p>
             <p>
-              <span className="text-muted-foreground">Objet :</span> {row.objet || "—"}
+              <span className="text-muted-foreground">Objet :</span> {objet || "—"}
             </p>
-            {row.montant != null && row.montant > 0 && (
+            {montant != null && montant > 0 && (
               <p>
-                <span className="text-muted-foreground">Montant :</span> {formatFCFA(row.montant)}
+                <span className="text-muted-foreground">Montant :</span> {formatFCFA(montant)}
               </p>
             )}
           </div>
