@@ -36,6 +36,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { uploadBackupToGoogleDrive } from "@/lib/gdrive-backup.functions";
 import { exportCriticalArtifacts } from "@/lib/gdrive-artifacts-backup.functions";
 import { exportStorageBinariesZip } from "@/lib/gdrive-covers-zip.functions";
+import { downloadDriveFile } from "@/lib/gdrive-download.functions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@tanstack/react-router";
 
@@ -180,6 +181,32 @@ function BackupPage() {
     buckets: Array<{ bucket: string; files: number; bytes: number }>;
     drive: { id: string; url: string | null };
   } | null>(null);
+  const runDriveDownload = useServerFn(downloadDriveFile);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  async function downloadFromDrive(fileId: string, fallbackName: string) {
+    setDownloadingId(fileId);
+    try {
+      const res = await runDriveDownload({ data: { fileId } });
+      const bin = atob(res.base64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const blob = new Blob([bytes], { type: res.mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = res.name || fallbackName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast.success(`Téléchargé — ${res.name}`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setDownloadingId(null);
+    }
+  }
 
   async function backupCriticalArtifacts() {
     setCriticalRunning(true);
@@ -585,25 +612,52 @@ function BackupPage() {
                 <b>{criticalResult.files_count}</b> fichiers dans{" "}
                 <b>{criticalResult.buckets_count}</b> buckets
               </div>
-              <div className="flex flex-wrap gap-3 text-xs">
+              <div className="flex flex-wrap gap-2 text-xs">
+                {criticalResult.users_drive.id && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={downloadingId === criticalResult.users_drive.id}
+                    onClick={() =>
+                      downloadFromDrive(criticalResult.users_drive.id, "auth_users.json")
+                    }
+                  >
+                    {downloadingId === criticalResult.users_drive.id ? (
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    ) : (
+                      <Download className="mr-1 h-3 w-3" />
+                    )}
+                    auth_users.json
+                  </Button>
+                )}
+                {criticalResult.storage_drive.id && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={downloadingId === criticalResult.storage_drive.id}
+                    onClick={() =>
+                      downloadFromDrive(
+                        criticalResult.storage_drive.id,
+                        "storage_manifest.json",
+                      )
+                    }
+                  >
+                    {downloadingId === criticalResult.storage_drive.id ? (
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    ) : (
+                      <Download className="mr-1 h-3 w-3" />
+                    )}
+                    storage_manifest.json
+                  </Button>
+                )}
                 {criticalResult.users_drive.url && (
                   <a
                     href={criticalResult.users_drive.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-primary hover:underline self-center"
                   >
-                    <Cloud className="h-3 w-3" /> auth_users.json
-                  </a>
-                )}
-                {criticalResult.storage_drive.url && (
-                  <a
-                    href={criticalResult.storage_drive.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-primary hover:underline"
-                  >
-                    <Cloud className="h-3 w-3" /> storage_manifest.json
+                    <Cloud className="h-3 w-3" /> Ouvrir dans Drive
                   </a>
                 )}
               </div>
@@ -651,16 +705,35 @@ function BackupPage() {
                   </li>
                 ))}
               </ul>
-              {binariesResult.drive.url && (
-                <a
-                  href={binariesResult.drive.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-primary hover:underline text-xs"
-                >
-                  <Cloud className="h-3 w-3" /> storage_binaries.zip
-                </a>
-              )}
+              <div className="flex flex-wrap gap-2">
+                {binariesResult.drive.id && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={downloadingId === binariesResult.drive.id}
+                    onClick={() =>
+                      downloadFromDrive(binariesResult.drive.id, "storage_binaries.zip")
+                    }
+                  >
+                    {downloadingId === binariesResult.drive.id ? (
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    ) : (
+                      <Download className="mr-1 h-3 w-3" />
+                    )}
+                    Télécharger storage_binaries.zip
+                  </Button>
+                )}
+                {binariesResult.drive.url && (
+                  <a
+                    href={binariesResult.drive.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline text-xs self-center"
+                  >
+                    <Cloud className="h-3 w-3" /> Ouvrir dans Drive
+                  </a>
+                )}
+              </div>
             </div>
           )}
         </CardContent>
