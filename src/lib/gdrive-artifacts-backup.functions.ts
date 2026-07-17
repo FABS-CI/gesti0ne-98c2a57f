@@ -98,22 +98,41 @@ export const exportCriticalArtifacts = createServerFn({ method: "POST" })
     if (bErr) throw new Error(`listBuckets: ${bErr.message}`);
     const manifest: any = { generated_at: new Date().toISOString(), buckets: [] };
 
+    async function listAll(bucketId: string, prefix = ""): Promise<any[]> {
+      const out: any[] = [];
+      let offset = 0;
+      const pageSize = 1000;
+      while (true) {
+        const { data: entries, error } = await supabaseAdmin.storage
+          .from(bucketId)
+          .list(prefix, { limit: pageSize, offset, sortBy: { column: "name", order: "asc" } });
+        if (error) throw new Error(`storage.list(${bucketId}/${prefix}): ${error.message}`);
+        if (!entries || entries.length === 0) break;
+        for (const entry of entries) {
+          const fullPath = prefix ? `${prefix}/${entry.name}` : entry.name;
+          if (entry.id === null || entry.metadata == null) {
+            // folder
+            const sub = await listAll(bucketId, fullPath);
+            out.push(...sub);
+          } else {
+            out.push({ path: fullPath, metadata: entry.metadata, created_at: entry.created_at });
+          }
+        }
+        if (entries.length < pageSize) break;
+        offset += pageSize;
+      }
+      return out;
+    }
+
     for (const bucket of buckets ?? []) {
+      const rows = await listAll(bucket.id);
       const objects: any[] = [];
-      // list récursif via storage.objects (bypass RLS via service role)
-      const { data: rows, error: oErr } = await supabaseAdmin
-        .schema("storage")
-        .from("objects")
-        .select("name,bucket_id,metadata,created_at,updated_at")
-        .eq("bucket_id", bucket.id)
-        .limit(10000);
-      if (oErr) throw new Error(`storage.objects: ${oErr.message}`);
-      for (const row of rows ?? []) {
+      for (const row of rows) {
         const { data: signed } = await supabaseAdmin.storage
           .from(bucket.id)
-          .createSignedUrl(row.name, 60 * 60 * 24 * 7);
+          .createSignedUrl(row.path, 60 * 60 * 24 * 7);
         objects.push({
-          path: row.name,
+          path: row.path,
           size: row.metadata?.size ?? null,
           mimetype: row.metadata?.mimetype ?? null,
           created_at: row.created_at,
@@ -128,6 +147,7 @@ export const exportCriticalArtifacts = createServerFn({ method: "POST" })
         objects,
       });
     }
+
 
     const stamp = new Date().toISOString().slice(0, 10);
     const folderId = await getOrCreateBackupFolder(LOVABLE_API_KEY, GDRIVE_KEY);
