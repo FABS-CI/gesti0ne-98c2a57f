@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserRoles } from "@/hooks/use-user-roles";
 import { supabase } from "@/integrations/supabase/client";
-import { Sun, CloudSun, Moon } from "lucide-react";
+import { Sun, CloudSun, Moon, Sparkles } from "lucide-react";
 import { useAvatarUrl } from "@/hooks/use-avatar-url";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  pickWelcomeMessage,
+  roleKeyFromAppRoles,
+  type WelcomePick,
+} from "@/lib/welcome-messages";
 
 function getGreeting(hour: number) {
   if (hour >= 5 && hour < 12) {
