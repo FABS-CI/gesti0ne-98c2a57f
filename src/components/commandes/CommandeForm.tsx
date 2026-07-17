@@ -3,7 +3,8 @@ import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { invalidateCommande } from "@/lib/cache-invalidation";
+import { invalidateCommande, invalidateFacture, invalidateColisage } from "@/lib/cache-invalidation";
+import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Info, Percent, Save, User } from "lucide-react";
@@ -78,6 +79,15 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const canValiderCommande = has("commandes.valider");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<CommandeFormValues | null>(null);
+  const [recap, setRecap] = useState<{
+    commandeId: string;
+    commandeRef: string;
+    factureRef: string | null;
+    factureId: string | null;
+    blRef: string | null;
+    blId: string | null;
+    autoValidated: boolean;
+  } | null>(null);
 
   const form = useForm<CommandeFormValues>({
     resolver: zodResolver(formSchema),
@@ -179,19 +189,59 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       if (mode === "edit" && commandeId) return modifierCommande(commandeId, payload);
       return creerCommande(payload);
     },
-    onSuccess: () => {
-      toast.success(
-        mode === "edit"
-          ? "Commande mise à jour"
-          : canValiderCommande
-            ? "Commande créée et validée"
-            : "Commande créée, en attente de validation",
-      );
+    onSuccess: async (created) => {
+      const clientId = form.getValues("client_id") ?? undefined;
       invalidateCommande(qc, {
-        commandeId: commandeId ?? undefined,
-        clientId: form.getValues("client_id") ?? undefined,
+        commandeId: commandeId ?? (created as { commande_id?: string })?.commande_id,
+        clientId,
       });
-      navigate({ to: "/commandes" });
+
+      if (mode === "edit") {
+        toast.success("Commande mise à jour");
+        navigate({ to: "/commandes" });
+        return;
+      }
+
+      const cId = (created as { commande_id?: string; reference?: string })?.commande_id;
+      const cRef = (created as { commande_id?: string; reference?: string })?.reference ?? "";
+
+      if (!canValiderCommande || !cId) {
+        toast.success("Commande créée, en attente de validation");
+        navigate({ to: "/commandes" });
+        return;
+      }
+
+      // Auto-validation : on va chercher facture + BL générés pour afficher le récap
+      const [{ data: fac }, { data: bl }] = await Promise.all([
+        supabase
+          .from("factures")
+          .select("facture_id, reference")
+          .eq("commande_id", cId)
+          .neq("statut", "annulee")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("bons_livraison")
+          .select("bl_id, reference")
+          .eq("commande_id", cId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+
+      invalidateFacture(qc, { clientId });
+      invalidateColisage(qc, { clientId });
+
+      setRecap({
+        commandeId: cId,
+        commandeRef: cRef,
+        factureRef: (fac as { reference?: string } | null)?.reference ?? null,
+        factureId: (fac as { facture_id?: string } | null)?.facture_id ?? null,
+        blRef: (bl as { reference?: string } | null)?.reference ?? null,
+        blId: (bl as { bl_id?: string } | null)?.bl_id ?? null,
+        autoValidated: true,
+      });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -597,6 +647,68 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             <AlertDialogCancel>Modifier la saisie</AlertDialogCancel>
             <AlertDialogAction onClick={confirmSubmit} disabled={mutation.isPending}>
               {mutation.isPending ? "Enregistrement…" : "Confirmer et enregistrer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!recap} onOpenChange={(o) => !o && setRecap(null)}>
+        <AlertDialogContent className="max-w-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Commande enregistrée avec succès</AlertDialogTitle>
+            <AlertDialogDescription>
+              {recap?.autoValidated
+                ? "La commande a été validée automatiquement. La facture et le bon de livraison ont été générés."
+                : "La commande a été enregistrée et est en attente de validation."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {recap && (
+            <div className="space-y-2 text-sm">
+              <div className="rounded-md border p-3 space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Commande</span>
+                  <span className="font-mono font-semibold">{recap.commandeRef}</span>
+                </div>
+                {recap.factureRef && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Facture</span>
+                    <span className="font-mono font-semibold">{recap.factureRef}</span>
+                  </div>
+                )}
+                {recap.blRef && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Bon de livraison</span>
+                    <span className="font-mono font-semibold">{recap.blRef}</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/commandes/$commandeId" params={{ commandeId: recap.commandeId }}>
+                    Voir la commande
+                  </Link>
+                </Button>
+                {recap.factureId && (
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/factures">Voir les factures</Link>
+                  </Button>
+                )}
+                {recap.blId && (
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/bons-livraison">Voir les BL</Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => {
+                setRecap(null);
+                navigate({ to: "/commandes" });
+              }}
+            >
+              Fermer
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
