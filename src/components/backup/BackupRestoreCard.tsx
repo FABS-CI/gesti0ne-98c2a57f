@@ -81,8 +81,8 @@ const PK_MAP: Record<string, string> = {
   alertes_stock: "alerte_id",
   audit_stock: "audit_id",
   // Logistique
-  colisages: "colisage_id",
   tournees: "tournee_id",
+
   livraisons: "livraison_id",
   bons_livraison: "bon_id",
   // Finance & compta
@@ -155,8 +155,8 @@ const RESTORE_ORDER = [
   "alertes_stock",
   "audit_stock",
   "tournees",
-  "colisages",
   "livraisons",
+
   "bons_livraison",
   "transactions",
   "fne_declarations",

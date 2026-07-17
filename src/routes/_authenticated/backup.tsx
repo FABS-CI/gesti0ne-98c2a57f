@@ -95,8 +95,8 @@ const TABLES = [
   "alertes_stock",
   "audit_stock",
   // Logistique
-  "colisages",
   "tournees",
+
   "livraisons",
   "bons_livraison",
   // Finance & compta
