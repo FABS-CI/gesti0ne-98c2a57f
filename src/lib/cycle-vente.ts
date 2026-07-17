@@ -9,15 +9,6 @@ import type { Commande } from "@/lib/commandes-api";
  * intégralement l'opération (pas de données à moitié créées).
  */
 
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function addDaysISO(days: number) {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
-}
 
 /** Convertit une proforma en commande via RPC atomique. */
 export async function createCommandeFromProforma(proformaId: string): Promise<Commande> {
