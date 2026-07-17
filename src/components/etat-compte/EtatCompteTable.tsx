@@ -99,7 +99,7 @@ export function EtatCompteTable({ clients, isLoading, busy, historiqueBusy, onPd
                       <Button
                         size="sm"
                         variant="secondary"
-                        onClick={() => navigate({ to: "/paiements/nouveau", search: { client_id: c.client_id } as never })}
+                        onClick={() => navigate({ to: "/paiements/nouveau", search: { clientId: c.client_id } })}
                         title="Imputer un paiement"
                       >
                         <Wallet className="h-3.5 w-3.5 mr-1.5" />
