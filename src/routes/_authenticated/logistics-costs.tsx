@@ -8,7 +8,6 @@ import {
   Eye,
   FileDown,
   Filter,
-  Printer,
   Undo2,
   XCircle,
 } from "lucide-react";
@@ -25,101 +24,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { exportListePDF } from "@/lib/pdf/exportListe";
-import { generateRecapCoutsTourneePDF } from "@/lib/pdf/tourneePdf";
-import { viewCached } from "@/lib/pdf/actions";
+import {
+  CATEGORIES,
+  TYPES,
+  VALIDATION_STATUTS,
+  fmtFCFA,
+  startOf,
+  statutMeta,
+  type TourneeCout,
+} from "@/components/logistics-costs/types";
+import { Kpi } from "@/components/logistics-costs/Kpi";
+import { DetailDialog } from "@/components/logistics-costs/DetailDialog";
+import { ValidateDialog } from "@/components/logistics-costs/ValidateDialog";
+import { RefuseDialog } from "@/components/logistics-costs/RefuseDialog";
 
 export const Route = createFileRoute("/_authenticated/logistics-costs")({
   component: LogisticsCostsPage,
 });
 
-// ---------------------------------------------------------------------------
-// Types & constantes
-// ---------------------------------------------------------------------------
-type TourneeCout = {
-  tournee_id: string;
-  reference: string;
-  date_tournee: string | null;
-  chauffeur_nom: string | null;
-  responsable_nom: string | null;
-  vehicule_id: string | null;
-  vehicules?: { immatriculation: string | null } | null;
-  statut: string;
-  type_tournee: string | null;
-  validation_statut: string;
-  mode_reglement: string | null;
-  validation_at: string | null;
-  validation_commentaire: string | null;
-  nb_clients: number;
-  nb_colis: number;
-  nb_cartons: number;
-  cout_carburant: number;
-  cout_peages: number;
-  cout_repas: number;
-  cout_manutentions: number;
-  cout_livraison: number;
-  cout_expeditions: number;
-  cout_autres: number;
-  cout_total: number | null;
-  ecriture_id: string | null;
-};
-
-const VALIDATION_STATUTS = [
-  { value: "en_attente", label: "En attente de validation", color: "amber" },
-  { value: "valide", label: "Validé", color: "blue" },
-  { value: "refuse", label: "Refusé", color: "red" },
-  { value: "annule", label: "Annulé", color: "gray" },
-  { value: "decaisse", label: "Décaissement effectué", color: "green" },
-] as const;
-
-const TYPES = [
-  { value: "livraison", label: "Livraison" },
-  { value: "expedition", label: "Expédition" },
-  { value: "mixte", label: "Mixte" },
-];
-
-const CATEGORIES: Array<{ key: keyof TourneeCout; label: string }> = [
-  { key: "cout_carburant", label: "Carburant" },
-  { key: "cout_peages", label: "Péages" },
-  { key: "cout_repas", label: "Repas" },
-  { key: "cout_manutentions", label: "Manutentions" },
-  { key: "cout_livraison", label: "Livraison" },
-  { key: "cout_expeditions", label: "Expéditions" },
-  { key: "cout_autres", label: "Autres" },
-];
-
-function statutMeta(v: string) {
-  return VALIDATION_STATUTS.find((s) => s.value === v) ?? VALIDATION_STATUTS[0];
-}
-
-function fmtFCFA(n: number | null | undefined): string {
-  return Math.round(Number(n ?? 0)).toLocaleString("fr-FR") + " FCFA";
-}
-
-function startOf(period: "day" | "week" | "month" | "year"): Date {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  if (period === "day") return d;
-  if (period === "week") {
-    const day = (d.getDay() + 6) % 7; // lundi = 0
-    d.setDate(d.getDate() - day);
-    return d;
-  }
-  if (period === "month") return new Date(d.getFullYear(), d.getMonth(), 1);
-  return new Date(d.getFullYear(), 0, 1);
-}
-
-// ---------------------------------------------------------------------------
-// Composant principal
-// ---------------------------------------------------------------------------
 function LogisticsCostsPage() {
   const qc = useQueryClient();
   const { has } = usePermissions();
@@ -170,7 +93,6 @@ function LogisticsCostsPage() {
     },
   });
 
-  // Realtime : rafraîchit à chaque changement
   useEffect(() => {
     const ch = supabase
       .channel("logistics-costs-sync")
@@ -185,7 +107,6 @@ function LogisticsCostsPage() {
 
   const rows = listQ.data ?? [];
 
-  // KPIs
   const kpis = useMemo(() => {
     const now = new Date();
     const day = startOf("day");
@@ -230,7 +151,6 @@ function LogisticsCostsPage() {
     };
   }, [rows]);
 
-  // Actions
   const [validating, setValidating] = useState<TourneeCout | null>(null);
   const [refusing, setRefusing] = useState<TourneeCout | null>(null);
   const [detail, setDetail] = useState<TourneeCout | null>(null);
@@ -292,7 +212,6 @@ function LogisticsCostsPage() {
         </Button>
       </div>
 
-      {/* KPI cards */}
       <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
         <Kpi label="Aujourd'hui" value={fmtFCFA(kpis.tDay)} />
         <Kpi label="Semaine" value={fmtFCFA(kpis.tWeek)} />
@@ -304,7 +223,6 @@ function LogisticsCostsPage() {
         <Kpi label="Moyenne / carton" value={fmtFCFA(kpis.moyCarton)} />
       </div>
 
-      {/* Répartition par catégorie */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Répartition des dépenses par catégorie</CardTitle>
@@ -326,7 +244,6 @@ function LogisticsCostsPage() {
         </CardContent>
       </Card>
 
-      {/* Filtres */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
@@ -411,7 +328,6 @@ function LogisticsCostsPage() {
         </CardContent>
       </Card>
 
-      {/* Liste */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Tournées avec coûts ({rows.length})</CardTitle>
@@ -541,261 +457,5 @@ function LogisticsCostsPage() {
       />
       <DetailDialog row={detail} onClose={() => setDetail(null)} />
     </div>
-  );
-}
-
-function Kpi({ label, value }: { label: string; value: string }) {
-  return (
-    <Card>
-      <CardContent className="p-3">
-        <div className="text-xs text-muted-foreground">{label}</div>
-        <div className="text-lg font-bold tabular-nums">{value}</div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function DetailDialog({ row, onClose }: { row: TourneeCout | null; onClose: () => void }) {
-  if (!row) return null;
-  const meta = statutMeta(row.validation_statut);
-  const openPdf = () =>
-    viewCached(
-      `recap-couts-${row.tournee_id}`,
-      () => generateRecapCoutsTourneePDF(row.tournee_id),
-      {
-        title: `Récapitulatif coûts — ${row.reference}`,
-        filename: `recap-couts-${row.reference}.pdf`,
-      },
-    );
-  return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Détail des coûts — {row.reference}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3 text-sm">
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <span className="text-muted-foreground">Date : </span>
-              {row.date_tournee ?? "—"}
-            </div>
-            <div>
-              <span className="text-muted-foreground">Chauffeur : </span>
-              {row.chauffeur_nom ?? "—"}
-            </div>
-            <div>
-              <span className="text-muted-foreground">Responsable : </span>
-              {row.responsable_nom ?? "—"}
-            </div>
-            <div>
-              <span className="text-muted-foreground">Véhicule : </span>
-              {row.vehicules?.immatriculation ?? "—"}
-            </div>
-            <div>
-              <span className="text-muted-foreground">Type : </span>
-              {row.type_tournee ?? "—"}
-            </div>
-            <div>
-              <span className="text-muted-foreground">Statut : </span>
-              <Badge variant="outline">{meta.label}</Badge>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Clients : </span>
-              {row.nb_clients}
-            </div>
-            <div>
-              <span className="text-muted-foreground">Colis / Cartons : </span>
-              {row.nb_colis} / {row.nb_cartons}
-            </div>
-            {row.mode_reglement && (
-              <div>
-                <span className="text-muted-foreground">Règlement : </span>
-                {row.mode_reglement}
-              </div>
-            )}
-            {row.validation_at && (
-              <div>
-                <span className="text-muted-foreground">Validé le : </span>
-                {new Date(row.validation_at).toLocaleString("fr-FR")}
-              </div>
-            )}
-          </div>
-          <table className="w-full border-collapse text-xs">
-            <thead>
-              <tr className="bg-muted/40 text-left">
-                <th className="border p-2">Catégorie</th>
-                <th className="border p-2 text-right">Montant</th>
-                <th className="border p-2 text-right">%</th>
-              </tr>
-            </thead>
-            <tbody>
-              {CATEGORIES.map((c) => {
-                const v = Number(row[c.key] ?? 0);
-                const pct = row.cout_total ? Math.round((v / Number(row.cout_total)) * 100) : 0;
-                return (
-                  <tr key={String(c.key)}>
-                    <td className="border p-2">{c.label}</td>
-                    <td className="border p-2 text-right tabular-nums">{fmtFCFA(v)}</td>
-                    <td className="border p-2 text-right">{pct}%</td>
-                  </tr>
-                );
-              })}
-              <tr className="font-semibold bg-muted/20">
-                <td className="border p-2">TOTAL</td>
-                <td className="border p-2 text-right tabular-nums">{fmtFCFA(row.cout_total)}</td>
-                <td className="border p-2 text-right">100%</td>
-              </tr>
-            </tbody>
-          </table>
-          {row.validation_commentaire && (
-            <div className="rounded bg-muted/40 p-2 text-xs">
-              <b>Commentaire :</b> {row.validation_commentaire}
-            </div>
-          )}
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Fermer
-          </Button>
-          <Button onClick={openPdf}>
-            <Printer className="mr-2 h-4 w-4" /> Aperçu / Imprimer
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function ValidateDialog({
-  row,
-  onClose,
-  onDone,
-}: {
-  row: TourneeCout | null;
-  onClose: () => void;
-  onDone: () => void;
-}) {
-  const [mode, setMode] = useState<"caisse" | "banque">("caisse");
-  const [comment, setComment] = useState("");
-  const [busy, setBusy] = useState(false);
-  useEffect(() => {
-    if (row) {
-      setMode("caisse");
-      setComment("");
-    }
-  }, [row]);
-  if (!row) return null;
-  const submit = async () => {
-    setBusy(true);
-    const { error } = await supabase.rpc("valider_decaissement_tournee", {
-      _tournee_id: row.tournee_id,
-      _mode_reglement: mode,
-      _commentaire: comment || undefined,
-    });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Décaissement validé — écriture comptable générée.");
-    onDone();
-    onClose();
-  };
-  return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Valider le décaissement — {row.reference}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3">
-          <div className="rounded bg-muted/40 p-3 text-sm">
-            Montant à décaisser : <b>{fmtFCFA(row.cout_total)}</b>
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground">Mode de règlement</label>
-            <Select value={mode} onValueChange={(v) => setMode(v as "caisse" | "banque")}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="caisse">Caisse (571)</SelectItem>
-                <SelectItem value="banque">Banque (521)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground">Commentaire (facultatif)</label>
-            <Textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={busy}>
-            Annuler
-          </Button>
-          <Button onClick={submit} disabled={busy}>
-            {busy ? "Validation…" : "Valider le décaissement"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function RefuseDialog({
-  row,
-  onClose,
-  onDone,
-}: {
-  row: TourneeCout | null;
-  onClose: () => void;
-  onDone: () => void;
-}) {
-  const [comment, setComment] = useState("");
-  const [busy, setBusy] = useState(false);
-  useEffect(() => {
-    if (row) setComment("");
-  }, [row]);
-  if (!row) return null;
-  const submit = async () => {
-    if (!comment.trim()) {
-      toast.error("Un motif est requis pour refuser.");
-      return;
-    }
-    setBusy(true);
-    const { error } = await supabase.rpc("refuser_tournee_couts", {
-      _tournee_id: row.tournee_id,
-      _commentaire: comment,
-    });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Coûts refusés.");
-    onDone();
-    onClose();
-  };
-  return (
-    <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Refuser les coûts — {row.reference}</DialogTitle>
-        </DialogHeader>
-        <Textarea
-          rows={4}
-          placeholder="Motif du refus"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={busy}>
-            Annuler
-          </Button>
-          <Button variant="destructive" onClick={submit} disabled={busy}>
-            {busy ? "…" : "Refuser"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
