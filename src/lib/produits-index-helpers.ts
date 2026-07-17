@@ -48,22 +48,26 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
     "N°",
     "Code article",
     "Désignation",
-    "Niveau",
-    "Catégorie",
     "Prix achat (FCFA)",
     "Prix vente (FCFA)",
     "Stock",
   ];
-  const rows = all.map((prod, i) => [
-    String(i + 1),
-    prod.reference,
-    prod.titre + (prod.auteur ? ` — ${prod.auteur}` : ""),
-    prod.niveau ?? "",
-    CATEGORIE_LABEL[prod.categorie] ?? prod.categorie,
-    canSeeSensitive ? formatFCFA(prod.prix_achat, false) : "—",
-    canSeeSensitive ? formatFCFA(prod.prix_vente, false) : "—",
-    String(prod.stock ?? 0),
-  ]);
+  const rows = all.map((prod, i) => {
+    const parts = [
+      prod.titre,
+      prod.auteur || null,
+      prod.niveau || null,
+      CATEGORIE_LABEL[prod.categorie] ?? prod.categorie,
+    ].filter(Boolean);
+    return [
+      String(i + 1),
+      prod.reference,
+      parts.join(" — "),
+      canSeeSensitive ? formatFCFA(prod.prix_achat, false) : "—",
+      canSeeSensitive ? formatFCFA(prod.prix_vente, false) : "—",
+      String(prod.stock ?? 0),
+    ];
+  });
   const totalAchat = all.reduce(
     (s, x) => s + (Number(x.prix_achat) || 0) * (Number(x.stock) || 0),
     0,
@@ -78,12 +82,11 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
       0: { cellWidth: 10, halign: "center", fontStyle: "bold" },
       1: { cellWidth: 24, fontStyle: "bold" },
       2: { cellWidth: "auto" },
-      3: { cellWidth: 20, halign: "center" },
-      4: { cellWidth: 24 },
-      5: { cellWidth: 26, halign: "right" },
-      6: { cellWidth: 26, halign: "right", fontStyle: "bold" },
-      7: { cellWidth: 18, halign: "center", fontStyle: "bold" },
+      3: { cellWidth: 26, halign: "right" },
+      4: { cellWidth: 26, halign: "right", fontStyle: "bold" },
+      5: { cellWidth: 18, halign: "center", fontStyle: "bold" },
     },
+
     pageTitle: "LISTE DES PRODUITS",
     summary: [
       { label: "Nombre total de références", value: String(all.length) },
