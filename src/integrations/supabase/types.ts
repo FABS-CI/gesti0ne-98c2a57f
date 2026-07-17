@@ -6619,6 +6619,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_permission: {
+        Args: { _permission_code: string; _user_id: string }
+        Returns: boolean
+      }
       has_permission_v2: {
         Args: { _perm: string; _user_id: string }
         Returns: boolean
