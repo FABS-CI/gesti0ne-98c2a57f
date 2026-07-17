@@ -45,7 +45,8 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
     p += 1;
   }
   const headers = [
-    "N° / Code article",
+    "N°",
+    "Code article",
     "Désignation",
     "Prix achat (FCFA)",
     "Prix vente (FCFA)",
@@ -54,8 +55,10 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
   const rows = all.map((prod, i) => {
     const parts = [prod.titre, prod.auteur || null].filter(Boolean);
     return [
-      `${i + 1} — ${prod.reference}`,
+      String(i + 1),
+      prod.reference,
       parts.join(" — "),
+
       canSeeSensitive ? formatFCFA(prod.prix_achat, false) : "—",
       canSeeSensitive ? formatFCFA(prod.prix_vente, false) : "—",
       String(prod.stock ?? 0),
@@ -72,13 +75,13 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
   const qte = all.reduce((s, x) => s + (Number(x.stock) || 0), 0);
   await exportCsv(`liste_produits_fabs_${new Date().toISOString().slice(0, 10)}`, headers, rows, {
     columnStyles: {
-      0: { cellWidth: 32, fontStyle: "bold" },
-      1: { cellWidth: "auto" },
-      2: { cellWidth: 28, halign: "right" },
-      3: { cellWidth: 28, halign: "right", fontStyle: "bold" },
-      4: { cellWidth: 18, halign: "center", fontStyle: "bold" },
+      0: { cellWidth: 10, halign: "center", fontStyle: "bold" },
+      1: { cellWidth: 24, fontStyle: "bold" },
+      2: { cellWidth: "auto" },
+      3: { cellWidth: 26, halign: "right" },
+      4: { cellWidth: 26, halign: "right", fontStyle: "bold" },
+      5: { cellWidth: 18, halign: "center", fontStyle: "bold" },
     },
-
 
     pageTitle: "LISTE DES PRODUITS",
     summary: [
