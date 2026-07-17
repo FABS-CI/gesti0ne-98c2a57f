@@ -252,7 +252,7 @@ function EmployesPage() {
                     onReset={q ? () => setSearch("") : undefined}
                     action={
                       !q ? (
-                        <Can permission="rh.creer">
+                        <Can permission="employes.creer">
                           <Button asChild size="sm">
                             <Link to="/employes/nouveau">
                               <Plus className="mr-2 h-4 w-4" /> Nouvel employé
