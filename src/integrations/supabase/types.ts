@@ -5401,6 +5401,7 @@ export type Database = {
         Args: { _col: string; _prefix: string; _table: unknown }
         Returns: string
       }
+      _resolve_exercice_id: { Args: { _d: string }; Returns: string }
       ajuster_stock_depot: {
         Args: {
           _depot_id: string
