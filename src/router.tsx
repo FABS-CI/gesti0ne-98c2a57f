@@ -1,6 +1,8 @@
 import { QueryClient } from "@tanstack/react-query";
-import { createRouter, ErrorComponent } from "@tanstack/react-router";
+import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
+import { RouteError, RouteNotFound } from "./components/route-boundaries";
+
 
 /**
  * Indicateur de chargement léger affiché pendant la résolution d'une route.
@@ -57,8 +59,10 @@ export const getRouter = () => {
     // page côté client, ce qui peut laisser la preview bloquée sur le fallback.
     defaultPendingMinMs: 0,
     defaultPendingComponent: RoutePending,
-    defaultErrorComponent: ErrorComponent,
+    defaultErrorComponent: RouteError,
+    defaultNotFoundComponent: RouteNotFound,
   });
+
 
   return router;
 };
