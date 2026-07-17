@@ -35,6 +35,7 @@ import { BackupRestoreCard } from "@/components/backup/BackupRestoreCard";
 import { useServerFn } from "@tanstack/react-start";
 import { uploadBackupToGoogleDrive } from "@/lib/gdrive-backup.functions";
 import { exportCriticalArtifacts } from "@/lib/gdrive-artifacts-backup.functions";
+import { exportStorageBinariesZip } from "@/lib/gdrive-covers-zip.functions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@tanstack/react-router";
 
