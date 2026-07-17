@@ -34,6 +34,7 @@ import { BackupSchedulesCard } from "@/components/backup/BackupSchedulesCard";
 import { BackupRestoreCard } from "@/components/backup/BackupRestoreCard";
 import { useServerFn } from "@tanstack/react-start";
 import { uploadBackupToGoogleDrive } from "@/lib/gdrive-backup.functions";
+import { exportCriticalArtifacts } from "@/lib/gdrive-artifacts-backup.functions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@tanstack/react-router";
 
@@ -160,6 +161,30 @@ function BackupPage() {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [sendToDrive, setSendToDrive] = useState(true);
   const uploadToDrive = useServerFn(uploadBackupToGoogleDrive);
+  const runCriticalExport = useServerFn(exportCriticalArtifacts);
+  const [criticalRunning, setCriticalRunning] = useState(false);
+  const [criticalResult, setCriticalResult] = useState<{
+    users_count: number;
+    buckets_count: number;
+    files_count: number;
+    users_drive: { id: string; url: string | null };
+    storage_drive: { id: string; url: string | null };
+  } | null>(null);
+
+  async function backupCriticalArtifacts() {
+    setCriticalRunning(true);
+    try {
+      const res = await runCriticalExport();
+      setCriticalResult(res);
+      toast.success(
+        `Export critique OK — ${res.users_count} comptes, ${res.files_count} fichiers`,
+      );
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setCriticalRunning(false);
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -500,6 +525,65 @@ function BackupPage() {
             )}
             {running ? progress || "Sauvegarde…" : "Créer une sauvegarde maintenant (JSON)"}
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="border-amber-500/40">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-amber-600" />
+            Export critique — Comptes & Fichiers
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Complète la sauvegarde JSON avec les deux éléments non couverts par le dump SQL :
+            la liste des comptes <code>auth.users</code> (id, email, métadonnées, providers) et
+            un <b>manifest storage</b> avec URLs signées 7 jours pour tous les buckets
+            (product-covers, avatars, exports). Indispensable pour reconstruire l'ERP à
+            l'identique sur une autre instance.
+          </p>
+          <Button onClick={backupCriticalArtifacts} disabled={criticalRunning}>
+            {criticalRunning ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Cloud className="mr-2 h-4 w-4" />
+            )}
+            {criticalRunning
+              ? "Export en cours…"
+              : "Exporter comptes + fichiers vers Google Drive"}
+          </Button>
+          {criticalResult && (
+            <div className="rounded-md border bg-muted/40 p-3 text-sm space-y-1">
+              <div>
+                ✅ <b>{criticalResult.users_count}</b> comptes auth exportés ·{" "}
+                <b>{criticalResult.files_count}</b> fichiers dans{" "}
+                <b>{criticalResult.buckets_count}</b> buckets
+              </div>
+              <div className="flex flex-wrap gap-3 text-xs">
+                {criticalResult.users_drive.url && (
+                  <a
+                    href={criticalResult.users_drive.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                  >
+                    <Cloud className="h-3 w-3" /> auth_users.json
+                  </a>
+                )}
+                {criticalResult.storage_drive.url && (
+                  <a
+                    href={criticalResult.storage_drive.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                  >
+                    <Cloud className="h-3 w-3" /> storage_manifest.json
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
