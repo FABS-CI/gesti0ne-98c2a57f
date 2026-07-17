@@ -224,10 +224,10 @@ function CommandesPage() {
           commande={commandeToDelete}
           onOpenChange={(o) => !o && setCommandeToDelete(null)}
           pending={deleteMutation.isPending}
-          onConfirm={(motif) => {
+          onConfirm={(motif, force) => {
             if (!commandeToDelete) return;
             deleteMutation.mutate(
-              { id: commandeToDelete.commande_id, motif },
+              { id: commandeToDelete.commande_id, motif, force },
               { onSettled: () => setCommandeToDelete(null) },
             );
           }}
