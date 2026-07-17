@@ -5968,6 +5968,10 @@ export type Database = {
         Returns: undefined
       }
       annuler_incident: { Args: { _incident_id: string }; Returns: undefined }
+      annuler_inventaire: {
+        Args: { _inventaire_id: string }
+        Returns: undefined
+      }
       annuler_paiement: {
         Args: { _notes?: string; _paiement_id: string; _raison: string }
         Returns: {
@@ -6133,6 +6137,7 @@ export type Database = {
           solde: number
         }[]
       }
+      confirmer_achat: { Args: { _achat_id: string }; Returns: undefined }
       convertir_commande_en_bl: {
         Args: {
           _adresse_livraison?: string
@@ -6537,6 +6542,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      executer_cloture_exercice: {
+        Args: { _activer_suivant?: boolean; _exercice_id: string }
+        Returns: Json
       }
       executer_transfert: {
         Args: { _transfert_id: string }
