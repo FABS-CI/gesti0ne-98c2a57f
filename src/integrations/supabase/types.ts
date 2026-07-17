@@ -109,12 +109,14 @@ export type Database = {
           date_achat: string
           depot_id: string | null
           fournisseur_id: string | null
+          fournisseur_nom: string | null
           libelle: string
           montant: number
           notes: string | null
           reference: string
           reference_fournisseur: string | null
           statut: string
+          total_quantite: number
           updated_at: string
         }
         Insert: {
@@ -125,12 +127,14 @@ export type Database = {
           date_achat?: string
           depot_id?: string | null
           fournisseur_id?: string | null
+          fournisseur_nom?: string | null
           libelle?: string
           montant?: number
           notes?: string | null
           reference?: string
           reference_fournisseur?: string | null
           statut?: string
+          total_quantite?: number
           updated_at?: string
         }
         Update: {
@@ -141,12 +145,14 @@ export type Database = {
           date_achat?: string
           depot_id?: string | null
           fournisseur_id?: string | null
+          fournisseur_nom?: string | null
           libelle?: string
           montant?: number
           notes?: string | null
           reference?: string
           reference_fournisseur?: string | null
           statut?: string
+          total_quantite?: number
           updated_at?: string
         }
         Relationships: [
@@ -5838,12 +5844,14 @@ export type Database = {
           date_achat: string
           depot_id: string | null
           fournisseur_id: string | null
+          fournisseur_nom: string | null
           libelle: string
           montant: number
           notes: string | null
           reference: string
           reference_fournisseur: string | null
           statut: string
+          total_quantite: number
           updated_at: string
         }
         SetofOptions: {
@@ -6124,12 +6132,14 @@ export type Database = {
           date_achat: string
           depot_id: string | null
           fournisseur_id: string | null
+          fournisseur_nom: string | null
           libelle: string
           montant: number
           notes: string | null
           reference: string
           reference_fournisseur: string | null
           statut: string
+          total_quantite: number
           updated_at: string
         }[]
         SetofOptions: {
