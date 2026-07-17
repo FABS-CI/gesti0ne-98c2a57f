@@ -94,11 +94,16 @@ export function usePermissions() {
   const query = useQuery({
     queryKey: ["rbac", "permissions", userId],
     enabled: !!userId && !authLoading,
-    // 10 s : fallback court si le realtime rate un événement (onglet inactif,
-    // mobile, reconnexion réseau), sans requêter en boucle la RPC.
-    staleTime: 10_000,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
+    // Realtime (rbac_role_permissions + rbac_user_roles) et le handler
+    // visibilitychange ci-dessous invalident déjà cette clé lorsque les
+    // droits changent réellement. Un staleTime long évite les 3000+ appels
+    // parasites à list_user_permissions constatés en production (chaque
+    // focus/reconnect refetchait la RPC alors qu'aucun droit n'a bougé).
+    staleTime: 15 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+
     queryFn: async () => {
       if (!userId) return new Set<string>();
       const { data, error } = await supabase.rpc("list_user_permissions", {

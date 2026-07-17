@@ -2,24 +2,18 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   ClientOnly,
   Outlet,
-  Link,
   createRootRouteWithContext,
-  useRouter,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
-import {
-  getClientSessionId,
-  installClientErrorTracing,
-  newClientErrorId,
-  readServerRequestId,
-} from "../lib/client-error-tracing";
+import { installClientErrorTracing } from "../lib/client-error-tracing";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import { RouteError, RouteNotFound } from "../components/route-boundaries";
+
 
 const AppActionTracker = lazy(() =>
   import("@/components/AppActionTracker").then((m) => ({ default: m.AppActionTracker })),
@@ -84,88 +78,8 @@ const PERSISTED_QUERY_KEYS = new Set([
   "modeles-documents",
 ]);
 
-function NotFoundComponent() {
-  return (
-    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
+// NotFound + Error boundary components partagés — voir components/route-boundaries.tsx
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  const router = useRouter();
-  const [ids] = useState(() => ({
-    clientErrorId: newClientErrorId(),
-    clientSessionId: getClientSessionId(),
-    serverRequestId: readServerRequestId(),
-  }));
-  const traceId = ids.serverRequestId ?? ids.clientErrorId;
-  // eslint-disable-next-line no-console
-  console.error(
-    `[client:${ids.clientSessionId}:${ids.clientErrorId}] ` +
-      (ids.serverRequestId ? `server=${ids.serverRequestId} ` : "") +
-      `route error ->`,
-    error,
-  );
-  useEffect(() => {
-    reportLovableError(error, {
-      boundary: "tanstack_root_error_component",
-      clientSessionId: ids.clientSessionId,
-      clientErrorId: ids.clientErrorId,
-      serverRequestId: ids.serverRequestId,
-    });
-  }, [error, ids]);
-
-  return (
-    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Trace ID:{" "}
-          <code className="select-all rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground">
-            {traceId}
-          </code>
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -231,9 +145,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   }),
   shellComponent: RootShell,
   component: RootComponent,
-  notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
+  notFoundComponent: RouteNotFound,
+  errorComponent: RouteError,
 });
+
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
