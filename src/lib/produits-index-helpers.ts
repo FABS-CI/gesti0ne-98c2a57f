@@ -75,8 +75,8 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
   const qte = all.reduce((s, x) => s + (Number(x.stock) || 0), 0);
   await exportCsv(`liste_produits_fabs_${new Date().toISOString().slice(0, 10)}`, headers, rows, {
     columnStyles: {
-      0: { cellWidth: 10, halign: "center", fontStyle: "bold", overflow: "visible", noWrap: true },
-      1: { cellWidth: 28, fontStyle: "bold", overflow: "visible", noWrap: true },
+      0: { cellWidth: 10, halign: "center", fontStyle: "bold", overflow: "visible" },
+      1: { cellWidth: 28, fontStyle: "bold", overflow: "visible" },
       2: { cellWidth: "auto" },
       3: { cellWidth: 26, halign: "right" },
       4: { cellWidth: 26, halign: "right", fontStyle: "bold" },
