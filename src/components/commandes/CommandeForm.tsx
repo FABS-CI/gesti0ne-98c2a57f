@@ -189,19 +189,59 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       if (mode === "edit" && commandeId) return modifierCommande(commandeId, payload);
       return creerCommande(payload);
     },
-    onSuccess: () => {
-      toast.success(
-        mode === "edit"
-          ? "Commande mise à jour"
-          : canValiderCommande
-            ? "Commande créée et validée"
-            : "Commande créée, en attente de validation",
-      );
+    onSuccess: async (created) => {
+      const clientId = form.getValues("client_id") ?? undefined;
       invalidateCommande(qc, {
-        commandeId: commandeId ?? undefined,
-        clientId: form.getValues("client_id") ?? undefined,
+        commandeId: commandeId ?? (created as { commande_id?: string })?.commande_id,
+        clientId,
       });
-      navigate({ to: "/commandes" });
+
+      if (mode === "edit") {
+        toast.success("Commande mise à jour");
+        navigate({ to: "/commandes" });
+        return;
+      }
+
+      const cId = (created as { commande_id?: string; reference?: string })?.commande_id;
+      const cRef = (created as { commande_id?: string; reference?: string })?.reference ?? "";
+
+      if (!canValiderCommande || !cId) {
+        toast.success("Commande créée, en attente de validation");
+        navigate({ to: "/commandes" });
+        return;
+      }
+
+      // Auto-validation : on va chercher facture + BL générés pour afficher le récap
+      const [{ data: fac }, { data: bl }] = await Promise.all([
+        supabase
+          .from("factures")
+          .select("facture_id, reference")
+          .eq("commande_id", cId)
+          .neq("statut", "annulee")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("bons_livraison")
+          .select("bl_id, reference")
+          .eq("commande_id", cId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+
+      invalidateFacture(qc, { clientId });
+      invalidateColisage(qc, { clientId });
+
+      setRecap({
+        commandeId: cId,
+        commandeRef: cRef,
+        factureRef: (fac as { reference?: string } | null)?.reference ?? null,
+        factureId: (fac as { facture_id?: string } | null)?.facture_id ?? null,
+        blRef: (bl as { reference?: string } | null)?.reference ?? null,
+        blId: (bl as { bl_id?: string } | null)?.bl_id ?? null,
+        autoValidated: true,
+      });
     },
     onError: (e: Error) => toast.error(e.message),
   });
