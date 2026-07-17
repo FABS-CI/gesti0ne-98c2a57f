@@ -221,7 +221,7 @@ export const mfaVerifyBackupCode = createServerFn({ method: "POST" })
 export const mfaStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
+    const { supabase, userId, claims } = context;
     const { data: superAdminFlag } = await supabase.rpc("has_role", {
       _user_id: userId,
       _role: "super_admin",
@@ -236,7 +236,7 @@ export const mfaStatus = createServerFn({ method: "POST" })
     const required = !!prof?.mfa_required;
     let sessionValid = false;
     if (enrolled) {
-      const key = bearerSessionKey();
+      const key = sessionKey(claims, bearerRaw());
       const { data: sess } = await supabase
         .from("mfa_session_validations")
         .select("id, expires_at, revoked_at")
