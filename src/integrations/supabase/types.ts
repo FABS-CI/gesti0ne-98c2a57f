@@ -108,6 +108,7 @@ export type Database = {
           created_by_nom: string | null
           date_achat: string
           depot_id: string | null
+          exercice_id: string | null
           fournisseur_id: string | null
           fournisseur_nom: string | null
           libelle: string
@@ -126,6 +127,7 @@ export type Database = {
           created_by_nom?: string | null
           date_achat?: string
           depot_id?: string | null
+          exercice_id?: string | null
           fournisseur_id?: string | null
           fournisseur_nom?: string | null
           libelle?: string
@@ -144,6 +146,7 @@ export type Database = {
           created_by_nom?: string | null
           date_achat?: string
           depot_id?: string | null
+          exercice_id?: string | null
           fournisseur_id?: string | null
           fournisseur_nom?: string | null
           libelle?: string
@@ -156,6 +159,20 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "achats_exercice_id_fkey"
+            columns: ["exercice_id"]
+            isOneToOne: false
+            referencedRelation: "exercices"
+            referencedColumns: ["exercice_id"]
+          },
+          {
+            foreignKeyName: "achats_exercice_id_fkey"
+            columns: ["exercice_id"]
+            isOneToOne: false
+            referencedRelation: "exercices_comptables"
+            referencedColumns: ["exercice_id"]
+          },
           {
             foreignKeyName: "achats_fournisseur_id_fkey"
             columns: ["fournisseur_id"]
@@ -5847,6 +5864,7 @@ export type Database = {
           created_by_nom: string | null
           date_achat: string
           depot_id: string | null
+          exercice_id: string | null
           fournisseur_id: string | null
           fournisseur_nom: string | null
           libelle: string
@@ -6139,6 +6157,7 @@ export type Database = {
           created_by_nom: string | null
           date_achat: string
           depot_id: string | null
+          exercice_id: string | null
           fournisseur_id: string | null
           fournisseur_nom: string | null
           libelle: string
