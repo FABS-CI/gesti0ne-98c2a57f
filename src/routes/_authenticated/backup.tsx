@@ -612,25 +612,52 @@ function BackupPage() {
                 <b>{criticalResult.files_count}</b> fichiers dans{" "}
                 <b>{criticalResult.buckets_count}</b> buckets
               </div>
-              <div className="flex flex-wrap gap-3 text-xs">
+              <div className="flex flex-wrap gap-2 text-xs">
+                {criticalResult.users_drive.id && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={downloadingId === criticalResult.users_drive.id}
+                    onClick={() =>
+                      downloadFromDrive(criticalResult.users_drive.id, "auth_users.json")
+                    }
+                  >
+                    {downloadingId === criticalResult.users_drive.id ? (
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    ) : (
+                      <Download className="mr-1 h-3 w-3" />
+                    )}
+                    auth_users.json
+                  </Button>
+                )}
+                {criticalResult.storage_drive.id && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={downloadingId === criticalResult.storage_drive.id}
+                    onClick={() =>
+                      downloadFromDrive(
+                        criticalResult.storage_drive.id,
+                        "storage_manifest.json",
+                      )
+                    }
+                  >
+                    {downloadingId === criticalResult.storage_drive.id ? (
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    ) : (
+                      <Download className="mr-1 h-3 w-3" />
+                    )}
+                    storage_manifest.json
+                  </Button>
+                )}
                 {criticalResult.users_drive.url && (
                   <a
                     href={criticalResult.users_drive.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-primary hover:underline self-center"
                   >
-                    <Cloud className="h-3 w-3" /> auth_users.json
-                  </a>
-                )}
-                {criticalResult.storage_drive.url && (
-                  <a
-                    href={criticalResult.storage_drive.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-primary hover:underline"
-                  >
-                    <Cloud className="h-3 w-3" /> storage_manifest.json
+                    <Cloud className="h-3 w-3" /> Ouvrir dans Drive
                   </a>
                 )}
               </div>
