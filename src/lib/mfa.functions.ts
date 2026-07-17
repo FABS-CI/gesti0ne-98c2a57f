@@ -36,10 +36,22 @@ function hashToken(token: string): string {
   return `s_${Math.abs(h).toString(36)}_${token.length}`;
 }
 
-function bearerSessionKey(): string {
+/**
+ * Clé stable identifiant la session utilisateur Supabase.
+ * On utilise `claims.session_id` (présent dans le JWT Supabase) car il reste
+ * identique à travers les refresh d'access token — contrairement au bearer
+ * qui change ~toutes les heures et invalidait à tort la validation MFA.
+ * Fallback sur un hash du bearer pour les JWT anciens sans session_id.
+ */
+function sessionKey(claims: Record<string, unknown>, bearerFallback: string): string {
+  const sid = claims.session_id;
+  if (typeof sid === "string" && sid.length > 0) return `sid_${sid}`;
+  return hashToken(bearerFallback);
+}
+
+function bearerRaw(): string {
   const auth = getRequestHeader("authorization") ?? "";
-  const token = auth.replace(/^Bearer\s+/i, "");
-  return hashToken(token);
+  return auth.replace(/^Bearer\s+/i, "");
 }
 
 /** Démarre l'enrôlement : génère un secret TOTP et l'URL otpauth (QR). */
