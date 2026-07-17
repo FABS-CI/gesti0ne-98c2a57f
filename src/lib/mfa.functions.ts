@@ -209,7 +209,7 @@ export const mfaVerifyBackupCode = createServerFn({ method: "POST" })
         await resetFails(supabase, userId);
         await supabase
           .from("mfa_session_validations")
-          .insert({ user_id: userId, session_token: bearerSessionKey() });
+          .insert({ user_id: userId, session_token: sessionKey(claims, bearerRaw()) });
         return { ok: true, remaining: (rows?.length ?? 1) - 1 };
       }
     }
