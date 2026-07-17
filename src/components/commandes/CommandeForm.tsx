@@ -651,6 +651,68 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={!!recap} onOpenChange={(o) => !o && setRecap(null)}>
+        <AlertDialogContent className="max-w-lg">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Commande enregistrée avec succès</AlertDialogTitle>
+            <AlertDialogDescription>
+              {recap?.autoValidated
+                ? "La commande a été validée automatiquement. La facture et le bon de livraison ont été générés."
+                : "La commande a été enregistrée et est en attente de validation."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {recap && (
+            <div className="space-y-2 text-sm">
+              <div className="rounded-md border p-3 space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Commande</span>
+                  <span className="font-mono font-semibold">{recap.commandeRef}</span>
+                </div>
+                {recap.factureRef && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Facture</span>
+                    <span className="font-mono font-semibold">{recap.factureRef}</span>
+                  </div>
+                )}
+                {recap.blRef && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Bon de livraison</span>
+                    <span className="font-mono font-semibold">{recap.blRef}</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2 pt-1">
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/commandes/$commandeId" params={{ commandeId: recap.commandeId }}>
+                    Voir la commande
+                  </Link>
+                </Button>
+                {recap.factureId && (
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/factures">Voir les factures</Link>
+                  </Button>
+                )}
+                {recap.blId && (
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/bons-livraison">Voir les BL</Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => {
+                setRecap(null);
+                navigate({ to: "/commandes" });
+              }}
+            >
+              Fermer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </form>
   );
 }
