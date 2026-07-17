@@ -629,7 +629,15 @@ export type Database = {
           transporteur?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bons_livraison_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
+        ]
       }
       bulletin_lignes: {
         Row: {
@@ -974,6 +982,13 @@ export type Database = {
             referencedRelation: "bons_livraison"
             referencedColumns: ["bl_id"]
           },
+          {
+            foreignKeyName: "colis_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
         ]
       }
       colis_lignes: {
@@ -1152,7 +1167,15 @@ export type Database = {
           statut?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "colisages_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
+        ]
       }
       commande_lignes: {
         Row: {
@@ -2403,7 +2426,15 @@ export type Database = {
           statut?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "factures_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
+        ]
       }
       fne_declarations: {
         Row: {
@@ -3070,6 +3101,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "clients"
             referencedColumns: ["client_id"]
+          },
+          {
+            foreignKeyName: "livraisons_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
           },
           {
             foreignKeyName: "livraisons_expedition_id_fkey"
@@ -4165,7 +4203,15 @@ export type Database = {
           statut?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "proformas_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
+        ]
       }
       rbac_audit_log: {
         Row: {
@@ -4515,7 +4561,15 @@ export type Database = {
           updated_at?: string
           ville?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "retours_commande_id_fkey"
+            columns: ["commande_id"]
+            isOneToOne: false
+            referencedRelation: "commandes"
+            referencedColumns: ["commande_id"]
+          },
+        ]
       }
       rubriques_paie: {
         Row: {
