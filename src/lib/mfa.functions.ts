@@ -115,7 +115,7 @@ export const mfaEnrollConfirm = createServerFn({ method: "POST" })
     // Validate current session
     await supabase
       .from("mfa_session_validations")
-      .insert({ user_id: userId, session_token: bearerSessionKey() });
+      .insert({ user_id: userId, session_token: sessionKey(claims, bearerRaw()) });
 
     return { backupCodes: plain };
   });
