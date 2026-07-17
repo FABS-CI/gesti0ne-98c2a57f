@@ -77,7 +77,7 @@ const PK_MAP: Record<string, string> = {
   inventaire_lignes: "ligne_id",
   transferts: "transfert_id",
   transfert_lignes: "ligne_id",
-  incidents_stock: "incident_id",
+  incidents: "incident_id",
   alertes_stock: "alerte_id",
   audit_stock: "audit_id",
   // Logistique
@@ -151,7 +151,7 @@ const RESTORE_ORDER = [
   "inventaire_lignes",
   "transferts",
   "transfert_lignes",
-  "incidents_stock",
+  "incidents",
   "alertes_stock",
   "audit_stock",
   "tournees",
