@@ -36,10 +36,22 @@ function hashToken(token: string): string {
   return `s_${Math.abs(h).toString(36)}_${token.length}`;
 }
 
-function bearerSessionKey(): string {
+/**
+ * Clé stable identifiant la session utilisateur Supabase.
+ * On utilise `claims.session_id` (présent dans le JWT Supabase) car il reste
+ * identique à travers les refresh d'access token — contrairement au bearer
+ * qui change ~toutes les heures et invalidait à tort la validation MFA.
+ * Fallback sur un hash du bearer pour les JWT anciens sans session_id.
+ */
+function sessionKey(claims: Record<string, unknown>, bearerFallback: string): string {
+  const sid = claims.session_id;
+  if (typeof sid === "string" && sid.length > 0) return `sid_${sid}`;
+  return hashToken(bearerFallback);
+}
+
+function bearerRaw(): string {
   const auth = getRequestHeader("authorization") ?? "";
-  const token = auth.replace(/^Bearer\s+/i, "");
-  return hashToken(token);
+  return auth.replace(/^Bearer\s+/i, "");
 }
 
 /** Démarre l'enrôlement : génère un secret TOTP et l'URL otpauth (QR). */
@@ -103,7 +115,7 @@ export const mfaEnrollConfirm = createServerFn({ method: "POST" })
     // Validate current session
     await supabase
       .from("mfa_session_validations")
-      .insert({ user_id: userId, session_token: bearerSessionKey() });
+      .insert({ user_id: userId, session_token: sessionKey(claims, bearerRaw()) });
 
     return { backupCodes: plain };
   });
@@ -168,7 +180,7 @@ export const mfaVerify = createServerFn({ method: "POST" })
     const ua = getRequestHeader("user-agent") ?? null;
     await supabase.from("mfa_session_validations").insert({
       user_id: userId,
-      session_token: bearerSessionKey(),
+      session_token: sessionKey(claims, bearerRaw()),
       user_agent: ua,
     });
     return { ok: true };
@@ -179,7 +191,7 @@ export const mfaVerifyBackupCode = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw) => z.object({ code: z.string().min(6).max(20) }).parse(raw))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { supabase, userId, claims } = context;
     await ensureNotLocked(supabase as SB, userId);
     const { data: rows, error } = await supabase
       .from("mfa_backup_codes")
@@ -197,7 +209,7 @@ export const mfaVerifyBackupCode = createServerFn({ method: "POST" })
         await resetFails(supabase, userId);
         await supabase
           .from("mfa_session_validations")
-          .insert({ user_id: userId, session_token: bearerSessionKey() });
+          .insert({ user_id: userId, session_token: sessionKey(claims, bearerRaw()) });
         return { ok: true, remaining: (rows?.length ?? 1) - 1 };
       }
     }
@@ -209,7 +221,7 @@ export const mfaVerifyBackupCode = createServerFn({ method: "POST" })
 export const mfaStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
+    const { supabase, userId, claims } = context;
     const { data: superAdminFlag } = await supabase.rpc("has_role", {
       _user_id: userId,
       _role: "super_admin",
@@ -224,7 +236,7 @@ export const mfaStatus = createServerFn({ method: "POST" })
     const required = !!prof?.mfa_required;
     let sessionValid = false;
     if (enrolled) {
-      const key = bearerSessionKey();
+      const key = sessionKey(claims, bearerRaw());
       const { data: sess } = await supabase
         .from("mfa_session_validations")
         .select("id, expires_at, revoked_at")
