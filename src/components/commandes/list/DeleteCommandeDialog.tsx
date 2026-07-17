@@ -23,13 +23,14 @@ export function DeleteCommandeDialog({
       title="Supprimer définitivement cette commande ?"
       entityLabel="le bon de commande"
       entityName={label}
-      description="Cette opération est irréversible. Elle met automatiquement à jour tous les modules liés (stock, comptabilité, livraisons, fidélité, notifications)."
+      description="Cette opération est irréversible. Elle est refusée si un paiement validé existe, si une facture non annulée est rattachée, ou si un BL a été expédié/livré. Dans ce cas, annuler la commande (qui remet le stock et annule les documents comptables) au lieu de la supprimer."
       consequences={[
-        "Factures, paiements, écritures comptables et transactions rattachés",
-        "Bons de livraison, expéditions, colis, colisage et suivi",
-        "Retours, proformas et mouvements de stock générés",
-        "Mouvements de fidélité client, notifications et historique d'envois",
-        "Recalcul automatique des tournées, statistiques et tableaux de bord",
+        "Refus si paiement validé, facture non annulée, ou BL expédié/livré",
+        "Suppression : commande, lignes, proformas, factures annulées, BL, paiements annulés",
+        "Suppression : bons de livraison, colisages, colis, livraisons, expéditions, suivi",
+        "Suppression : retours, mouvements de stock, notifications rattachés",
+        "Écritures comptables des factures/paiements supprimées automatiquement via triggers",
+        "Recalcul automatique du solde client",
       ]}
       motifRequired
       motifPlaceholder="Motif de la suppression (obligatoire pour audit)"

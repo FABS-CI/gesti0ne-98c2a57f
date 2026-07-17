@@ -9,15 +9,6 @@ import type { Commande } from "@/lib/commandes-api";
  * intégralement l'opération (pas de données à moitié créées).
  */
 
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function addDaysISO(days: number) {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
-}
 
 /** Convertit une proforma en commande via RPC atomique. */
 export async function createCommandeFromProforma(proformaId: string): Promise<Commande> {
@@ -71,37 +62,34 @@ export async function convertirCommandeEnBL(commande: Commande, colisage: Colisa
   return row as { bl_id: string; reference: string };
 }
 
-/** Crée une facture (impayée, échéance +30j) à partir d'une commande. */
+/**
+ * Crée la facture définitive à partir d'une commande.
+ *
+ * Lot B : l'insertion directe est supprimée pour éviter les doublons.
+ * On délègue à la RPC atomique `valider_commande` qui gère en une seule
+ * transaction : contrôle stock, décrément stock, création facture, création BL.
+ * Si la commande a déjà une facture non annulée, elle est renvoyée telle quelle.
+ */
 export async function createFactureFromCommande(commande: Commande) {
   const { assertPermission } = await import("@/lib/rbac-api");
   await assertPermission("commandes.generer_facture");
-  // Empêche les doublons : une facture par commande
+
   const { data: existing } = await supabase
     .from("factures")
     .select("facture_id, reference")
     .eq("commande_id", commande.commande_id)
+    .neq("statut", "annulee")
     .limit(1);
   if (existing && existing.length > 0) {
-    throw new Error(`Facture déjà existante (${existing[0].reference}) pour cette commande`);
+    return existing[0];
   }
 
-  const { data, error } = await supabase
-    .from("factures")
-    .insert({
-      client_id: commande.client_id ?? null,
-      client_nom: commande.client_nom ?? null,
-      commande_id: commande.commande_id,
-      date_facture: todayISO(),
-      date_echeance: addDaysISO(30),
-      montant_total: commande.montant_total ?? 0,
-      montant_paye: 0,
-      statut: "impayee",
-      notes: `Facturation de la commande ${commande.reference}`,
-    })
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+  const { data, error } = await supabase.rpc("valider_commande", {
+    _commande_id: commande.commande_id,
+  });
+  if (error) throw new Error(error.message);
+  const row = Array.isArray(data) ? data[0] : data;
+  return { reference: (row as { facture_reference?: string })?.facture_reference ?? "" };
 }
 
 /**
