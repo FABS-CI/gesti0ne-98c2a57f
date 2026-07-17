@@ -4050,6 +4050,7 @@ export type Database = {
           prix_unitaire: number | null
           produit_id: string | null
           quantite: number | null
+          reference_produit: string | null
           retour_id: string
           total_ligne: number | null
           updated_at: string
@@ -4062,6 +4063,7 @@ export type Database = {
           prix_unitaire?: number | null
           produit_id?: string | null
           quantite?: number | null
+          reference_produit?: string | null
           retour_id: string
           total_ligne?: number | null
           updated_at?: string
@@ -4074,6 +4076,7 @@ export type Database = {
           prix_unitaire?: number | null
           produit_id?: string | null
           quantite?: number | null
+          reference_produit?: string | null
           retour_id?: string
           total_ligne?: number | null
           updated_at?: string
@@ -4097,49 +4100,91 @@ export type Database = {
       }
       retours: {
         Row: {
+          adresse: string | null
           client_id: string | null
           client_nom: string | null
           commande_id: string | null
           created_at: string
+          created_by: string | null
+          created_by_nom: string | null
           date_retour: string | null
+          depot_id: string | null
+          etablissement: string | null
+          exercice_id: string | null
           facture_id: string | null
+          livraison_id: string | null
           montant: number | null
           motif: string | null
+          nb_produits: number
           notes: string | null
+          numero: string | null
+          observations: string | null
           reference: string | null
+          representant_nom: string | null
           retour_id: string
           statut: string | null
+          telephone: string | null
+          total_quantite: number
           updated_at: string
+          ville: string | null
         }
         Insert: {
+          adresse?: string | null
           client_id?: string | null
           client_nom?: string | null
           commande_id?: string | null
           created_at?: string
+          created_by?: string | null
+          created_by_nom?: string | null
           date_retour?: string | null
+          depot_id?: string | null
+          etablissement?: string | null
+          exercice_id?: string | null
           facture_id?: string | null
+          livraison_id?: string | null
           montant?: number | null
           motif?: string | null
+          nb_produits?: number
           notes?: string | null
+          numero?: string | null
+          observations?: string | null
           reference?: string | null
+          representant_nom?: string | null
           retour_id?: string
           statut?: string | null
+          telephone?: string | null
+          total_quantite?: number
           updated_at?: string
+          ville?: string | null
         }
         Update: {
+          adresse?: string | null
           client_id?: string | null
           client_nom?: string | null
           commande_id?: string | null
           created_at?: string
+          created_by?: string | null
+          created_by_nom?: string | null
           date_retour?: string | null
+          depot_id?: string | null
+          etablissement?: string | null
+          exercice_id?: string | null
           facture_id?: string | null
+          livraison_id?: string | null
           montant?: number | null
           motif?: string | null
+          nb_produits?: number
           notes?: string | null
+          numero?: string | null
+          observations?: string | null
           reference?: string | null
+          representant_nom?: string | null
           retour_id?: string
           statut?: string | null
+          telephone?: string | null
+          total_quantite?: number
           updated_at?: string
+          ville?: string | null
         }
         Relationships: []
       }
@@ -4227,48 +4272,137 @@ export type Database = {
         }
         Relationships: []
       }
-      specimens: {
+      specimen_lignes: {
         Row: {
-          client_id: string | null
-          client_nom: string | null
           created_at: string
-          date_envoi: string | null
-          designation: string | null
-          notes: string | null
+          designation: string
+          ligne_id: string
           produit_id: string | null
-          quantite: number | null
-          reference: string | null
+          quantite: number
+          reference_produit: string | null
           specimen_id: string
-          statut: string | null
           updated_at: string
         }
         Insert: {
-          client_id?: string | null
-          client_nom?: string | null
           created_at?: string
-          date_envoi?: string | null
-          designation?: string | null
-          notes?: string | null
+          designation?: string
+          ligne_id?: string
           produit_id?: string | null
-          quantite?: number | null
-          reference?: string | null
-          specimen_id?: string
-          statut?: string | null
+          quantite?: number
+          reference_produit?: string | null
+          specimen_id: string
           updated_at?: string
         }
         Update: {
+          created_at?: string
+          designation?: string
+          ligne_id?: string
+          produit_id?: string | null
+          quantite?: number
+          reference_produit?: string | null
+          specimen_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specimen_lignes_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "specimens"
+            referencedColumns: ["specimen_id"]
+          },
+        ]
+      }
+      specimens: {
+        Row: {
+          adresse: string | null
+          client_id: string | null
+          client_nom: string | null
+          created_at: string
+          created_by: string | null
+          date_envoi: string | null
+          depot_id: string | null
+          designation: string | null
+          donneur_nom: string | null
+          etablissement: string | null
+          exercice_id: string | null
+          gestionnaire_id: string | null
+          gestionnaire_nom: string | null
+          motif: string | null
+          nb_produits: number
+          notes: string | null
+          numero: string | null
+          observations: string | null
+          produit_id: string | null
+          quantite: number | null
+          reference: string | null
+          representant_nom: string | null
+          specimen_id: string
+          statut: string | null
+          telephone: string | null
+          total_quantite: number
+          updated_at: string
+          ville: string | null
+        }
+        Insert: {
+          adresse?: string | null
           client_id?: string | null
           client_nom?: string | null
           created_at?: string
+          created_by?: string | null
           date_envoi?: string | null
+          depot_id?: string | null
           designation?: string | null
+          donneur_nom?: string | null
+          etablissement?: string | null
+          exercice_id?: string | null
+          gestionnaire_id?: string | null
+          gestionnaire_nom?: string | null
+          motif?: string | null
+          nb_produits?: number
           notes?: string | null
+          numero?: string | null
+          observations?: string | null
           produit_id?: string | null
           quantite?: number | null
           reference?: string | null
+          representant_nom?: string | null
           specimen_id?: string
           statut?: string | null
+          telephone?: string | null
+          total_quantite?: number
           updated_at?: string
+          ville?: string | null
+        }
+        Update: {
+          adresse?: string | null
+          client_id?: string | null
+          client_nom?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_envoi?: string | null
+          depot_id?: string | null
+          designation?: string | null
+          donneur_nom?: string | null
+          etablissement?: string | null
+          exercice_id?: string | null
+          gestionnaire_id?: string | null
+          gestionnaire_nom?: string | null
+          motif?: string | null
+          nb_produits?: number
+          notes?: string | null
+          numero?: string | null
+          observations?: string | null
+          produit_id?: string | null
+          quantite?: number | null
+          reference?: string | null
+          representant_nom?: string | null
+          specimen_id?: string
+          statut?: string | null
+          telephone?: string | null
+          total_quantite?: number
+          updated_at?: string
+          ville?: string | null
         }
         Relationships: []
       }
@@ -5791,19 +5925,33 @@ export type Database = {
       creer_retour: {
         Args: { _payload: Json }
         Returns: {
+          adresse: string | null
           client_id: string | null
           client_nom: string | null
           commande_id: string | null
           created_at: string
+          created_by: string | null
+          created_by_nom: string | null
           date_retour: string | null
+          depot_id: string | null
+          etablissement: string | null
+          exercice_id: string | null
           facture_id: string | null
+          livraison_id: string | null
           montant: number | null
           motif: string | null
+          nb_produits: number
           notes: string | null
+          numero: string | null
+          observations: string | null
           reference: string | null
+          representant_nom: string | null
           retour_id: string
           statut: string | null
+          telephone: string | null
+          total_quantite: number
           updated_at: string
+          ville: string | null
         }[]
         SetofOptions: {
           from: "*"
@@ -5815,18 +5963,34 @@ export type Database = {
       creer_specimen: {
         Args: { _payload: Json }
         Returns: {
+          adresse: string | null
           client_id: string | null
           client_nom: string | null
           created_at: string
+          created_by: string | null
           date_envoi: string | null
+          depot_id: string | null
           designation: string | null
+          donneur_nom: string | null
+          etablissement: string | null
+          exercice_id: string | null
+          gestionnaire_id: string | null
+          gestionnaire_nom: string | null
+          motif: string | null
+          nb_produits: number
           notes: string | null
+          numero: string | null
+          observations: string | null
           produit_id: string | null
           quantite: number | null
           reference: string | null
+          representant_nom: string | null
           specimen_id: string
           statut: string | null
+          telephone: string | null
+          total_quantite: number
           updated_at: string
+          ville: string | null
         }[]
         SetofOptions: {
           from: "*"
