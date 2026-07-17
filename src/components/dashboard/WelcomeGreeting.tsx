@@ -80,6 +80,10 @@ export function WelcomeGreeting() {
     return raw.split(/\s+/)[0];
   }, [user, profile]);
 
+  const fallbackInitials = useMemo(() => {
+    return name.slice(0, 2).toUpperCase();
+  }, [name]);
+
   const { roles } = useUserRoles();
 
   // Pioche une citation motivante adaptée au rôle, avec rotation anti-répétition.
