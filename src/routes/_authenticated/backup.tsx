@@ -612,6 +612,61 @@ function BackupPage() {
         </CardContent>
       </Card>
 
+      <Card className="border-emerald-500/40">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Download className="h-5 w-5 text-emerald-600" />
+            ZIP binaires Storage (couvertures, avatars, RH)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Contrairement au manifest (URLs signées 7 jours), ce ZIP contient les{" "}
+            <b>fichiers binaires réels</b> des buckets métier : <code>product-covers</code>,{" "}
+            <code>avatars</code>, <code>employe-photos</code>, <code>employe-documents</code>.
+            Nécessaire pour restaurer l'ERP hors ligne au-delà de 7 jours.
+          </p>
+          <Button onClick={backupBinariesZip} disabled={binariesRunning} variant="outline">
+            {binariesRunning ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="mr-2 h-4 w-4" />
+            )}
+            {binariesRunning
+              ? "Compression & upload…"
+              : "Exporter ZIP binaires vers Google Drive"}
+          </Button>
+          {binariesResult && (
+            <div className="rounded-md border bg-muted/40 p-3 text-sm space-y-2">
+              <div>
+                ✅ <b>{binariesResult.total_files}</b> fichiers ·{" "}
+                <b>{(binariesResult.zip_bytes / 1024 / 1024).toFixed(1)} Mo</b> compressés
+                ({(binariesResult.total_bytes / 1024 / 1024).toFixed(1)} Mo décompressés)
+              </div>
+              <ul className="text-xs text-muted-foreground space-y-0.5">
+                {binariesResult.buckets.map((b) => (
+                  <li key={b.bucket}>
+                    • <b>{b.bucket}</b> — {b.files} fichiers (
+                    {(b.bytes / 1024 / 1024).toFixed(1)} Mo)
+                  </li>
+                ))}
+              </ul>
+              {binariesResult.drive.url && (
+                <a
+                  href={binariesResult.drive.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-primary hover:underline text-xs"
+                >
+                  <Cloud className="h-3 w-3" /> storage_binaries.zip
+                </a>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+
       <BackupSchedulesCard />
 
       <BackupRestoreCard />
