@@ -207,7 +207,16 @@ function AuthPage() {
       } catch {
         /* fallback silencieux sur /dashboard */
       }
-      navigate({ to: landing as "/dashboard", replace: true });
+      // TanStack Router valide `to` en littéral : dispatch explicite pour rester typé.
+      switch (landing) {
+        case "/dashboard-global": navigate({ to: "/dashboard-global", replace: true }); break;
+        case "/dashboard-logistique": navigate({ to: "/dashboard-logistique", replace: true }); break;
+        case "/paie-dashboard": navigate({ to: "/paie-dashboard", replace: true }); break;
+        case "/rh-dashboard": navigate({ to: "/rh-dashboard", replace: true }); break;
+        case "/compta-dashboard": navigate({ to: "/compta-dashboard", replace: true }); break;
+        default: navigate({ to: "/dashboard", replace: true });
+      }
+
       setTimeout(prefetchHotRoutes, 0);
 
     } catch (err) {
