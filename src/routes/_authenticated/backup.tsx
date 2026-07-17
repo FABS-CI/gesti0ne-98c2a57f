@@ -181,6 +181,32 @@ function BackupPage() {
     buckets: Array<{ bucket: string; files: number; bytes: number }>;
     drive: { id: string; url: string | null };
   } | null>(null);
+  const runDriveDownload = useServerFn(downloadDriveFile);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  async function downloadFromDrive(fileId: string, fallbackName: string) {
+    setDownloadingId(fileId);
+    try {
+      const res = await runDriveDownload({ data: { fileId } });
+      const bin = atob(res.base64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const blob = new Blob([bytes], { type: res.mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = res.name || fallbackName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast.success(`Téléchargé — ${res.name}`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setDownloadingId(null);
+    }
+  }
 
   async function backupCriticalArtifacts() {
     setCriticalRunning(true);
