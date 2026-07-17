@@ -37,6 +37,42 @@ function toDocLignes(rows: RawLigne[]): DocLigne[] {
   }));
 }
 
+/**
+ * Hydrate les lignes avec les infos produits (categorie, niveau, matiere,
+ * reference) via une requête séparée. La relation FK n'étant pas déclarée
+ * dans PostgREST, un `select("produits(...)")` renvoie une 400 et vidait
+ * toutes les lignes des PDF (Bon de commande, Facture, BL…).
+ */
+async function hydrateProduits(rows: RawLigne[]): Promise<RawLigne[]> {
+  const ids = Array.from(
+    new Set(rows.map((r) => r.produit_id).filter((v): v is string => !!v)),
+  );
+  if (ids.length === 0) return rows;
+  const { data } = await supabase
+    .from("produits")
+    .select("produit_id, reference, categorie, niveau, matiere")
+    .in("produit_id", ids);
+  const map = new Map<string, RawLigne["produits"]>();
+  for (const p of (data ?? []) as Array<{
+    produit_id: string;
+    reference: string | null;
+    categorie: string | null;
+    niveau: string | null;
+    matiere: string | null;
+  }>) {
+    map.set(p.produit_id, {
+      categorie: p.categorie,
+      niveau: p.niveau,
+      matiere: p.matiere,
+      reference: p.reference,
+    });
+  }
+  return rows.map((r) => ({
+    ...r,
+    produits: r.produit_id ? map.get(r.produit_id) ?? null : null,
+  }));
+}
+
 /** Lignes enrichies d'une proforma (via proforma_lignes + produits). */
 export async function loadProformaDocLignes(proformaId: string): Promise<DocLigne[]> {
   // Priorité aux lignes de la commande liée pour bénéficier des remises et
@@ -51,12 +87,11 @@ export async function loadProformaDocLignes(proformaId: string): Promise<DocLign
   }
   const { data, error } = await supabase
     .from("proforma_lignes")
-    .select(
-      "produit_id, designation, quantite, prix_unitaire, total_ligne, produits(categorie, niveau, matiere, reference)",
-    )
+    .select("produit_id, designation, quantite, prix_unitaire, total_ligne")
     .eq("proforma_id", proformaId);
   if (error) return [];
-  return toDocLignes((data ?? []) as unknown as RawLigne[]);
+  const hydrated = await hydrateProduits((data ?? []) as unknown as RawLigne[]);
+  return toDocLignes(hydrated);
 }
 
 /** Lignes enrichies d'une commande (via commande_lignes + produits). */
@@ -64,11 +99,12 @@ export async function loadCommandeDocLignes(commandeId: string): Promise<DocLign
   const { data, error } = await supabase
     .from("commande_lignes")
     .select(
-      "produit_id, designation, quantite, prix_unitaire, total_ligne, remise_pct, montant_remise, total_ht_ligne, reference_produit, produits(categorie, niveau, matiere, reference)",
+      "produit_id, designation, quantite, prix_unitaire, total_ligne, remise_pct, montant_remise, total_ht_ligne, reference_produit",
     )
     .eq("commande_id", commandeId);
   if (error) return [];
-  return toDocLignes((data ?? []) as unknown as RawLigne[]);
+  const hydrated = await hydrateProduits((data ?? []) as unknown as RawLigne[]);
+  return toDocLignes(hydrated);
 }
 
 /**
