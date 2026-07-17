@@ -51,8 +51,8 @@ function etatDuStock(stock: number, seuil: number): EtatStock {
 function StockPage() {
   const [search, setSearch] = useState("");
   const q = useDebouncedValue(search, 300);
-  const { roles } = useUserRoles();
-  const canEditStock = hasPermission("edit_stock", roles);
+  const { has } = usePermissions();
+  const canEditStock = has("stock.modifier");
 
   const { data: produits = [], isLoading } = useQuery({
     queryKey: ["stock", q],
