@@ -5953,6 +5953,10 @@ export type Database = {
         Args: { _col: string; _prefix: string; _table: unknown }
         Returns: string
       }
+      _recalc_solde_client_internal: {
+        Args: { _client_id: string }
+        Returns: number
+      }
       _resolve_exercice_id: { Args: { _d: string }; Returns: string }
       ajuster_stock_depot: {
         Args: {
@@ -5965,6 +5969,10 @@ export type Database = {
       }
       annuler_colisage: {
         Args: { _bl_id: string; _motif: string }
+        Returns: undefined
+      }
+      annuler_commande: {
+        Args: { _commande_id: string; _motif?: string }
         Returns: undefined
       }
       annuler_incident: { Args: { _incident_id: string }; Returns: undefined }
