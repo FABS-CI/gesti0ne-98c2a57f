@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserRoles } from "@/hooks/use-user-roles";
 import { supabase } from "@/integrations/supabase/client";
-import { Sun, CloudSun, Moon } from "lucide-react";
+import { Sun, CloudSun, Moon, Sparkles } from "lucide-react";
 import { useAvatarUrl } from "@/hooks/use-avatar-url";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  pickWelcomeMessage,
+  roleKeyFromAppRoles,
+  type WelcomePick,
+} from "@/lib/welcome-messages";
 
 function getGreeting(hour: number) {
   if (hour >= 5 && hour < 12) {
@@ -78,6 +84,18 @@ export function WelcomeGreeting() {
     return name.slice(0, 2).toUpperCase();
   }, [name]);
 
+  const { roles } = useUserRoles();
+
+  // Pioche une citation motivante adaptée au rôle, avec rotation anti-répétition.
+  // Recalculée à chaque session (identité user) — pas à chaque render.
+  const [pick, setPick] = useState<WelcomePick | null>(null);
+  useEffect(() => {
+    if (!user?.id) return;
+    const roleKey = roleKeyFromAppRoles(roles);
+    setPick(pickWelcomeMessage(roleKey));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, roles.join(",")]);
+
   const g = getGreeting(hour);
 
   return (
@@ -91,7 +109,7 @@ export function WelcomeGreeting() {
         aria-hidden
         className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-3xl"
       />
-      <div className="relative flex items-center gap-4">
+      <div className="relative flex items-start gap-4">
         <Avatar className="h-12 w-12 shrink-0 ring-1 ring-white/20">
           {avatarUrl ? <AvatarImage src={avatarUrl} alt={name} /> : null}
           <AvatarFallback className="bg-white/15 text-white text-sm font-semibold backdrop-blur-sm">
@@ -102,7 +120,18 @@ export function WelcomeGreeting() {
           <p className="text-lg font-bold leading-tight tracking-tight sm:text-xl">
             {g.salutation(name)}
           </p>
-          <p className="mt-0.5 text-sm text-white/80">{g.message}</p>
+          {pick ? (
+            <p className="mt-0.5 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-white/70">
+              <Sparkles className="h-3 w-3" aria-hidden />
+              {pick.roleLabel}
+            </p>
+          ) : null}
+          <p className="mt-2 text-sm leading-relaxed text-white/90">
+            {pick ? `« ${pick.message} »` : g.message}
+          </p>
+          <p className="mt-1 text-xs italic text-white/60">
+            {g.message}
+          </p>
         </div>
         <g.Icon className={`h-7 w-7 shrink-0 ${g.iconTint}`} aria-hidden />
       </div>
