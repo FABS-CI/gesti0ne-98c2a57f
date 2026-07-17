@@ -1,4 +1,19 @@
-import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
+import { useEffect, useState } from "react";
+import { AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { usePermissions } from "@/hooks/use-permissions";
 import type { Commande } from "@/lib/commandes-api";
 
 export function DeleteCommandeDialog({
@@ -9,35 +24,116 @@ export function DeleteCommandeDialog({
 }: {
   commande: Commande | null;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (motif: string | null) => void;
+  onConfirm: (motif: string | null, force: boolean) => void;
   pending: boolean;
 }) {
+  const { isSuperAdmin } = usePermissions();
+  const [motif, setMotif] = useState("");
+  const [typed, setTyped] = useState("");
+  const [force, setForce] = useState(false);
+
+  useEffect(() => {
+    if (!commande) {
+      setMotif("");
+      setTyped("");
+      setForce(false);
+    }
+  }, [commande]);
+
   const label = commande?.client_nom
     ? `${commande.reference} — ${commande.client_nom}`
-    : commande?.reference ?? "";
+    : (commande?.reference ?? "");
+
+  const canConfirm =
+    motif.trim().length > 0 &&
+    typed.trim() === (force ? "FORCER" : "SUPPRIMER") &&
+    !pending;
 
   return (
-    <ConfirmDeleteDialog
-      open={!!commande}
-      onOpenChange={onOpenChange}
-      title="Supprimer définitivement cette commande ?"
-      entityLabel="le bon de commande"
-      entityName={label}
-      description="Cette opération est irréversible. Elle est refusée si un paiement validé existe, si une facture non annulée est rattachée, ou si un BL a été expédié/livré. Dans ce cas, annuler la commande (qui remet le stock et annule les documents comptables) au lieu de la supprimer."
-      consequences={[
-        "Refus si paiement validé, facture non annulée, ou BL expédié/livré",
-        "Suppression : commande, lignes, proformas, factures annulées, BL, paiements annulés",
-        "Suppression : bons de livraison, colisages, colis, livraisons, expéditions, suivi",
-        "Suppression : retours, mouvements de stock, notifications rattachés",
-        "Écritures comptables des factures/paiements supprimées automatiquement via triggers",
-        "Recalcul automatique du solde client",
-      ]}
-      motifRequired
-      motifPlaceholder="Motif de la suppression (obligatoire pour audit)"
-      requireTyping="SUPPRIMER"
-      confirmLabel="Supprimer définitivement"
-      pending={pending}
-      onConfirm={onConfirm}
-    />
+    <Dialog open={!!commande} onOpenChange={(o) => (!pending ? onOpenChange(o) : null)}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-destructive" />
+            Supprimer définitivement cette commande ?
+          </DialogTitle>
+          <DialogDescription>
+            Vous êtes sur le point de supprimer{" "}
+            <span className="font-semibold">le bon de commande</span>{" "}
+            <span className="font-mono text-xs">{label}</span>.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-3 text-sm">
+          <p className="text-destructive font-medium">
+            {force
+              ? "Mode FORCER (Super Admin) — bypass des contrôles métier. Toutes les factures, paiements, BL et livraisons rattachés seront supprimés en cascade. Irréversible."
+              : "Refusé si paiement validé, facture non annulée, ou BL expédié/livré. Préférer l'annulation dans ce cas."}
+          </p>
+
+          {isSuperAdmin && (
+            <label className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-2">
+              <Checkbox
+                id="force-delete"
+                checked={force}
+                onCheckedChange={(v) => {
+                  setForce(v === true);
+                  setTyped("");
+                }}
+              />
+              <div className="text-xs">
+                <div className="font-semibold text-destructive">
+                  Forcer la suppression (Super Admin)
+                </div>
+                <div className="text-muted-foreground">
+                  Bypass des contrôles métier — supprime factures, paiements et BL rattachés.
+                </div>
+              </div>
+            </label>
+          )}
+
+          <div className="space-y-1">
+            <Label htmlFor="confirm-delete-motif">
+              Motif <span className="text-destructive">*</span>
+            </Label>
+            <Textarea
+              id="confirm-delete-motif"
+              value={motif}
+              onChange={(e) => setMotif(e.target.value)}
+              placeholder="Motif de la suppression (obligatoire pour audit)"
+              rows={2}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="confirm-delete-typing">
+              Pour confirmer, tapez{" "}
+              <span className="font-mono font-semibold">
+                {force ? "FORCER" : "SUPPRIMER"}
+              </span>
+            </Label>
+            <Input
+              id="confirm-delete-typing"
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+              autoComplete="off"
+            />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={pending}>
+            Annuler
+          </Button>
+          <Button
+            variant="destructive"
+            disabled={!canConfirm}
+            onClick={() => onConfirm(motif.trim(), force)}
+          >
+            {pending ? "Suppression…" : force ? "Forcer la suppression" : "Supprimer définitivement"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
