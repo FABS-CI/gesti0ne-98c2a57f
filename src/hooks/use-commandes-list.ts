@@ -67,8 +67,8 @@ export function useCommandesList({
   });
 
   const deleteMutation = useMutation({
-    mutationFn: ({ id, motif }: { id: string; motif?: string | null }) =>
-      deleteCommande(id, motif),
+    mutationFn: ({ id, motif, force }: { id: string; motif?: string | null; force?: boolean }) =>
+      deleteCommande(id, motif, force),
     onSuccess: (summary) => {
       toast.success(
         "Le Bon de Commande a été supprimé définitivement avec toutes les données associées.",
