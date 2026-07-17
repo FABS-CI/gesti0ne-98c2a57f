@@ -5949,6 +5949,15 @@ export type Database = {
       }
     }
     Functions: {
+      _compte_mode_paiement: {
+        Args: { _mode: string }
+        Returns: {
+          compte: string
+          journal: string
+        }[]
+      }
+      _delete_ecriture_piece: { Args: { _piece: string }; Returns: undefined }
+      _journal_id: { Args: { _code: string }; Returns: string }
       _next_ref: {
         Args: { _col: string; _prefix: string; _table: unknown }
         Returns: string
@@ -6602,6 +6611,15 @@ export type Database = {
       }
       finaliser_tournee: { Args: { _tournee_id: string }; Returns: Json }
       generate_client_reference: { Args: never; Returns: string }
+      generate_ecriture_achat: { Args: { _achat_id: string }; Returns: string }
+      generate_ecriture_facture: {
+        Args: { _facture_id: string }
+        Returns: string
+      }
+      generate_ecriture_paiement: {
+        Args: { _paiement_id: string }
+        Returns: string
+      }
       generer_proforma_commande: {
         Args: { _commande_id: string }
         Returns: Json
