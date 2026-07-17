@@ -194,13 +194,14 @@ export async function getCommandeLignes(commandeId: string) {
   return (data ?? []) as Required<CommandeLigne>[];
 }
 
-export async function deleteCommande(id: string, motif?: string | null) {
+export async function deleteCommande(id: string, motif?: string | null, force?: boolean) {
   const { assertPermission } = await import("@/lib/rbac-api");
   await assertPermission("commandes.supprimer");
   const { data, error } = await supabase.rpc("supprimer_commande_definitif", {
     _commande_id: id,
     _motif: motif ?? undefined,
-  });
+    _force: force ?? false,
+  } as never);
   if (error) {
     throw new Error(error.message);
   }
