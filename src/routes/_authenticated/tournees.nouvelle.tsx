@@ -9,18 +9,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +23,21 @@ import {
 } from "@/components/ui/alert-dialog";
 import { invalidateColisage } from "@/lib/cache-invalidation";
 import { finaliserTournee } from "@/lib/livraison-suivi/writes";
+import { Stat } from "@/components/tournees/edit/parts";
+import {
+  type BLStatusRow,
+  type ColisRow,
+  type CommandeRow,
+  type CostsState,
+  type DepotRow,
+  type TourneeFormState,
+  type Vehicule,
+  defaultRef,
+  todayISO,
+} from "@/components/tournees/create/types";
+import { ColisPickerTable } from "@/components/tournees/create/ColisPickerTable";
+import { NewTourneeInfoCard } from "@/components/tournees/create/NewTourneeInfoCard";
+import { NewTourneeCoutsCard } from "@/components/tournees/create/NewTourneeCoutsCard";
 
 const searchSchema = z.object({
   preselect: fallback(z.string(), "").default(""),
@@ -44,80 +49,15 @@ export const Route = createFileRoute("/_authenticated/tournees/nouvelle")({
   component: NouvelleTourneePage,
 });
 
-type ColisRow = {
-  colis_id: string;
-  reference: string | null;
-  bl_id: string | null;
-  numero_carton: number | null;
-  nb_cartons: number | null;
-  commande_id: string | null;
-  destinataire: string | null;
-  ville_livraison: string | null;
-  quartier: string | null;
-  vehicule: string | null;
-  livreur_nom: string | null;
-  responsable_nom: string | null;
-  transporteur: string | null;
-  mode_acheminement: string | null;
-  date_colisage: string | null;
-};
-
-type BLStatusRow = { bl_id: string; statut: string | null };
-
-type Vehicule = { vehicule_id: string; immatriculation: string | null };
-
-type CommandeRow = {
-  commande_id: string;
-  reference: string | null;
-  client_id: string | null;
-  client_nom: string | null;
-  representant_nom: string | null;
-  commercial_nom: string | null;
-  total_quantite: number | null;
-  depot_id: string | null;
-  ville: string | null;
-};
-
-type DepotRow = { depot_id: string; nom: string | null };
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function defaultRef() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return `TRN-${y}${m}${day}-${rand}`;
-}
-
-const COST_FIELDS: Array<{ key: string; label: string }> = [
-  { key: "cout_carburant", label: "Carburant" },
-  { key: "cout_peages", label: "Péages" },
-  { key: "cout_repas", label: "Repas" },
-  { key: "cout_livraison", label: "Frais de livraison" },
-  { key: "cout_expeditions", label: "Expéditions" },
-  { key: "cout_manutentions", label: "Manutentions" },
-  { key: "cout_autres", label: "Autres" },
-];
-
-// Le statut d'une nouvelle tournée est toujours "preparee" à la création,
-// puis passe à "en_cours" via la RPC `finaliser_tournee` (voir submit()).
-
 function NouvelleTourneePage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { preselect, colis: colisParam } = Route.useSearch();
-  // Filtre date optionnel (vide = toutes les dates). Aucun impact sur la
-  // requête serveur : on récupère tous les colis « prêts non affectés ».
   const [dateColis, setDateColis] = useState<string>("");
   const [clientFilter, setClientFilter] = useState("");
   const [representantFilter, setRepresentantFilter] = useState("");
   const [villeFilter, setVilleFilter] = useState("");
 
-  // Colis prêts non affectés
   const colisQ = useQuery({
     queryKey: ["colis-prets-non-affectes"],
     queryFn: async (): Promise<ColisRow[]> => {
@@ -146,9 +86,6 @@ function NouvelleTourneePage() {
     },
   });
 
-  // Synchronisation temps réel : Colisage → Tournées → Suivi.
-  // Toute mutation sur `colis` (fin de colisage, affectation à une tournée)
-  // recharge instantanément la liste des colis prêts, sans F5.
   useEffect(() => {
     const ch = supabase
       .channel("nouvelle-tournee-colis-sync")
@@ -233,7 +170,6 @@ function NouvelleTourneePage() {
     },
   });
 
-  // Liste complète des dépôts pour le champ obligatoire « Dépôt de départ ».
   const depotsListQ = useQuery({
     queryKey: ["depots-all-for-tournee"],
     queryFn: async (): Promise<DepotRow[]> => {
@@ -246,11 +182,9 @@ function NouvelleTourneePage() {
     },
   });
 
-  // Sélection
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [presetApplied, setPresetApplied] = useState(false);
 
-  // Application des préselections depuis l'URL (?preselect=all ou ?colis=id1,id2)
   useEffect(() => {
     if (presetApplied) return;
     const rows = colisQ.data;
@@ -266,9 +200,6 @@ function NouvelleTourneePage() {
       if (match.length) setSelected(new Set(match));
       setPresetApplied(true);
     } else {
-      // Auto-sélection par défaut : tous les colis « Colisage terminé »
-      // non encore affectés sont pré-cochés à l'ouverture de « Nouvelle
-      // tournée » (`preselect=all` reste supporté pour rétro-compatibilité).
       if (rows.length) setSelected(new Set(rows.map((r) => r.colis_id)));
       setPresetApplied(true);
     }
@@ -285,7 +216,6 @@ function NouvelleTourneePage() {
   const allSelected = allIds.length > 0 && allIds.every((id) => selected.has(id));
   const toggleAll = () => setSelected(allSelected ? new Set() : new Set(allIds));
 
-  // Filtre libre (recherche globale)
   const [filter, setFilter] = useState("");
   const rows = useMemo(() => {
     const f = filter.trim().toLowerCase();
@@ -315,14 +245,11 @@ function NouvelleTourneePage() {
     });
   }, [colisQ.data, clientByCmd, filter, clientFilter, representantFilter, villeFilter, dateColis]);
 
-  // Totaux temps réel (basés sur la sélection)
   const selectedRows = useMemo(
     () => (colisQ.data ?? []).filter((c) => selected.has(c.colis_id)),
     [colisQ.data, selected],
   );
   const totals = useMemo(() => {
-    // Règle métier : 1 commande = 1 colis (avec N cartons).
-    // Chaque ligne de la table `colis` = 1 carton physique.
     const nb_cartons = selectedRows.length;
     const commandeIds = new Set<string>();
     for (const r of selectedRows) if (r.commande_id) commandeIds.add(r.commande_id);
@@ -336,20 +263,19 @@ function NouvelleTourneePage() {
     return { nb_colis, nb_cartons, nb_clients: clientIds.size };
   }, [selectedRows, clientByCmd]);
 
-  // Formulaire tournée
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<TourneeFormState>({
     reference: defaultRef(),
     date_tournee: todayISO(),
     heure_depart: "08:00",
-    depot_depart_id: "" as string,
+    depot_depart_id: "",
     responsable_nom: "",
     chauffeur_nom: "",
-    vehicule_id: "" as string,
+    vehicule_id: "",
     statut: "preparee",
     type_tournee: "livraison",
     notes: "",
   });
-  const [costs, setCosts] = useState<Record<string, number>>({
+  const [costs, setCosts] = useState<CostsState>({
     cout_carburant: 0,
     cout_peages: 0,
     cout_repas: 0,
@@ -363,13 +289,12 @@ function NouvelleTourneePage() {
     [costs],
   );
 
-  // Pré-remplissage à partir des colis chargés (le plus fréquent)
   useEffect(() => {
-    const rows = colisQ.data ?? [];
-    if (!rows.length) return;
+    const rowsAll = colisQ.data ?? [];
+    if (!rowsAll.length) return;
     const mode = (k: keyof ColisRow) => {
       const counts = new Map<string, number>();
-      for (const r of rows) {
+      for (const r of rowsAll) {
         const v = String(r[k] ?? "").trim();
         if (!v) continue;
         counts.set(v, (counts.get(v) ?? 0) + 1);
@@ -393,10 +318,10 @@ function NouvelleTourneePage() {
   useEffect(() => {
     if (form.vehicule_id) return;
     const vehs = vehQ.data ?? [];
-    const rows = colisQ.data ?? [];
-    if (!vehs.length || !rows.length) return;
+    const rowsAll = colisQ.data ?? [];
+    if (!vehs.length || !rowsAll.length) return;
     const counts = new Map<string, number>();
-    for (const r of rows) {
+    for (const r of rowsAll) {
       const v = (r.vehicule ?? "").trim();
       if (!v) continue;
       counts.set(v, (counts.get(v) ?? 0) + 1);
@@ -416,9 +341,6 @@ function NouvelleTourneePage() {
   }, [vehQ.data, colisQ.data, form.vehicule_id]);
 
   const [saving, setSaving] = useState(false);
-  // Champs strictement obligatoires pour valider une tournée dans le nouveau
-  // workflow (Colisage → Tournée → Suivi). Un manquement bloque la validation
-  // et affiche la liste précise des informations à compléter.
   const missingFields = useMemo(() => {
     const missing: string[] = [];
     if (!form.reference.trim()) missing.push("Référence");
@@ -445,9 +367,6 @@ function NouvelleTourneePage() {
         responsable_nom: form.responsable_nom || null,
         chauffeur_nom: form.chauffeur_nom || null,
         vehicule_id: form.vehicule_id || null,
-        // La création laisse la tournée en brouillon ("preparee") ; le passage
-        // à "en_cours" (validation) est fait par la RPC `finaliser_tournee`
-        // qui crée aussi les lignes de suivi de livraison correspondantes.
         statut: "preparee",
         type_tournee: form.type_tournee,
         notes: form.notes || null,
@@ -471,8 +390,6 @@ function NouvelleTourneePage() {
         .in("colis_id", ids);
       if (upErr) throw upErr;
 
-      // Validation immédiate : crée les lignes de suivi de livraison
-      // rattachées à cette tournée et passe la tournée à `en_cours`.
       await finaliserTournee(tourneeId);
 
       toast.success("Tournée validée", {
@@ -534,11 +451,10 @@ function NouvelleTourneePage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmer la création de cette tournée ?</AlertDialogTitle>
             <AlertDialogDescription>
-              Après validation, les {totals.nb_colis} colis sélectionnés seront
-              affectés à la tournée <strong>{form.reference}</strong> et
-              deviendront disponibles dans le module Suivi de livraison. Cette
-              opération est définitive : un colis affecté ne peut plus être
-              déplacé vers une autre tournée.
+              Après validation, les {totals.nb_colis} colis sélectionnés seront affectés à la
+              tournée <strong>{form.reference}</strong> et deviendront disponibles dans le module
+              Suivi de livraison. Cette opération est définitive : un colis affecté ne peut plus
+              être déplacé vers une autre tournée.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -627,67 +543,14 @@ function NouvelleTourneePage() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {loading ? (
-              <div className="flex items-center justify-center py-10 text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin mr-2" /> Chargement…
-              </div>
-            ) : rows.length === 0 ? (
-              <div className="py-10 text-center text-sm text-muted-foreground">
-                Aucun colis prêt non affecté. Préparez un colisage d'abord.
-              </div>
-            ) : (
-              <div className="overflow-auto max-h-[60vh] border-t">
-                <table className="w-full text-xs">
-                  <thead className="bg-muted/50 sticky top-0">
-                    <tr>
-                      <th className="p-2 w-8"></th>
-                      <th className="p-2 text-left">N° colis</th>
-                      <th className="p-2 text-left">Commande</th>
-                      <th className="p-2 text-left">Client</th>
-                      <th className="p-2 text-left">Représentant</th>
-                      <th className="p-2 text-left">Ville</th>
-                      <th className="p-2 text-right">Cartons</th>
-                      <th className="p-2 text-right">Qté</th>
-                      <th className="p-2 text-left">Date prép.</th>
-                      <th className="p-2 text-left">Magasin</th>
-                      <th className="p-2 text-left">Responsable</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((c) => {
-                      const cli = c.commande_id ? clientByCmd.get(c.commande_id) : undefined;
-                      const isSel = selected.has(c.colis_id);
-                      const rep = cli?.representant_nom ?? cli?.commercial_nom ?? "—";
-                      const depotNom = cli?.depot_id ? (depotById.get(cli.depot_id) ?? "—") : "—";
-                      const ville = c.ville_livraison ?? cli?.ville ?? "—";
-                      return (
-                        <tr
-                          key={c.colis_id}
-                          className={`border-t hover:bg-accent/40 cursor-pointer ${isSel ? "bg-accent/30" : ""}`}
-                          onClick={() => toggle(c.colis_id)}
-                        >
-                          <td className="p-2" onClick={(e) => e.stopPropagation()}>
-                            <Checkbox checked={isSel} onCheckedChange={() => toggle(c.colis_id)} />
-                          </td>
-                          <td className="p-2 font-mono">{c.reference ?? "—"}</td>
-                          <td className="p-2 font-mono">{cli?.reference ?? "—"}</td>
-                          <td className="p-2">{cli?.client_nom ?? "—"}</td>
-                          <td className="p-2">{rep}</td>
-                          <td className="p-2">{ville}</td>
-                          <td className="p-2 text-right">1</td>
-                          <td className="p-2 text-right">{cli?.total_quantite ?? "—"}</td>
-                          <td className="p-2">
-                            {c.date_colisage ? c.date_colisage.slice(0, 10) : "—"}
-                          </td>
-                          <td className="p-2">{depotNom}</td>
-                          <td className="p-2">{c.responsable_nom ?? "—"}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            <ColisPickerTable
+              rows={rows}
+              loading={loading}
+              selected={selected}
+              toggle={toggle}
+              clientByCmd={clientByCmd}
+              depotById={depotById}
+            />
           </CardContent>
         </Card>
 
@@ -703,147 +566,15 @@ function NouvelleTourneePage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Informations tournée</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Field label="Référence *">
-                <Input
-                  value={form.reference}
-                  onChange={(e) => setForm({ ...form, reference: e.target.value })}
-                />
-              </Field>
-              <Field label="Date">
-                <Input
-                  type="date"
-                  value={form.date_tournee}
-                  onChange={(e) => setForm({ ...form, date_tournee: e.target.value })}
-                />
-              </Field>
-              <Field label="Heure de départ *">
-                <Input
-                  type="time"
-                  value={form.heure_depart}
-                  onChange={(e) => setForm({ ...form, heure_depart: e.target.value })}
-                />
-              </Field>
-              <Field label="Dépôt de départ *">
-                <Select
-                  value={form.depot_depart_id || "__none"}
-                  onValueChange={(v) =>
-                    setForm({ ...form, depot_depart_id: v === "__none" ? "" : v })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none">— Sélectionner —</SelectItem>
-                    {(depotsListQ.data ?? []).map((d) => (
-                      <SelectItem key={d.depot_id} value={d.depot_id}>
-                        {d.nom ?? d.depot_id}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-              <Field label="Responsable logistique">
-                <Input
-                  value={form.responsable_nom}
-                  onChange={(e) => setForm({ ...form, responsable_nom: e.target.value })}
-                />
-              </Field>
-              <Field label="Chauffeur *">
-                <Input
-                  value={form.chauffeur_nom}
-                  onChange={(e) => setForm({ ...form, chauffeur_nom: e.target.value })}
-                />
-              </Field>
-              <Field label="Véhicule *">
-                <Select
-                  value={form.vehicule_id || "__none"}
-                  onValueChange={(v) => setForm({ ...form, vehicule_id: v === "__none" ? "" : v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none">— Aucun —</SelectItem>
-                    {(vehQ.data ?? []).map((v) => (
-                      <SelectItem key={v.vehicule_id} value={v.vehicule_id}>
-                        {v.immatriculation ?? v.vehicule_id}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-              <Field label="Type de tournée">
-                <Select
-                  value={form.type_tournee}
-                  onValueChange={(v) => setForm({ ...form, type_tournee: v })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="livraison">Livraison</SelectItem>
-                    <SelectItem value="expedition">Expédition</SelectItem>
-                    <SelectItem value="mixte">Mixte</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-              <Field label="Notes">
-                <Textarea
-                  rows={2}
-                  value={form.notes}
-                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                />
-              </Field>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Coûts (FCFA)</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {COST_FIELDS.map((c) => (
-                <Field key={c.key} label={c.label}>
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    value={costs[c.key] ?? 0}
-                    onChange={(e) => setCosts({ ...costs, [c.key]: Number(e.target.value) || 0 })}
-                  />
-                </Field>
-              ))}
-              <div className="flex items-center justify-between pt-2 border-t text-sm font-medium">
-                <span>Total</span>
-                <span className="tabular-nums">{coutTotal.toLocaleString("fr-FR")}</span>
-              </div>
-            </CardContent>
-          </Card>
+          <NewTourneeInfoCard
+            form={form}
+            setForm={setForm}
+            depots={depotsListQ.data ?? []}
+            vehicules={vehQ.data ?? []}
+          />
+          <NewTourneeCoutsCard costs={costs} setCosts={setCosts} coutTotal={coutTotal} />
         </div>
       </div>
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="grid grid-cols-[9rem_1fr] items-center gap-2">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      {children}
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-md border p-2">
-      <div className="text-xl font-semibold tabular-nums">{value}</div>
-      <div className="text-[10px] uppercase text-muted-foreground">{label}</div>
     </div>
   );
 }
