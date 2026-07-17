@@ -17,8 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { listStockProduits } from "@/lib/stock-api";
-import { hasPermission } from "@/lib/permissions";
-import { useUserRoles } from "@/hooks/use-user-roles";
+import { usePermissions } from "@/hooks/use-permissions";
 
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -52,8 +51,8 @@ function etatDuStock(stock: number, seuil: number): EtatStock {
 function StockPage() {
   const [search, setSearch] = useState("");
   const q = useDebouncedValue(search, 300);
-  const { roles } = useUserRoles();
-  const canEditStock = hasPermission("edit_stock", roles);
+  const { has } = usePermissions();
+  const canEditStock = has("stock.modifier");
 
   const { data: produits = [], isLoading } = useQuery({
     queryKey: ["stock", q],
