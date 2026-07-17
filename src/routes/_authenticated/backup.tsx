@@ -161,6 +161,30 @@ function BackupPage() {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [sendToDrive, setSendToDrive] = useState(true);
   const uploadToDrive = useServerFn(uploadBackupToGoogleDrive);
+  const runCriticalExport = useServerFn(exportCriticalArtifacts);
+  const [criticalRunning, setCriticalRunning] = useState(false);
+  const [criticalResult, setCriticalResult] = useState<{
+    users_count: number;
+    buckets_count: number;
+    files_count: number;
+    users_drive: { id: string; url: string | null };
+    storage_drive: { id: string; url: string | null };
+  } | null>(null);
+
+  async function backupCriticalArtifacts() {
+    setCriticalRunning(true);
+    try {
+      const res = await runCriticalExport();
+      setCriticalResult(res);
+      toast.success(
+        `Export critique OK — ${res.users_count} comptes, ${res.files_count} fichiers`,
+      );
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setCriticalRunning(false);
+    }
+  }
 
   useEffect(() => {
     (async () => {
