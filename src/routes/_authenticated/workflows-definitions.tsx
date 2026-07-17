@@ -7,17 +7,17 @@ export const Route = createFileRoute("/_authenticated/workflows-definitions")({
     <ResourceManager
       config={{
         table: "workflows_definitions",
-        idField: "workflow_id",
+        idField: "id",
         title: "Définitions de workflows",
-        subtitle: "Modèles d'approbation multi-niveaux",
+        subtitle: "Modèles d'approbation (workflow simple : approuvé / rejeté)",
         icon: GitBranch,
         newLabel: "Nouveau workflow",
         entityLabel: "workflow",
-        searchFields: ["nom", "entite_type", "description"],
+        searchFields: ["code", "libelle", "description"],
         csvName: "workflows-definitions",
         columns: [
-          { name: "nom", label: "Nom" },
-          { name: "entite_type", label: "Entité" },
+          { name: "code", label: "Code", type: "mono" },
+          { name: "libelle", label: "Libellé" },
           { name: "description", label: "Description" },
           {
             name: "actif",
@@ -30,8 +30,8 @@ export const Route = createFileRoute("/_authenticated/workflows-definitions")({
           },
         ],
         fields: [
-          { name: "nom", label: "Nom", required: true, colSpan: 2 },
-          { name: "entite_type", label: "Entité (ex: facture, achat)", required: true },
+          { name: "code", label: "Code", required: true },
+          { name: "libelle", label: "Libellé", required: true },
           {
             name: "actif",
             label: "Actif",
