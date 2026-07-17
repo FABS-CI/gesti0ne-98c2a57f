@@ -191,7 +191,7 @@ export const mfaVerifyBackupCode = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw) => z.object({ code: z.string().min(6).max(20) }).parse(raw))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
+    const { supabase, userId, claims } = context;
     await ensureNotLocked(supabase as SB, userId);
     const { data: rows, error } = await supabase
       .from("mfa_backup_codes")
