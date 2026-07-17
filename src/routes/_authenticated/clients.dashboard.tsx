@@ -60,10 +60,12 @@ function CrmDashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <Kpi label="Chiffre d'affaires" value={formatFCFA(data?.ca_total ?? 0)} />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <Kpi label="CA (encaissé)" value={formatFCFA(data?.ca_total ?? 0)} />
+        <Kpi label="Montant facturé" value={formatFCFA(data?.montant_facture ?? 0)} />
+        <Kpi label="Reste à encaisser" value={formatFCFA(data?.reste_a_encaisser ?? 0)} />
+        <Kpi label="Taux encaissement" value={`${(data?.taux_encaissement ?? 0).toFixed(1)}%`} />
         <Kpi label="Commandes" value={String(data?.nb_commandes ?? 0)} />
-        <Kpi label="Clients actifs" value={String(data?.nb_clients ?? 0)} />
       </div>
 
       {isLoading || !data ? (

@@ -41,6 +41,10 @@ export type RapportKpi = {
   nb_factures: number;
   nb_clients: number;
   ca: number;
+  montant_facture?: number;
+  montant_encaisse?: number;
+  reste_a_encaisser?: number;
+  taux_encaissement?: number;
   nb_commandes: number;
   prix_moyen: number;
   panier_moyen: number;

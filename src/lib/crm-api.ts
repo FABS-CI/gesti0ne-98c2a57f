@@ -69,6 +69,10 @@ export async function getClientHistorique(clientId: string): Promise<HistoriqueL
 export type DashboardBucket = { label: string; ca: number; qte?: number; nb?: number };
 export type CrmDashboard = {
   ca_total: number;
+  montant_facture?: number;
+  montant_encaisse?: number;
+  reste_a_encaisser?: number;
+  taux_encaissement?: number;
   nb_commandes: number;
   nb_clients: number;
   par_niveau: DashboardBucket[];

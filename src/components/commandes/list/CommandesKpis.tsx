@@ -12,7 +12,7 @@ export function CommandesKpis({ kpis }: { kpis: Kpis }) {
       tint: "text-primary bg-primary/10",
     },
     {
-      label: "Chiffre d'affaires",
+      label: "Montant commandé",
       value: formatFCFA(kpis.ca),
       icon: Wallet,
       tint: "text-emerald-600 bg-emerald-500/10",
