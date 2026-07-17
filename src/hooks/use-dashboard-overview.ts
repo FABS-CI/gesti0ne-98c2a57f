@@ -87,6 +87,10 @@ export function useDashboardOverview(periode: Periode, exerciceId: string | null
         soldeTotal,
         nbCommandes: Number(ov.nbCommandes) || 0,
         caTotal: Number(ov.caTotal) || 0,
+        montantFacture: Number(ov.montantFacture) || 0,
+        montantEncaisse: Number(ov.montantEncaisse) || 0,
+        resteAEncaisser: Number(ov.resteAEncaisser) || 0,
+        tauxEncaissement: Number(ov.tauxEncaissement) || 0,
         parStatut: (ov.parStatut ?? []).map((s) => ({
           statut: s.statut,
           count: Number(s.count) || 0,
