@@ -171,6 +171,15 @@ function BackupPage() {
     users_drive: { id: string; url: string | null };
     storage_drive: { id: string; url: string | null };
   } | null>(null);
+  const runBinariesZip = useServerFn(exportStorageBinariesZip);
+  const [binariesRunning, setBinariesRunning] = useState(false);
+  const [binariesResult, setBinariesResult] = useState<{
+    total_files: number;
+    total_bytes: number;
+    zip_bytes: number;
+    buckets: Array<{ bucket: string; files: number; bytes: number }>;
+    drive: { id: string; url: string | null };
+  } | null>(null);
 
   async function backupCriticalArtifacts() {
     setCriticalRunning(true);
@@ -184,6 +193,21 @@ function BackupPage() {
       toast.error((e as Error).message);
     } finally {
       setCriticalRunning(false);
+    }
+  }
+
+  async function backupBinariesZip() {
+    setBinariesRunning(true);
+    try {
+      const res = await runBinariesZip();
+      setBinariesResult(res);
+      toast.success(
+        `ZIP binaires OK — ${res.total_files} fichiers (${(res.zip_bytes / 1024 / 1024).toFixed(1)} Mo)`,
+      );
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBinariesRunning(false);
     }
   }
 
