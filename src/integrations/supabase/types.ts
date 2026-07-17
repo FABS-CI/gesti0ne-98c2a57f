@@ -1216,6 +1216,7 @@ export type Database = {
           client_id: string | null
           client_nom: string | null
           commande_id: string
+          commentaire_validation: string | null
           commercial_id: string | null
           commercial_nom: string | null
           created_at: string
@@ -1228,12 +1229,15 @@ export type Database = {
           montant_total: number
           montant_ttc: number
           montant_tva: number
+          motif_rejet: string | null
           nb_produits: number
           net_a_payer: number
           notes: string | null
           numero: string | null
           observations: string | null
           reference: string | null
+          rejete_le: string | null
+          rejete_par: string | null
           remise: number
           remise_globale_montant: number
           remise_globale_pct: number
@@ -1246,6 +1250,8 @@ export type Database = {
           total_quantite: number
           total_remises_lignes: number
           updated_at: string
+          valide_le: string | null
+          valide_par: string | null
           ville: string | null
         }
         Insert: {
@@ -1253,6 +1259,7 @@ export type Database = {
           client_id?: string | null
           client_nom?: string | null
           commande_id?: string
+          commentaire_validation?: string | null
           commercial_id?: string | null
           commercial_nom?: string | null
           created_at?: string
@@ -1265,12 +1272,15 @@ export type Database = {
           montant_total?: number
           montant_ttc?: number
           montant_tva?: number
+          motif_rejet?: string | null
           nb_produits?: number
           net_a_payer?: number
           notes?: string | null
           numero?: string | null
           observations?: string | null
           reference?: string | null
+          rejete_le?: string | null
+          rejete_par?: string | null
           remise?: number
           remise_globale_montant?: number
           remise_globale_pct?: number
@@ -1283,6 +1293,8 @@ export type Database = {
           total_quantite?: number
           total_remises_lignes?: number
           updated_at?: string
+          valide_le?: string | null
+          valide_par?: string | null
           ville?: string | null
         }
         Update: {
@@ -1290,6 +1302,7 @@ export type Database = {
           client_id?: string | null
           client_nom?: string | null
           commande_id?: string
+          commentaire_validation?: string | null
           commercial_id?: string | null
           commercial_nom?: string | null
           created_at?: string
@@ -1302,12 +1315,15 @@ export type Database = {
           montant_total?: number
           montant_ttc?: number
           montant_tva?: number
+          motif_rejet?: string | null
           nb_produits?: number
           net_a_payer?: number
           notes?: string | null
           numero?: string | null
           observations?: string | null
           reference?: string | null
+          rejete_le?: string | null
+          rejete_par?: string | null
           remise?: number
           remise_globale_montant?: number
           remise_globale_pct?: number
@@ -1320,6 +1336,8 @@ export type Database = {
           total_quantite?: number
           total_remises_lignes?: number
           updated_at?: string
+          valide_le?: string | null
+          valide_par?: string | null
           ville?: string | null
         }
         Relationships: []
@@ -6224,6 +6242,7 @@ export type Database = {
           client_id: string | null
           client_nom: string | null
           commande_id: string
+          commentaire_validation: string | null
           commercial_id: string | null
           commercial_nom: string | null
           created_at: string
@@ -6236,12 +6255,15 @@ export type Database = {
           montant_total: number
           montant_ttc: number
           montant_tva: number
+          motif_rejet: string | null
           nb_produits: number
           net_a_payer: number
           notes: string | null
           numero: string | null
           observations: string | null
           reference: string | null
+          rejete_le: string | null
+          rejete_par: string | null
           remise: number
           remise_globale_montant: number
           remise_globale_pct: number
@@ -6254,6 +6276,8 @@ export type Database = {
           total_quantite: number
           total_remises_lignes: number
           updated_at: string
+          valide_le: string | null
+          valide_par: string | null
           ville: string | null
         }[]
         SetofOptions: {
@@ -6784,6 +6808,7 @@ export type Database = {
           client_id: string | null
           client_nom: string | null
           commande_id: string
+          commentaire_validation: string | null
           commercial_id: string | null
           commercial_nom: string | null
           created_at: string
@@ -6796,12 +6821,15 @@ export type Database = {
           montant_total: number
           montant_ttc: number
           montant_tva: number
+          motif_rejet: string | null
           nb_produits: number
           net_a_payer: number
           notes: string | null
           numero: string | null
           observations: string | null
           reference: string | null
+          rejete_le: string | null
+          rejete_par: string | null
           remise: number
           remise_globale_montant: number
           remise_globale_pct: number
@@ -6814,6 +6842,8 @@ export type Database = {
           total_quantite: number
           total_remises_lignes: number
           updated_at: string
+          valide_le: string | null
+          valide_par: string | null
           ville: string | null
         }[]
         SetofOptions: {
