@@ -7042,10 +7042,12 @@ export type Database = {
         Args: { _bl_id: string; _motif: string }
         Returns: Json
       }
-      supprimer_commande_definitif: {
-        Args: { _commande_id: string; _motif?: string }
-        Returns: Json
-      }
+      supprimer_commande_definitif:
+        | { Args: { _commande_id: string; _motif?: string }; Returns: Json }
+        | {
+            Args: { _commande_id: string; _force?: boolean; _motif?: string }
+            Returns: Json
+          }
       supprimer_employe: {
         Args: { _employe_id: string; _motif?: string }
         Returns: Json
