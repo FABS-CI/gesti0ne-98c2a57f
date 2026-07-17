@@ -71,16 +71,17 @@ export const WIDGETS: Record<WidgetId, WidgetDef> = {
   },
   ca_mois: {
     id: "ca_mois",
-    title: "CA du mois",
+    title: "CA encaissé du mois",
     icon: Wallet,
     accent: "text-amber-600",
     fetch: async () => {
       const { data } = await supabase
-        .from("factures")
-        .select("montant_total")
-        .gte("created_at", startOfMonthISO());
-      const sum = (data ?? []).reduce((s, r) => s + Number(r.montant_total ?? 0), 0);
-      return { value: formatFCFA(sum), sub: "TTC" };
+        .from("paiements")
+        .select("montant")
+        .eq("statut", "valide")
+        .gte("date_paiement", startOfMonthISO().slice(0, 10));
+      const sum = (data ?? []).reduce((s, r) => s + Number(r.montant ?? 0), 0);
+      return { value: formatFCFA(sum), sub: "paiements validés" };
     },
   },
   bl_en_cours: {
