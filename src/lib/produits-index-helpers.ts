@@ -53,16 +53,12 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
     "Stock",
   ];
   const rows = all.map((prod, i) => {
-    const parts = [
-      prod.titre,
-      prod.auteur || null,
-      prod.niveau || null,
-      CATEGORIE_LABEL[prod.categorie] ?? prod.categorie,
-    ].filter(Boolean);
+    const parts = [prod.titre, prod.auteur || null].filter(Boolean);
     return [
       String(i + 1),
       prod.reference,
       parts.join(" — "),
+
       canSeeSensitive ? formatFCFA(prod.prix_achat, false) : "—",
       canSeeSensitive ? formatFCFA(prod.prix_vente, false) : "—",
       String(prod.stock ?? 0),
