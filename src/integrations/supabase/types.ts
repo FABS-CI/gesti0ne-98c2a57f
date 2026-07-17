@@ -6555,7 +6555,9 @@ export type Database = {
       exercices_comparatif: {
         Args: { _exercice_ids: string[] }
         Returns: {
+          achats: number
           ca: number
+          encaisse: number
           exercice_id: string
           libelle: string
           montant_paye: number
@@ -6879,8 +6881,14 @@ export type Database = {
         Args: { _dimension?: string; _filtres?: Json }
         Returns: Json
       }
-      rapport_clients_produit: { Args: { _filtres?: Json }; Returns: Json }
-      rapport_evolution: { Args: { _filtres?: Json }; Returns: Json }
+      rapport_clients_produit: {
+        Args: { _filtres?: Json; _limit?: number; _produit_id: string }
+        Returns: Json
+      }
+      rapport_evolution: {
+        Args: { _filtres?: Json; _granularite?: string }
+        Returns: Json
+      }
       rapport_flop_produits: { Args: { _filtres?: Json }; Returns: Json }
       rapport_kpi: { Args: { _filtres?: Json }; Returns: Json }
       rapport_produits: {
