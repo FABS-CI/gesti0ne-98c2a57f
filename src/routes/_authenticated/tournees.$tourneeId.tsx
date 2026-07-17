@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CheckCircle2, Loader2, Navigation, Plus, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -8,18 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Can } from "@/components/rbac/Can";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,71 +25,23 @@ import { invalidateColisage } from "@/lib/cache-invalidation";
 import { DateColisPicker } from "@/components/tournees/DateColisPicker";
 import { usePermissions } from "@/hooks/use-permissions";
 import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
+import {
+  COST_FIELDS,
+  STATUTS,
+  type ColisRow,
+  type CommandeRow,
+  type Tournee,
+  type Vehicule,
+} from "@/components/tournees/edit/types";
+import { ColisTable } from "@/components/tournees/edit/ColisTable";
+import { Stat, TimelineRow } from "@/components/tournees/edit/parts";
+import { TourneeInfoCard } from "@/components/tournees/edit/TourneeInfoCard";
+import { TourneeCoutsCard } from "@/components/tournees/edit/TourneeCoutsCard";
+import { TourneeAuditCard } from "@/components/tournees/edit/TourneeAuditCard";
 
 export const Route = createFileRoute("/_authenticated/tournees/$tourneeId")({
   component: EditTourneePage,
 });
-
-type Tournee = {
-  tournee_id: string;
-  reference: string;
-  date_tournee: string | null;
-  responsable_nom: string | null;
-  chauffeur_nom: string | null;
-  vehicule_id: string | null;
-  statut: string;
-  notes: string | null;
-  cout_carburant: number | null;
-  cout_peages: number | null;
-  cout_repas: number | null;
-  cout_expeditions: number | null;
-  cout_manutentions: number | null;
-  cout_autres: number | null;
-  cout_livraison: number | null;
-  type_tournee: string | null;
-  cout_total: number | null;
-  validation_statut?: string | null;
-  validation_at?: string | null;
-  validation_commentaire?: string | null;
-  mode_reglement?: string | null;
-  nb_colis: number | null;
-  nb_cartons: number | null;
-  nb_clients: number | null;
-  cloture_mode: string | null;
-  cloture_at: string | null;
-  cloture_by: string | null;
-};
-
-type ColisRow = {
-  colis_id: string;
-  reference: string | null;
-  nb_cartons: number | null;
-  commande_id: string | null;
-  destinataire: string | null;
-  ville_livraison: string | null;
-  quartier: string | null;
-  livreur_nom: string | null;
-};
-
-type CommandeRow = { commande_id: string; client_id: string | null; client_nom: string | null };
-type Vehicule = { vehicule_id: string; immatriculation: string | null };
-
-const STATUTS = [
-  { value: "preparee", label: "Préparée" },
-  { value: "en_cours", label: "En cours" },
-  { value: "terminee", label: "Terminée" },
-  { value: "annulee", label: "Annulée" },
-];
-
-const COST_FIELDS: Array<{ key: keyof Tournee; label: string }> = [
-  { key: "cout_carburant", label: "Carburant" },
-  { key: "cout_peages", label: "Péages" },
-  { key: "cout_repas", label: "Repas" },
-  { key: "cout_livraison", label: "Frais de livraison" },
-  { key: "cout_expeditions", label: "Expéditions" },
-  { key: "cout_manutentions", label: "Manutentions" },
-  { key: "cout_autres", label: "Autres" },
-];
 
 function EditTourneePage() {
   const { tourneeId } = useParams({ from: "/_authenticated/tournees/$tourneeId" });
@@ -250,13 +192,10 @@ function EditTourneePage() {
     });
   }, [dispo, filterDispo, clientByCmd]);
 
-  // Totaux projetés (après ajout/retrait)
   const totals = useMemo(() => {
     const kept = affectes.filter((c) => !toRemove.has(c.colis_id));
     const added = dispo.filter((c) => toAdd.has(c.colis_id));
     const all = [...kept, ...added];
-    // Règle métier : 1 commande = 1 colis (avec N cartons).
-    // Chaque ligne de la table `colis` = 1 carton physique.
     const nb_cartons = all.length;
     const commandeIds = new Set<string>();
     for (const r of all) if (r.commande_id) commandeIds.add(r.commande_id);
@@ -398,12 +337,6 @@ function EditTourneePage() {
   const cloturer = async () => {
     setClosing(true);
     try {
-      // Clôture = validation administrative :
-      //   - vérifie les champs obligatoires (chauffeur, véhicule, date, colis),
-      //   - crée/actualise le Suivi des livraisons pour chaque colis,
-      //   - passe la tournée à `terminee` et enregistre date/mode/auteur.
-      // Aucune livraison n'est marquée terminée à cette étape — c'est le
-      // module Suivi des livraisons qui gère l'avancement réel ensuite.
       const missing: string[] = [];
       if (!form?.chauffeur_nom?.trim()) missing.push("Chauffeur");
       if (!form?.vehicule_id) missing.push("Véhicule");
@@ -693,255 +626,15 @@ function EditTourneePage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Informations tournée</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Field label="Référence">
-                <Input
-                  value={form.reference}
-                  onChange={(e) => setField("reference", e.target.value)}
-                />
-              </Field>
-              <Field label="Date">
-                <Input
-                  type="date"
-                  value={form.date_tournee ?? ""}
-                  onChange={(e) => setField("date_tournee", e.target.value || null)}
-                />
-              </Field>
-              <Field label="Responsable">
-                <Input
-                  value={form.responsable_nom ?? ""}
-                  onChange={(e) => setField("responsable_nom", e.target.value)}
-                />
-              </Field>
-              <Field label="Chauffeur">
-                <Input
-                  value={form.chauffeur_nom ?? ""}
-                  onChange={(e) => setField("chauffeur_nom", e.target.value)}
-                />
-              </Field>
-              <Field label="Véhicule">
-                <Select
-                  value={form.vehicule_id || "__none"}
-                  onValueChange={(v) => setField("vehicule_id", v === "__none" ? null : v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none">— Aucun —</SelectItem>
-                    {(vehQ.data ?? []).map((v) => (
-                      <SelectItem key={v.vehicule_id} value={v.vehicule_id}>
-                        {v.immatriculation ?? v.vehicule_id}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-              <Field label="Statut">
-                <Select value={form.statut} onValueChange={(v) => setField("statut", v)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUTS.map((s) => (
-                      <SelectItem key={s.value} value={s.value}>
-                        {s.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-              <Field label="Type de tournée">
-                <Select
-                  value={form.type_tournee ?? "livraison"}
-                  onValueChange={(v) => setField("type_tournee", v)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="livraison">Livraison</SelectItem>
-                    <SelectItem value="expedition">Expédition</SelectItem>
-                    <SelectItem value="mixte">Mixte</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-              <Field label="Notes">
-                <Textarea
-                  rows={2}
-                  value={form.notes ?? ""}
-                  onChange={(e) => setField("notes", e.target.value)}
-                />
-              </Field>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Coûts (FCFA)</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {(() => {
-                const vs = form.validation_statut ?? "en_attente";
-                const locked =
-                  !canValidate && (vs === "valide" || vs === "decaisse" || vs === "refuse");
-                return (
-                  <>
-                    {vs !== "en_attente" && (
-                      <div className="text-[11px] rounded bg-muted/40 border px-2 py-1">
-                        Statut : <b>{vs}</b>
-                        {locked && " — édition verrouillée"}
-                      </div>
-                    )}
-                    {COST_FIELDS.map((c) => (
-                      <Field key={String(c.key)} label={c.label}>
-                        <Input
-                          type="number"
-                          value={Number(form[c.key] ?? 0)}
-                          disabled={locked}
-                          onChange={(e) =>
-                            setField(c.key, (Number(e.target.value) || 0) as Tournee[typeof c.key])
-                          }
-                        />
-                      </Field>
-                    ))}
-                  </>
-                );
-              })()}
-              <div className="flex items-center justify-between pt-2 border-t text-sm font-medium">
-                <span>Total</span>
-                <span className="tabular-nums">{coutTotal.toLocaleString("fr-FR")}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Historique / Audit</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="max-h-72 overflow-y-auto divide-y text-xs">
-                {(auditQ.data ?? []).length === 0 ? (
-                  <div className="p-3 text-muted-foreground">Aucun événement.</div>
-                ) : (
-                  (auditQ.data ?? []).map((e) => (
-                    <div key={e.audit_id} className="p-2">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium capitalize">{e.action}</span>
-                        <span className="text-muted-foreground">
-                          {new Date(e.created_at).toLocaleString("fr-FR")}
-                        </span>
-                      </div>
-                      <div className="text-muted-foreground">{e.actor_email ?? "—"}</div>
-                      {e.commentaire && <div className="mt-1">{e.commentaire}</div>}
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <TourneeInfoCard form={form} setField={setField} vehicules={vehQ.data ?? []} />
+          <TourneeCoutsCard
+            form={form}
+            setField={setField}
+            coutTotal={coutTotal}
+            canValidate={canValidate}
+          />
+          <TourneeAuditCard rows={auditQ.data ?? []} />
         </div>
-      </div>
-    </div>
-  );
-}
-
-function ColisTable({
-  rows,
-  clientByCmd,
-  actionHeader,
-  selected,
-  onToggle,
-  emptyLabel,
-  actionIcon,
-}: {
-  rows: ColisRow[];
-  clientByCmd: Map<string, CommandeRow>;
-  actionHeader: string;
-  selected: Set<string>;
-  onToggle: (id: string) => void;
-  emptyLabel: string;
-  actionIcon?: React.ReactNode;
-}) {
-  if (rows.length === 0) {
-    return <div className="py-8 text-center text-sm text-muted-foreground">{emptyLabel}</div>;
-  }
-  return (
-    <div className="overflow-auto max-h-[45vh] border-t">
-      <table className="w-full text-xs">
-        <thead className="bg-muted/50 sticky top-0">
-          <tr>
-            <th className="p-2 w-16 text-left">{actionHeader}</th>
-            <th className="p-2 text-left">Réf.</th>
-            <th className="p-2 text-left">Client</th>
-            <th className="p-2 text-left">Destinataire / Ville</th>
-            <th className="p-2 text-left">Livreur</th>
-            <th className="p-2 text-right">Cartons</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((c) => {
-            const cli = c.commande_id ? clientByCmd.get(c.commande_id) : undefined;
-            const isSel = selected.has(c.colis_id);
-            return (
-              <tr
-                key={c.colis_id}
-                className={`border-t hover:bg-accent/40 cursor-pointer ${isSel ? "bg-accent/30" : ""}`}
-                onClick={() => onToggle(c.colis_id)}
-              >
-                <td className="p-2" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex items-center gap-1">
-                    <Checkbox checked={isSel} onCheckedChange={() => onToggle(c.colis_id)} />
-                    {actionIcon}
-                  </div>
-                </td>
-                <td className="p-2 font-mono">{c.reference ?? "—"}</td>
-                <td className="p-2">{cli?.client_nom ?? "—"}</td>
-                <td className="p-2">
-                  <div>{c.destinataire ?? "—"}</div>
-                  <div className="text-muted-foreground">
-                    {[c.ville_livraison, c.quartier].filter(Boolean).join(" · ") || "—"}
-                  </div>
-                </td>
-                <td className="p-2">{c.livreur_nom ?? "—"}</td>
-                <td className="p-2 text-right">1</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="grid grid-cols-[9rem_1fr] items-center gap-2">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      {children}
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-md border p-2">
-      <div className="text-xl font-semibold tabular-nums">{value}</div>
-      <div className="text-[10px] uppercase text-muted-foreground">{label}</div>
-    </div>
-  );
-}
-
-function TimelineRow({ label, value }: { label: string; value: ReactNode }) {
-  return (
-    <div className="flex items-start gap-2 border-l-2 border-primary/40 pl-3 py-1">
-      <div className="flex-1">
-        <div className="font-medium">{label}</div>
-        <div className="text-muted-foreground">{value}</div>
       </div>
     </div>
   );
