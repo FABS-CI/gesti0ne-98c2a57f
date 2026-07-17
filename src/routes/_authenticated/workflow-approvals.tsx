@@ -6,11 +6,12 @@ export const Route = createFileRoute("/_authenticated/workflow-approvals")({
   component: () => <ResourceManager config={config} />,
 });
 
-const types = [
+const workflows = [
   { value: "achat", label: "Achat" },
   { value: "depense", label: "Dépense" },
   { value: "conge", label: "Congé" },
   { value: "mission", label: "Mission" },
+  { value: "facture", label: "Facture" },
   { value: "autre", label: "Autre" },
 ];
 
@@ -22,30 +23,28 @@ const statuts = [
 
 const config: ResourceConfig = {
   table: "workflow_approvals",
-  idField: "approval_id",
+  idField: "id",
   title: "Workflow & Approbations",
   subtitle: "Demandes d'approbation internes",
   icon: FileCheck,
   newLabel: "Nouvelle demande",
   entityLabel: "la demande",
   csvName: "workflow_approvals",
-  searchFields: ["reference", "demandeur", "objet"],
+  searchFields: ["reference", "demandeur_nom", "workflow_code", "entity_type"],
   statusFilter: { field: "statut", options: statuts },
   columns: [
     { name: "reference", label: "Référence", type: "mono" },
-    { name: "type_demande", label: "Type", type: "badge", options: types },
-    { name: "demandeur", label: "Demandeur" },
-    { name: "objet", label: "Objet" },
-    { name: "montant", label: "Montant", type: "money", align: "right" },
+    { name: "workflow_code", label: "Workflow", type: "badge", options: workflows },
+    { name: "entity_type", label: "Entité" },
+    { name: "demandeur_nom", label: "Demandeur" },
     { name: "statut", label: "Statut", type: "badge", options: statuts },
   ],
   fields: [
-    { name: "type_demande", label: "Type", type: "select", options: types, default: "achat" },
-    { name: "demandeur", label: "Demandeur", required: true },
-    { name: "objet", label: "Objet", type: "textarea" },
-    { name: "montant", label: "Montant (FCFA)", type: "money" },
-    { name: "date_demande", label: "Date", type: "date" },
+    { name: "workflow_code", label: "Workflow", type: "select", options: workflows, default: "achat" },
+    { name: "entity_type", label: "Type d'entité (ex: facture, achat)" },
+    { name: "reference", label: "Référence" },
+    { name: "demandeur_nom", label: "Demandeur", required: true },
     { name: "statut", label: "Statut", type: "select", options: statuts, default: "en_attente" },
-    { name: "notes", label: "Notes", type: "textarea" },
+    { name: "commentaire", label: "Commentaire", type: "textarea", colSpan: 2 },
   ],
 };
