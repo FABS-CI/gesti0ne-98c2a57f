@@ -1124,59 +1124,6 @@ export type Database = {
           },
         ]
       }
-      colisages: {
-        Row: {
-          colisage_id: string
-          commande_id: string | null
-          created_at: string
-          date_colisage: string | null
-          nb_colis: number | null
-          notes: string | null
-          poids_total: number | null
-          preparateur_id: string | null
-          reference: string | null
-          responsable_id: string | null
-          statut: string | null
-          updated_at: string
-        }
-        Insert: {
-          colisage_id?: string
-          commande_id?: string | null
-          created_at?: string
-          date_colisage?: string | null
-          nb_colis?: number | null
-          notes?: string | null
-          poids_total?: number | null
-          preparateur_id?: string | null
-          reference?: string | null
-          responsable_id?: string | null
-          statut?: string | null
-          updated_at?: string
-        }
-        Update: {
-          colisage_id?: string
-          commande_id?: string | null
-          created_at?: string
-          date_colisage?: string | null
-          nb_colis?: number | null
-          notes?: string | null
-          poids_total?: number | null
-          preparateur_id?: string | null
-          reference?: string | null
-          responsable_id?: string | null
-          statut?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "colisages_commande_id_fkey"
-            columns: ["commande_id"]
-            isOneToOne: false
-            referencedRelation: "commandes"
-            referencedColumns: ["commande_id"]
-          },
-        ]
-      }
       commande_lignes: {
         Row: {
           commande_id: string
