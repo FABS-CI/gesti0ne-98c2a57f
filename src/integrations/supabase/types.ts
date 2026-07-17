@@ -4216,6 +4216,7 @@ export type Database = {
           client_nom: string | null
           created_at: string
           date_envoi: string | null
+          designation: string | null
           notes: string | null
           produit_id: string | null
           quantite: number | null
@@ -4229,6 +4230,7 @@ export type Database = {
           client_nom?: string | null
           created_at?: string
           date_envoi?: string | null
+          designation?: string | null
           notes?: string | null
           produit_id?: string | null
           quantite?: number | null
@@ -4242,6 +4244,7 @@ export type Database = {
           client_nom?: string | null
           created_at?: string
           date_envoi?: string | null
+          designation?: string | null
           notes?: string | null
           produit_id?: string | null
           quantite?: number | null
@@ -5798,6 +5801,7 @@ export type Database = {
           client_nom: string | null
           created_at: string
           date_envoi: string | null
+          designation: string | null
           notes: string | null
           produit_id: string | null
           quantite: number | null
