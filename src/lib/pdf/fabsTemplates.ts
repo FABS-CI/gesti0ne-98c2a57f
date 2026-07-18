@@ -2926,7 +2926,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
 
   const totalCommandes = data.totalCommandes ?? (data.commandes ?? []).reduce((s, c) => s + Number(c.montant ?? 0), 0);
   const totalFacture = data.totalFacture ?? totalDebit;
-  const totalPaye = data.totalPaye ?? (data.paiements ?? []).reduce((s, p) => s + Number(p.montant ?? 0), 0) || 0;
+  const totalPaye = data.totalPaye ?? ((data.paiements ?? []).reduce((s, p) => s + Number(p.montant ?? 0), 0) || 0);
   const totalAvoirs = data.totalAvoirs ?? 0;
 
   const ensureSpace = async (h: number, titreSuite: string) => {
