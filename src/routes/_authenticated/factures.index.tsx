@@ -328,13 +328,13 @@ function FacturesPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="py-8 text-center text-muted-foreground">
+                  <TableCell colSpan={11} className="py-8 text-center text-muted-foreground">
                     Chargement...
                   </TableCell>
                 </TableRow>
               ) : factures.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="py-6">
+                  <TableCell colSpan={11} className="py-6">
                     {hasActiveFilters ? (
                       <EmptyState
                         icon={FileText}
