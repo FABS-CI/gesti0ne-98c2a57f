@@ -145,7 +145,8 @@ export async function buildRetourDocBaseFrom(retour: RetourWithLignes): Promise<
     emailClient: clientInfo.emailClient ?? null,
     ncc: clientInfo.ncc ?? null,
     lignes,
-    totalVente: totalHT || undefined,
+    totalVente: totalBrut || undefined,
+    remiseLigneTotal: remiseLigneTotal || undefined,
     montantHT: totalHT || undefined,
     totalTTC: totalHT || undefined,
     statut:
