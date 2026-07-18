@@ -295,3 +295,92 @@ export async function getFacturePaiements(factureId: string) {
     statut: string;
   }[];
 }
+
+// ============================================================================
+// Retours liés à une facture — permet d'afficher "Retour partiel/total" partout
+// où une facture est présentée (liste, détail, état de compte).
+// ============================================================================
+
+export type FactureRetourInfo = {
+  retour_id: string;
+  reference: string;
+  date_retour: string;
+  montant: number;
+  quantite: number;
+  motif: string | null;
+  statut: string;
+};
+
+export type FactureRetourStatus = "aucun" | "partiel" | "total";
+
+export type FactureRetourResume = {
+  retours: FactureRetourInfo[];
+  totalMontantRetour: number;
+  totalQuantiteRetour: number;
+  status: FactureRetourStatus;
+};
+
+/** Retours (valides) rattachés à une liste de factures. */
+export async function getRetoursByFactureIds(
+  factureIds: string[],
+): Promise<Record<string, FactureRetourInfo[]>> {
+  if (factureIds.length === 0) return {};
+  const CHUNK = 100;
+  const out: Record<string, FactureRetourInfo[]> = {};
+  for (let i = 0; i < factureIds.length; i += CHUNK) {
+    const batch = factureIds.slice(i, i + CHUNK);
+    const { data, error } = await supabase
+      .from("retours")
+      .select("retour_id, reference, date_retour, montant, total_quantite, motif, statut, facture_id")
+      .in("facture_id", batch)
+      .neq("statut", "annule")
+      .order("date_retour", { ascending: true });
+    if (error) throw error;
+    for (const r of data ?? []) {
+      const fid = (r as any).facture_id as string | null;
+      if (!fid) continue;
+      (out[fid] ||= []).push({
+        retour_id: (r as any).retour_id,
+        reference: (r as any).reference,
+        date_retour: (r as any).date_retour,
+        montant: Number((r as any).montant ?? 0),
+        quantite: Number((r as any).total_quantite ?? 0),
+        motif: (r as any).motif ?? null,
+        statut: (r as any).statut,
+      });
+    }
+  }
+  return out;
+}
+
+/** Calcule le statut retour (aucun/partiel/total) et les totaux. */
+export function computeRetourResume(
+  montantFactureNet: number,
+  retours: FactureRetourInfo[],
+): FactureRetourResume {
+  const totalMontantRetour = retours.reduce((s, r) => s + Number(r.montant ?? 0), 0);
+  const totalQuantiteRetour = retours.reduce((s, r) => s + Number(r.quantite ?? 0), 0);
+  // Le montant net de la facture (montant_total en base) est déjà diminué des retours.
+  // Le montant "brut" (facturé à l'origine) = net + total retours.
+  const brut = Number(montantFactureNet ?? 0) + totalMontantRetour;
+  let status: FactureRetourStatus = "aucun";
+  if (retours.length > 0) {
+    // "Total" si le net résiduel est ~nul (le retour couvre toute la facture d'origine).
+    status = Number(montantFactureNet ?? 0) <= 0.5 || totalMontantRetour >= brut - 0.5
+      ? "total"
+      : "partiel";
+  }
+  return { retours, totalMontantRetour, totalQuantiteRetour, status };
+}
+
+export const RETOUR_STATUS_META: Record<FactureRetourStatus, { label: string; color: string }> = {
+  aucun: { label: "Aucun retour", color: "#94A3B8" },
+  partiel: { label: "Retour partiel", color: "#F97316" },
+  total: { label: "Retour total", color: "#EF4444" },
+};
+
+/** Détail unique — variante scoped à une seule facture. */
+export async function getFactureRetours(factureId: string): Promise<FactureRetourInfo[]> {
+  const map = await getRetoursByFactureIds([factureId]);
+  return map[factureId] ?? [];
+}
