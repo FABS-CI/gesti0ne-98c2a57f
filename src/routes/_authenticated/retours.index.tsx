@@ -111,6 +111,34 @@ function RetoursListPage() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => supprimerRetour(id),
+    onSuccess: () => {
+      toast.success("Retour supprimé définitivement");
+      qc.invalidateQueries({ queryKey: ["retours"] });
+      qc.invalidateQueries({ queryKey: ["produits"] });
+      qc.invalidateQueries({ queryKey: ["stock"] });
+      setToDelete(null);
+      setConfirmText("");
+    },
+    onError: (e) => {
+      const d = describeSupabaseError(e);
+      toast.error(d.title, { description: d.message });
+    },
+  });
+
+  const downloadPdf = async (r: Retour) => {
+    try {
+      const data = await buildRetourDocBase(r.retour_id);
+      const blob = await generateBonRetourPDF(data);
+      downloadBlob(blob, `bon-retour-${r.numero ?? r.reference}.pdf`);
+    } catch (e) {
+      const d = describeSupabaseError(e);
+      toast.error(d.title, { description: d.message });
+    }
+  };
+
+
   const onExport = () => {
     const headers = [
       "Numéro",
