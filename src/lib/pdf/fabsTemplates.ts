@@ -2882,7 +2882,10 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     yR -= 14;
   }
 
-  text(ctx, client.nom, MARGIN.x, yL, { size: 12, bold: true });
+  text(ctx, fitText(ctx, client.nom, CONTENT_W / 2 - 12, { size: 11, bold: true }), MARGIN.x, yL, {
+    size: 11,
+    bold: true,
+  });
   yL -= 15;
   if (client.code) {
     text(ctx, `Code : ${client.code}`, MARGIN.x, yL, { size: 9, color: FABS_COLORS.gris });
@@ -2966,9 +2969,10 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
         const x0 = colX[i];
         const x1 = (colX[i + 1] ?? MARGIN.x + CONTENT_W) - 4;
         const ty = yTop - rowH + 4;
+        const label = fitText(ctx, c.label, Math.max(4, x1 - x0 - 4), { size: 6.7, bold: true });
         if (c.align === "right")
-          textRight(ctx, c.label, x1, ty, { size: 8, bold: true, color: FABS_COLORS.texteTableau });
-        else text(ctx, c.label, x0 + 3, ty, { size: 8, bold: true, color: FABS_COLORS.texteTableau });
+          textRight(ctx, label, x1, ty, { size: 6.7, bold: true, color: FABS_COLORS.texteTableau });
+        else text(ctx, label, x0 + 3, ty, { size: 6.7, bold: true, color: FABS_COLORS.texteTableau });
       });
       return yTop - rowH;
     };
@@ -3005,10 +3009,13 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
         const x0 = colX[k];
         const x1 = (colX[k + 1] ?? MARGIN.x + CONTENT_W) - 4;
         const ty = y + 4;
-        const val = rows[i][k] ?? "";
+        const val = fitText(ctx, rows[i][k] ?? "", Math.max(4, x1 - x0 - 4), {
+          size: 7,
+          bold: opts?.highlightLast && isLast,
+        });
         const bold = opts?.highlightLast && isLast;
-        if (c.align === "right") textRight(ctx, val, x1, ty, { size: 8, bold });
-        else text(ctx, val, x0 + 3, ty, { size: 8, bold });
+        if (c.align === "right") textRight(ctx, val, x1, ty, { size: 7, bold });
+        else text(ctx, val, x0 + 3, ty, { size: 7, bold });
       });
     }
 
@@ -3055,13 +3062,13 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
 
   const mvtCols: TCol[] = [
     { label: "Date", w: 0.9, align: "left" },
-    { label: "Type d'opération", w: 1.1, align: "left" },
-    { label: "Référence", w: 1.1, align: "left" },
-    { label: "N° Facture", w: 1.1, align: "left" },
-    { label: "Libellé", w: 1.6, align: "left" },
+    { label: "Type d'opération", w: 1.15, align: "left" },
+    { label: "Référence", w: 1.2, align: "left" },
+    { label: "N° Facture", w: 1.2, align: "left" },
+    { label: "Libellé", w: 1.7, align: "left" },
     { label: "Débit (+)", w: 1.0, align: "right" },
     { label: "Crédit (-)", w: 1.0, align: "right" },
-    { label: "Solde après opération", w: 1.2, align: "right" },
+    { label: "Solde après opération", w: 1.3, align: "right" },
   ];
 
   const mvtRows: string[][] = [];
