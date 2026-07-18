@@ -15,6 +15,7 @@ export type Retour = {
   reference: string;
   numero: string | null;
   date_retour: string;
+  type_retour: "physique" | "avoir";
   client_id: string | null;
   client_nom: string | null;
   etablissement: string | null;
@@ -63,6 +64,7 @@ export type RetourLigneInput = {
 export type RetourInput = {
   date_retour?: string;
   client_id: string;
+  type_retour?: "physique" | "avoir";
   etablissement?: string | null;
   representant_nom?: string | null;
   telephone?: string | null;
@@ -125,10 +127,13 @@ export async function getRetour(id: string): Promise<RetourWithLignes | null> {
 
 export async function creerRetour(input: RetourInput): Promise<Retour> {
   await assertPermission("retours.creer");
-  const depot_id = input.depot_id ?? (await getDepotDefautId());
+  const type_retour = input.type_retour ?? "physique";
+  const depot_id =
+    type_retour === "avoir" ? null : (input.depot_id ?? (await getDepotDefautId()));
   const payload = {
     date_retour: input.date_retour ?? new Date().toISOString().slice(0, 10),
     client_id: input.client_id,
+    type_retour,
     etablissement: input.etablissement ?? null,
     representant_nom: input.representant_nom ?? null,
     telephone: input.telephone ?? null,
