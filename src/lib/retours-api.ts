@@ -15,6 +15,7 @@ export type Retour = {
   reference: string;
   numero: string | null;
   date_retour: string;
+  type_retour: "physique" | "avoir";
   client_id: string | null;
   client_nom: string | null;
   etablissement: string | null;
