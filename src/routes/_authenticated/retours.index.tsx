@@ -424,6 +424,59 @@ function RetoursListPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog
+        open={!!toDelete}
+        onOpenChange={(o) => {
+          if (!o) {
+            setToDelete(null);
+            setConfirmText("");
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-700">
+              Supprimer définitivement ce retour ?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-sm">
+                <p className="font-medium text-red-600">
+                  ⚠ Action irréversible réservée aux Super Administrateurs.
+                </p>
+                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                  <li>Si le retour est actif, ses effets seront d'abord inversés (stock ressorti, facture / solde client rétablis).</li>
+                  <li>Le retour et toutes ses lignes seront ensuite effacés.</li>
+                  <li>Aucune restauration possible depuis l'interface.</li>
+                  <li>L'opération est tracée dans le journal d'audit.</li>
+                </ul>
+                <div className="pt-1">
+                  <p className="mb-1">
+                    Tapez <span className="font-mono font-semibold">SUPPRIMER</span> pour confirmer :
+                  </p>
+                  <Input
+                    value={confirmText}
+                    onChange={(e) => setConfirmText(e.target.value)}
+                    placeholder="SUPPRIMER"
+                    autoFocus
+                  />
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={confirmText !== "SUPPRIMER" || deleteMutation.isPending}
+              onClick={() => toDelete && deleteMutation.mutate(toDelete.retour_id)}
+              className="bg-red-700 hover:bg-red-800"
+            >
+              {deleteMutation.isPending ? "Suppression…" : "Supprimer définitivement"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+
   );
 }
