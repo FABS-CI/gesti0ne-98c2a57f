@@ -129,6 +129,12 @@ function FacturesPage() {
     },
   });
 
+  const { data: retoursMap = {} } = useQuery({
+    queryKey: ["retours-by-factures", factureIds.join(",")],
+    enabled: factureIds.length > 0,
+    queryFn: () => getRetoursByFactureIds(factureIds),
+  });
+
   // Totaux calculés côté base (KPI cohérents avec tous les filtres, pas juste la page)
   const totals = useMemo(() => {
     const total = pageData?.sumMontantTotal ?? 0;
