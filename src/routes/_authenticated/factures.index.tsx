@@ -319,6 +319,7 @@ function FacturesPage() {
                 <TableHead className="text-right">Payé</TableHead>
                 <TableHead className="text-right">Reste</TableHead>
                 <TableHead>Statut</TableHead>
+                <TableHead>Retour</TableHead>
                 <TableHead>FNE</TableHead>
                 <TableHead className="text-right">FNE actions</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
