@@ -75,6 +75,9 @@ export type SoldeResultat = {
   debug: SoldeDebug;
 };
 
+const avoirEstValide = (statut?: string | null) =>
+  !statut || statut === "valide" || statut === "accepte";
+
 const inRange = (iso: string, debut?: string | null, fin?: string | null) => {
   if (!iso) return false;
   const t = new Date(iso).getTime();
@@ -122,7 +125,7 @@ export function computeSoldeClient(input: RawInputs): SoldeResultat {
       if (t < cutoff) reportAnterieur -= Number(p.montant ?? 0);
     }
     for (const a of input.avoirs) {
-      if (a.statut && a.statut !== "valide") continue;
+      if (!avoirEstValide(a.statut)) continue;
       if (!a.date_retour) continue;
       const t = new Date(a.date_retour).getTime();
       if (t < cutoff) reportAnterieur -= Number(a.montant ?? 0);
@@ -161,7 +164,7 @@ export function computeSoldeClient(input: RawInputs): SoldeResultat {
     });
   }
   for (const a of input.avoirs) {
-    if (a.statut && a.statut !== "valide") continue;
+    if (!avoirEstValide(a.statut)) continue;
     if (!a.date_retour) continue;
     if (!inRange(a.date_retour, dateDebut, dateFin)) continue;
     avoirsValidesPeriode += 1;
