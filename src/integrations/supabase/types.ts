@@ -4447,6 +4447,7 @@ export type Database = {
           statut: string | null
           telephone: string | null
           total_quantite: number
+          type_retour: string
           updated_at: string
           ville: string | null
         }
@@ -4476,6 +4477,7 @@ export type Database = {
           statut?: string | null
           telephone?: string | null
           total_quantite?: number
+          type_retour?: string
           updated_at?: string
           ville?: string | null
         }
@@ -4505,6 +4507,7 @@ export type Database = {
           statut?: string | null
           telephone?: string | null
           total_quantite?: number
+          type_retour?: string
           updated_at?: string
           ville?: string | null
         }
@@ -6429,6 +6432,7 @@ export type Database = {
           statut: string | null
           telephone: string | null
           total_quantite: number
+          type_retour: string
           updated_at: string
           ville: string | null
         }[]
