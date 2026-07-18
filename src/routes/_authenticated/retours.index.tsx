@@ -331,13 +331,14 @@ function RetoursListPage() {
                                   <Eye className="h-4 w-4" />
                                 </Link>
                               </Button>
-                              <Button aria-label="Imprimer"
+                              <Button
+                                aria-label="Télécharger le bon de retour"
                                 variant="ghost"
                                 size="icon"
-                                title="Imprimer"
-                                onClick={() => window.print()}
+                                title="Télécharger le bon de retour (PDF)"
+                                onClick={() => downloadPdf(r)}
                               >
-                                <Printer className="h-4 w-4" />
+                                <FileDown className="h-4 w-4" />
                               </Button>
                               {r.statut !== "annule" && (
                                 <Can permission="retours.annuler">
@@ -350,6 +351,20 @@ function RetoursListPage() {
                                     <XCircle className="h-4 w-4 text-red-600" />
                                   </Button>
                                 </Can>
+                              )}
+                              {isSuperAdmin && (
+                                <Button
+                                  aria-label="Supprimer définitivement"
+                                  variant="ghost"
+                                  size="icon"
+                                  title="Supprimer définitivement (Super Admin)"
+                                  onClick={() => {
+                                    setToDelete(r);
+                                    setConfirmText("");
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-700" />
+                                </Button>
                               )}
                             </div>
                           </TableCell>
