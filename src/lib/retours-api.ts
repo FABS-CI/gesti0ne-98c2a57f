@@ -63,6 +63,7 @@ export type RetourLigneInput = {
 export type RetourInput = {
   date_retour?: string;
   client_id: string;
+  type_retour?: "physique" | "avoir";
   etablissement?: string | null;
   representant_nom?: string | null;
   telephone?: string | null;
