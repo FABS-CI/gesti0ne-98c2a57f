@@ -24,6 +24,7 @@ const base: RawInputs = {
   ],
   avoirs: [
     { reference: "A-001", date_retour: "2026-05-10", montant: 5_000, statut: "valide" },
+    { reference: "RET-001", date_retour: "2026-05-11", montant: 2_000, statut: "accepte" },
     { reference: "A-002", date_retour: "2026-07-01", montant: 3_000, statut: "brouillon" }, // ignoré
   ],
 };
@@ -32,7 +33,7 @@ describe("computeSoldeClient — parité tableau ↔ PDF", () => {
   it("filtre les paiements/avoirs non valides", () => {
     const r = computeSoldeClient(base);
     expect(r.debug.compteurs.paiementsValidesPeriode).toBe(1); // seul P-001
-    expect(r.debug.compteurs.avoirsValidesPeriode).toBe(1); // seul A-001
+    expect(r.debug.compteurs.avoirsValidesPeriode).toBe(2); // avoir valide + retour accepté
   });
 
   it("filtre les mouvements hors des bornes d'exercice", () => {
@@ -52,11 +53,11 @@ describe("computeSoldeClient — parité tableau ↔ PDF", () => {
   it("Solde dû = Ouverture + Débits − Crédits (identique tableau et PDF)", () => {
     const r = computeSoldeClient(base);
     // Débits : 120 000 + 80 000 = 200 000
-    // Crédits : 40 000 (P-001) + 5 000 (A-001) = 45 000
-    // Solde = 70 000 + 200 000 − 45 000 = 225 000
+    // Crédits : 40 000 (P-001) + 5 000 (A-001) + 2 000 (RET-001) = 47 000
+    // Solde = 70 000 + 200 000 − 47 000 = 223 000
     expect(r.totalDebit).toBe(200_000);
-    expect(r.totalCredit).toBe(45_000);
-    expect(r.solde).toBe(225_000);
+    expect(r.totalCredit).toBe(47_000);
+    expect(r.solde).toBe(223_000);
 
     // Recalcul « à la manière du PDF » (ligne à ligne à partir du soldeOuverture)
     // doit donner exactement le même solde final.

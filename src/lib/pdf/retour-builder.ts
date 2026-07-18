@@ -20,10 +20,18 @@ async function loadPrixMap(
       .eq("facture_id", factureId)
       .maybeSingle();
     if (fac?.commande_id) {
-      const { data: lignes } = await supabase
-        .from("commande_lignes")
-        .select("produit_id, prix_unitaire, remise_pct")
-        .eq("commande_id", fac.commande_id);
+      const [{ data: lignes }, { data: commande }] = await Promise.all([
+        supabase
+          .from("commande_lignes")
+          .select("produit_id, prix_unitaire, remise_pct")
+          .eq("commande_id", fac.commande_id),
+        supabase
+          .from("commandes")
+          .select("remise_globale_pct")
+          .eq("commande_id", fac.commande_id)
+          .maybeSingle(),
+      ]);
+      const remiseGlobalePct = Number(commande?.remise_globale_pct ?? 0);
       for (const l of (lignes ?? []) as Array<{
         produit_id: string | null;
         prix_unitaire: number | null;
@@ -32,7 +40,10 @@ async function loadPrixMap(
         if (l.produit_id && l.prix_unitaire != null) {
           prices.set(l.produit_id, {
             prix: Number(l.prix_unitaire),
-            remisePct: Number(l.remise_pct ?? 0),
+            remisePct:
+              100 -
+              (100 - Number(l.remise_pct ?? 0)) *
+                (1 - remiseGlobalePct / 100),
           });
         }
       }
@@ -105,11 +116,15 @@ export async function buildRetourDocBaseFrom(retour: RetourWithLignes): Promise<
   const lignes: DocLigne[] = retour.lignes.map((l) => {
     const info = l.produit_id ? prices.get(l.produit_id) : undefined;
     const pu = info?.prix ?? 0;
-    const remisePct = info?.remisePct ?? 0;
+    const prixNetStocke = Number(l.prix_unitaire ?? 0);
+    const remisePct =
+      pu > 0 && prixNetStocke > 0
+        ? Math.max(0, Math.min(100, 100 - (prixNetStocke / pu) * 100))
+        : (info?.remisePct ?? 0);
     const qte = Number(l.quantite ?? 0);
     const brut = pu * qte;
     const remiseMontant = Math.round((brut * remisePct) / 100);
-    const montant = brut - remiseMontant;
+    const montant = Number(l.total_ligne ?? 0) || brut - remiseMontant;
     totalBrut += brut;
     remiseLigneTotal += remiseMontant;
     totalHT += montant;

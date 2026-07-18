@@ -32,6 +32,24 @@ type CommandeRow = {
   commande_lignes?: CommandeLigneAgg[] | null;
 };
 
+type FactureCompteRow = {
+  facture_id: string;
+  reference: string | null;
+  date_facture: string;
+  date_echeance: string | null;
+  montant_total: number | null;
+  montant_paye: number | null;
+  statut: string | null;
+};
+
+type RetourCompteRow = {
+  reference: string | null;
+  date_retour: string;
+  montant: number | null;
+  statut: string | null;
+  facture_id: string | null;
+};
+
 export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Promise<Blob> {
   // --- Client complet
   const { data: cli } = await supabase
@@ -81,7 +99,7 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
     await Promise.all([
       supabase
         .from("factures")
-        .select("reference, date_facture, date_echeance, montant_total, montant_paye, statut")
+        .select("facture_id, reference, date_facture, date_echeance, montant_total, montant_paye, statut")
         .eq("client_id", args.clientId)
         .order("date_facture", { ascending: true }),
       supabase
@@ -92,9 +110,10 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
         .eq("factures.client_id", args.clientId)
         .order("date_paiement", { ascending: true }),
       supabase
-        .from("bons_retour")
-        .select("reference, date_retour, montant, statut")
+        .from("retours")
+        .select("reference, date_retour, montant, statut, facture_id")
         .eq("client_id", args.clientId)
+        .neq("statut", "annule")
         .order("date_retour", { ascending: true }),
       supabase
         .from("commandes")
@@ -112,19 +131,52 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
     statut: p.statut ?? null,
   }));
 
+  const facturesCompte = (factures ?? []) as FactureCompteRow[];
+  const retoursCompte = (avoirs ?? []) as RetourCompteRow[];
+  const retoursParFacture = new Map<string, number>();
+  const factureRefParRetour = new Map<string, string>();
+  const factureRefParId = new Map(
+    facturesCompte.map((f) => [f.facture_id, f.reference ?? ""]),
+  );
+  for (const retour of retoursCompte) {
+    if (retour.facture_id) {
+      retoursParFacture.set(
+        retour.facture_id,
+        (retoursParFacture.get(retour.facture_id) ?? 0) + Number(retour.montant ?? 0),
+      );
+      factureRefParRetour.set(
+        retour.reference ?? "",
+        factureRefParId.get(retour.facture_id) ?? "",
+      );
+    }
+  }
+
+  // Le montant stocké sur la facture est déjà diminué des retours. Pour un relevé
+  // comptable lisible, on reconstitue la facture d'origine puis on affiche chaque
+  // retour séparément au crédit, sans compter l'avoir deux fois.
+  const facturesReleve = facturesCompte.map((f) => ({
+    ...f,
+    montant_total: Number(f.montant_total ?? 0) + (retoursParFacture.get(f.facture_id) ?? 0),
+  }));
+  const avoirsReleve = retoursCompte.map((r) => ({
+    ...r,
+    statut: "valide",
+  }));
+
   const res = computeSoldeClient({
     clientId: args.clientId,
     dateDebut,
     dateFin,
     soldeOuvertureRow,
-    factures: factures ?? [],
+    factures: facturesReleve,
     paiements: paiementsFlat,
-    avoirs: avoirs ?? [],
+    avoirs: avoirsReleve,
   });
 
   // --- Enrichit les lignes avec un libellé humain
   const lignes: EtatCompteLigne[] = res.lignes.map((l) => ({
     ...l,
+    factureReference: l.type === "Avoir" ? factureRefParRetour.get(l.reference) : undefined,
     libelle:
       l.type === "Facture"
         ? `Facture ${l.reference}`
@@ -183,7 +235,7 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
   // --- Vieillissement (factures non entièrement payées, dans la période)
   const today = new Date();
   const ageing: EtatCompteAgeing = { nonEchu: 0, j0_30: 0, j31_60: 0, j61_90: 0, j90plus: 0 };
-  for (const f of factures ?? []) {
+  for (const f of facturesReleve) {
     const reste = Number(f.montant_total ?? 0) - Number(f.montant_paye ?? 0);
     if (reste <= 0) continue;
     const ech = f.date_echeance ? new Date(f.date_echeance as string) : null;
