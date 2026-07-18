@@ -7076,6 +7076,10 @@ export type Database = {
         Args: { _motif?: string; _proforma_id: string }
         Returns: Json
       }
+      supprimer_retour_definitif: {
+        Args: { _retour_id: string }
+        Returns: undefined
+      }
       supprimer_tournee: {
         Args: { _motif?: string; _tournee_id: string }
         Returns: Json

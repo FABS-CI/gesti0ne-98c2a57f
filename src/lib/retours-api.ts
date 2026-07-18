@@ -171,6 +171,16 @@ export async function annulerRetour(id: string): Promise<void> {
   if (error) throw error;
 }
 
+/** Suppression définitive — réservée aux super administrateurs. */
+export async function supprimerRetour(id: string): Promise<void> {
+  const { error } = await (
+    supabase as unknown as {
+      rpc: (name: string, args: { _retour_id: string }) => Promise<{ error: Error | null }>;
+    }
+  ).rpc("supprimer_retour_definitif", { _retour_id: id });
+  if (error) throw error;
+}
+
 // ============================================================================
 // Lot 1 — Retour rattaché à une facture
 // ============================================================================

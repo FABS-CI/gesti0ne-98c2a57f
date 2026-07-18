@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { RotateCcw, Plus, Search, Eye, XCircle, Download, Printer, X } from "lucide-react";
+import { RotateCcw, Plus, Search, Eye, XCircle, Download, FileDown, Trash2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { exportPdf } from "@/lib/export-csv";
@@ -40,6 +40,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import {
   listRetours,
   annulerRetour,
+  supprimerRetour,
   STATUTS_RETOUR,
   STATUT_RETOUR_LABEL,
   type Retour,
@@ -47,6 +48,11 @@ import {
 import { describeSupabaseError } from "@/lib/rbac-api";
 import { Can } from "@/components/rbac/Can";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
+import { useUserRoles } from "@/hooks/use-user-roles";
+import { generateBonRetourPDF } from "@/lib/pdf/fabsTemplates";
+import { buildRetourDocBase } from "@/lib/pdf/retour-builder";
+import { downloadBlob } from "@/lib/pdf/fabsTemplates";
+
 
 import { authRouteHead } from "@/lib/route-head";
 export const Route = createFileRoute("/_authenticated/retours/")({
@@ -65,6 +71,9 @@ function RetoursListPage() {
   const [statut, setStatut] = useState("all");
   const [page, setPage] = useState(1);
   const [toCancel, setToCancel] = useState<Retour | null>(null);
+  const [toDelete, setToDelete] = useState<Retour | null>(null);
+  const [confirmText, setConfirmText] = useState("");
+  const { isSuperAdmin } = useUserRoles();
   const pageSize = 20;
   const exerciceId = useExerciceConsulteId();
   const hasActiveFilters = !!q || statut !== "all";
@@ -101,6 +110,34 @@ function RetoursListPage() {
       toast.error(d.title, { description: d.message });
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => supprimerRetour(id),
+    onSuccess: () => {
+      toast.success("Retour supprimé définitivement");
+      qc.invalidateQueries({ queryKey: ["retours"] });
+      qc.invalidateQueries({ queryKey: ["produits"] });
+      qc.invalidateQueries({ queryKey: ["stock"] });
+      setToDelete(null);
+      setConfirmText("");
+    },
+    onError: (e) => {
+      const d = describeSupabaseError(e);
+      toast.error(d.title, { description: d.message });
+    },
+  });
+
+  const downloadPdf = async (r: Retour) => {
+    try {
+      const data = await buildRetourDocBase(r.retour_id);
+      const blob = await generateBonRetourPDF(data);
+      downloadBlob(blob, `bon-retour-${r.numero ?? r.reference}.pdf`);
+    } catch (e) {
+      const d = describeSupabaseError(e);
+      toast.error(d.title, { description: d.message });
+    }
+  };
+
 
   const onExport = () => {
     const headers = [
@@ -294,13 +331,14 @@ function RetoursListPage() {
                                   <Eye className="h-4 w-4" />
                                 </Link>
                               </Button>
-                              <Button aria-label="Imprimer"
+                              <Button
+                                aria-label="Télécharger le bon de retour"
                                 variant="ghost"
                                 size="icon"
-                                title="Imprimer"
-                                onClick={() => window.print()}
+                                title="Télécharger le bon de retour (PDF)"
+                                onClick={() => downloadPdf(r)}
                               >
-                                <Printer className="h-4 w-4" />
+                                <FileDown className="h-4 w-4" />
                               </Button>
                               {r.statut !== "annule" && (
                                 <Can permission="retours.annuler">
@@ -313,6 +351,20 @@ function RetoursListPage() {
                                     <XCircle className="h-4 w-4 text-red-600" />
                                   </Button>
                                 </Can>
+                              )}
+                              {isSuperAdmin && (
+                                <Button
+                                  aria-label="Supprimer définitivement"
+                                  variant="ghost"
+                                  size="icon"
+                                  title="Supprimer définitivement (Super Admin)"
+                                  onClick={() => {
+                                    setToDelete(r);
+                                    setConfirmText("");
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-700" />
+                                </Button>
                               )}
                             </div>
                           </TableCell>
@@ -372,6 +424,59 @@ function RetoursListPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog
+        open={!!toDelete}
+        onOpenChange={(o) => {
+          if (!o) {
+            setToDelete(null);
+            setConfirmText("");
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-700">
+              Supprimer définitivement ce retour ?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3 text-sm">
+                <p className="font-medium text-red-600">
+                  ⚠ Action irréversible réservée aux Super Administrateurs.
+                </p>
+                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                  <li>Si le retour est actif, ses effets seront d'abord inversés (stock ressorti, facture / solde client rétablis).</li>
+                  <li>Le retour et toutes ses lignes seront ensuite effacés.</li>
+                  <li>Aucune restauration possible depuis l'interface.</li>
+                  <li>L'opération est tracée dans le journal d'audit.</li>
+                </ul>
+                <div className="pt-1">
+                  <p className="mb-1">
+                    Tapez <span className="font-mono font-semibold">SUPPRIMER</span> pour confirmer :
+                  </p>
+                  <Input
+                    value={confirmText}
+                    onChange={(e) => setConfirmText(e.target.value)}
+                    placeholder="SUPPRIMER"
+                    autoFocus
+                  />
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={confirmText !== "SUPPRIMER" || deleteMutation.isPending}
+              onClick={() => toDelete && deleteMutation.mutate(toDelete.retour_id)}
+              className="bg-red-700 hover:bg-red-800"
+            >
+              {deleteMutation.isPending ? "Suppression…" : "Supprimer définitivement"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
+
   );
 }
