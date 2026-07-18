@@ -18,6 +18,7 @@ type Props = {
 };
 
 export function InfosSection({ form, depots }: Props) {
+  const typeRetour = form.watch("type_retour");
   return (
     <section className="rounded-md border bg-card p-5 space-y-4">
       <h2 className="text-lg font-semibold">2. Informations du retour</h2>
@@ -30,27 +31,55 @@ export function InfosSection({ form, depots }: Props) {
           <Label htmlFor="date_retour">Date *</Label>
           <Input id="date_retour" type="date" {...form.register("date_retour")} />
         </div>
-        <div>
-          <Label>Dépôt de réintégration *</Label>
+        <div className="md:col-span-2">
+          <Label>Type de retour *</Label>
           <Select
-            value={form.watch("depot_id") ?? ""}
-            onValueChange={(v) => form.setValue("depot_id", v, { shouldValidate: true })}
+            value={typeRetour ?? "physique"}
+            onValueChange={(v) =>
+              form.setValue("type_retour", v as "physique" | "avoir", { shouldValidate: true })
+            }
           >
             <SelectTrigger>
-              <SelectValue placeholder="Choisir un dépôt" />
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {depots
-                .filter((d) => d.actif)
-                .map((d) => (
-                  <SelectItem key={d.depot_id} value={d.depot_id}>
-                    {d.nom}
-                    {d.is_principal ? " — Principal" : ""}
-                  </SelectItem>
-                ))}
+              <SelectItem value="physique">
+                Retour physique — marchandise réintégrée au stock
+              </SelectItem>
+              <SelectItem value="avoir">
+                Avoir financier — crédit client sans retour de produits
+              </SelectItem>
             </SelectContent>
           </Select>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {typeRetour === "avoir"
+              ? "Le stock ne sera pas impacté. Seul le compte client (ou la facture liée) est crédité."
+              : "Les quantités seront réintégrées au dépôt sélectionné, avec traçabilité (référence, date, utilisateur)."}
+          </p>
         </div>
+        {typeRetour !== "avoir" && (
+          <div>
+            <Label>Dépôt de réintégration *</Label>
+            <Select
+              value={form.watch("depot_id") ?? ""}
+              onValueChange={(v) => form.setValue("depot_id", v, { shouldValidate: true })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choisir un dépôt" />
+              </SelectTrigger>
+              <SelectContent>
+                {depots
+                  .filter((d) => d.actif)
+                  .map((d) => (
+                    <SelectItem key={d.depot_id} value={d.depot_id}>
+                      {d.nom}
+                      {d.is_principal ? " — Principal" : ""}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         <div className="md:col-span-2">
           <Label htmlFor="observations">Observations</Label>
           <Textarea id="observations" rows={2} {...form.register("observations")} />
