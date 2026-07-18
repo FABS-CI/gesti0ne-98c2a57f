@@ -386,8 +386,26 @@ function FacturesPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <FneStatusBadge info={fneInfo} />
+                        {(() => {
+                          const rs = retoursMap[f.facture_id] ?? [];
+                          const resume = computeRetourResume(Number(f.montant_total), rs);
+                          const meta = RETOUR_STATUS_META[resume.status];
+                          return (
+                            <Badge
+                              variant="outline"
+                              style={{ color: meta.color, borderColor: meta.color }}
+                              title={
+                                resume.retours.length
+                                  ? `${resume.retours.length} retour(s) — ${formatFCFA(resume.totalMontantRetour)}`
+                                  : "Aucun retour"
+                              }
+                            >
+                              {meta.label}
+                            </Badge>
+                          );
+                        })()}
                       </TableCell>
+                      <TableCell>
                       <TableCell className="text-right">
                         <FneRowActions
                           facture={{
