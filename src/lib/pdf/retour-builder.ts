@@ -9,10 +9,10 @@ import { getRetour, type RetourWithLignes } from "@/lib/retours-api";
 async function loadPrixMap(
   factureId: string | null,
   produitIds: string[],
-): Promise<Map<string, number>> {
-  const prices = new Map<string, number>();
+): Promise<Map<string, { prix: number; remisePct: number }>> {
+  const prices = new Map<string, { prix: number; remisePct: number }>();
 
-  // 1) Prix vendus sur la facture liée (via la commande)
+  // 1) Prix + remise vendus sur la facture liée (via la commande)
   if (factureId) {
     const { data: fac } = await supabase
       .from("factures")
@@ -22,31 +22,36 @@ async function loadPrixMap(
     if (fac?.commande_id) {
       const { data: lignes } = await supabase
         .from("commande_lignes")
-        .select("produit_id, prix_unitaire")
+        .select("produit_id, prix_unitaire, remise_pct")
         .eq("commande_id", fac.commande_id);
       for (const l of (lignes ?? []) as Array<{
         produit_id: string | null;
         prix_unitaire: number | null;
+        remise_pct: number | null;
       }>) {
         if (l.produit_id && l.prix_unitaire != null) {
-          prices.set(l.produit_id, Number(l.prix_unitaire));
+          prices.set(l.produit_id, {
+            prix: Number(l.prix_unitaire),
+            remisePct: Number(l.remise_pct ?? 0),
+          });
         }
       }
     }
   }
 
-  // 2) Fallback : prix de vente courant du produit
+  // 2) Fallback : prix de vente courant du produit (sans remise)
   const missing = produitIds.filter((id) => !prices.has(id));
   if (missing.length > 0) {
     const { data: prods } = await supabase
       .from("produits")
-      .select("produit_id, prix_vente, categorie, niveau, matiere, reference")
+      .select("produit_id, prix_vente")
       .in("produit_id", missing);
     for (const p of (prods ?? []) as Array<{
       produit_id: string;
       prix_vente: number | null;
     }>) {
-      if (p.prix_vente != null) prices.set(p.produit_id, Number(p.prix_vente));
+      if (p.prix_vente != null)
+        prices.set(p.produit_id, { prix: Number(p.prix_vente), remisePct: 0 });
     }
   }
   return prices;
