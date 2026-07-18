@@ -15,7 +15,14 @@ import { useState } from "react";
 import { submitFactureToFNE, getFneFactureForFacture, getBalanceSticker } from "@/lib/fne-api";
 import { invalidateFne } from "@/lib/cache-invalidation";
 
-import { getFacture, getFacturePaiements, STATUT_FACTURE_LABEL } from "@/lib/factures-api";
+import {
+  getFacture,
+  getFacturePaiements,
+  getFactureRetours,
+  computeRetourResume,
+  RETOUR_STATUS_META,
+  STATUT_FACTURE_LABEL,
+} from "@/lib/factures-api";
 import { formatFCFA } from "@/lib/format";
 import { generateFacturePDF, fileNameFor } from "@/lib/pdf/fabsTemplates";
 import {
