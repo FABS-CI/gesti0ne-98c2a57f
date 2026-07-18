@@ -64,11 +64,16 @@ function ClientDetailPage() {
   const factures = rel?.factures ?? [];
   const caFacture = factures.reduce((s, f) => s + Number(f.montant_total), 0);
   const totalPaye = (rel?.paiements ?? []).reduce((s, p) => s + Number(p.montant), 0);
-  const encours = factures.reduce((s, f) => {
+  const encoursFactures = factures.reduce((s, f) => {
     if (f.statut === "annulee" || f.statut === "avoir") return s;
     const solde = Number(f.montant_total) - Number(f.montant_paye);
     return solde > 0 ? s + solde : s;
   }, 0);
+  // Fallback : si aucune facture impayée n'est comptabilisée mais que le client
+  // a un solde débiteur (ardoise via commandes/report), on affiche ce solde.
+  const soldeClient = Number(client.solde) || 0;
+  const encours = Math.max(encoursFactures, soldeClient > 0 ? soldeClient : 0);
+
   const plafond = Number(client.plafond_credit) || 0;
   const tauxCredit = plafond > 0 ? Math.min(100, Math.round((encours / plafond) * 100)) : 0;
   const facturesImpayees = factures.filter(
