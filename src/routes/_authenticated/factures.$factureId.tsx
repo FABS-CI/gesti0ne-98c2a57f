@@ -357,6 +357,81 @@ function FactureDetailPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {(() => {
+        const resume = computeRetourResume(Number(facture.montant_total), retours);
+        const meta = RETOUR_STATUS_META[resume.status];
+        const brut = Number(facture.montant_total) + resume.totalMontantRetour;
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between gap-2">
+                <span>Retours enregistrés</span>
+                <Badge
+                  variant="outline"
+                  style={{ color: meta.color, borderColor: meta.color }}
+                >
+                  {meta.label}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {retours.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Aucun retour n'a été enregistré sur cette facture.
+                </p>
+              ) : (
+                <>
+                  <div className="grid gap-2 rounded-md border bg-muted/30 p-3 text-sm sm:grid-cols-3">
+                    <div>
+                      <div className="text-muted-foreground">Montant initial</div>
+                      <div className="font-semibold">{formatFCFA(brut)}</div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Total des retours</div>
+                      <div className="font-semibold text-orange-600">
+                        − {formatFCFA(resume.totalMontantRetour)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Montant net</div>
+                      <div className="font-semibold text-primary">
+                        {formatFCFA(Number(facture.montant_total))}
+                      </div>
+                    </div>
+                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Référence</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead className="text-right">Quantité</TableHead>
+                        <TableHead className="text-right">Montant</TableHead>
+                        <TableHead>Motif</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {retours.map((r) => (
+                        <TableRow key={r.retour_id}>
+                          <TableCell className="font-mono text-xs">{r.reference}</TableCell>
+                          <TableCell>{frDate(r.date_retour)}</TableCell>
+                          <TableCell className="text-right">{r.quantite}</TableCell>
+                          <TableCell className="text-right font-medium">
+                            {formatFCFA(r.montant)}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-sm">
+                            {r.motif ?? "—"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
