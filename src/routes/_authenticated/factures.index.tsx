@@ -9,7 +9,14 @@ import {
   type AdvancedFilters,
 } from "@/components/search/AdvancedSearchBar";
 import { exportListePDF } from "@/lib/pdf/exportListe";
-import { listFacturesPaginated, STATUTS_FACTURE, STATUT_FACTURE_LABEL } from "@/lib/factures-api";
+import {
+  listFacturesPaginated,
+  STATUTS_FACTURE,
+  STATUT_FACTURE_LABEL,
+  getRetoursByFactureIds,
+  computeRetourResume,
+  RETOUR_STATUS_META,
+} from "@/lib/factures-api";
 import { supabase } from "@/integrations/supabase/client";
 import { FneRowActions } from "@/components/fne/FneRowActions";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -120,6 +127,12 @@ function FacturesPage() {
       }
       return m;
     },
+  });
+
+  const { data: retoursMap = {} } = useQuery({
+    queryKey: ["retours-by-factures", factureIds.join(",")],
+    enabled: factureIds.length > 0,
+    queryFn: () => getRetoursByFactureIds(factureIds),
   });
 
   // Totaux calculés côté base (KPI cohérents avec tous les filtres, pas juste la page)
@@ -306,6 +319,7 @@ function FacturesPage() {
                 <TableHead className="text-right">Payé</TableHead>
                 <TableHead className="text-right">Reste</TableHead>
                 <TableHead>Statut</TableHead>
+                <TableHead>Retour</TableHead>
                 <TableHead>FNE</TableHead>
                 <TableHead className="text-right">FNE actions</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -314,13 +328,13 @@ function FacturesPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="py-8 text-center text-muted-foreground">
+                  <TableCell colSpan={11} className="py-8 text-center text-muted-foreground">
                     Chargement...
                   </TableCell>
                 </TableRow>
               ) : factures.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="py-6">
+                  <TableCell colSpan={11} className="py-6">
                     {hasActiveFilters ? (
                       <EmptyState
                         icon={FileText}
@@ -370,6 +384,26 @@ function FacturesPage() {
                         >
                           {statutMeta?.label ?? f.statut}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {(() => {
+                          const rs = retoursMap[f.facture_id] ?? [];
+                          const resume = computeRetourResume(Number(f.montant_total), rs);
+                          const meta = RETOUR_STATUS_META[resume.status];
+                          return (
+                            <Badge
+                              variant="outline"
+                              style={{ color: meta.color, borderColor: meta.color }}
+                              title={
+                                resume.retours.length
+                                  ? `${resume.retours.length} retour(s) — ${formatFCFA(resume.totalMontantRetour)}`
+                                  : "Aucun retour"
+                              }
+                            >
+                              {meta.label}
+                            </Badge>
+                          );
+                        })()}
                       </TableCell>
                       <TableCell>
                         <FneStatusBadge info={fneInfo} />
