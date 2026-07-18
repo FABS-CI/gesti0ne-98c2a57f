@@ -2914,7 +2914,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
   });
   y -= 14;
 
-  // ---------- Résumé (cartes) ----------
+  // ---------- Résumé comptable (5 indicateurs) ----------
   const soldeOuverture = Number(data.soldeOuverture ?? 0);
   let totalDebit = 0;
   let totalCredit = 0;
@@ -2924,10 +2924,12 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
   }
   const soldeFinal = soldeOuverture + totalDebit - totalCredit;
 
-  const totalCommandes = data.totalCommandes ?? (data.commandes ?? []).reduce((s, c) => s + Number(c.montant ?? 0), 0);
   const totalFacture = data.totalFacture ?? totalDebit;
-  const totalPaye = data.totalPaye ?? ((data.paiements ?? []).reduce((s, p) => s + Number(p.montant ?? 0), 0) || 0);
-  const totalAvoirs = data.totalAvoirs ?? 0;
+  const totalAvoirs = Number(data.totalAvoirs ?? 0);
+  const totalPaye =
+    data.totalPaye ??
+    ((data.paiements ?? []).reduce((s, p) => s + Number(p.montant ?? 0), 0) ||
+      Math.max(0, totalCredit - totalAvoirs));
 
   const ensureSpace = async (h: number, titreSuite: string) => {
     if (y - h < BODY_BOTTOM_Y) {
@@ -2940,21 +2942,20 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
   await ensureSpace(90, "État de Compte (suite)");
   y = drawMetricCards(ctx, [
     { label: "Solde d'ouverture", value: `${fmtMontant(soldeOuverture)} FCFA` },
-    { label: "Total commandé", value: `${fmtMontant(totalCommandes)} FCFA` },
-    { label: "Total facturé", value: `${fmtMontant(totalFacture)} FCFA` },
-    { label: "Total payé", value: `${fmtMontant(totalPaye)} FCFA` },
+    { label: "Total factures", value: `${fmtMontant(totalFacture)} FCFA` },
+    { label: "Total paiements", value: `${fmtMontant(totalPaye)} FCFA` },
     { label: "Total avoirs", value: `${fmtMontant(totalAvoirs)} FCFA` },
-    { label: "Solde dû", value: `${fmtMontant(soldeFinal)} FCFA` },
+    { label: "Solde restant dû", value: `${fmtMontant(soldeFinal)} FCFA` },
   ], y);
-  y -= 8;
+  y -= 10;
 
-  // ---------- Utilitaire : tableau générique ----------
+  // ---------- Utilitaire : tableau ----------
   type TCol = { label: string; w: number; align: "left" | "right" };
   const drawTable = async (
     titre: string,
     cols: TCol[],
     rows: string[][],
-    opts?: { footerRow?: string[]; emptyMsg?: string },
+    opts?: { footerRow?: string[]; emptyMsg?: string; highlightLast?: boolean },
   ) => {
     await ensureSpace(50, "État de Compte (suite)");
     y -= 4;
@@ -3007,13 +3008,14 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
         y = drawHead(y);
       }
       y -= rowH;
-      if (i % 2 === 1) {
+      const isLast = i === rows.length - 1;
+      if (opts?.highlightLast && isLast) {
         ctx.page.drawRectangle({
-          x: MARGIN.x,
-          y,
-          width: CONTENT_W,
-          height: rowH,
-          color: FABS_COLORS.grisClair,
+          x: MARGIN.x, y, width: CONTENT_W, height: rowH, color: hex("#FFF4E5"),
+        });
+      } else if (i % 2 === 1) {
+        ctx.page.drawRectangle({
+          x: MARGIN.x, y, width: CONTENT_W, height: rowH, color: FABS_COLORS.grisClair,
         });
       }
       cols.forEach((c, k) => {
@@ -3021,8 +3023,9 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
         const x1 = (colX[k + 1] ?? MARGIN.x + CONTENT_W) - 4;
         const ty = y + 4;
         const val = rows[i][k] ?? "";
-        if (c.align === "right") textRight(ctx, val, x1, ty, { size: 8 });
-        else text(ctx, val, x0 + 3, ty, { size: 8 });
+        const bold = opts?.highlightLast && isLast;
+        if (c.align === "right") textRight(ctx, val, x1, ty, { size: 8, bold });
+        else text(ctx, val, x0 + 3, ty, { size: 8, bold });
       });
     }
 
@@ -3043,28 +3046,48 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     }
   };
 
-  // ---------- Mouvements chronologiques ----------
-  const sortedLignes = [...data.lignes].sort(
+  // ---------- Historique chronologique unique ----------
+  // Ne conserver que les opérations à impact comptable : facture / paiement / avoir / régularisation.
+  const isComptable = (typ: string) => {
+    const t = (typ || "").toLowerCase();
+    return (
+      t.includes("facture") ||
+      t.includes("paiement") ||
+      t.includes("règlement") ||
+      t.includes("reglement") ||
+      t.includes("avoir") ||
+      t.includes("retour") ||
+      t.includes("régularisation") ||
+      t.includes("regularisation") ||
+      t.includes("ajustement")
+    );
+  };
+  const lignesComptables = data.lignes.filter(
+    (l) => Number(l.debit ?? 0) !== 0 || Number(l.credit ?? 0) !== 0,
+  ).filter((l) => isComptable(l.type));
+
+  const sortedLignes = [...lignesComptables].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
   const mvtCols: TCol[] = [
     { label: "Date", w: 0.9, align: "left" },
-    { label: "Type", w: 1.0, align: "left" },
-    { label: "N° pièce", w: 1.2, align: "left" },
+    { label: "Type d'opération", w: 1.1, align: "left" },
+    { label: "N° Facture", w: 1.1, align: "left" },
+    { label: "Référence", w: 1.1, align: "left" },
     { label: "Libellé", w: 1.6, align: "left" },
-    { label: "Débit", w: 1.0, align: "right" },
-    { label: "Crédit", w: 1.0, align: "right" },
-    { label: "Solde", w: 1.1, align: "right" },
+    { label: "Débit (+)", w: 1.0, align: "right" },
+    { label: "Crédit (-)", w: 1.0, align: "right" },
+    { label: "Solde restant", w: 1.1, align: "right" },
   ];
 
   const mvtRows: string[][] = [];
-  // Ligne "Solde d'ouverture" en tête
   mvtRows.push([
     data.periodeDebut ? fmtDate(data.periodeDebut) : "—",
-    "Report",
+    "Report à-nouveau",
     "—",
-    "Solde d'ouverture (report à-nouveau)",
+    "—",
+    "Solde d'ouverture",
     "",
     "",
     fmtMontant(soldeOuverture),
@@ -3075,10 +3098,13 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     const debit = Number(l.debit ?? 0);
     const credit = Number(l.credit ?? 0);
     solde += debit - credit;
+    const typeLow = (l.type || "").toLowerCase();
+    const isFact = typeLow.includes("facture");
     mvtRows.push([
       fmtDate(l.date),
       l.type,
-      l.reference || "—",
+      isFact ? (l.reference || "—") : "—",
+      !isFact ? (l.reference || "—") : "—",
       l.libelle ?? "",
       debit ? fmtMontant(debit) : "",
       credit ? fmtMontant(credit) : "",
@@ -3086,100 +3112,38 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     ]);
   }
 
-  await drawTable("Mouvements du compte", mvtCols, mvtRows, {
-    footerRow: [
-      "", "", "", "TOTAUX",
-      fmtMontant(totalDebit),
-      fmtMontant(totalCredit),
-      fmtMontant(soldeFinal),
-    ],
-    emptyMsg: "Aucune opération sur la période sélectionnée.",
-  });
-
-  // ---------- Détail commandes ----------
-  const commandes = data.commandes ?? [];
-  const cmdCols: TCol[] = [
-    { label: "N° Commande", w: 1.2, align: "left" },
-    { label: "Date", w: 0.9, align: "left" },
-    { label: "Statut", w: 1.3, align: "left" },
-    { label: "Qté cmd", w: 0.8, align: "right" },
-    { label: "Qté livrée", w: 0.8, align: "right" },
-    { label: "Qté restante", w: 0.9, align: "right" },
-    { label: "Montant", w: 1.1, align: "right" },
-  ];
-  const cmdRows = commandes.map((c) => {
-    const statutKey = c.statut?.toLowerCase() ?? "";
-    const statutLbl = STATUT_COMMANDE_LABEL[statutKey] ?? (c.statut || "—");
-    return [
-      c.reference || "—",
-      c.date ? fmtDate(c.date) : "—",
-      statutLbl,
-      c.qteCommandee != null ? String(c.qteCommandee) : "—",
-      c.qteLivree != null ? String(c.qteLivree) : "—",
-      c.qteRestante != null ? String(c.qteRestante) : "—",
-      fmtMontant(Number(c.montant ?? 0)),
-    ];
-  });
-  y -= 10;
-  await drawTable("Détail des commandes", cmdCols, cmdRows, {
-    emptyMsg: "Aucune commande sur la période.",
-    footerRow: cmdRows.length
-      ? ["", "", "", "", "", "TOTAL", fmtMontant(totalCommandes)]
-      : undefined,
-  });
-
-  // ---------- Détail paiements ----------
-  const paiements = data.paiements ?? [];
-  const payCols: TCol[] = [
-    { label: "Date", w: 0.9, align: "left" },
-    { label: "Référence", w: 1.4, align: "left" },
-    { label: "Mode", w: 1.2, align: "left" },
-    { label: "N° Reçu", w: 1.2, align: "left" },
-    { label: "Montant", w: 1.1, align: "right" },
-  ];
-  const payRows = paiements.map((p) => [
-    p.date ? fmtDate(p.date) : "—",
-    p.reference || "—",
-    MODE_PAIEMENT_LABEL[p.mode?.toLowerCase() ?? ""] ?? (p.mode || "—"),
-    p.numeroRecu || "—",
-    fmtMontant(Number(p.montant ?? 0)),
+  // Ligne de solde final mise en évidence
+  mvtRows.push([
+    data.periodeFin ? fmtDate(data.periodeFin) : "",
+    "Solde restant dû",
+    "",
+    "",
+    "",
+    fmtMontant(totalDebit),
+    fmtMontant(totalCredit),
+    fmtMontant(soldeFinal),
   ]);
-  y -= 10;
-  await drawTable("Détail des paiements", payCols, payRows, {
-    emptyMsg: "Aucun paiement sur la période.",
-    footerRow: payRows.length
-      ? ["", "", "", "TOTAL", fmtMontant(totalPaye)]
-      : undefined,
+
+  await drawTable("Historique du compte", mvtCols, mvtRows, {
+    emptyMsg: "Aucune facture, aucun paiement et aucun avoir sur la période sélectionnée.",
+    highlightLast: true,
   });
 
-  // ---------- Vieillissement des créances ----------
-  if (data.ageing) {
-    const a = data.ageing;
-    const ageCols: TCol[] = [
-      { label: "Non échu", w: 1, align: "right" },
-      { label: "0-30 jours", w: 1, align: "right" },
-      { label: "31-60 jours", w: 1, align: "right" },
-      { label: "61-90 jours", w: 1, align: "right" },
-      { label: "+ 90 jours", w: 1, align: "right" },
-      { label: "Total dû", w: 1, align: "right" },
-    ];
-    const totalAge = a.nonEchu + a.j0_30 + a.j31_60 + a.j61_90 + a.j90plus;
-    const ageRows = [[
-      fmtMontant(a.nonEchu),
-      fmtMontant(a.j0_30),
-      fmtMontant(a.j31_60),
-      fmtMontant(a.j61_90),
-      fmtMontant(a.j90plus),
-      fmtMontant(totalAge),
-    ]];
-    y -= 10;
-    await drawTable("Vieillissement des créances", ageCols, ageRows);
+  // ---------- Note (cas vide / info) ----------
+  if (sortedLignes.length === 0) {
+    y -= 14;
+    text(
+      ctx,
+      "Aucune facture, aucun paiement et aucun avoir sur la période sélectionnée.",
+      MARGIN.x,
+      y,
+      { size: 9, color: FABS_COLORS.gris },
+    );
+    y -= 12;
   }
-
-  // ---------- Note (cas vide) ----------
   if (data.note) {
     await ensureSpace(40, "État de Compte (suite)");
-    y -= 18;
+    y -= 14;
     const maxChars = 105;
     const words = data.note.split(/\s+/);
     let line = "";
