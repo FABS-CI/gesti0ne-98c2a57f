@@ -58,15 +58,21 @@ function NouveauPaiementPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [presetClientId]);
 
-  const [form, setForm] = useState<FormState>({
-    date_paiement: new Date().toISOString().slice(0, 10),
-    montant: 0,
-    mode_paiement: "especes",
-    reference_paiement: "",
-    banque: "",
-    num_transaction: "",
-    observations: "",
+  const [form, setForm] = useState<FormState>(() => {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const autoRef = `PAY-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    return {
+      date_paiement: now.toISOString().slice(0, 10),
+      montant: 0,
+      mode_paiement: "especes",
+      reference_paiement: autoRef,
+      banque: "",
+      num_transaction: "",
+      observations: "",
+    };
   });
+
 
   const { data: factures = [], isLoading: facLoading } = useQuery({
     queryKey: ["factures-impayees", clientId],
