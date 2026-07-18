@@ -1719,11 +1719,12 @@ const COLS_BL: Colonne[] = [
 ];
 
 const COLS_BR: Colonne[] = [
-  { key: "codeArticle", label: "Code Article", width: 1.3, align: "center" },
-  { key: "reference", label: "Référence", width: 2.4, align: "left", wrap: true },
-  { key: "qteRetournee", label: "Qté Retournée", width: 1.1, align: "center" },
-  { key: "motif", label: "Motif", width: 1.5, align: "left", wrap: true },
-  { key: "prixUnitaire", label: "Prix Unit.", width: 1.1, align: "right", money: true },
+  { key: "codeArticle", label: "Code Article", width: 1.2, align: "center" },
+  { key: "reference", label: "Référence", width: 2.1, align: "left", wrap: true },
+  { key: "qteRetournee", label: "Qté", width: 0.7, align: "center" },
+  { key: "motif", label: "Motif", width: 1.3, align: "left", wrap: true },
+  { key: "prixUnitaire", label: "Prix Unit.", width: 1.0, align: "right", money: true },
+  { key: "remisePct", label: "Rem. %", width: 0.7, align: "right" },
   { key: "montant", label: "Montant", width: 1.1, align: "right", money: true },
 ];
 
