@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { RotateCcw, Plus, Search, Eye, XCircle, Download, Printer, X } from "lucide-react";
+import { RotateCcw, Plus, Search, Eye, XCircle, Download, FileDown, Trash2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { exportPdf } from "@/lib/export-csv";
@@ -40,6 +40,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 import {
   listRetours,
   annulerRetour,
+  supprimerRetour,
   STATUTS_RETOUR,
   STATUT_RETOUR_LABEL,
   type Retour,
@@ -47,6 +48,11 @@ import {
 import { describeSupabaseError } from "@/lib/rbac-api";
 import { Can } from "@/components/rbac/Can";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
+import { useUserRoles } from "@/hooks/use-user-roles";
+import { generateBonRetourPDF } from "@/lib/pdf/fabsTemplates";
+import { buildRetourDocBase } from "@/lib/pdf/retour-builder";
+import { downloadBlob } from "@/lib/pdf/fabsTemplates";
+
 
 import { authRouteHead } from "@/lib/route-head";
 export const Route = createFileRoute("/_authenticated/retours/")({
