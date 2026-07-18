@@ -9,7 +9,14 @@ import {
   type AdvancedFilters,
 } from "@/components/search/AdvancedSearchBar";
 import { exportListePDF } from "@/lib/pdf/exportListe";
-import { listFacturesPaginated, STATUTS_FACTURE, STATUT_FACTURE_LABEL } from "@/lib/factures-api";
+import {
+  listFacturesPaginated,
+  STATUTS_FACTURE,
+  STATUT_FACTURE_LABEL,
+  getRetoursByFactureIds,
+  computeRetourResume,
+  RETOUR_STATUS_META,
+} from "@/lib/factures-api";
 import { supabase } from "@/integrations/supabase/client";
 import { FneRowActions } from "@/components/fne/FneRowActions";
 import { EmptyState } from "@/components/common/EmptyState";
