@@ -4,10 +4,10 @@ import { ArrowLeft, FileDown, FileText, Mail, MessageCircle, Pencil, PlusCircle,
 import { toast } from "sonner";
 
 import { useClientDetail } from "@/hooks/use-client-detail";
-import { buildEtatCompteLignes } from "@/lib/client-detail-helpers";
 import { TYPE_COLOR } from "@/lib/company";
 import { formatFCFA } from "@/lib/format";
-import { generateEtatCompteClientPDF, downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
+import { downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
+import { buildEtatCompteClientPDF } from "@/lib/pdf/etat-compte-builder";
 import { buildClientHistoriquePDF } from "@/lib/pdf/client-historique-builder";
 import { ClientSoldeDialog } from "@/components/clients/detail/ClientSoldeDialog";
 
@@ -98,13 +98,11 @@ function ClientDetailPage() {
     if (!client || !rel) return;
     setGenerating(true);
     try {
-      const reference = `EC|${new Date().getFullYear()}|${client.reference}`;
-      const blob = await generateEtatCompteClientPDF({
-        reference,
+      const blob = await buildEtatCompteClientPDF({
+        clientId: client.client_id,
         clientNom: client.nom,
         clientTel: client.telephone,
         representant: client.representant,
-        lignes: buildEtatCompteLignes(rel),
       });
       downloadBlob(blob, fileNameFor(`ETAT_COMPTE_${client.reference}`, client.nom));
       toast.success("État de compte généré");

@@ -2882,7 +2882,10 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     yR -= 14;
   }
 
-  text(ctx, client.nom, MARGIN.x, yL, { size: 12, bold: true });
+  text(ctx, fitText(ctx, client.nom, CONTENT_W / 2 - 12, { size: 11, bold: true }), MARGIN.x, yL, {
+    size: 11,
+    bold: true,
+  });
   yL -= 15;
   if (client.code) {
     text(ctx, `Code : ${client.code}`, MARGIN.x, yL, { size: 9, color: FABS_COLORS.gris });
@@ -2915,22 +2918,14 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
   });
   y -= 14;
 
-  // ---------- Résumé comptable (5 indicateurs) ----------
-  const soldeOuverture = Number(data.soldeOuverture ?? 0);
+  // ---------- Solde du relevé : uniquement les opérations visibles ----------
   let totalDebit = 0;
   let totalCredit = 0;
   for (const l of data.lignes) {
     totalDebit += Number(l.debit ?? 0);
     totalCredit += Number(l.credit ?? 0);
   }
-  const soldeFinal = soldeOuverture + totalDebit - totalCredit;
-
-  const totalFacture = data.totalFacture ?? totalDebit;
-  const totalAvoirs = Number(data.totalAvoirs ?? 0);
-  const totalPaye =
-    data.totalPaye ??
-    ((data.paiements ?? []).reduce((s, p) => s + Number(p.montant ?? 0), 0) ||
-      Math.max(0, totalCredit - totalAvoirs));
+  const soldeFinal = totalDebit - totalCredit;
 
   const ensureSpace = async (h: number, titreSuite: string) => {
     if (y - h < BODY_BOTTOM_Y) {
@@ -2939,16 +2934,6 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
       y = drawHeader(ctx, titreSuite) - 18;
     }
   };
-
-  await ensureSpace(90, "État de Compte (suite)");
-  y = drawMetricCards(ctx, [
-    { label: "Solde d'ouverture", value: `${fmtMontant(soldeOuverture)} FCFA` },
-    { label: "Total factures", value: `${fmtMontant(totalFacture)} FCFA` },
-    { label: "Total paiements", value: `${fmtMontant(totalPaye)} FCFA` },
-    { label: "Total avoirs", value: `${fmtMontant(totalAvoirs)} FCFA` },
-    { label: "Solde restant dû", value: `${fmtMontant(soldeFinal)} FCFA` },
-  ], y);
-  y -= 10;
 
   // ---------- Utilitaire : tableau ----------
   type TCol = { label: string; w: number; align: "left" | "right" };
@@ -2984,9 +2969,10 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
         const x0 = colX[i];
         const x1 = (colX[i + 1] ?? MARGIN.x + CONTENT_W) - 4;
         const ty = yTop - rowH + 4;
+        const label = fitText(ctx, c.label, Math.max(4, x1 - x0 - 4), { size: 6.7, bold: true });
         if (c.align === "right")
-          textRight(ctx, c.label, x1, ty, { size: 8, bold: true, color: FABS_COLORS.texteTableau });
-        else text(ctx, c.label, x0 + 3, ty, { size: 8, bold: true, color: FABS_COLORS.texteTableau });
+          textRight(ctx, label, x1, ty, { size: 6.7, bold: true, color: FABS_COLORS.texteTableau });
+        else text(ctx, label, x0 + 3, ty, { size: 6.7, bold: true, color: FABS_COLORS.texteTableau });
       });
       return yTop - rowH;
     };
@@ -3023,10 +3009,13 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
         const x0 = colX[k];
         const x1 = (colX[k + 1] ?? MARGIN.x + CONTENT_W) - 4;
         const ty = y + 4;
-        const val = rows[i][k] ?? "";
+        const val = fitText(ctx, rows[i][k] ?? "", Math.max(4, x1 - x0 - 4), {
+          size: 7,
+          bold: opts?.highlightLast && isLast,
+        });
         const bold = opts?.highlightLast && isLast;
-        if (c.align === "right") textRight(ctx, val, x1, ty, { size: 8, bold });
-        else text(ctx, val, x0 + 3, ty, { size: 8, bold });
+        if (c.align === "right") textRight(ctx, val, x1, ty, { size: 7, bold });
+        else text(ctx, val, x0 + 3, ty, { size: 7, bold });
       });
     }
 
@@ -3073,39 +3062,33 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
 
   const mvtCols: TCol[] = [
     { label: "Date", w: 0.9, align: "left" },
-    { label: "Type d'opération", w: 1.1, align: "left" },
-    { label: "N° Facture", w: 1.1, align: "left" },
-    { label: "Référence", w: 1.1, align: "left" },
-    { label: "Libellé", w: 1.6, align: "left" },
+    { label: "Type d'opération", w: 1.15, align: "left" },
+    { label: "Référence", w: 1.2, align: "left" },
+    { label: "N° Facture", w: 1.2, align: "left" },
+    { label: "Libellé", w: 1.7, align: "left" },
     { label: "Débit (+)", w: 1.0, align: "right" },
     { label: "Crédit (-)", w: 1.0, align: "right" },
-    { label: "Solde restant", w: 1.1, align: "right" },
+    { label: "Solde après opération", w: 1.3, align: "right" },
   ];
 
   const mvtRows: string[][] = [];
-  mvtRows.push([
-    data.periodeDebut ? fmtDate(data.periodeDebut) : "—",
-    "Report à-nouveau",
-    "—",
-    "—",
-    "Solde d'ouverture",
-    "",
-    "",
-    fmtMontant(soldeOuverture),
-  ]);
-
-  let solde = soldeOuverture;
+  let solde = 0;
   for (const l of sortedLignes) {
     const debit = Number(l.debit ?? 0);
     const credit = Number(l.credit ?? 0);
     solde += debit - credit;
     const typeLow = (l.type || "").toLowerCase();
     const isFact = typeLow.includes("facture");
+    const typeAffiche = typeLow.includes("avoir") || typeLow.includes("retour")
+      ? "Retour / Avoir"
+      : typeLow.includes("paiement") || typeLow.includes("règlement") || typeLow.includes("reglement")
+        ? "Paiement"
+        : "Facture";
     mvtRows.push([
       fmtDate(l.date),
-      l.type,
+      typeAffiche,
+      l.reference || "—",
       isFact ? (l.reference || "—") : (l.factureReference || "—"),
-      !isFact ? (l.reference || "—") : "—",
       l.libelle ?? "",
       debit ? fmtMontant(debit) : "",
       credit ? fmtMontant(credit) : "",
@@ -3113,22 +3096,15 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     ]);
   }
 
-  // Ligne de solde final mise en évidence
-  mvtRows.push([
-    data.periodeFin ? fmtDate(data.periodeFin) : "",
-    "Solde restant dû",
-    "",
-    "",
-    "",
-    fmtMontant(totalDebit),
-    fmtMontant(totalCredit),
-    fmtMontant(soldeFinal),
-  ]);
-
-  await drawTable("Historique du compte", mvtCols, mvtRows, {
+  await drawTable(
+    `Historique du compte — Solde à ce jour : ${fmtMontant(soldeFinal)} FCFA`,
+    mvtCols,
+    mvtRows,
+    {
     emptyMsg: "Aucune facture, aucun paiement et aucun avoir sur la période sélectionnée.",
-    highlightLast: true,
-  });
+    highlightLast: false,
+    },
+  );
 
   // ---------- Note (cas vide / info) ----------
   if (sortedLignes.length === 0) {
@@ -3142,28 +3118,6 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     );
     y -= 12;
   }
-  if (data.note) {
-    await ensureSpace(40, "État de Compte (suite)");
-    y -= 14;
-    const maxChars = 105;
-    const words = data.note.split(/\s+/);
-    let line = "";
-    const lines: string[] = [];
-    for (const w of words) {
-      if ((line + " " + w).trim().length > maxChars) {
-        lines.push(line.trim());
-        line = w;
-      } else {
-        line = (line + " " + w).trim();
-      }
-    }
-    if (line) lines.push(line);
-    for (const ln of lines) {
-      text(ctx, ln, MARGIN.x, y, { size: 8, color: FABS_COLORS.gris });
-      y -= 11;
-    }
-  }
-
   await drawFooter(ctx);
   return finalize(ctx);
 }
