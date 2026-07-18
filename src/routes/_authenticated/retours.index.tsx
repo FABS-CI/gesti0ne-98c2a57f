@@ -71,6 +71,9 @@ function RetoursListPage() {
   const [statut, setStatut] = useState("all");
   const [page, setPage] = useState(1);
   const [toCancel, setToCancel] = useState<Retour | null>(null);
+  const [toDelete, setToDelete] = useState<Retour | null>(null);
+  const [confirmText, setConfirmText] = useState("");
+  const { isSuperAdmin } = useUserRoles();
   const pageSize = 20;
   const exerciceId = useExerciceConsulteId();
   const hasActiveFilters = !!q || statut !== "all";
