@@ -47,6 +47,8 @@ export type RetourLigne = {
   reference_produit: string | null;
   designation: string;
   quantite: number;
+  prix_unitaire: number;
+  total_ligne: number;
   motif: string | null;
   created_at: string;
 };

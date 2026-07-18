@@ -72,6 +72,7 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
       };
 
       type FactureRow = {
+        facture_id: string;
         client_id: string | null;
         montant_total: number | null;
         date_facture: string;
@@ -84,6 +85,7 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
       };
       type AvoirRow = {
         client_id: string | null;
+        facture_id: string | null;
         montant: number;
         date_retour: string;
         statut: string | null;
@@ -94,7 +96,7 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
         runBatched<FactureRow>((batch) =>
           supabase
             .from("factures")
-            .select("client_id, montant_total, date_facture")
+            .select("facture_id, client_id, montant_total, date_facture")
             .in("client_id", batch),
         ),
         runBatched<PaiementRow>((batch) =>
@@ -105,8 +107,8 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
         ),
         runBatched<AvoirRow>((batch) =>
           supabase
-            .from("bons_retour")
-            .select("client_id, montant, date_retour, statut")
+            .from("retours")
+            .select("client_id, facture_id, montant, date_retour, statut")
             .in("client_id", batch),
         ),
         exerciceId
@@ -124,7 +126,11 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
       const byClient = new Map<
         string,
         {
-          factures: Array<{ date_facture: string; montant_total: number | null }>;
+          factures: Array<{
+            facture_id: string;
+            date_facture: string;
+            montant_total: number | null;
+          }>;
           paiements: Array<{
             date_paiement: string;
             montant: number | null;
@@ -148,6 +154,7 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
       for (const f of facturesData) {
         if (!f.client_id) continue;
         bucket(f.client_id).factures.push({
+          facture_id: f.facture_id,
           date_facture: f.date_facture as string,
           montant_total: Number(f.montant_total ?? 0),
         });
@@ -163,10 +170,19 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
       }
       for (const a of avoirsData) {
         if (!a.client_id) continue;
+        if (a.facture_id) {
+          const facture = bucket(a.client_id).factures.find(
+            (f) => f.facture_id === a.facture_id,
+          );
+          if (facture) {
+            facture.montant_total =
+              Number(facture.montant_total ?? 0) + Number(a.montant ?? 0);
+          }
+        }
         bucket(a.client_id).avoirs.push({
           date_retour: a.date_retour,
           montant: Number(a.montant ?? 0),
-          statut: a.statut ?? null,
+          statut: a.statut === "annule" ? "annule" : "valide",
         });
       }
 

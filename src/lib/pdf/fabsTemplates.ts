@@ -2755,6 +2755,7 @@ export type EtatCompteLigne = {
   type: string; // Report | Facture | Paiement | Avoir | Commande | Livraison
   reference: string;
   libelle?: string | null;
+  factureReference?: string | null;
   debit?: number;
   credit?: number;
 };
@@ -2851,16 +2852,16 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
   };
 
   const ctx = await newCtx({
-    title: "État de Compte",
+    title: "État de Compte Client",
     reference: data.reference,
     date: new Date(),
     signatureLabel: "La Comptabilité",
     showQr: false,
     docType: "etat_compte",
   });
-  let y = drawHeader(ctx, "État de Compte");
+  let y = drawHeader(ctx, "État de Compte Client");
   y -= 8;
-  y = drawV2Title(ctx, "ÉTAT DE COMPTE", y);
+  y = drawV2Title(ctx, "RELEVÉ CHRONOLOGIQUE DES OPÉRATIONS", y);
 
   // ---------- Bloc infos client + période ----------
   const colR = MARGIN.x + CONTENT_W / 2;
@@ -3103,7 +3104,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     mvtRows.push([
       fmtDate(l.date),
       l.type,
-      isFact ? (l.reference || "—") : "—",
+      isFact ? (l.reference || "—") : (l.factureReference || "—"),
       !isFact ? (l.reference || "—") : "—",
       l.libelle ?? "",
       debit ? fmtMontant(debit) : "",
