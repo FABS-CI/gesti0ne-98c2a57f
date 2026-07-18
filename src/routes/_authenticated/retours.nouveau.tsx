@@ -65,6 +65,7 @@ function RetourNouveauPage() {
       creerRetour({
         date_retour: values.date_retour,
         client_id: values.client_id,
+        type_retour: values.type_retour,
         facture_id: values.facture_id || null,
         livraison_id: values.livraison_id || null,
         etablissement: values.etablissement || null,
@@ -73,7 +74,7 @@ function RetourNouveauPage() {
         ville: values.ville || null,
         adresse: values.adresse || null,
         observations: values.observations || null,
-        depot_id: values.depot_id || null,
+        depot_id: values.type_retour === "avoir" ? null : values.depot_id || null,
         lignes: values.lignes.map((l) => ({
           produit_id: l.produit_id,
           reference_produit: l.reference_produit ?? null,
