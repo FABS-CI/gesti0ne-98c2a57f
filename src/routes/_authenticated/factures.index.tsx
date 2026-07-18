@@ -406,6 +406,8 @@ function FacturesPage() {
                         })()}
                       </TableCell>
                       <TableCell>
+                        <FneStatusBadge info={fneInfo} />
+                      </TableCell>
                       <TableCell className="text-right">
                         <FneRowActions
                           facture={{
