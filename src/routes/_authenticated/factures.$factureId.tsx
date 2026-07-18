@@ -84,6 +84,10 @@ function FactureDetailPage() {
     queryKey: ["fne-sticker"],
     queryFn: getBalanceSticker,
   });
+  const { data: retours = [] } = useQuery({
+    queryKey: ["facture-retours", factureId],
+    queryFn: () => getFactureRetours(factureId),
+  });
   const qc = useQueryClient();
   const submitFne = useMutation({
     mutationFn: () =>
