@@ -11,13 +11,12 @@ const config: ResourceConfig = {
   newLabel: "Nouveau livreur",
   entityLabel: "le livreur",
   csvName: "livreurs",
-  searchFields: ["nom", "telephone", "societe", "immatriculation"],
+  searchFields: ["nom_complet", "telephone", "matricule", "permis"],
   columns: [
-    { name: "nom", label: "Nom" },
+    { name: "matricule", label: "Matricule", type: "mono" },
+    { name: "nom_complet", label: "Nom complet" },
     { name: "telephone", label: "Téléphone" },
-    { name: "societe", label: "Société" },
-    { name: "vehicule_defaut", label: "Véhicule" },
-    { name: "immatriculation", label: "Immatriculation", type: "mono" },
+    { name: "permis", label: "Permis" },
     {
       name: "actif",
       label: "Statut",
@@ -29,11 +28,10 @@ const config: ResourceConfig = {
     },
   ],
   fields: [
-    { name: "nom", label: "Nom complet", required: true },
+    { name: "nom_complet", label: "Nom complet", required: true },
+    { name: "matricule", label: "Matricule" },
     { name: "telephone", label: "Téléphone" },
-    { name: "societe", label: "Société / Employeur" },
-    { name: "vehicule_defaut", label: "Véhicule habituel" },
-    { name: "immatriculation", label: "Immatriculation" },
+    { name: "permis", label: "Permis (catégorie / n°)" },
     {
       name: "actif",
       label: "Actif",
@@ -44,7 +42,6 @@ const config: ResourceConfig = {
       ],
       default: "true",
     },
-    { name: "observations", label: "Observations", type: "textarea", colSpan: 2 },
   ],
 };
 
