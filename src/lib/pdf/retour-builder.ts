@@ -99,10 +99,19 @@ export async function buildRetourDocBaseFrom(retour: RetourWithLignes): Promise<
     loadClientDocInfo(retour.client_id),
   ]);
 
+  let totalBrut = 0;
+  let remiseLigneTotal = 0;
   let totalHT = 0;
   const lignes: DocLigne[] = retour.lignes.map((l) => {
-    const pu = l.produit_id ? prices.get(l.produit_id) ?? 0 : 0;
-    const montant = pu * Number(l.quantite ?? 0);
+    const info = l.produit_id ? prices.get(l.produit_id) : undefined;
+    const pu = info?.prix ?? 0;
+    const remisePct = info?.remisePct ?? 0;
+    const qte = Number(l.quantite ?? 0);
+    const brut = pu * qte;
+    const remiseMontant = Math.round((brut * remisePct) / 100);
+    const montant = brut - remiseMontant;
+    totalBrut += brut;
+    remiseLigneTotal += remiseMontant;
     totalHT += montant;
     const m = l.produit_id ? meta.get(l.produit_id) : undefined;
     return {
@@ -111,9 +120,11 @@ export async function buildRetourDocBaseFrom(retour: RetourWithLignes): Promise<
       cycle: m?.cycle,
       niveau: m?.niveau,
       matiere: m?.matiere,
-      qteRetournee: Number(l.quantite ?? 0),
+      qteRetournee: qte,
       motif: l.motif ?? undefined,
       prixUnitaire: pu || undefined,
+      remisePct: remisePct || undefined,
+      remiseMontant: remiseMontant || undefined,
       montant: montant || undefined,
     };
   });
