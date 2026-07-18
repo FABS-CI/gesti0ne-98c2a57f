@@ -1,9 +1,12 @@
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import { generateEtatCompteClientPDF } from "@/lib/pdf/fabsTemplates";
 
 describe("QA PDF état de compte", () => {
   it("génère le relevé bancaire chronologique", async () => {
+    const originalFetch = globalThis.fetch;
+    const logo = await readFile("src/assets/fabs-logo.png");
+    globalThis.fetch = async () => new Response(logo, { status: 200 });
     const blob = await generateEtatCompteClientPDF({
       reference: "EC|2026|CLIENT-DEMO",
       client: {
@@ -51,6 +54,7 @@ describe("QA PDF état de compte", () => {
     });
     const bytes = new Uint8Array(await blob.arrayBuffer());
     await writeFile("/mnt/documents/qa-etat-compte.pdf", bytes);
+    globalThis.fetch = originalFetch;
     expect(bytes.length).toBeGreaterThan(1000);
   });
 });
