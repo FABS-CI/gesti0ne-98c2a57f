@@ -35,6 +35,7 @@ function RetourNouveauPage() {
       client_id: "",
       facture_id: "",
       livraison_id: "",
+      type_retour: "physique",
       etablissement: "",
       representant_nom: "",
       telephone: "",
