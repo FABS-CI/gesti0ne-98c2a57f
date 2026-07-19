@@ -362,7 +362,7 @@ function NouvelleTourneePage() {
     const match = vehs.find(
       (v) => (v.immatriculation ?? "").toLowerCase() === bestImmat.toLowerCase(),
     );
-    if (match) setForm((f) => ({ ...f, vehicule_id: match.vehicule_id }));
+    if (match) setForm((f) => ({ ...f, vehicule_id: match.immatriculation ?? match.vehicule_id }));
   }, [vehQ.data, colisQ.data, form.vehicule_id]);
 
   const [saving, setSaving] = useState(false);
@@ -370,7 +370,6 @@ function NouvelleTourneePage() {
     const missing: string[] = [];
     if (!form.reference.trim()) missing.push("Référence");
     if (!form.chauffeur_nom.trim()) missing.push("Chauffeur");
-    if (!form.vehicule_id) missing.push("Véhicule");
     if (!form.date_tournee) missing.push("Date de départ");
     if (!form.heure_depart) missing.push("Heure de départ");
     if (!form.depot_depart_id) missing.push("Dépôt de départ");
