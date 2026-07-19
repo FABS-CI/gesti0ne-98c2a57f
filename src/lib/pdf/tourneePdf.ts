@@ -146,7 +146,40 @@ export async function generateBonTourneePDF(tourneeId: string): Promise<Blob> {
       client_id: string | null;
     } | null;
   };
-  const list = (rows ?? []) as unknown as Row[];
+  let list = (rows ?? []) as unknown as Row[];
+
+  // Le suivi de livraison est la source créée lors de la validation d'une
+  // tournée. Certaines tournées n'ont pas de ligne historique dans
+  // `livraisons_commande` : le bon doit néanmoins afficher leurs commandes.
+  if (list.length === 0) {
+    const { data: suiviRows } = await supabase
+      .from("livsuivi_commandes")
+      .select(
+        "statut, type_livraison, gare_depot, gare_destination, ville_destination, nb_cartons, commande_id, commandes:commande_id(reference, client_nom, client_id)",
+      )
+      .eq("tournee_id", tourneeId)
+      .order("ordre_passage", { ascending: true });
+    list = ((suiviRows ?? []) as unknown as Array<{
+      statut: string | null;
+      type_livraison: string | null;
+      gare_depot: string | null;
+      gare_destination: string | null;
+      ville_destination: string | null;
+      nb_cartons: number | null;
+      commande_id: string | null;
+      commandes: Row["commandes"];
+    }>).map((r) => ({
+      statut: r.statut,
+      type_livraison: r.type_livraison,
+      gare_nom: r.gare_destination ?? r.gare_depot,
+      ville_livraison: r.ville_destination,
+      nb_cartons: r.nb_cartons,
+      quantite_commandee: null,
+      transporteur: null,
+      commande_id: r.commande_id,
+      commandes: r.commandes,
+    }));
+  }
 
   // Enrichissement clients (téléphone / adresse) en un seul appel
   const clientIds = Array.from(

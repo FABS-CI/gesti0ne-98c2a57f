@@ -421,10 +421,10 @@ function NouvelleTourneePage() {
       const tourneeId = (created as { tournee_id: string }).tournee_id;
 
       const ids = Array.from(selected);
-      const { error: upErr } = await supabase
-        .from("colis")
-        .update({ tournee_id: tourneeId } as never)
-        .in("colis_id", ids);
+      const { error: upErr } = await supabase.rpc("affecter_colis_tournee" as never, {
+        _tournee_id: tourneeId,
+        _colis_ids: ids,
+      } as never);
       if (upErr) throw upErr;
 
       await finaliserTournee(tourneeId);
