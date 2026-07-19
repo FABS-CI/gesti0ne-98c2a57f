@@ -148,7 +148,7 @@ export function ClientAvoirsTab({ avoirs }: { avoirs: ClientRelations["avoirs"] 
           {!avoirs.length ? (
             <EmptyRow cols={5} label="Aucun avoir / retour" />
           ) : (
-            avoirs.map((a) => <AvoirRow key={a.br_id} a={a} />)
+            avoirs.map((a) => <AvoirRow key={a.retour_id} a={a} />)
           )}
         </TableBody>
       </Table>

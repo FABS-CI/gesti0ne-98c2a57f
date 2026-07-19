@@ -131,7 +131,6 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
     facture_reference = fact?.reference ?? null;
   }
 
-  const c = data.commandes as BLDetail extends infer T ? never : never;
   type Cmd = {
     reference: string | null;
     client_nom: string | null;
@@ -144,7 +143,30 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
     total_quantite: number | null;
   } | null;
   const cmd = data.commandes as unknown as Cmd;
-  void c;
+
+  // Fallback: enrich missing contact/address fields from the client record
+  type ClientFallback = {
+    telephone: string | null;
+    telephone2: string | null;
+    ville: string | null;
+    adresse: string | null;
+    representant: string | null;
+    nom: string | null;
+  };
+  let clientFallback: ClientFallback | null = null;
+  if (data.client_id) {
+    const { data: cli } = await supabase
+      .from("clients")
+      .select("nom, telephone, telephone2, ville, adresse, representant")
+      .eq("client_id", data.client_id)
+      .maybeSingle();
+    clientFallback = (cli as ClientFallback | null) ?? null;
+  }
+
+
+  const telephone =
+    cmd?.telephone ?? clientFallback?.telephone ?? clientFallback?.telephone2 ?? null;
+
   return {
     bl_id: data.bl_id,
     reference: data.reference,
@@ -154,18 +176,19 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
     client_id: data.client_id,
     commande_id: data.commande_id,
     commande_reference: cmd?.reference ?? null,
-    client_nom: cmd?.client_nom ?? null,
+    client_nom: cmd?.client_nom ?? clientFallback?.nom ?? null,
     etablissement: cmd?.etablissement ?? null,
-    representant_nom: cmd?.representant_nom ?? null,
-    telephone: cmd?.telephone ?? null,
-    ville: cmd?.ville ?? null,
-    adresse: cmd?.adresse ?? null,
+    representant_nom: cmd?.representant_nom ?? clientFallback?.representant ?? null,
+    telephone,
+    ville: cmd?.ville ?? clientFallback?.ville ?? null,
+    adresse: cmd?.adresse ?? clientFallback?.adresse ?? null,
     nb_articles: cmd?.nb_produits ?? 0,
     total_quantite: cmd?.total_quantite ?? 0,
     facture_reference,
     lignes,
   };
 }
+
 
 export type ColisagePayload = {
   nb_cartons: number;

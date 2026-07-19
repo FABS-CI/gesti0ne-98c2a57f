@@ -200,20 +200,21 @@ export type ClientRelations = {
     commande_id: string | null;
   }>;
   avoirs: Array<{
-    br_id: string;
+    retour_id: string;
     reference: string;
     statut: string;
     date_retour: string;
     montant: number;
     motif: string | null;
   }>;
+
 };
 
 export async function getClientRelations(
   clientId: string,
   clientNom: string,
 ): Promise<ClientRelations> {
-  const [cmd, fac, liv, pro, bl, av] = await Promise.all([
+  const [cmd, fac, pro, bl, av] = await Promise.all([
     supabase
       .from("commandes")
       .select("commande_id,reference,statut,date_commande,montant_total")
@@ -225,11 +226,6 @@ export async function getClientRelations(
       .eq("client_id", clientId)
       .order("date_facture", { ascending: false }),
     supabase
-      .from("livraisons")
-      .select("livraison_id,reference,statut,date_livraison,transporteur")
-      .eq("client_nom", clientNom)
-      .order("date_livraison", { ascending: false }),
-    supabase
       .from("proformas")
       .select("proforma_id,reference,statut,date_proforma,date_validite,montant_total")
       .eq("client_id", clientId)
@@ -240,18 +236,36 @@ export async function getClientRelations(
       .eq("client_id", clientId)
       .order("date_emission", { ascending: false }),
     supabase
-      .from("bons_retour")
-      .select("br_id,reference,statut,date_retour,montant,motif")
+      .from("retours")
+      .select("retour_id,reference,statut,date_retour,montant,motif")
       .eq("client_id", clientId)
       .order("date_retour", { ascending: false }),
   ]);
 
   if (cmd.error) throw cmd.error;
   if (fac.error) throw fac.error;
-  if (liv.error) throw liv.error;
   if (pro.error) throw pro.error;
   if (bl.error) throw bl.error;
   if (av.error) throw av.error;
+
+  const blIds = (bl.data ?? []).map((b) => b.bl_id);
+  let livraisons: ClientRelations["livraisons"] = [];
+  if (blIds.length > 0) {
+    const { data, error } = await supabase
+      .from("livraisons")
+      .select("livraison_id,reference,statut,date_livraison,transporteur:transporteur_id,bl_id")
+      .in("bl_id", blIds)
+      .order("date_livraison", { ascending: false });
+    if (error) throw error;
+    livraisons = (data ?? []).map((l) => ({
+      livraison_id: l.livraison_id,
+      reference: l.reference,
+      statut: l.statut,
+      date_livraison: l.date_livraison,
+      transporteur: null,
+    })) as ClientRelations["livraisons"];
+  }
+
 
   const factureIds = (fac.data ?? []).map((f) => f.facture_id);
   let paiements: ClientRelations["paiements"] = [];
@@ -269,12 +283,13 @@ export async function getClientRelations(
     commandes: (cmd.data ?? []) as ClientRelations["commandes"],
     factures: (fac.data ?? []) as ClientRelations["factures"],
     paiements,
-    livraisons: (liv.data ?? []) as ClientRelations["livraisons"],
+    livraisons,
     proformas: (pro.data ?? []) as ClientRelations["proformas"],
     bons_livraison: (bl.data ?? []) as ClientRelations["bons_livraison"],
     avoirs: (av.data ?? []) as ClientRelations["avoirs"],
   };
 }
+
 
 /** Détecte les clients existants au nom similaire (pour avertir des doublons). */
 export async function findDuplicateClients(nom: string, excludeId?: string) {
