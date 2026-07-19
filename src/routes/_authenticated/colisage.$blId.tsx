@@ -1,4 +1,4 @@
-import { COMMANDE_REF_SEARCH_DEFAULTS } from "@/lib/route-schemas";
+
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, Package, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
