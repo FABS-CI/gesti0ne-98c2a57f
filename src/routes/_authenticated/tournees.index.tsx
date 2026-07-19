@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { ResourceManager, type ResourceConfig } from "@/components/crud/ResourceManager";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { finaliserTournee } from "@/lib/livraison-suivi/writes";
 import { BACKOFF_INITIAL, nextBackoffDelay } from "@/lib/realtime-backoff";
 import { viewCached } from "@/lib/pdf/actions";
 import { invalidatePdfByPrefix } from "@/lib/pdf/pdfCache";
@@ -247,7 +246,10 @@ function TourneesPage() {
   const handleCloturer = async (tourneeId: string, ref: string) => {
     const tid = toast.loading(`Validation de la tournée ${ref}…`);
     try {
-      await finaliserTournee(tourneeId);
+      const { error } = await supabase.rpc("cloturer_tournee" as never, {
+        _tournee_id: tourneeId,
+      } as never);
+      if (error) throw new Error(error.message);
       invalidatePdfByPrefix(`bon-tournee-${tourneeId}`);
       toast.success(`Tournée ${ref} validée`, {
         id: tid,
