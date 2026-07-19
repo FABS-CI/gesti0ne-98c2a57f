@@ -37,12 +37,13 @@ export function ColisPickerTable({
         <thead className="bg-muted/50 sticky top-0">
           <tr>
             <th className="p-2 w-8"></th>
-            <th className="p-2 text-left">N° colis</th>
+            <th className="p-2 text-left">N° carton</th>
+            <th className="p-2 text-left">BL</th>
             <th className="p-2 text-left">Commande</th>
             <th className="p-2 text-left">Client</th>
             <th className="p-2 text-left">Représentant</th>
             <th className="p-2 text-left">Ville</th>
-            <th className="p-2 text-right">Cartons</th>
+            <th className="p-2 text-right">Carton</th>
             <th className="p-2 text-right">Qté</th>
             <th className="p-2 text-left">Date prép.</th>
             <th className="p-2 text-left">Magasin</th>
@@ -56,6 +57,10 @@ export function ColisPickerTable({
             const rep = cli?.representant_nom ?? cli?.commercial_nom ?? "—";
             const depotNom = cli?.depot_id ? (depotById.get(cli.depot_id) ?? "—") : "—";
             const ville = c.ville_livraison ?? cli?.ville ?? "—";
+            const cartonLabel =
+              c.numero_carton && c.nb_cartons
+                ? `${c.numero_carton}/${c.nb_cartons}`
+                : (c.nb_cartons ?? 1);
             return (
               <tr
                 key={c.colis_id}
@@ -66,11 +71,12 @@ export function ColisPickerTable({
                   <Checkbox checked={isSel} onCheckedChange={() => toggle(c.colis_id)} />
                 </td>
                 <td className="p-2 font-mono">{c.reference ?? "—"}</td>
+                <td className="p-2 font-mono">{c.bl_reference ?? "—"}</td>
                 <td className="p-2 font-mono">{cli?.reference ?? "—"}</td>
                 <td className="p-2">{cli?.client_nom ?? "—"}</td>
                 <td className="p-2">{rep}</td>
                 <td className="p-2">{ville}</td>
-                <td className="p-2 text-right">1</td>
+                <td className="p-2 text-right">{cartonLabel}</td>
                 <td className="p-2 text-right">{cli?.total_quantite ?? "—"}</td>
                 <td className="p-2">{c.date_colisage ? c.date_colisage.slice(0, 10) : "—"}</td>
                 <td className="p-2">{depotNom}</td>
@@ -78,6 +84,7 @@ export function ColisPickerTable({
               </tr>
             );
           })}
+
         </tbody>
       </table>
     </div>
