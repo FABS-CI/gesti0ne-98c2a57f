@@ -200,13 +200,14 @@ export type ClientRelations = {
     commande_id: string | null;
   }>;
   avoirs: Array<{
-    br_id: string;
+    retour_id: string;
     reference: string;
     statut: string;
     date_retour: string;
     montant: number;
     motif: string | null;
   }>;
+
 };
 
 export async function getClientRelations(
