@@ -242,9 +242,6 @@ function TourneesPage() {
   // Synchronisation silencieuse : Realtime + fallback polling avec backoff.
   // Aucun bandeau, aucun toast, aucun bouton "Rafraîchir" — l'UI reste fluide.
   const [rtLive, setRtLive] = useState(false);
-  const navigate = (path: string) => {
-    window.location.href = path;
-  };
   const handleCloturer = async (tourneeId: string, ref: string) => {
     const tid = toast.loading(`Clôture de la tournée ${ref}…`);
     try {
