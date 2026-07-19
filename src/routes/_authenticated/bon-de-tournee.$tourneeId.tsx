@@ -175,7 +175,7 @@ async function fetchFeuille(tourneeId: string): Promise<FeuilleData> {
       montant_total: number | null;
     } | null;
   };
-  const list = ((rows ?? []) as unknown as Row[]) ?? [];
+  const list = (rows ?? []) as unknown as Row[];
 
   // Fetch client details + factures + colis in parallel
   const clientIds = Array.from(
