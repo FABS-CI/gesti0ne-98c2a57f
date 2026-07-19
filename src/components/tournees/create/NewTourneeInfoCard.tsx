@@ -76,23 +76,18 @@ export function NewTourneeInfoCard({
             onChange={(e) => patch({ chauffeur_nom: e.target.value })}
           />
         </Field>
-        <Field label="Véhicule *">
-          <Select
-            value={form.vehicule_id || "__none"}
-            onValueChange={(v) => patch({ vehicule_id: v === "__none" ? "" : v })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionner…" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__none">— Aucun —</SelectItem>
-              {vehicules.map((v) => (
-                <SelectItem key={v.vehicule_id} value={v.vehicule_id}>
-                  {v.immatriculation ?? v.vehicule_id}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <Field label="Véhicule">
+          <Input
+            list="tournee-vehicules-list"
+            placeholder="Immatriculation ou libellé libre"
+            value={form.vehicule_id}
+            onChange={(e) => patch({ vehicule_id: e.target.value })}
+          />
+          <datalist id="tournee-vehicules-list">
+            {vehicules.map((v) => (
+              <option key={v.vehicule_id} value={v.immatriculation ?? v.vehicule_id} />
+            ))}
+          </datalist>
         </Field>
         <Field label="Type de tournée">
           <Select value={form.type_tournee} onValueChange={(v) => patch({ type_tournee: v })}>

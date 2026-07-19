@@ -362,7 +362,7 @@ function NouvelleTourneePage() {
     const match = vehs.find(
       (v) => (v.immatriculation ?? "").toLowerCase() === bestImmat.toLowerCase(),
     );
-    if (match) setForm((f) => ({ ...f, vehicule_id: match.vehicule_id }));
+    if (match) setForm((f) => ({ ...f, vehicule_id: match.immatriculation ?? match.vehicule_id }));
   }, [vehQ.data, colisQ.data, form.vehicule_id]);
 
   const [saving, setSaving] = useState(false);
@@ -370,7 +370,6 @@ function NouvelleTourneePage() {
     const missing: string[] = [];
     if (!form.reference.trim()) missing.push("Référence");
     if (!form.chauffeur_nom.trim()) missing.push("Chauffeur");
-    if (!form.vehicule_id) missing.push("Véhicule");
     if (!form.date_tournee) missing.push("Date de départ");
     if (!form.heure_depart) missing.push("Heure de départ");
     if (!form.depot_depart_id) missing.push("Dépôt de départ");
@@ -384,6 +383,19 @@ function NouvelleTourneePage() {
     if (!canSave) return;
     setSaving(true);
     try {
+      const vehInput = form.vehicule_id.trim();
+      const vehs = vehQ.data ?? [];
+      const matchedVeh = vehInput
+        ? vehs.find(
+            (v) =>
+              v.vehicule_id === vehInput ||
+              (v.immatriculation ?? "").toLowerCase() === vehInput.toLowerCase(),
+          )
+        : null;
+      const notesFinal =
+        vehInput && !matchedVeh
+          ? [`Véhicule: ${vehInput}`, form.notes].filter(Boolean).join("\n")
+          : form.notes || null;
       const payload: Record<string, unknown> = {
         reference: form.reference.trim(),
         date_tournee: form.date_tournee,
@@ -391,10 +403,10 @@ function NouvelleTourneePage() {
         depot_depart_id: form.depot_depart_id,
         responsable_nom: form.responsable_nom || null,
         chauffeur_nom: form.chauffeur_nom || null,
-        vehicule_id: form.vehicule_id || null,
+        vehicule_id: matchedVeh ? matchedVeh.vehicule_id : null,
         statut: "preparee",
         type_tournee: form.type_tournee,
-        notes: form.notes || null,
+        notes: notesFinal,
         nb_colis: totals.nb_colis,
         nb_cartons: totals.nb_cartons,
         nb_clients: totals.nb_clients,
