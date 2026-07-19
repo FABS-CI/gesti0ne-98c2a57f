@@ -242,19 +242,33 @@ function TourneesPage() {
   // Synchronisation silencieuse : Realtime + fallback polling avec backoff.
   // Aucun bandeau, aucun toast, aucun bouton "Rafraîchir" — l'UI reste fluide.
   const [rtLive, setRtLive] = useState(false);
-  const navigate = (path: string) => {
-    window.location.href = path;
-  };
-  const handleCloturer = (tourneeId: string, ref: string) => {
-    if (
-      !confirm(
-        `Clôturer la tournée ${ref} ?\n\nVous serez redirigé vers la page de la tournée pour vérifier les informations obligatoires et confirmer la clôture.`,
-      )
-    ) {
-      return;
+  const handleCloturer = async (tourneeId: string, ref: string) => {
+    const tid = toast.loading(`Clôture de la tournée ${ref}…`);
+    try {
+      const { error } = await supabase.rpc("cloturer_tournee" as never, {
+        _tournee_id: tourneeId,
+      } as never);
+      if (error) {
+        const parts = [
+          error.message,
+          (error as { details?: string }).details,
+          (error as { hint?: string }).hint,
+        ]
+          .filter(Boolean)
+          .join(" — ");
+        throw new Error(parts || "Échec de la clôture");
+      }
+      toast.success(`Tournée ${ref} clôturée`, {
+        id: tid,
+        description: "Suivi des livraisons créé — le chauffeur peut partir.",
+      });
+      qc.invalidateQueries({ queryKey: ["tournees"] });
+      qc.invalidateQueries({ queryKey: ["livsuivi"] });
+      qc.invalidateQueries({ queryKey: ["livsuivi-commandes"] });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Erreur inconnue";
+      toast.error("Impossible de clôturer", { id: tid, description: msg });
     }
-    toast.info("Ouverture de la tournée pour clôture…");
-    navigate(`/tournees/${tourneeId}`);
   };
   const config = buildConfig(handleCloturer);
 
