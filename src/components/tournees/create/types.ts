@@ -14,6 +14,7 @@ export type ColisRow = {
   transporteur: string | null;
   mode_acheminement: string | null;
   date_colisage: string | null;
+  bl_reference?: string | null;
 };
 
 export type BLStatusRow = { bl_id: string; statut: string | null };
