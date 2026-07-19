@@ -1,4 +1,4 @@
-import { COMMANDE_REF_SEARCH_DEFAULTS } from "@/lib/route-schemas";
+
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, Package, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -114,21 +114,15 @@ function ColisageDetailPage() {
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5" />
             <span>
-              <strong>Colisage terminé</strong> — le suivi de livraison a été déclenché
-              automatiquement.
+              <strong>Colisage terminé</strong> — prochaine étape : créer une tournée et la
+              valider pour déclencher le suivi de livraison.
             </span>
           </div>
-          {bl.commande_reference && (
-            <Button asChild size="sm" variant="outline">
-              <Link
-                to="/livraison-suivi/$commandeRef"
-                params={{ commandeRef: bl.commande_reference }}
-                search={COMMANDE_REF_SEARCH_DEFAULTS}
-              >
-                <Truck className="mr-2 h-4 w-4" /> Ouvrir le suivi de livraison
-              </Link>
-            </Button>
-          )}
+          <Button asChild size="sm" variant="outline">
+            <Link to="/tournees/nouvelle">
+              <Truck className="mr-2 h-4 w-4" /> Créer une tournée
+            </Link>
+          </Button>
         </div>
       )}
 
