@@ -6,8 +6,10 @@ import { toast } from "sonner";
 import { ResourceManager, type ResourceConfig } from "@/components/crud/ResourceManager";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { finaliserTournee } from "@/lib/livraison-suivi/writes";
 import { BACKOFF_INITIAL, nextBackoffDelay } from "@/lib/realtime-backoff";
 import { viewCached } from "@/lib/pdf/actions";
+import { invalidatePdfByPrefix } from "@/lib/pdf/pdfCache";
 import { generateBonTourneePDF, generateBonSortiePDF } from "@/lib/pdf/tourneePdf";
 
 function todayISO() {
@@ -161,17 +163,17 @@ function buildConfig(onCloturer: (tourneeId: string, ref: string) => void): Reso
         },
       },
       {
-        label: "Clôturer",
+        label: "Valider",
         icon: CheckCircle2,
         render: (row) => {
           if ((row as { statut?: string }).statut !== "en_cours") return null;
           const id = (row as { tournee_id: string }).tournee_id;
           const ref = ((row as { reference?: string }).reference ?? "") as string;
           return (
-            <Button aria-label="Clôturer la tournée"
+            <Button aria-label="Valider la tournée"
               variant="ghost"
               size="icon"
-              title="Clôturer la tournée"
+              title="Valider la tournée"
               onClick={() => onCloturer(id, ref)}
             >
               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
@@ -243,22 +245,11 @@ function TourneesPage() {
   // Aucun bandeau, aucun toast, aucun bouton "Rafraîchir" — l'UI reste fluide.
   const [rtLive, setRtLive] = useState(false);
   const handleCloturer = async (tourneeId: string, ref: string) => {
-    const tid = toast.loading(`Clôture de la tournée ${ref}…`);
+    const tid = toast.loading(`Validation de la tournée ${ref}…`);
     try {
-      const { error } = await supabase.rpc("cloturer_tournee" as never, {
-        _tournee_id: tourneeId,
-      } as never);
-      if (error) {
-        const parts = [
-          error.message,
-          (error as { details?: string }).details,
-          (error as { hint?: string }).hint,
-        ]
-          .filter(Boolean)
-          .join(" — ");
-        throw new Error(parts || "Échec de la clôture");
-      }
-      toast.success(`Tournée ${ref} clôturée`, {
+      await finaliserTournee(tourneeId);
+      invalidatePdfByPrefix(`bon-tournee-${tourneeId}`);
+      toast.success(`Tournée ${ref} validée`, {
         id: tid,
         description: "Suivi des livraisons créé — le chauffeur peut partir.",
       });
@@ -267,7 +258,7 @@ function TourneesPage() {
       qc.invalidateQueries({ queryKey: ["livsuivi-commandes"] });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Erreur inconnue";
-      toast.error("Impossible de clôturer", { id: tid, description: msg });
+      toast.error("Impossible de valider", { id: tid, description: msg });
     }
   };
   const config = buildConfig(handleCloturer);
