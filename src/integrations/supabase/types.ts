@@ -5971,6 +5971,10 @@ export type Database = {
         Returns: number
       }
       _resolve_exercice_id: { Args: { _d: string }; Returns: string }
+      affecter_colis_tournee: {
+        Args: { _colis_ids: string[]; _tournee_id: string }
+        Returns: Json
+      }
       ajuster_stock_depot: {
         Args: {
           _depot_id: string
@@ -6615,6 +6619,10 @@ export type Database = {
         }[]
       }
       finaliser_tournee: { Args: { _tournee_id: string }; Returns: Json }
+      finaliser_tournee_interne: {
+        Args: { _tournee_id: string }
+        Returns: Json
+      }
       generate_client_reference: { Args: never; Returns: string }
       generate_ecriture_achat: { Args: { _achat_id: string }; Returns: string }
       generate_ecriture_facture: {
