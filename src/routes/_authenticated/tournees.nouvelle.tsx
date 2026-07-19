@@ -269,10 +269,15 @@ function NouvelleTourneePage() {
     [colisQ.data, selected],
   );
   const totals = useMemo(() => {
-    const nb_cartons = selectedRows.length;
-    const commandeIds = new Set<string>();
-    for (const r of selectedRows) if (r.commande_id) commandeIds.add(r.commande_id);
-    const nb_colis = commandeIds.size;
+    // Chaque ligne de la table `colis` = 1 carton (numero_carton).
+    // Un « colis » (envoi/BL) peut regrouper plusieurs cartons ⇒ compte les BL uniques.
+    const nb_cartons = selectedRows.reduce(
+      (s, r) => s + Math.max(1, Number(r.numero_carton ? 1 : r.nb_cartons ?? 1)),
+      0,
+    );
+    const blIds = new Set<string>();
+    for (const r of selectedRows) if (r.bl_id) blIds.add(r.bl_id);
+    const nb_colis = blIds.size || selectedRows.length;
     const clientIds = new Set<string>();
     for (const r of selectedRows) {
       if (!r.commande_id) continue;
@@ -281,6 +286,7 @@ function NouvelleTourneePage() {
     }
     return { nb_colis, nb_cartons, nb_clients: clientIds.size };
   }, [selectedRows, clientByCmd]);
+
 
   const [form, setForm] = useState<TourneeFormState>({
     reference: defaultRef(),
