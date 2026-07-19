@@ -264,8 +264,8 @@ export async function getClientRelations(
       date_livraison: l.date_livraison,
       transporteur: null,
     })) as ClientRelations["livraisons"];
-    void l_unused_type;
   }
+
 
   const factureIds = (fac.data ?? []).map((f) => f.facture_id);
   let paiements: ClientRelations["paiements"] = [];
