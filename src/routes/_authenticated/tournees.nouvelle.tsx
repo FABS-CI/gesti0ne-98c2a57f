@@ -76,15 +76,34 @@ function NouvelleTourneePage() {
 
       const { data: bls, error: blError } = await supabase
         .from("bons_livraison")
-        .select("bl_id,statut")
+        .select("bl_id,statut,reference,commande_id")
         .in("bl_id", blIds)
         .eq("statut", "colisage_termine");
       if (blError) throw blError;
 
-      const blTermines = new Set(((bls ?? []) as BLStatusRow[]).map((bl) => bl.bl_id));
-      return colis.filter((c) => !!c.bl_id && blTermines.has(c.bl_id));
+      const blMap = new Map<string, { commande_id: string | null; reference: string | null }>();
+      for (const bl of (bls ?? []) as Array<{
+        bl_id: string;
+        commande_id: string | null;
+        reference: string | null;
+      }>) {
+        blMap.set(bl.bl_id, { commande_id: bl.commande_id, reference: bl.reference });
+      }
+      // Enrich: use BL's commande_id as fallback when colis.commande_id is null,
+      // and attach the BL reference (bl_reference) for display.
+      return colis
+        .filter((c) => !!c.bl_id && blMap.has(c.bl_id))
+        .map((c) => {
+          const bl = blMap.get(c.bl_id!)!;
+          return {
+            ...c,
+            commande_id: c.commande_id ?? bl.commande_id ?? null,
+            bl_reference: bl.reference ?? null,
+          } as ColisRow;
+        });
     },
   });
+
 
   useEffect(() => {
     const ch = supabase
