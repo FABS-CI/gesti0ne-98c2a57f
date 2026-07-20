@@ -45,9 +45,10 @@ export const Route = createFileRoute("/_authenticated/logistics-costs")({
 
 function LogisticsCostsPage() {
   const qc = useQueryClient();
-  const { has } = usePermissions();
-  const canValidate = has("tournees.valider_couts");
-  const canCancel = has("tournees.annuler_validation");
+  const { has, isSuperAdmin } = usePermissions();
+  const canValidate = isSuperAdmin || has("tournees.valider_couts");
+  const canCancel = isSuperAdmin || has("tournees.annuler_validation");
+
 
   const [f, setF] = useState({
     from: "",
@@ -379,11 +380,12 @@ function LogisticsCostsPage() {
                       </td>
                       <td className="border p-2 text-right">
                         <div className="inline-flex gap-1">
-                          <Button aria-label="Voir la tournée" asChild variant="ghost" size="icon" title="Voir la tournée">
-                            <Link to="/tournees/$tourneeId" params={{ tourneeId: r.tournee_id }}>
+                          <Button aria-label="Voir la tournée" asChild variant="ghost" size="icon" title="Ouvrir le bon de tournée">
+                            <Link to="/bon-de-tournee/$tourneeId" params={{ tourneeId: r.tournee_id }}>
                               <Eye className="h-4 w-4" />
                             </Link>
                           </Button>
+
                           <Button aria-label="Détail des coûts"
                             variant="ghost"
                             size="icon"
