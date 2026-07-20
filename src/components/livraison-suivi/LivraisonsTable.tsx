@@ -11,7 +11,6 @@ import { Progress } from "@/components/ui/progress";
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   Table,
   TableBody,
   TableCell,

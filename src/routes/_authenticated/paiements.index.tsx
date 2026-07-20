@@ -58,7 +58,6 @@ import {
 
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
-import { friendlyError } from "@/lib/friendly-error";
 export const Route = createFileRoute("/_authenticated/paiements/")({
   head: () => authRouteHead("Paiements"),
   component: PaiementsPage,

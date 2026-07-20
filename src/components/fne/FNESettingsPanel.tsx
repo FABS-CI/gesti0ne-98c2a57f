@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { loadFNESettings, updateFNESetting, pingDGI, submitFNEInvoice } from "@/lib/fne-api";
 import { usePermissions } from "@/hooks/use-permissions";
-import { friendlyError } from "@/lib/friendly-error";
 
 const SECTIONS: { title: string; fields: [string, string, ("password" | "text" | "number")?][] }[] =
   [

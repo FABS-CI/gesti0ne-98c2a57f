@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   ArrowLeft,
   Copy,
   RefreshCw,

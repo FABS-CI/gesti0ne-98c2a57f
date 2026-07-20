@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   useInfiniteQuery,
   useMutation,
   useQuery,

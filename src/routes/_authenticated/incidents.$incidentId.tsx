@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   AlertTriangle,
   ArrowLeft,
   Calendar,

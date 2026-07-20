@@ -32,7 +32,6 @@ import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
-import { friendlyError } from "@/lib/friendly-error";
 export const Route = createFileRoute("/_authenticated/clients/")({
   head: () => authRouteHead("Clients"),
   validateSearch: z.object({ edit: z.string().optional() }),

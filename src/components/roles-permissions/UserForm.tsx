@@ -12,7 +12,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   adminCreateUser,
   adminUpdateUserProfile,
 } from "@/lib/users-admin.functions";

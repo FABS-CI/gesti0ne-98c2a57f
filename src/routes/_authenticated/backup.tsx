@@ -2,7 +2,6 @@ import { getCurrentUser } from "@/lib/current-user";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   DatabaseBackup,
   Download,
   Loader2,

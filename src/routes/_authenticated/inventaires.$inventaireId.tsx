@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowLeft, ClipboardList } from "lucide-react";
-import { friendlyError } from "@/lib/friendly-error";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

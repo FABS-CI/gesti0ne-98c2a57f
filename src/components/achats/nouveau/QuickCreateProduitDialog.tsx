@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   Dialog,
   DialogContent,
   DialogFooter,

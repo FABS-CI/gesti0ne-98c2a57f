@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowLeft, Gift, Save } from "lucide-react";
-import { friendlyError } from "@/lib/friendly-error";
 
 import { Button } from "@/components/ui/button";
 

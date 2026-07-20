@@ -36,7 +36,6 @@ import { getClient } from "@/lib/clients-api";
 import { validatePaiement } from "@/lib/paiement-recap";
 import { invalidatePaiement } from "@/lib/cache-invalidation";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
-import { friendlyError } from "@/lib/friendly-error";
 
 const searchSchema = z.object({
   clientId: fallback(z.string().optional(), undefined).default(undefined),

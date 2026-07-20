@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   Search,
   UserPlus,
   Pencil,

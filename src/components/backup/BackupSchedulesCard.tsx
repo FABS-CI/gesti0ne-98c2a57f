@@ -11,7 +11,6 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Can } from "@/components/rbac/Can";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   Select,
   SelectContent,
   SelectItem,
