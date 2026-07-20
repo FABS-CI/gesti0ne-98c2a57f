@@ -102,6 +102,19 @@ d("Retours — intégration RPC", () => {
       ssl: process.env.PGSSLMODE === "disable" ? false : { rejectUnauthorized: false },
     });
     await db.connect();
+    // Charge un super_admin dans les claims JWT pour toute la session : les RPC
+    // (creer_retour, annuler_retour, …) exigent une auth.uid() valide via
+    // assert_permission — sans quoi elles échouent avec SQLSTATE 28000 avant
+    // les checks métier P0001…P0005 testés ici.
+    const admins = await q<{ user_id: string }>(
+      "SELECT user_id FROM public.user_roles WHERE role='super_admin' LIMIT 1",
+    );
+    if (admins.length) {
+      await db.query(
+        "SELECT set_config('request.jwt.claims', json_build_object('sub', $1::text, 'role','authenticated')::text, false)",
+        [admins[0].user_id],
+      );
+    }
     const [ex] = await q<{ id: string }>("SELECT public.exercice_actif_id() AS id");
     exerciceId = ex.id;
     const [dep] = await q<{ depot_id: string }>(
