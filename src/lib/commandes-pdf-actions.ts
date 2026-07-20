@@ -16,6 +16,7 @@ import {
 import { emailDoc, printBlobAsync, viewBlobAsync } from "@/lib/pdf/actions";
 import { getOrCreatePdf, pdfCacheKey } from "@/lib/pdf/pdfCache";
 import type { Commande } from "@/lib/commandes-api";
+import { friendlyError } from '@/lib/friendly-error';
 
 // ── Proforma ──────────────────────────────────────────────────────────────────
 
@@ -53,7 +54,7 @@ export async function downloadProforma(c: Commande) {
     if (!built) return;
     downloadBlob(built.blob, fileNameFor(built.reference, c.client_nom));
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur PDF proforma");
+    toast.error(friendlyError(e, "Erreur PDF proforma"));
   }
 }
 
@@ -66,7 +67,7 @@ export async function printProforma(c: Commande) {
       }),
     );
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur impression");
+    toast.error(friendlyError(e, "Erreur impression"));
   }
 }
 
@@ -79,7 +80,7 @@ export async function viewProforma(c: Commande) {
       }),
     );
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur aperçu");
+    toast.error(friendlyError(e, "Erreur aperçu"));
   }
 }
 
@@ -116,7 +117,7 @@ export async function downloadBonCommande(c: Commande) {
     const built = await buildBonCommandeBlob(c);
     downloadBlob(built.blob, fileNameFor(built.reference, c.client_nom));
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur PDF bon de commande");
+    toast.error(friendlyError(e, "Erreur PDF bon de commande"));
   }
 }
 
@@ -124,7 +125,7 @@ export async function printBonCommande(c: Commande) {
   try {
     await printBlobAsync(buildBonCommandeBlob(c).then((b) => b.blob));
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur impression");
+    toast.error(friendlyError(e, "Erreur impression"));
   }
 }
 
@@ -132,7 +133,7 @@ export async function viewBonCommande(c: Commande) {
   try {
     await viewBlobAsync(buildBonCommandeBlob(c).then((b) => b.blob));
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur aperçu");
+    toast.error(friendlyError(e, "Erreur aperçu"));
   }
 }
 
@@ -172,7 +173,7 @@ export async function downloadFactureFor(c: Commande) {
     if (!built) return;
     downloadBlob(built.blob, fileNameFor(built.reference, c.client_nom));
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur PDF facture");
+    toast.error(friendlyError(e, "Erreur PDF facture"));
   }
 }
 
@@ -185,7 +186,7 @@ export async function printFactureFor(c: Commande) {
       }),
     );
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur impression");
+    toast.error(friendlyError(e, "Erreur impression"));
   }
 }
 
@@ -198,7 +199,7 @@ export async function viewFactureFor(c: Commande) {
       }),
     );
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur aperçu");
+    toast.error(friendlyError(e, "Erreur aperçu"));
   }
 }
 
@@ -238,7 +239,7 @@ export async function downloadBLFor(c: Commande) {
     if (!built) return;
     downloadBlob(built.blob, fileNameFor(built.reference, c.client_nom));
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur PDF BL");
+    toast.error(friendlyError(e, "Erreur PDF BL"));
   }
 }
 
@@ -251,7 +252,7 @@ export async function printBLFor(c: Commande) {
       }),
     );
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur impression");
+    toast.error(friendlyError(e, "Erreur impression"));
   }
 }
 
@@ -264,7 +265,7 @@ export async function viewBLFor(c: Commande) {
       }),
     );
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : "Erreur aperçu");
+    toast.error(friendlyError(e, "Erreur aperçu"));
   }
 }
 

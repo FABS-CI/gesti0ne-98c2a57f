@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { EmptyState } from "@/components/common/EmptyState";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from '@/lib/friendly-error';
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   component: NotificationsCentre,
@@ -85,7 +86,7 @@ function NotificationsCentre() {
       toast.success(`${r.created} alerte(s) générée(s) (${r.skipped} déjà présente(s))`);
       invalidate();
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur génération"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur génération")),
   });
 
   const allerLue = useMutation({

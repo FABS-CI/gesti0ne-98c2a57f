@@ -141,7 +141,7 @@ function NouveauPaiementPage() {
       solde: selectedFacture ? Number(selectedFacture.solde) : undefined,
     });
     if (!r.ok) {
-      toast.error(r.message);
+      toast.error(friendlyError(r));
       return false;
     }
     return true;

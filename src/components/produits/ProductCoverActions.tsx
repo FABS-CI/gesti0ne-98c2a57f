@@ -7,6 +7,7 @@ import {
   deleteProductCover,
   uploadProductCover,
 } from "@/lib/produits-api";
+import { friendlyError } from '@/lib/friendly-error';
 
 interface Props {
   produit: Produit;
@@ -32,7 +33,7 @@ export function ProductCoverActions({ produit, onChanged }: Props) {
       toast.success("Couverture mise à jour");
       onChanged?.(updated);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Échec du téléversement");
+      toast.error(friendlyError(e, "Échec du téléversement"));
     } finally {
       setBusy(null);
       if (fileRef.current) fileRef.current.value = "";
@@ -46,7 +47,7 @@ export function ProductCoverActions({ produit, onChanged }: Props) {
       toast.success("Couverture supprimée");
       onChanged?.();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Échec de la suppression");
+      toast.error(friendlyError(e, "Échec de la suppression"));
     } finally {
       setBusy(null);
     }

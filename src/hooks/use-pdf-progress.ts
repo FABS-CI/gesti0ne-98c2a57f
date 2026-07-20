@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { friendlyError } from '@/lib/friendly-error';
 
 export type PdfMode = "preview" | "download";
 export interface PdfProgress {
@@ -47,7 +48,7 @@ export function usePdfProgress() {
       const blob = await build();
       if (blob) onDone(blob);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur de génération");
+      toast.error(friendlyError(e, "Erreur de génération"));
     } finally {
       setPdfProgress({ pct: 100, label: "Terminé", mode });
       setTimeout(() => setPdfProgress(null), 250);
