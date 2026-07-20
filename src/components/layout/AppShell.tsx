@@ -69,6 +69,22 @@ export function AppShell({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Préchargement intelligent (Lot 7 perf) : à l'idle, on chauffe les
+  // routes les plus visitées après login pour supprimer la latence
+  // perçue au 1er clic sur la sidebar.
+  const queryClient = useQueryClient();
+  const prefetchTargets = useMemo<PrefetchTarget[]>(
+    () => [
+      { route: "/tableau-de-bord" },
+      { route: "/commandes" },
+      { route: "/factures" },
+      { route: "/clients" },
+      { route: "/stock" },
+    ],
+    [],
+  );
+  useIdlePrefetch(prefetchTargets, queryClient, !!user && !blocked);
+
   return (
     <ExerciceProvider>
       <SidebarProvider>
