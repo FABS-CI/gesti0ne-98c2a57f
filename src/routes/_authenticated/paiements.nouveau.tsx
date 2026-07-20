@@ -250,6 +250,36 @@ function NouveauPaiementPage() {
           mode={mode}
         />
       )}
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmer l'enregistrement du paiement</AlertDialogTitle>
+            <AlertDialogDescription>
+              Vérifiez le récapitulatif ci-dessous avant d'enregistrer définitivement le paiement.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {recap && selectedFacture && (
+            <div className="space-y-2 rounded-md border p-3 text-sm">
+              <div className="flex justify-between"><span className="text-muted-foreground">Client</span><span className="font-medium">{clientNom || "—"}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Facture</span><span className="font-mono text-xs">{recap.reference}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Date paiement</span><span>{form.date_paiement}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Mode</span><span className="capitalize">{form.mode_paiement}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Référence</span><span className="font-mono text-xs">{form.reference_paiement}</span></div>
+              <div className="my-2 border-t" />
+              <div className="flex justify-between"><span className="text-muted-foreground">Reste avant</span><span>{formatFCFA(recap.reste_avant)}</span></div>
+              <div className="flex justify-between text-primary"><span>Montant imputé</span><span className="font-semibold">{formatFCFA(recap.montant_impute)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Reste après</span><span className="font-semibold">{formatFCFA(recap.reste_apres)}</span></div>
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={doSave} disabled={mutation.isPending}>
+              {mutation.isPending ? "Enregistrement…" : "Confirmer et enregistrer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
