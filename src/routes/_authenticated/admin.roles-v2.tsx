@@ -83,7 +83,7 @@ function RolesV2Page() {
   const reload = useCallback(async () => {
     setLoading(true);
     try {
-      const [d, m, r, p, ro, rp, par, ur, pr] = await Promise.all([
+      const [d, m, r, p, ro, rp, par, ur, pr, dp] = await Promise.all([
         supabase.from("rbac2_domains").select("*").order("sort"),
         supabase.from("rbac2_modules").select("*").order("sort"),
         supabase.from("rbac2_resources").select("*").order("sort"),
@@ -93,8 +93,9 @@ function RolesV2Page() {
         supabase.from("rbac2_role_parents").select("*"),
         supabase.from("rbac2_user_roles").select("*"),
         supabase.from("profiles").select("id, email, nom, prenoms"),
+        supabase.from("rbac2_perm_deps").select("*"),
       ]);
-      const anyErr = [d, m, r, p, ro, rp, par, ur, pr].find((x) => x.error);
+      const anyErr = [d, m, r, p, ro, rp, par, ur, pr, dp].find((x) => x.error);
       if (anyErr?.error) throw anyErr.error;
       setDomains((d.data ?? []) as Domain[]);
       setModules((m.data ?? []) as Module[]);
@@ -105,6 +106,7 @@ function RolesV2Page() {
       setRoleParents((par.data ?? []) as RoleParent[]);
       setUserRoles((ur.data ?? []) as UserRole[]);
       setProfiles((pr.data ?? []) as Profile[]);
+      setDeps((dp.data ?? []) as PermDep[]);
       if (!selectedRole && (ro.data ?? []).length > 0) {
         setSelectedRole((ro.data as Role[])[0].code);
       }
