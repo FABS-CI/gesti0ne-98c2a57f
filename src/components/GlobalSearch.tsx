@@ -186,8 +186,8 @@ export function GlobalSearch() {
           placeholder="Rechercher un client, représentant, produit, facture, BL…"
         />
         <CommandList>
-          {debounced.trim().length < 2 ? (
-            <CommandEmpty>Tapez au moins 2 caractères…</CommandEmpty>
+          {debounced.trim().length < 3 ? (
+            <CommandEmpty>Tapez au moins 3 caractères…</CommandEmpty>
           ) : isFetching && hits.length === 0 ? (
             <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" /> Recherche…
