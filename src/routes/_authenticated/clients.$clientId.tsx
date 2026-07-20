@@ -70,8 +70,24 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
   const { data: client } = useSuspenseQuery(clientQO(clientId));
   const { data: factures } = useSuspenseQuery(clientFacturesQO(clientId));
   const { data: counts } = useSuspenseQuery(clientCountsQO(clientId));
-  // Précharge en idle les onglets les plus consultés (commandes, paiements, proformas)
-  useIdlePrefetch(clientId, queryClient);
+  // Précharge en idle les onglets les plus consultés
+  useEffect(() => {
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const run = () => {
+      queryClient.prefetchQuery(clientCommandesQO(clientId));
+      queryClient.prefetchQuery(clientPaiementsQO(clientId));
+      queryClient.prefetchQuery(clientProformasQO(clientId));
+    };
+    if (typeof w.requestIdleCallback === "function") {
+      const id = w.requestIdleCallback(run, { timeout: 2000 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(run, 400);
+    return () => window.clearTimeout(id);
+  }, [clientId, queryClient]);
 
   const prefetchOnHover = (fn: () => void) => ({ onMouseEnter: fn, onFocus: fn });
 
