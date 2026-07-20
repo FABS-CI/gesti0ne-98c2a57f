@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { isUserRestricted } from "@/lib/permissions";
 import { useNotificationsRealtime } from "@/hooks/use-notifications-realtime";
 import { usePresenceBroadcast } from "@/hooks/use-presence-broadcast";
+import { useRealtimeBus } from "@/hooks/use-realtime-bus";
 import { ShieldAlert } from "lucide-react";
 import { ExerciceProvider } from "@/contexts/ExerciceContext";
 import { ExerciceReadOnlyBanner } from "./ExerciceReadOnlyBanner";
@@ -52,6 +53,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   // Écoute globale des notifications temps réel (son + toast + notif navigateur)
   useNotificationsRealtime();
+
+  // Bus temps réel : synchro auto listes ventes/stock/livraison/paiements (Lot 1 perf).
+  useRealtimeBus();
 
   // Publie la présence temps réel de l'utilisateur courant (canal app-presence)
   usePresenceBroadcast({ id: user?.id ?? "", email: user?.email });
