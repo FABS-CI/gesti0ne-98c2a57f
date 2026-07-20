@@ -1,10 +1,17 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: () => {
-    // `/auth` redirige déjà une session active vers sa page d'arrivée.
-    // Passer d'abord par le dashboard créait plusieurs documents SSR successifs
-    // et pouvait hydrater la page de connexion avec l'état de la route précédente.
-    throw redirect({ to: "/auth" });
-  },
+  component: IndexRedirect,
 });
+
+function IndexRedirect() {
+  useEffect(() => {
+    // La preview ouvre toujours `/`. Une redirection HTTP à cet endroit pouvait
+    // mélanger l'état SSR de `/` avec le document final de `/auth` pendant
+    // l'hydratation. Un nouveau document explicite élimine cette course.
+    window.location.replace("/auth");
+  }, []);
+
+  return null;
+}
