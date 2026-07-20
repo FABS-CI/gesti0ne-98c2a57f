@@ -343,8 +343,8 @@ function FacturesPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={11} className="py-8 text-center text-muted-foreground">
-                    Chargement...
+                  <TableCell colSpan={11} className="p-4">
+                    <SkeletonTable rows={8} cols={7} />
                   </TableCell>
                 </TableRow>
               ) : factures.length === 0 ? (
