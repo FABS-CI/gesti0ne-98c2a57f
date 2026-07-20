@@ -10,7 +10,6 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-import { RouteError, RouteNotFound } from "@/components/route-boundaries";
   Table,
   TableBody,
   TableCell,
@@ -18,6 +17,7 @@ import { RouteError, RouteNotFound } from "@/components/route-boundaries";
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/commandes/$commandeId/")({
   component: CommandeDetailPage,

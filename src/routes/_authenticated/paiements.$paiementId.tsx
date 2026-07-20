@@ -22,7 +22,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-import { RouteError, RouteNotFound } from "@/components/route-boundaries";
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -33,6 +32,7 @@ import { RouteError, RouteNotFound } from "@/components/route-boundaries";
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/paiements/$paiementId")({
   component: PaiementDetailPage,
