@@ -368,7 +368,12 @@ function RolesV2Page() {
             Console inspirée d'Odoo Enterprise · {roles.length} rôles · {perms.length} permissions · {domains.length} domaines
           </p>
         </div>
-        <CreateRoleDialog onCreate={createRole} />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setDiagOpen(true)}>
+            <Stethoscope className="h-4 w-4 mr-2" />Diagnostic
+          </Button>
+          <CreateRoleDialog onCreate={createRole} />
+        </div>
       </div>
 
       {loading ? (
