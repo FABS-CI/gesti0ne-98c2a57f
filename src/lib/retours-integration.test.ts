@@ -106,8 +106,11 @@ d("Retours — intégration RPC", () => {
     // (creer_retour, annuler_retour, …) exigent une auth.uid() valide via
     // assert_permission — sans quoi elles échouent avec SQLSTATE 28000 avant
     // les checks métier P0001…P0005 testés ici.
+    // Sélectionne un super_admin qui possède RÉELLEMENT la permission via
+    // RBAC v2 (certains super_admin historiques n'ont jamais été rattachés
+    // aux rôles rbac2_*).
     const admins = await q<{ user_id: string }>(
-      "SELECT user_id FROM public.user_roles WHERE role='super_admin' LIMIT 1",
+      "SELECT ur.user_id FROM public.user_roles ur WHERE ur.role='super_admin' AND public.has_permission_v2(ur.user_id, 'retours.creer') LIMIT 1",
     );
     if (admins.length) {
       await db.query(
