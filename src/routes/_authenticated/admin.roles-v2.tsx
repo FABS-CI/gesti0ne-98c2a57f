@@ -37,6 +37,7 @@ type RolePerm = { role_code: string; perm_code: string; granted: boolean };
 type RoleParent = { role_code: string; parent_code: string };
 type UserRole = { user_id: string; role_code: string };
 type Profile = { id: string; email: string | null; nom: string | null; prenoms: string | null };
+type PermDep = { perm_code: string; requires_code: string };
 type AuditRow = {
   id: number; actor_id: string | null; action: string; target_type: string;
   target_id: string; before: unknown; after: unknown; at: string;
