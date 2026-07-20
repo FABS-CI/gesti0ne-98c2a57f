@@ -1,15 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowLeft, FileDown, FileText, Mail, MessageCircle, Pencil, PlusCircle, Wallet, Eye } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, Mail, MessageCircle, Pencil, PlusCircle, Wallet } from "lucide-react";
 
 import { TYPE_COLOR } from "@/lib/company";
 import { formatFCFA } from "@/lib/format";
-import { downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
-import { buildEtatCompteClientPDF } from "@/lib/pdf/etat-compte-builder";
-import { buildClientHistoriquePDF } from "@/lib/pdf/client-historique-builder";
-import { ClientSoldeDialog } from "@/components/clients/detail/ClientSoldeDialog";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -62,9 +57,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [editOpen, setEditOpen] = useState(false);
-  const [generating, setGenerating] = useState(false);
-  const [historiqueBusy, setHistoriqueBusy] = useState(false);
-  const [soldeOpen, setSoldeOpen] = useState(false);
   const { has } = usePermissions();
   const canSeeSolde = has("clients.voir_ca");
 
