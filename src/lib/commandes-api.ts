@@ -161,7 +161,11 @@ export async function listCommandes(params: ListCommandesParams = {}) {
     montantMax,
     exerciceId,
   } = params;
-  let query = supabase.from("commandes").select("*", { count: "estimated" });
+  // P0 perf : projection restreinte aux colonnes utilisées par la liste
+  // (badges, KPI, actions). Évite de transférer 40+ colonnes/ligne.
+  const LIST_COLS =
+    "commande_id, reference, numero, client_id, client_nom, telephone, ville, statut, date_commande, montant_total, net_a_payer, created_at, commercial_nom, created_by";
+  let query = supabase.from("commandes").select(LIST_COLS, { count: "estimated" });
 
   if (exerciceId) query = query.eq("exercice_id", exerciceId);
   if (q) query = query.or(`reference.ilike.%${q}%,client_nom.ilike.%${q}%`);

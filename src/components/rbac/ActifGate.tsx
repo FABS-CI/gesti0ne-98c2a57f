@@ -16,8 +16,10 @@ export function ActifGate({ children }: { children: React.ReactNode }) {
   const { data, isLoading } = useQuery({
     queryKey: ["profile-actif", user?.id],
     enabled: !!user?.id,
-    staleTime: 60_000,
-    refetchOnWindowFocus: true,
+    staleTime: 10 * 60_000, // 10 min : profils actif change rarement
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
