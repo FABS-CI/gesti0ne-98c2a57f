@@ -42,7 +42,7 @@ import {
   clientPaiementsQO,
   clientLivraisonsQO,
 } from "@/lib/client-detail-queries";
-import { useIdlePrefetch } from "@/hooks/use-idle-prefetch";
+
 
 export const Route = createFileRoute("/_authenticated/clients/$clientId")({
   component: ClientDetailPage,
