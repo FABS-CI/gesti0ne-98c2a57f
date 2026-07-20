@@ -58,7 +58,23 @@ function registerRbacRealtime(userId: string, queryClient: QueryClient) {
       { event: "*", schema: "public", table: "rbac_user_roles", filter: `user_id=eq.${userId}` },
       invalidatePermissions,
     )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "rbac2_role_perms" },
+      invalidatePermissions,
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "rbac2_role_parents" },
+      invalidatePermissions,
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "rbac2_user_roles", filter: `user_id=eq.${userId}` },
+      invalidatePermissions,
+    )
     .subscribe();
+
 
   const subscription: RbacRealtimeSubscription = {
     userId,
@@ -106,12 +122,18 @@ export function usePermissions() {
 
     queryFn: async () => {
       if (!userId) return new Set<string>();
-      const { data, error } = await supabase.rpc("list_user_permissions", {
-        _user_id: userId,
-      });
-      if (error) throw error;
-      return expandRbacViewPermissions((data ?? []).map((r) => r.permission_code));
+      // Priorité RBAC v2 : héritage multiple + deny explicite.
+      // Fallback v1 quand l'utilisateur n'a pas encore de rôle rbac2.
+      const v2 = await supabase.rpc("list_user_permissions_v2", { _user_id: userId });
+      if (v2.error) throw v2.error;
+      const v2Codes = (v2.data ?? []).map((r) => r.permission_code);
+      if (v2Codes.length > 0) return expandRbacViewPermissions(v2Codes);
+
+      const v1 = await supabase.rpc("list_user_permissions", { _user_id: userId });
+      if (v1.error) throw v1.error;
+      return expandRbacViewPermissions((v1.data ?? []).map((r) => r.permission_code));
     },
+
   });
 
   // Realtime : un seul abonnement RBAC par utilisateur, partagé par tous les composants.
