@@ -17,6 +17,7 @@ import {
 } from "@/lib/users-admin.functions";
 import { useRolesQuery } from "@/hooks/use-roles-permissions";
 import type { UserEditPayload } from "./UserFormDialog";
+import { friendlyError } from "@/lib/friendly-error";
 
 interface Props {
   editing?: UserEditPayload | null;

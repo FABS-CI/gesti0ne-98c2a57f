@@ -24,6 +24,7 @@ import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { usePermissions } from "@/hooks/use-permissions";
 import { formatFCFA } from "@/lib/format";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/comptabilite/audit")({
   component: ComptaAuditPage,

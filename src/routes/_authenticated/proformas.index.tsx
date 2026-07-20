@@ -15,6 +15,7 @@ import { deleteProformaDefinitif } from "@/lib/proformas-api";
 
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 async function buildProformaBlob(row: Record<string, unknown>): Promise<Blob> {
   const proformaId = row.proforma_id as string;
   const [lignes, clientInfo, totals] = await Promise.all([

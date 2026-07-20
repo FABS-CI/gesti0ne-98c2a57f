@@ -46,6 +46,7 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { buildIncidentPdfBlob, incidentPdfFilename } from "@/lib/incidents-pdf";
 import { printCached, viewCached } from "@/lib/pdf/actions";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/incidents/$incidentId")({
   component: IncidentDetailPage,

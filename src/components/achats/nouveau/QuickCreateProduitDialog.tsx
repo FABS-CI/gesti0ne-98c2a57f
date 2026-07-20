@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createProduit, type Produit } from "@/lib/produits-api";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Props = {
   open: boolean;

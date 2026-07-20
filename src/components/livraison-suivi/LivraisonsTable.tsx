@@ -29,6 +29,7 @@ import {
 } from "@/lib/livraison-suivi-api";
 import { deleteLivraisonSuivi } from "@/lib/livraison-suivi/writes";
 import type { ColisInfo } from "@/lib/livraison-suivi/types";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Props = {
   rows: Array<LivSuiviCommande & { colis?: ColisInfo | null }>;

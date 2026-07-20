@@ -18,6 +18,7 @@ import { DocumentSection } from "@/components/retours/nouveau/DocumentSection";
 import { InfosSection } from "@/components/retours/nouveau/InfosSection";
 import { LignesSection } from "@/components/retours/nouveau/LignesSection";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/retours/nouveau")({
   component: RetourNouveauPage,

@@ -33,6 +33,7 @@ import {
 } from "@/lib/fne-api";
 import { formatFCFA } from "@/lib/format";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/fne-detail/$factureId")({
   component: FNEDetail,

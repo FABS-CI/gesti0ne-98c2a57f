@@ -30,6 +30,7 @@ import type { Produit } from "@/lib/produits-api";
 import { creerIncident, TYPES_INCIDENT } from "@/lib/incidents-api";
 import { usePermissions } from "@/hooks/use-permissions";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/incidents/nouveau")({
   component: NouvelIncidentPage,

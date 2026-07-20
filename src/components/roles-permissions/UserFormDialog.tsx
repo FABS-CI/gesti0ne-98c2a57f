@@ -16,6 +16,7 @@ import {
   adminUpdateUserProfile,
 } from "@/lib/users-admin.functions";
 import { useRolesQuery } from "@/hooks/use-roles-permissions";
+import { friendlyError } from "@/lib/friendly-error";
 
 export interface UserEditPayload {
   id: string;

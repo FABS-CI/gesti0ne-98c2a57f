@@ -51,6 +51,7 @@ import { Can } from "@/components/rbac/Can";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
 import { invalidateColisage } from "@/lib/cache-invalidation";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/bons-livraison")({
   component: BonsLivraisonListPage,

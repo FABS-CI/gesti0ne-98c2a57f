@@ -24,6 +24,7 @@ import { InventaireKpis } from "@/components/inventaires/detail/InventaireKpis";
 import { InventaireLignesTable } from "@/components/inventaires/detail/InventaireLignesTable";
 import { InventaireHeaderActions } from "@/components/inventaires/detail/InventaireHeaderActions";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/inventaires/$inventaireId")({
   component: InventaireDetailPage,

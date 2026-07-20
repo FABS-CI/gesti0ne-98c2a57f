@@ -40,6 +40,7 @@ import { downloadDriveFile } from "@/lib/gdrive-download.functions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@tanstack/react-router";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/backup")({
   component: BackupPage,

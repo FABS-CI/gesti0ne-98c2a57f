@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Can } from "@/components/rbac/Can";
+import { friendlyError } from "@/lib/friendly-error";
 import {
   Select,
   SelectContent,

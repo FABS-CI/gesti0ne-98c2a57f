@@ -21,6 +21,7 @@ import { PageLayoutCard } from "@/components/paie/nouveau/PageLayoutCard";
 import { ActionsBar } from "@/components/paie/nouveau/ActionsBar";
 import { PreviewDialog } from "@/components/paie/nouveau/PreviewDialog";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/paie/nouveau")({
   component: NouveauBulletinPage,

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { fmtFCFA, type TourneeCout } from "./types";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function ValidateDialog({
   row,

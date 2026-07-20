@@ -63,6 +63,7 @@ import type { z } from "zod";
 type FormInput = z.input<typeof clientFormSchema>;
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { audit } from "@/lib/audit-client";
+import { friendlyError } from "@/lib/friendly-error";
 
 interface ClientFormProps {
   clientId?: string;

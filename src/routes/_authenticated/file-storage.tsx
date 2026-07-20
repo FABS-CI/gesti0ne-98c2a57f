@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Can } from "@/components/rbac/Can";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/file-storage")({
   component: FileStoragePage,

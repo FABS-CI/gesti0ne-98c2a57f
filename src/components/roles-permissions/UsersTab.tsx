@@ -47,6 +47,7 @@ import { adminDeactivateUser, adminReactivateUser, adminDeleteUser } from "@/lib
 import { mfaAdminSetRequired, mfaAdminResetUser } from "@/lib/mfa.functions";
 import { Switch } from "@/components/ui/switch";
 import type { UserProfile } from "@/lib/rbac-api";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function UsersTab() {
   const [search, setSearch] = useState("");

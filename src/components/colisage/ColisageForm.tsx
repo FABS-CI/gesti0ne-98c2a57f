@@ -33,6 +33,7 @@ import {
 } from "./form/ColisageAcheminementFields";
 import { ColisageCartonsSection } from "./form/ColisageCartonsSection";
 import type { CartonState, Responsable, Livreur, ClientInfo } from "./form/colisage-form-types";
+import { friendlyError } from "@/lib/friendly-error";
 import {
   livraisonSchema,
   expeditionSchema,

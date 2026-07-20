@@ -31,6 +31,7 @@ import { invalidateSpecimen } from "@/lib/cache-invalidation";
 import { Can } from "@/components/rbac/Can";
 import { downloadBlob, fileNameFor, generateBonRemiseSpecimensPDF } from "@/lib/pdf/fabsTemplates";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/specimens/$specimenId")({
   component: SpecimenDetailPage,

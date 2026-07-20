@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import type { TourneeCout } from "./types";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function RefuseDialog({
   row,

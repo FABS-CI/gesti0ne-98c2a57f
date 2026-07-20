@@ -39,6 +39,7 @@ import { DetailDialog } from "@/components/logistics-costs/DetailDialog";
 import { ValidateDialog } from "@/components/logistics-costs/ValidateDialog";
 import { RefuseDialog } from "@/components/logistics-costs/RefuseDialog";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/logistics-costs")({
   component: LogisticsCostsPage,

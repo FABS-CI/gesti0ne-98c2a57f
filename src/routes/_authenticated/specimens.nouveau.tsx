@@ -18,6 +18,7 @@ import { InfosGeneralesSection } from "@/components/specimens/nouveau/InfosGener
 import { BeneficiaireSection } from "@/components/specimens/nouveau/BeneficiaireSection";
 import { LignesProduitsSection } from "@/components/specimens/nouveau/LignesProduitsSection";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/specimens/nouveau")({
   component: SpecimenNouveauPage,
