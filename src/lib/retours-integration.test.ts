@@ -84,11 +84,13 @@ async function creerRetourPayload(payload: Record<string, unknown>) {
 }
 
 async function solde(clientId: string): Promise<number> {
-  const [row] = await q<{ solde: string }>("SELECT public.calcul_solde_client($1,$2) AS solde", [
-    clientId,
-    exerciceId,
-  ]);
-  return Number(row.solde);
+  // Recalcule le solde côté RPC puis lit la valeur matérialisée sur clients.
+  await db.query("SELECT public.recalculer_solde_client($1)", [clientId]);
+  const [row] = await q<{ solde: string | null }>(
+    "SELECT solde FROM public.clients WHERE client_id=$1",
+    [clientId],
+  );
+  return Number(row?.solde ?? 0);
 }
 
 d("Retours — intégration RPC", () => {
