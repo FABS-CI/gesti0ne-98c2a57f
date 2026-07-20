@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   assignRoleToUser,
   bulkSetRolePermissions,
   copyRolePermissions,
@@ -45,7 +46,7 @@ export function useDeleteRole() {
       toast.success("Rôle supprimé");
       qc.invalidateQueries({ queryKey: ["rbac", "roles"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 }
 
@@ -66,7 +67,7 @@ export function useDuplicateRole() {
       qc.invalidateQueries({ queryKey: ["rbac", "roles"] });
       qc.invalidateQueries({ queryKey: ["rbac", "role-permissions"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 }
 
@@ -79,7 +80,7 @@ export function useToggleRoleActive() {
       toast.success(vars.actif ? "Rôle activé" : "Rôle désactivé");
       qc.invalidateQueries({ queryKey: ["rbac", "roles"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 }
 
@@ -116,7 +117,7 @@ export function useSaveRole(
       qc.invalidateQueries({ queryKey: ["rbac", "roles"] });
       onSuccess();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 }
 
@@ -167,7 +168,7 @@ export function useTogglePermission(currentRoleId: string | null) {
     },
     onError: (e: Error, _vars, ctx) => {
       if (ctx?.previous !== undefined) qc.setQueryData(queryKey, ctx.previous);
-      toast.error(e.message || "Échec de l'enregistrement");
+      toast.error(friendlyError(e, "Échec de l'enregistrement"));
     },
     // Force la resynchronisation avec la DB : évite qu'une case reste "cochée"
     // dans l'UI si la RPC a échoué silencieusement ou si une écriture partielle
@@ -213,7 +214,7 @@ export function useBulkSetPermissions(currentRoleId: string | null) {
     },
     onError: (e: Error, _vars, ctx) => {
       if (ctx?.previous !== undefined) qc.setQueryData(queryKey, ctx.previous);
-      toast.error(e.message || "Échec de la mise à jour");
+      toast.error(friendlyError(e, "Échec de la mise à jour"));
     },
     onSettled: () => {
       qc.invalidateQueries({ queryKey });
@@ -233,7 +234,7 @@ export function useCopyPermissions(currentRoleId: string | null) {
       toast.success("Permissions copiées");
       qc.invalidateQueries({ queryKey: ["rbac", "role-permissions", currentRoleId] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 }
 
@@ -265,7 +266,7 @@ export function useToggleUserRole() {
       toast.success("Assignation mise à jour");
       qc.invalidateQueries({ queryKey: ["rbac", "user-role-assigns"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 }
 

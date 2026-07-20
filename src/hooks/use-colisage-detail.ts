@@ -12,6 +12,7 @@ import {
 import { getParametre } from "@/lib/parametres-api";
 import { COMMUNES_ABIDJAN } from "@/lib/ci-locations";
 import { invalidateColisage } from "@/lib/cache-invalidation";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function useColisageDetail(blId: string) {
   const qc = useQueryClient();
@@ -98,7 +99,7 @@ export function useColisageDetail(blId: string) {
       toast.success("Colisage annulé");
       invalidateAll();
     },
-    onError: (e: Error) => toast.error(e.message || "Erreur lors de l'annulation"),
+    onError: (e: Error) => toast.error(friendlyError(e, "Erreur lors de l'annulation")),
   });
 
   const supprMut = useMutation({
@@ -120,7 +121,7 @@ export function useColisageDetail(blId: string) {
       invalidateAll();
       navigate({ to: "/colisage" });
     },
-    onError: (e: Error) => toast.error(e.message || "Erreur lors de la suppression"),
+    onError: (e: Error) => toast.error(friendlyError(e, "Erreur lors de la suppression")),
   });
 
   const deverMut = useMutation({
@@ -129,7 +130,7 @@ export function useColisageDetail(blId: string) {
       toast.success("Colisage déverrouillé — vous pouvez maintenant le modifier");
       invalidateAll();
     },
-    onError: (e: Error) => toast.error(e.message || "Erreur lors du déverrouillage"),
+    onError: (e: Error) => toast.error(friendlyError(e, "Erreur lors du déverrouillage")),
   });
 
   return {

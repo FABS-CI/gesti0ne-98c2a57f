@@ -17,6 +17,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   Select,
   SelectContent,
   SelectItem,
@@ -99,7 +100,7 @@ export function ClientEditSheet({
       qc.invalidateQueries({ queryKey: ["clients"] });
       onOpenChange(false);
     },
-    onError: (e) => toast.error(e instanceof Error ? `Échec : ${e.message}` : "Erreur inconnue"),
+    onError: (e) => toast.error(`Échec : ${friendlyError(e, "Erreur inconnue")}`),
   });
 
   const handleCancel = () => {

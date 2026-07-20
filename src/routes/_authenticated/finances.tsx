@@ -29,6 +29,7 @@ import { FinancesKpis } from "@/components/finances/FinancesKpis";
 import { TransactionsTable } from "@/components/finances/TransactionsTable";
 import { TransactionFormDialog } from "@/components/finances/TransactionFormDialog";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/finances")({
   component: FinancesPage,
@@ -83,7 +84,7 @@ function FinancesPage() {
       toast.success(editing ? "Transaction modifiée" : "Transaction enregistrée");
       setOpen(false);
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   const deleteMutation = useMutation({
@@ -92,7 +93,7 @@ function FinancesPage() {
       invalidateTransaction(queryClient);
       toast.success("Transaction supprimée");
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   function openNew() {

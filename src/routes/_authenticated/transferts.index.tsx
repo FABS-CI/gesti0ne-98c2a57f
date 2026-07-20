@@ -37,6 +37,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 export const Route = createFileRoute("/_authenticated/transferts/")({
   head: () => authRouteHead("Transferts"),
   component: TransfertsPage,
@@ -91,7 +92,7 @@ function TransfertsPage() {
             : "Transfert annulé",
       );
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   return (

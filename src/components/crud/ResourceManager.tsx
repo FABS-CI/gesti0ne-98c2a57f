@@ -32,6 +32,7 @@ import {
 } from "./resource-manager-types";
 import { ResourceTable } from "./ResourceTable";
 import { ResourceFormDialog } from "./ResourceFormDialog";
+import { friendlyError } from "@/lib/friendly-error";
 
 // Re-exports (les consommateurs importent ces types depuis ResourceManager).
 export type {
@@ -186,7 +187,7 @@ export function ResourceManager({ config }: { config: ResourceConfig }) {
         setOpen(false);
       }
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   const deleteMutation = useMutation({
@@ -198,7 +199,7 @@ export function ResourceManager({ config }: { config: ResourceConfig }) {
       queryClient.invalidateQueries({ queryKey: [config.table] });
       toast.success("Supprimé");
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   async function openNew() {

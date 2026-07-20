@@ -51,6 +51,7 @@ import {
   setEmployeAccountBan,
 } from "@/lib/employe-account.functions";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   Select,
   SelectContent,
   SelectItem,
@@ -165,7 +166,7 @@ export function EmployeForm({ employe }: { employe?: Employe }) {
       qc.invalidateQueries({ queryKey: ["conges"] });
       if (!editing) navigate({ to: "/employes" });
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   return (
@@ -673,7 +674,7 @@ function PhotoUpload({
       onUploaded(path);
       toast.success("Photo mise à jour");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Upload échoué");
+      toast.error(friendlyError(e, "Upload échoué"));
     } finally {
       setBusy(false);
     }
@@ -963,7 +964,7 @@ function DocumentsTab({ employeId }: { employeId: string }) {
       qc.invalidateQueries({ queryKey: ["employe-documents", employeId] });
       toast.success("Document ajouté");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Upload échoué");
+      toast.error(friendlyError(e, "Upload échoué"));
     } finally {
       setBusy(false);
       if (ref.current) ref.current.value = "";
@@ -1074,12 +1075,12 @@ function AccountTab({ employeId, defaultEmail }: { employeId: string; defaultEma
       toast.success("Invitation envoyée");
       refresh();
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
   const resetMut = useMutation({
     mutationFn: () => resetFn({ data: { employeId } }),
     onSuccess: () => toast.success("Lien de réinitialisation envoyé"),
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
   const banMut = useMutation({
     mutationFn: (banned: boolean) => banFn({ data: { employeId, banned } }),
@@ -1087,7 +1088,7 @@ function AccountTab({ employeId, defaultEmail }: { employeId: string; defaultEma
       toast.success("Statut mis à jour");
       refresh();
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
   const detachMut = useMutation({
     mutationFn: () => detachFn({ data: { employeId } }),
@@ -1095,7 +1096,7 @@ function AccountTab({ employeId, defaultEmail }: { employeId: string; defaultEma
       toast.success("Compte détaché");
       refresh();
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   if (statusQ.isLoading) {
@@ -1296,7 +1297,7 @@ function FonctionPicker({
       setLabel("");
       setCreating(false);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur");
+      toast.error(friendlyError(e, "Erreur"));
     } finally {
       setBusy(false);
     }

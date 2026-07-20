@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { TYPES_DEPOT, type DepotInput } from "@/lib/depots-api";
+import { friendlyError } from "@/lib/friendly-error";
 
 interface Props {
   open: boolean;
@@ -55,7 +56,7 @@ export function DepotFormDialog({
         }));
         toast.success("Position récupérée", { id: "gps" });
       },
-      (err) => toast.error(`Échec : ${err.message}`, { id: "gps" }),
+      (err) => toast.error(`Échec : ${friendlyError(err)}`, { id: "gps" }),
       { enableHighAccuracy: true, timeout: 10000 },
     );
   }

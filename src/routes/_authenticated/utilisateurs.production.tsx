@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/utilisateurs/production")({
   component: UtilisateursProductionPage,
@@ -65,7 +66,7 @@ function UtilisateursProductionPage() {
         toast.success("Lien de réinitialisation généré et copié");
       }
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur");
+      toast.error(friendlyError(e, "Erreur"));
     }
   }
 
@@ -130,7 +131,7 @@ function UtilisateursProductionPage() {
         <ShieldAlert className="h-10 w-10 text-destructive" />
         <h1 className="text-xl font-bold">Accès restreint</h1>
         <p className="max-w-md text-sm text-muted-foreground">
-          {error instanceof Error ? error.message : "Réservé au super administrateur."}
+          {friendlyError(error, "Réservé au super administrateur.")}
         </p>
       </div>
     );

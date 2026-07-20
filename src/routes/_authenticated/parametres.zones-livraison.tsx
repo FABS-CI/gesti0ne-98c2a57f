@@ -13,6 +13,7 @@ import { COMMUNES_ABIDJAN, VILLES_CI, normalize as normLoc } from "@/lib/ci-loca
 import { Combobox } from "@/components/ui/combobox";
 import { usePermissions } from "@/hooks/use-permissions";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 const KEY = "colisage.zones_livraison_directe";
 
@@ -111,7 +112,7 @@ function ZonesLivraisonPage() {
       toast.success("Zones enregistrées");
       refetch();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur d'enregistrement");
+      toast.error(friendlyError(e, "Erreur d'enregistrement"));
     } finally {
       setSaving(false);
     }

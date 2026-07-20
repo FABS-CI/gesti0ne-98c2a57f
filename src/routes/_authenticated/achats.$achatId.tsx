@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/achats/$achatId")({
   component: AchatDetailPage,
@@ -78,14 +79,14 @@ function AchatDetailPage() {
     try {
       await viewCached(cacheKey, buildBlob);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur aperçu");
+      toast.error(friendlyError(e, "Erreur aperçu"));
     }
   };
   const handlePrint = async () => {
     try {
       await printCached(cacheKey, buildBlob);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur impression");
+      toast.error(friendlyError(e, "Erreur impression"));
     }
   };
 

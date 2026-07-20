@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { callRpc } from "@/lib/rpc";
 import type { Paiement } from "@/lib/paiements-api";
+import { friendlyError } from "@/lib/friendly-error";
 
 /**
  * Workflow de validation des paiements (Lot 2).
@@ -48,7 +49,7 @@ export function useValiderPaiement() {
       qc.invalidateQueries({ queryKey: ["paiements"] });
       qc.invalidateQueries({ queryKey: ["paiements-en-attente"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 }
 
@@ -67,6 +68,6 @@ export function useRejeterPaiement() {
       qc.invalidateQueries({ queryKey: ["paiements"] });
       qc.invalidateQueries({ queryKey: ["paiements-en-attente"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 }

@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { usePermissions } from "@/hooks/use-permissions";
+import { friendlyError } from "@/lib/friendly-error";
 
 export type SuperAdminDeleteButtonProps = {
   /** Async fn that performs the actual delete (calls the RPC). */
@@ -47,7 +48,7 @@ export function SuperAdminDeleteButton({
       setOpen(false);
     },
     onError: (e: unknown) => {
-      toast.error(e instanceof Error ? e.message : "Suppression impossible");
+      toast.error(friendlyError(e, "Suppression impossible"));
     },
   });
 
