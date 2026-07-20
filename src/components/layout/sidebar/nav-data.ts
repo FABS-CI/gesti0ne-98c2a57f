@@ -44,7 +44,17 @@ import {
   Navigation,
 } from "lucide-react";
 
-export type Item = { title: string; url: string; icon: typeof Users; ready?: boolean };
+export type Item = {
+  title: string;
+  url: string;
+  icon: typeof Users;
+  ready?: boolean;
+  /**
+   * Nom du sous-dossier (section repliable) affiché dans le menu.
+   * Uniquement visuel : n'affecte ni le routage, ni le RBAC, ni les URLs.
+   */
+  section?: string;
+};
 export type Group = {
   label: string;
   groupIcon: typeof Users;
@@ -105,30 +115,42 @@ export const groups: Group[] = [
     grad: "linear-gradient(90deg,#10B981,#34D399)",
     shadow: "rgba(16,185,129,0.3)",
     items: [
-      { title: "Produits", url: "/produits", icon: BookOpen, ready: true },
-      { title: "Dépôts", url: "/depots", icon: Warehouse, ready: true },
-      { title: "Approvisionnements", url: "/achats", icon: Inbox, ready: true },
-      { title: "Mouvements de Stock", url: "/stock", icon: Package, ready: true },
-      { title: "Colisage", url: "/colisage", icon: Package, ready: true },
+      // 📂 Catalogue — Données de référence
+      { title: "Produits", url: "/produits", icon: BookOpen, ready: true, section: "Catalogue" },
+      { title: "Dépôts", url: "/depots", icon: Warehouse, ready: true, section: "Catalogue" },
+      { title: "Fournisseurs", url: "/fournisseurs", icon: Building2, ready: true, section: "Catalogue" },
+
+      // 📂 Réception — Entrées de marchandises
+      { title: "Approvisionnements", url: "/achats", icon: Inbox, ready: true, section: "Réception" },
+      { title: "Mouvements", url: "/stock", icon: Package, ready: true, section: "Réception" },
+
+      // 📂 Stock — Gestion et contrôle des stocks
+      { title: "Transferts", url: "/transferts", icon: Warehouse, ready: true, section: "Stock" },
+      { title: "Inventaires", url: "/inventaires", icon: ClipboardList, ready: true, section: "Stock" },
+      { title: "Alertes de Stock", url: "/alertes-stock", icon: AlertTriangle, ready: true, section: "Stock" },
+      { title: "Incidents de Stock", url: "/incidents", icon: AlertTriangle, ready: true, section: "Stock" },
+      { title: "Audit stock", url: "/stock/audit", icon: ClipboardList, ready: true, section: "Stock" },
+
+      // 📂 Préparation — Préparation des commandes
+      { title: "Colisage", url: "/colisage", icon: Package, ready: true, section: "Préparation" },
       {
         title: "Préparateurs / Responsables colisage",
         url: "/colisage/responsables",
         icon: UserCog,
         ready: true,
+        section: "Préparation",
       },
-      { title: "Suivi des livraisons", url: "/livraison-suivi", icon: Truck, ready: true },
-      { title: "Bons de livraison", url: "/bons-livraison", icon: Truck, ready: true },
-      { title: "Inventaires", url: "/inventaires", icon: ClipboardList, ready: true },
-      { title: "Incidents de Stock", url: "/incidents", icon: AlertTriangle, ready: true },
-      { title: "Alertes de Stock", url: "/alertes-stock", icon: AlertTriangle, ready: true },
-      { title: "Audit stock", url: "/stock/audit", icon: ClipboardList, ready: true },
-      { title: "Fournisseurs", url: "/fournisseurs", icon: Building2, ready: true },
-      { title: "Transferts", url: "/transferts", icon: Warehouse, ready: true },
-      { title: "Flotte", url: "/fleet", icon: Car, ready: true },
-      { title: "Tournées", url: "/tournees", icon: Navigation, ready: true },
-      { title: "Livreurs", url: "/livreurs", icon: Users, ready: true },
-      { title: "Dashboard logistique", url: "/dashboard-logistique", icon: BarChart3, ready: true },
-      { title: "Rapports logistique", url: "/rapports-logistique", icon: BarChart3, ready: true },
+      { title: "Bons de livraison", url: "/bons-livraison", icon: Truck, ready: true, section: "Préparation" },
+
+      // 📂 Livraison — Transport et suivi
+      { title: "Livreurs", url: "/livreurs", icon: Users, ready: true, section: "Livraison" },
+      { title: "Flotte", url: "/fleet", icon: Car, ready: true, section: "Livraison" },
+      { title: "Tournées", url: "/tournees", icon: Navigation, ready: true, section: "Livraison" },
+      { title: "Suivi des livraisons", url: "/livraison-suivi", icon: Truck, ready: true, section: "Livraison" },
+
+      // 📂 Analyse — Indicateurs et rapports
+      { title: "Dashboard logistique", url: "/dashboard-logistique", icon: BarChart3, ready: true, section: "Analyse" },
+      { title: "Rapports logistique", url: "/rapports-logistique", icon: BarChart3, ready: true, section: "Analyse" },
     ],
   },
   {
