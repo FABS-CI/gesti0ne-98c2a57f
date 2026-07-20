@@ -389,7 +389,9 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
         </TabsContent>
 
         <TabsContent value="stats" className="space-y-4">
-          <ClientStatsTab factures={factures} commandesCount={counts.commandes} />
+          <Section fallback={<SkeletonKpiRow count={8} />}>
+            <LazyStatsTab clientId={clientId} client={client} counts={counts} factures={factures} />
+          </Section>
         </TabsContent>
 
         <TabsContent value="audit" className="space-y-3">
