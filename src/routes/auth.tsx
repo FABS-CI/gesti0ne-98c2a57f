@@ -96,14 +96,18 @@ function AuthPage() {
       /* ignore */
     }
     initRememberPolicyFromStorage();
-    setAuthReady(true);
     void supabase.auth
       .getSession()
-      .then(({ data }) => {
-        if (data.session) navigate({ to: "/dashboard" });
+      .then(async ({ data }) => {
+        if (data.session) {
+          await navigate({ to: "/dashboard", replace: true });
+          return;
+        }
+        setAuthReady(true);
       })
       .catch((sessionError) => {
         console.warn("[auth] Vérification de session indisponible", sessionError);
+        setAuthReady(true);
       });
   }, [navigate]);
 
@@ -160,8 +164,14 @@ function AuthPage() {
       const uid = signInData.user?.id ?? "";
       const who = signInData.user?.email ?? email.trim().toLowerCase();
       const flagKey = `notif-login-sent:${uid}`;
-      if (uid && sessionStorage.getItem(flagKey) !== "1") {
-        sessionStorage.setItem(flagKey, "1");
+      let loginAlreadyLogged = false;
+      try {
+        loginAlreadyLogged = sessionStorage.getItem(flagKey) === "1";
+        if (uid && !loginAlreadyLogged) sessionStorage.setItem(flagKey, "1");
+      } catch {
+        /* Le journal serveur reste fonctionnel si le stockage iframe est bloqué. */
+      }
+      if (uid && !loginAlreadyLogged) {
         void (async () => {
           const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
           const device = /Mobi|Android|iPhone/i.test(ua)
@@ -185,7 +195,11 @@ function AuthPage() {
             _status: "success",
           });
           if (logErr) {
-            sessionStorage.removeItem(flagKey);
+            try {
+              sessionStorage.removeItem(flagKey);
+            } catch {
+              /* ignore */
+            }
             console.warn("[auth] log_user_login échoué:", logErr.message);
           } else {
             console.info("[auth] connexion journalisée pour", who);
@@ -229,6 +243,42 @@ function AuthPage() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (!authReady) {
+    return (
+      <div
+        className="login-page-root relative flex min-h-dvh w-full items-center justify-center overflow-hidden"
+        style={{
+          backgroundImage: `url(${loginBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundColor: "#0d1b2a",
+        }}
+        aria-busy="true"
+        aria-label="Vérification de la session"
+      >
+        <LoginStyles />
+        <div
+          className="flex h-24 w-24 items-center justify-center rounded-full"
+          style={{
+            background: "linear-gradient(150deg, #FFF4EC 0%, #F5F7FB 100%)",
+            boxShadow: "0 10px 26px rgba(7,27,77,0.28)",
+          }}
+        >
+          <img
+            src={fabsLogo}
+            alt="Logo Éditions FABS-CI"
+            width={64}
+            height={64}
+            loading="eager"
+            fetchPriority="high"
+            className="h-16 w-16 object-contain"
+          />
+        </div>
+      </div>
+    );
   }
 
   return (
