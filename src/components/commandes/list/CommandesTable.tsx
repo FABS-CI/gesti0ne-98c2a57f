@@ -13,6 +13,7 @@ import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { CommandeRow } from "@/components/commandes/CommandeRow";
 import { CommandeCard } from "@/components/commandes/CommandeCard";
 import { EmptyState } from "@/components/common/EmptyState";
+import { SkeletonTable, SkeletonList } from "@/components/ui/skeletons";
 import type { Commande } from "@/lib/commandes-api";
 
 export function CommandesTable({
