@@ -16,6 +16,7 @@ import {
   STATUT_COLOR,
 } from "@/lib/livraison-suivi-api";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export type ValidateButtonState = {
   isPending: boolean;
@@ -94,7 +95,7 @@ function RemisePage() {
       qc.invalidateQueries({ queryKey: ["livsuivi"] });
       navigate({ to: "/livraison-suivi/$commandeRef", params: { commandeRef }, search: COMMANDE_REF_SEARCH_DEFAULTS });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   if (isLoading) {

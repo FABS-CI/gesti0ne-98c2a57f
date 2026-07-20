@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { useUserRoles } from "@/hooks/use-user-roles";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/admin/data-quality")({
   component: DataQualityPage,
@@ -112,7 +113,7 @@ function DataQualityPage() {
       } as never,
     );
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success(`Fusion effectuée : ${JSON.stringify(data)}`);

@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createProduit, type Produit } from "@/lib/produits-api";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Props = {
   open: boolean;
@@ -70,7 +71,7 @@ export function QuickCreateProduitDialog({ open, onOpenChange, onCreated }: Prop
       reset();
       onCreated(p);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   return (

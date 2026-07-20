@@ -32,6 +32,7 @@ import {
 import { formatFCFA } from "@/lib/format";
 import { invalidateFne } from "@/lib/cache-invalidation";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/fne-nouvelle")({ component: NewFNE });
 
@@ -86,7 +87,7 @@ function NewFNE() {
       invalidateFne(qc);
       nav({ to: "/fne-detail/$factureId", params: { factureId: d.fne_id } });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const canSubmit =

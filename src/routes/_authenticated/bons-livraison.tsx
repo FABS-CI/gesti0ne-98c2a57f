@@ -51,6 +51,7 @@ import { Can } from "@/components/rbac/Can";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
 import { invalidateColisage } from "@/lib/cache-invalidation";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/bons-livraison")({
   component: BonsLivraisonListPage,
@@ -268,7 +269,7 @@ function RowActions({ row }: { row: BLAColiser }) {
       invalidate();
     },
     onError: (e: Error) => {
-      toast.error(e.message || "Erreur lors de l'annulation");
+      toast.error(friendlyError(e, "Erreur lors de l'annulation"));
       setOpenAnnul(false);
     },
   });
@@ -290,7 +291,7 @@ function RowActions({ row }: { row: BLAColiser }) {
       invalidate();
     },
     onError: (e: Error) => {
-      toast.error(e.message || "Erreur lors de la suppression");
+      toast.error(friendlyError(e, "Erreur lors de la suppression"));
       setOpenSuppr(false);
     },
   });

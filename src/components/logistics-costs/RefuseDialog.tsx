@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import type { TourneeCout } from "./types";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function RefuseDialog({
   row,
@@ -39,7 +40,7 @@ export function RefuseDialog({
     });
     setBusy(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success("Coûts refusés.");

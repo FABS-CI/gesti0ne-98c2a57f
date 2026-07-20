@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/profil")({
   component: Profil,
@@ -96,7 +97,7 @@ function Profil() {
       .update({ nom_complet: nom.trim() })
       .eq("id", user.id);
     setSaving(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(friendlyError(error));
     else {
       toast.success("Profil mis à jour");
       await queryClient.invalidateQueries({ queryKey: ["my-profile"] });
@@ -112,7 +113,7 @@ function Profil() {
     setPwdSaving(true);
     const { error } = await supabase.auth.updateUser({ password: pwd });
     setPwdSaving(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(friendlyError(error));
     else {
       toast.success("Mot de passe modifié");
       setPwd("");

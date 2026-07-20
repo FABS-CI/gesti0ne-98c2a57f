@@ -26,6 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/comptabilite/nouvelle")({
   component: NouvelleEcriturePage,
@@ -113,7 +114,7 @@ function NouvelleEcriturePage() {
       toast.success("Écriture enregistrée");
       navigate({ to: "/comptabilite" });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   return (

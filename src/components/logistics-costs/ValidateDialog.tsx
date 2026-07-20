@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { fmtFCFA, type TourneeCout } from "./types";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function ValidateDialog({
   row,
@@ -47,7 +48,7 @@ export function ValidateDialog({
     });
     setBusy(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success("Décaissement validé — écriture comptable générée.");

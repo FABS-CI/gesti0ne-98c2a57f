@@ -17,6 +17,7 @@ import {
 } from "@/lib/users-admin.functions";
 import { useRolesQuery } from "@/hooks/use-roles-permissions";
 import type { UserEditPayload } from "./UserFormDialog";
+import { friendlyError } from "@/lib/friendly-error";
 
 interface Props {
   editing?: UserEditPayload | null;
@@ -114,7 +115,7 @@ export function UserForm({ editing }: Props) {
       qc.invalidateQueries({ queryKey: ["rbac", "user-role-assigns"] });
       navigate({ to: "/utilisateurs" });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const activeRoles = (rolesQ.data ?? []).filter((r) => r.actif);

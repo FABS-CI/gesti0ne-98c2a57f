@@ -31,6 +31,7 @@ import { invalidateSpecimen } from "@/lib/cache-invalidation";
 import { Can } from "@/components/rbac/Can";
 import { downloadBlob, fileNameFor, generateBonRemiseSpecimensPDF } from "@/lib/pdf/fabsTemplates";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/specimens/$specimenId")({
   component: SpecimenDetailPage,
@@ -57,7 +58,7 @@ function SpecimenDetailPage() {
       invalidateSpecimen(qc, specimenId);
       setConfirmCancel(false);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const handlePrint = async () => {

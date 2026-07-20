@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ResponsiveDialog } from "@/components/ui/responsive-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { friendlyError } from "@/lib/friendly-error";
 import {
   Select,
   SelectContent,
@@ -76,7 +77,7 @@ export function AvancerEtapeDialog({ target, onClose, defaults }: Props) {
       qc.invalidateQueries({ queryKey: ["livsuivi"] });
       onClose();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   return (

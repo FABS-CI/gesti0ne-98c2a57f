@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { confirmerReception, uploadPreuveLivraison } from "@/lib/livraison-suivi/writes";
+import { friendlyError } from "@/lib/friendly-error";
 
 /**
  * Dialogue « Confirmer la réception » — capture la signature du réceptionnaire
@@ -102,7 +103,7 @@ export function ConfirmerReceptionDialog({
       onSuccess?.();
       onOpenChange(false);
     },
-    onError: (e: Error) => toast.error(e.message || "Erreur"),
+    onError: (e: Error) => toast.error(friendlyError(e, "Erreur")),
   });
 
   return (

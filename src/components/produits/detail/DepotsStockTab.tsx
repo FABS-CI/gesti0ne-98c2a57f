@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { ajusterStockDepot, listDepots, type StockDepot } from "@/lib/depots-api";
 import { usePermissions } from "@/hooks/use-permissions";
+import { friendlyError } from "@/lib/friendly-error";
 
 export function DepotsStockTab({
   produitId,
@@ -70,7 +71,7 @@ export function DepotsStockTab({
       setOpen(false);
       setMotif("");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   function openFor(s: StockDepot | null) {

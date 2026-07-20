@@ -33,6 +33,7 @@ import {
 } from "./form/ColisageAcheminementFields";
 import { ColisageCartonsSection } from "./form/ColisageCartonsSection";
 import type { CartonState, Responsable, Livreur, ClientInfo } from "./form/colisage-form-types";
+import { friendlyError } from "@/lib/friendly-error";
 import {
   livraisonSchema,
   expeditionSchema,
@@ -227,7 +228,7 @@ export function ColisageForm({
         }
       }
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const handleSubmit = (e: React.FormEvent) => {

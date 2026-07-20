@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Can } from "@/components/rbac/Can";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/file-storage")({
   component: FileStoragePage,
@@ -89,7 +90,7 @@ function FileStoragePage() {
   async function handleDownload(name: string) {
     const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(name, 60);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     window.open(data.signedUrl, "_blank");

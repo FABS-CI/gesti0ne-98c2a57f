@@ -30,6 +30,7 @@ import type { Produit } from "@/lib/produits-api";
 import { creerIncident, TYPES_INCIDENT } from "@/lib/incidents-api";
 import { usePermissions } from "@/hooks/use-permissions";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/incidents/nouveau")({
   component: NouvelIncidentPage,
@@ -124,7 +125,7 @@ function NouvelIncidentPage() {
       qc.invalidateQueries({ queryKey: ["stock_mouvements"] });
       navigate({ to: "/incidents" });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   function updateLigne(i: number, patch: Partial<LigneUI>) {

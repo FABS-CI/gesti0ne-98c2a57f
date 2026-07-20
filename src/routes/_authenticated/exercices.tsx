@@ -25,6 +25,7 @@ import type { EditingExercice, PreviewResult } from "@/components/exercices/inde
 
 import { COMPARATIF_SEARCH_DEFAULTS } from "@/lib/route-schemas";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/exercices")({
   component: ExercicesPage,
@@ -76,7 +77,7 @@ function ExercicesPage() {
       setPreviewFor(null);
       qc.invalidateQueries();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const updateMut = useMutation({
@@ -97,7 +98,7 @@ function ExercicesPage() {
       setEditing(null);
       qc.invalidateQueries({ queryKey: ["exercices"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   return (

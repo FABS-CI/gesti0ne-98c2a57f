@@ -36,6 +36,7 @@ import { useConfirmDelete } from "@/hooks/use-confirm-delete";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { commandeRefSearchSchema, COMMANDE_REF_SEARCH_DEFAULTS } from "@/lib/route-schemas";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/livraison-suivi/$commandeRef")({
   validateSearch: zodValidator(commandeRefSearchSchema),
@@ -534,7 +535,7 @@ function HistoRow({
       setEditing(false);
       onChanged();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const mutDel = useMutation({
@@ -543,7 +544,7 @@ function HistoRow({
       toast.success("Étape supprimée");
       onChanged();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   return (

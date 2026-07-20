@@ -29,6 +29,7 @@ import {
 } from "@/lib/livraison-suivi-api";
 import { deleteLivraisonSuivi } from "@/lib/livraison-suivi/writes";
 import type { ColisInfo } from "@/lib/livraison-suivi/types";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Props = {
   rows: Array<LivSuiviCommande & { colis?: ColisInfo | null }>;
@@ -229,7 +230,7 @@ function DeleteLivraisonButton({ id, reference }: { id: string; reference: strin
       qc.invalidateQueries({ queryKey: ["colis-for-bl"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
     },
-    onError: (e: Error) => toast.error(e.message || "Erreur lors de la suppression"),
+    onError: (e: Error) => toast.error(friendlyError(e, "Erreur lors de la suppression")),
   });
   return (
     <>

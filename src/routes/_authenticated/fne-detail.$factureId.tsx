@@ -33,6 +33,7 @@ import {
 } from "@/lib/fne-api";
 import { formatFCFA } from "@/lib/format";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/fne-detail/$factureId")({
   component: FNEDetail,
@@ -58,7 +59,7 @@ function FNEDetail() {
       toast.success("Avoir émis");
       qc.invalidateQueries({ queryKey: ["fne-invoice", factureId] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
   const retry = useMutation({
     mutationFn: async () => {

@@ -24,6 +24,7 @@ import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { usePermissions } from "@/hooks/use-permissions";
 import { formatFCFA } from "@/lib/format";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/comptabilite/audit")({
   component: ComptaAuditPage,
@@ -116,7 +117,7 @@ function ComptaAuditPage() {
       qc.invalidateQueries({ queryKey: ["compta-audit-soldes"] });
       qc.invalidateQueries({ queryKey: ["compta-audit-factures"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const recalcAll = useMutation({
@@ -133,7 +134,7 @@ function ComptaAuditPage() {
       qc.invalidateQueries({ queryKey: ["compta-audit-soldes"] });
       qc.invalidateQueries({ queryKey: ["compta-audit-factures"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   if (!canView) {

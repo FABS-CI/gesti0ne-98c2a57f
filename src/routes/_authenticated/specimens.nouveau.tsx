@@ -18,6 +18,7 @@ import { InfosGeneralesSection } from "@/components/specimens/nouveau/InfosGener
 import { BeneficiaireSection } from "@/components/specimens/nouveau/BeneficiaireSection";
 import { LignesProduitsSection } from "@/components/specimens/nouveau/LignesProduitsSection";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/specimens/nouveau")({
   component: SpecimenNouveauPage,
@@ -88,7 +89,7 @@ function SpecimenNouveauPage() {
       invalidateSpecimen(qc);
       navigate({ to: "/specimens" });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const onSubmit = form.handleSubmit(
