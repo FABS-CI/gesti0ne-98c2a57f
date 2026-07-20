@@ -290,8 +290,12 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
             </>
           )}
           <Kpi label="Commandes" value={String(counts.commandes)} />
-          <Kpi label="Factures" value={String(factures.length)} />
+          <Kpi label="Factures" value={String(counts.factures)} />
           <Kpi label="Bons de livraison" value={String(counts.bl)} />
+          <Kpi label="Paiements" value={String(counts.paiements)} />
+          <Kpi label="Livraisons" value={String(counts.livraisons)} />
+          <Kpi label="Proformas" value={String(counts.proformas)} />
+          <Kpi label="Avoirs" value={String(counts.avoirs)} />
         </div>
       </Section>
 
