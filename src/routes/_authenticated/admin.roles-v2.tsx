@@ -19,7 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
   ChevronDown, ChevronRight, Plus, Search, Shield, Users, Trash2, UserPlus, X,
-  CheckCircle2, XCircle, GitBranch, History as HistoryIcon,
+  CheckCircle2, XCircle, GitBranch, History as HistoryIcon, Stethoscope, Download, AlertTriangle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/roles-v2")({
@@ -37,6 +37,7 @@ type RolePerm = { role_code: string; perm_code: string; granted: boolean };
 type RoleParent = { role_code: string; parent_code: string };
 type UserRole = { user_id: string; role_code: string };
 type Profile = { id: string; email: string | null; nom: string | null; prenoms: string | null };
+type PermDep = { perm_code: string; requires_code: string };
 type AuditRow = {
   id: number; actor_id: string | null; action: string; target_type: string;
   target_id: string; before: unknown; after: unknown; at: string;
@@ -71,16 +72,18 @@ function RolesV2Page() {
   const [roleParents, setRoleParents] = useState<RoleParent[]>([]);
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [deps, setDeps] = useState<PermDep[]>([]);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState<string | null>(null);
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [diagOpen, setDiagOpen] = useState(false);
 
   const reload = useCallback(async () => {
     setLoading(true);
     try {
-      const [d, m, r, p, ro, rp, par, ur, pr] = await Promise.all([
+      const [d, m, r, p, ro, rp, par, ur, pr, dp] = await Promise.all([
         supabase.from("rbac2_domains").select("*").order("sort"),
         supabase.from("rbac2_modules").select("*").order("sort"),
         supabase.from("rbac2_resources").select("*").order("sort"),
@@ -90,8 +93,9 @@ function RolesV2Page() {
         supabase.from("rbac2_role_parents").select("*"),
         supabase.from("rbac2_user_roles").select("*"),
         supabase.from("profiles").select("id, email, nom, prenoms"),
+        supabase.from("rbac2_perm_deps").select("*"),
       ]);
-      const anyErr = [d, m, r, p, ro, rp, par, ur, pr].find((x) => x.error);
+      const anyErr = [d, m, r, p, ro, rp, par, ur, pr, dp].find((x) => x.error);
       if (anyErr?.error) throw anyErr.error;
       setDomains((d.data ?? []) as Domain[]);
       setModules((m.data ?? []) as Module[]);
@@ -102,6 +106,7 @@ function RolesV2Page() {
       setRoleParents((par.data ?? []) as RoleParent[]);
       setUserRoles((ur.data ?? []) as UserRole[]);
       setProfiles((pr.data ?? []) as Profile[]);
+      setDeps((dp.data ?? []) as PermDep[]);
       if (!selectedRole && (ro.data ?? []).length > 0) {
         setSelectedRole((ro.data as Role[])[0].code);
       }
@@ -202,6 +207,22 @@ function RolesV2Page() {
     setExpandedModules(s);
   };
 
+  // Fermeture transitive côté client des dépendances de permissions.
+  const depClosure = useCallback((permCode: string): Set<string> => {
+    const seen = new Set<string>();
+    const stack = [permCode];
+    while (stack.length) {
+      const cur = stack.pop()!;
+      for (const d of deps) {
+        if (d.perm_code === cur && !seen.has(d.requires_code)) {
+          seen.add(d.requires_code);
+          stack.push(d.requires_code);
+        }
+      }
+    }
+    return seen;
+  }, [deps]);
+
   const savePerm = async (roleCode: string, permCode: string, next: "grant" | "deny" | "clear") => {
     try {
       if (next === "clear") {
@@ -209,14 +230,34 @@ function RolesV2Page() {
           .delete().eq("role_code", roleCode).eq("perm_code", permCode);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("rbac2_role_perms")
-          .upsert({ role_code: roleCode, perm_code: permCode, granted: next === "grant" });
+        const rows: RolePerm[] = [{ role_code: roleCode, perm_code: permCode, granted: next === "grant" }];
+        // Auto-application des dépendances requises quand on accorde
+        if (next === "grant") {
+          for (const req of depClosure(permCode)) {
+            const already = rolePerms.some(
+              (x) => x.role_code === roleCode && x.perm_code === req && x.granted,
+            );
+            if (!already) rows.push({ role_code: roleCode, perm_code: req, granted: true });
+          }
+        }
+        const { error } = await supabase.from("rbac2_role_perms").upsert(rows);
         if (error) throw error;
+        if (rows.length > 1) {
+          toast.success(`Dépendances ajoutées : +${rows.length - 1}`);
+        }
       }
       // maj optimiste
       setRolePerms((prev) => {
-        const others = prev.filter((x) => !(x.role_code === roleCode && x.perm_code === permCode));
-        return next === "clear" ? others : [...others, { role_code: roleCode, perm_code: permCode, granted: next === "grant" }];
+        if (next === "clear") {
+          return prev.filter((x) => !(x.role_code === roleCode && x.perm_code === permCode));
+        }
+        const codesTouched = new Set<string>([permCode, ...(next === "grant" ? Array.from(depClosure(permCode)) : [])]);
+        const others = prev.filter((x) => !(x.role_code === roleCode && codesTouched.has(x.perm_code)));
+        const added: RolePerm[] = [{ role_code: roleCode, perm_code: permCode, granted: next === "grant" }];
+        if (next === "grant") {
+          for (const req of codesTouched) if (req !== permCode) added.push({ role_code: roleCode, perm_code: req, granted: true });
+        }
+        return [...others, ...added];
       });
     } catch (e) {
       toast.error(friendlyError(e));
@@ -327,7 +368,12 @@ function RolesV2Page() {
             Console inspirée d'Odoo Enterprise · {roles.length} rôles · {perms.length} permissions · {domains.length} domaines
           </p>
         </div>
-        <CreateRoleDialog onCreate={createRole} />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setDiagOpen(true)}>
+            <Stethoscope className="h-4 w-4 mr-2" />Diagnostic
+          </Button>
+          <CreateRoleDialog onCreate={createRole} />
+        </div>
       </div>
 
       {loading ? (
@@ -470,6 +516,13 @@ function RolesV2Page() {
           </Card>
         </div>
       )}
+
+      <DiagnosticDialog
+        open={diagOpen}
+        onOpenChange={setDiagOpen}
+        roleByCode={roleByCode}
+        onGoRole={(code) => { setSelectedRole(code); setDiagOpen(false); }}
+      />
     </div>
   );
 }
@@ -650,6 +703,11 @@ function RoleDetailsPanel(props: {
   const [assignQuery, setAssignQuery] = useState("");
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [auditLoading, setAuditLoading] = useState(false);
+  const [auditActionFilter, setAuditActionFilter] = useState<string | null>(null);
+  const filteredAudit = useMemo(
+    () => audit.filter((a) => !auditActionFilter || a.action === auditActionFilter),
+    [audit, auditActionFilter],
+  );
 
   const loadAudit = useCallback(async () => {
     setAuditLoading(true);
@@ -817,11 +875,38 @@ function RoleDetailsPanel(props: {
 
           {tab === "audit" && (
             <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <select
+                  className="h-8 rounded-md border bg-background px-2 text-xs flex-1"
+                  onChange={(e) => setAuditActionFilter(e.target.value || null)}
+                  value={auditActionFilter ?? ""}
+                >
+                  <option value="">Toutes actions</option>
+                  <option value="INSERT">Ajout</option>
+                  <option value="UPDATE">Modification</option>
+                  <option value="DELETE">Suppression</option>
+                </select>
+                <Button size="sm" variant="outline" onClick={() => {
+                  const rows = [["date", "action", "cible", "acteur", "avant", "après"]];
+                  filteredAudit.forEach((a) => rows.push([
+                    a.at, a.action, a.target_type, a.actor_id ?? "",
+                    JSON.stringify(a.before ?? ""), JSON.stringify(a.after ?? ""),
+                  ]));
+                  const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+                  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url; a.download = `audit-${role.code}-${new Date().toISOString().slice(0, 10)}.csv`;
+                  a.click(); URL.revokeObjectURL(url);
+                }}>
+                  <Download className="h-3 w-3 mr-1" />CSV
+                </Button>
+              </div>
               {auditLoading && <div className="text-sm text-muted-foreground">Chargement…</div>}
-              {!auditLoading && audit.length === 0 && (
-                <div className="italic text-sm text-muted-foreground">Aucun événement récent.</div>
+              {!auditLoading && filteredAudit.length === 0 && (
+                <div className="italic text-sm text-muted-foreground">Aucun événement.</div>
               )}
-              {audit.map((a) => (
+              {filteredAudit.map((a) => (
                 <div key={a.id} className="text-xs border-l-2 border-primary pl-2 py-1">
                   <div className="flex items-center gap-2">
                     <HistoryIcon className="h-3 w-3 text-muted-foreground" />
@@ -878,6 +963,175 @@ function CreateRoleDialog({ onCreate }: { onCreate: (code: string, label: string
             await onCreate(code, label, description);
             setOpen(false); setCode(""); setLabel(""); setDescription("");
           }}>Créer</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ---- Diagnostic dialog ----
+type DiagnosticReport = {
+  roles_sans_permission: Array<{ code: string; label: string }>;
+  roles_sans_utilisateur: Array<{ code: string; label: string }>;
+  grants_orphelins: Array<{ role: string; perm: string }>;
+  dependances_manquantes: Array<{ role: string; perm: string; manque: string }>;
+  ressources_sans_permission: Array<{ code: string; label: string }>;
+  cycles_heritage: Array<{ role: string }>;
+  generated_at: string;
+};
+
+function DiagnosticDialog(props: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  roleByCode: Map<string, Role>;
+  onGoRole: (code: string) => void;
+}) {
+  const { open, onOpenChange, roleByCode, onGoRole } = props;
+  const [loading, setLoading] = useState(false);
+  const [report, setReport] = useState<DiagnosticReport | null>(null);
+
+  const run = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.rpc("rbac2_diagnose");
+      if (error) throw error;
+      setReport(data as unknown as DiagnosticReport);
+    } catch (e) {
+      toast.error(friendlyError(e));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { if (open) run(); }, [open, run]);
+
+  const sections: Array<{ key: keyof DiagnosticReport; title: string; render: (row: unknown) => React.ReactNode }> = [
+    {
+      key: "roles_sans_permission",
+      title: "Rôles sans permission accordée",
+      render: (row) => {
+        const r = row as { code: string; label: string };
+        return (
+          <button className="text-left hover:underline" onClick={() => onGoRole(r.code)}>
+            {r.label} <span className="text-muted-foreground">({r.code})</span>
+          </button>
+        );
+      },
+    },
+    {
+      key: "roles_sans_utilisateur",
+      title: "Rôles sans utilisateur",
+      render: (row) => {
+        const r = row as { code: string; label: string };
+        return (
+          <button className="text-left hover:underline" onClick={() => onGoRole(r.code)}>
+            {r.label} <span className="text-muted-foreground">({r.code})</span>
+          </button>
+        );
+      },
+    },
+    {
+      key: "dependances_manquantes",
+      title: "Dépendances manquantes",
+      render: (row) => {
+        const r = row as { role: string; perm: string; manque: string };
+        const label = roleByCode.get(r.role)?.label ?? r.role;
+        return (
+          <span>
+            <button className="hover:underline font-medium" onClick={() => onGoRole(r.role)}>{label}</button>
+            {" — "}<code className="text-[11px]">{r.perm}</code> nécessite <code className="text-[11px]">{r.manque}</code>
+          </span>
+        );
+      },
+    },
+    {
+      key: "grants_orphelins",
+      title: "Grants orphelins (permission supprimée du catalogue)",
+      render: (row) => {
+        const r = row as { role: string; perm: string };
+        return <span><code>{r.role}</code> → <code>{r.perm}</code></span>;
+      },
+    },
+    {
+      key: "ressources_sans_permission",
+      title: "Ressources sans permission",
+      render: (row) => {
+        const r = row as { code: string; label: string };
+        return <span>{r.label} <code className="text-[11px]">({r.code})</code></span>;
+      },
+    },
+    {
+      key: "cycles_heritage",
+      title: "Cycles d'héritage détectés",
+      render: (row) => {
+        const r = row as { role: string };
+        return <code className="text-red-600">{r.role}</code>;
+      },
+    },
+  ];
+
+  const totalIssues = report
+    ? sections.reduce((n, s) => n + ((report[s.key] as unknown[])?.length ?? 0), 0)
+    : 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Stethoscope className="h-5 w-5 text-primary" />
+            Diagnostic RBAC
+            {report && (
+              <Badge variant={totalIssues > 0 ? "destructive" : "secondary"} className="ml-2">
+                {totalIssues} anomalie{totalIssues > 1 ? "s" : ""}
+              </Badge>
+            )}
+          </DialogTitle>
+          <DialogDescription>
+            Analyse du catalogue, des rôles, des attributions et des dépendances entre permissions.
+          </DialogDescription>
+        </DialogHeader>
+
+        {loading && <div className="py-8 text-center text-sm text-muted-foreground">Analyse en cours…</div>}
+        {!loading && report && totalIssues === 0 && (
+          <div className="py-6 text-center text-emerald-600 flex flex-col items-center gap-2">
+            <CheckCircle2 className="h-8 w-8" />
+            <div className="font-medium">Aucune anomalie détectée.</div>
+          </div>
+        )}
+        {!loading && report && totalIssues > 0 && (
+          <ScrollArea className="max-h-[60vh]">
+            <div className="space-y-3 pr-3">
+              {sections.map((s) => {
+                const rows = (report[s.key] as unknown[]) ?? [];
+                if (rows.length === 0) return null;
+                return (
+                  <div key={s.key} className="border rounded-md">
+                    <div className="px-3 py-2 border-b bg-muted/40 flex items-center gap-2 text-sm font-medium">
+                      <AlertTriangle className="h-4 w-4 text-amber-600" />
+                      {s.title}
+                      <Badge variant="outline" className="ml-auto">{rows.length}</Badge>
+                    </div>
+                    <ul className="p-2 space-y-1 text-sm">
+                      {rows.slice(0, 40).map((row, i) => (
+                        <li key={i} className="px-2 py-1 rounded hover:bg-muted">{s.render(row)}</li>
+                      ))}
+                      {rows.length > 40 && (
+                        <li className="px-2 py-1 text-xs italic text-muted-foreground">
+                          … {rows.length - 40} autres non affichés
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
+        )}
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Fermer</Button>
+          <Button variant="outline" onClick={run} disabled={loading}>Relancer</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
