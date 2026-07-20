@@ -131,15 +131,13 @@ export function SidebarNavGroup({
             borderLeft: `2px solid ${group.color}30`,
           }}
         >
-          {group.items.map((item) => (
-            <SidebarNavItem
-              key={item.title}
-              item={item}
-              group={group}
-              active={!!item.ready && currentPath === item.url}
-              activeText={activeText}
-            />
-          ))}
+          <NavSections
+            group={group}
+            currentPath={currentPath}
+            activeText={activeText}
+            parentOpen={isOpen}
+          />
+
         </ul>
       </div>
     </li>
