@@ -1,6 +1,25 @@
-import { ChevronDown } from "lucide-react";
-import type { Group } from "./nav-data";
+import { ChevronDown, ChevronRight, Folder } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import type { Group, Item } from "./nav-data";
 import { SidebarNavItem } from "./SidebarNavItem";
+
+type Section = { name: string | null; items: Item[] };
+
+function groupBySection(items: Item[]): Section[] {
+  const sections: Section[] = [];
+  const index = new Map<string, Section>();
+  for (const item of items) {
+    const key = item.section ?? "__flat__";
+    let bucket = index.get(key);
+    if (!bucket) {
+      bucket = { name: item.section ?? null, items: [] };
+      index.set(key, bucket);
+      sections.push(bucket);
+    }
+    bucket.items.push(item);
+  }
+  return sections;
+}
 
 export function SidebarNavGroup({
   group,
