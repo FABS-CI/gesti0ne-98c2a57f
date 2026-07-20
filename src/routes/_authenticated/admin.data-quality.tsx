@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   Table,
   TableBody,
   TableCell,
@@ -112,7 +113,7 @@ function DataQualityPage() {
       } as never,
     );
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success(`Fusion effectuée : ${JSON.stringify(data)}`);

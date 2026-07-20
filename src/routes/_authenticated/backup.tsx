@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/current-user";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   DatabaseBackup,
   Download,
   Loader2,
@@ -266,7 +267,7 @@ function BackupPage() {
       .limit(50);
     setLoadingHistory(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     setHistory((data ?? []) as BackupRow[]);

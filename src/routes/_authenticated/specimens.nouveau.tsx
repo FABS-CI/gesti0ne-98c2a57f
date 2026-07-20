@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowLeft, Gift, Save } from "lucide-react";
+import { friendlyError } from "@/lib/friendly-error";
 
 import { Button } from "@/components/ui/button";
 
@@ -88,7 +89,7 @@ function SpecimenNouveauPage() {
       invalidateSpecimen(qc);
       navigate({ to: "/specimens" });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const onSubmit = form.handleSubmit(

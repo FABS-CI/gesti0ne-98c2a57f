@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   useInfiniteQuery,
   useMutation,
   useQuery,
@@ -534,7 +535,7 @@ function HistoRow({
       setEditing(false);
       onChanged();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const mutDel = useMutation({
@@ -543,7 +544,7 @@ function HistoRow({
       toast.success("Étape supprimée");
       onChanged();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   return (

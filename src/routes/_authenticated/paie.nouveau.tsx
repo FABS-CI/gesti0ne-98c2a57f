@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { friendlyError } from "@/lib/friendly-error";
 
 import { supabase } from "@/integrations/supabase/client";
 import { listEmployes, type Employe } from "@/lib/rh-api";
@@ -102,7 +103,7 @@ function NouveauBulletinPage() {
       toast.success("Bulletin enregistré");
       navigate({ to: "/paie/$bulletinId", params: { bulletinId: data.bulletin_id } });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const build = async (): Promise<Blob | null> => {

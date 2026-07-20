@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   ArrowLeft,
   Copy,
   RefreshCw,
@@ -58,7 +59,7 @@ function FNEDetail() {
       toast.success("Avoir émis");
       qc.invalidateQueries({ queryKey: ["fne-invoice", factureId] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
   const retry = useMutation({
     mutationFn: async () => {

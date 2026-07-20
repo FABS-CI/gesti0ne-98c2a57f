@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   CheckCircle2,
   DollarSign,
   Eye,
@@ -432,7 +433,7 @@ function LogisticsCostsPage() {
                                   _tournee_id: r.tournee_id,
                                   _commentaire: undefined,
                                 });
-                                if (error) toast.error(error.message);
+                                if (error) toast.error(friendlyError(error));
                                 else {
                                   toast.success("Validation annulée");
                                   qc.invalidateQueries({ queryKey: ["logistics-costs"] });

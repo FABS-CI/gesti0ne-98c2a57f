@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AlertTriangle, ArrowLeft, Plus, Save, Trash2 } from "lucide-react";
+import { friendlyError } from "@/lib/friendly-error";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -124,7 +125,7 @@ function NouvelIncidentPage() {
       qc.invalidateQueries({ queryKey: ["stock_mouvements"] });
       navigate({ to: "/incidents" });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   function updateLigne(i: number, patch: Partial<LigneUI>) {

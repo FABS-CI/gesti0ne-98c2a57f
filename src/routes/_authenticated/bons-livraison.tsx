@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
@@ -268,7 +269,7 @@ function RowActions({ row }: { row: BLAColiser }) {
       invalidate();
     },
     onError: (e: Error) => {
-      toast.error(e.message || "Erreur lors de l'annulation");
+      toast.error(friendlyError(e, "Erreur lors de l'annulation"));
       setOpenAnnul(false);
     },
   });
@@ -290,7 +291,7 @@ function RowActions({ row }: { row: BLAColiser }) {
       invalidate();
     },
     onError: (e: Error) => {
-      toast.error(e.message || "Erreur lors de la suppression");
+      toast.error(friendlyError(e, "Erreur lors de la suppression"));
       setOpenSuppr(false);
     },
   });

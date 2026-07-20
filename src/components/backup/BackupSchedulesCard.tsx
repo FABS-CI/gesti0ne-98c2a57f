@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Can } from "@/components/rbac/Can";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   Select,
   SelectContent,
   SelectItem,
@@ -95,7 +96,7 @@ export function BackupSchedulesCard() {
       .order("created_at", { ascending: false });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     setItems((data ?? []) as Schedule[]);
@@ -115,7 +116,7 @@ export function BackupSchedulesCard() {
     const { error } = await supabase.from("backup_schedules").insert(payload);
     setSaving(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success("Planification créée");
@@ -128,13 +129,13 @@ export function BackupSchedulesCard() {
       .from("backup_schedules")
       .update({ active: !s.active })
       .eq("schedule_id", s.schedule_id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(friendlyError(error));
     else load();
   }
 
   async function remove(id: string) {
     const { error } = await supabase.from("backup_schedules").delete().eq("schedule_id", id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(friendlyError(error));
     else {
       toast.success("Planification supprimée");
       load();
@@ -149,7 +150,7 @@ export function BackupSchedulesCard() {
     });
     setPurging(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success(`${data ?? 0} sauvegarde(s) supprimée(s)`);

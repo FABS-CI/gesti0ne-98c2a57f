@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   adminCreateUser,
   adminUpdateUserProfile,
 } from "@/lib/users-admin.functions";
@@ -114,7 +115,7 @@ export function UserForm({ editing }: Props) {
       qc.invalidateQueries({ queryKey: ["rbac", "user-role-assigns"] });
       navigate({ to: "/utilisateurs" });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const activeRoles = (rolesQ.data ?? []).filter((r) => r.actif);

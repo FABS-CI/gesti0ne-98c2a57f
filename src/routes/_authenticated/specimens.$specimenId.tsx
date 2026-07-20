@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowLeft, Ban, Gift, Loader2, Printer } from "lucide-react";
+import { friendlyError } from "@/lib/friendly-error";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +58,7 @@ function SpecimenDetailPage() {
       invalidateSpecimen(qc, specimenId);
       setConfirmCancel(false);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const handlePrint = async () => {

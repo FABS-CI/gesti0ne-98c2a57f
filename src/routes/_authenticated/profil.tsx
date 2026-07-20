@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Save, KeyRound, Camera } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAvatarUrl } from "@/hooks/use-avatar-url";
+import { friendlyError } from "@/lib/friendly-error";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -96,7 +97,7 @@ function Profil() {
       .update({ nom_complet: nom.trim() })
       .eq("id", user.id);
     setSaving(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(friendlyError(error));
     else {
       toast.success("Profil mis à jour");
       await queryClient.invalidateQueries({ queryKey: ["my-profile"] });
@@ -112,7 +113,7 @@ function Profil() {
     setPwdSaving(true);
     const { error } = await supabase.auth.updateUser({ password: pwd });
     setPwdSaving(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(friendlyError(error));
     else {
       toast.success("Mot de passe modifié");
       setPwd("");

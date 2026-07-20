@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { friendlyError } from "@/lib/friendly-error";
 
 import {
   adminCreateUser,
@@ -139,7 +140,7 @@ export function UserFormDialog({ open, onOpenChange, editing }: Props) {
       qc.invalidateQueries({ queryKey: ["rbac", "user-role-assignments"] });
       onOpenChange(false);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const activeRoles = (rolesQ.data ?? []).filter((r) => r.actif);

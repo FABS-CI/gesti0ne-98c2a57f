@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   Dialog,
   DialogContent,
   DialogFooter,
@@ -70,7 +71,7 @@ export function QuickCreateProduitDialog({ open, onOpenChange, onCreated }: Prop
       reset();
       onCreated(p);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   return (

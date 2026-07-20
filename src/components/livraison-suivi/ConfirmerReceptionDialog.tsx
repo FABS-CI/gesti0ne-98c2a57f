@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Camera, PenLine } from "lucide-react";
+import { friendlyError } from "@/lib/friendly-error";
 
 import { Button } from "@/components/ui/button";
 import { ResponsiveDialog } from "@/components/ui/responsive-dialog";
@@ -102,7 +103,7 @@ export function ConfirmerReceptionDialog({
       onSuccess?.();
       onOpenChange(false);
     },
-    onError: (e: Error) => toast.error(e.message || "Erreur"),
+    onError: (e: Error) => toast.error(friendlyError(e, "Erreur")),
   });
 
   return (

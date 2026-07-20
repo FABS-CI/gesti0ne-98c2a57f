@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   Search,
   UserPlus,
   Pencil,
@@ -71,7 +72,7 @@ export function UsersTab() {
       qc.invalidateQueries({ queryKey: ["rbac", "user-profiles"] });
       qc.invalidateQueries({ queryKey: ["rbac", "user-role-assigns"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const reactivate = useMutation({
@@ -80,7 +81,7 @@ export function UsersTab() {
       toast.success("Utilisateur réactivé");
       qc.invalidateQueries({ queryKey: ["rbac", "user-profiles"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const remove = useMutation({
@@ -90,7 +91,7 @@ export function UsersTab() {
       qc.invalidateQueries({ queryKey: ["rbac", "user-profiles"] });
       qc.invalidateQueries({ queryKey: ["rbac", "user-role-assigns"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const mfaToggle = useMutation({
@@ -106,7 +107,7 @@ export function UsersTab() {
     },
     onError: (e: Error, _v, ctx) => {
       if (ctx?.prev) qc.setQueryData(["rbac", "user-profiles"], ctx.prev);
-      toast.error(e.message);
+      toast.error(friendlyError(e));
     },
     onSuccess: (_r, v) => {
       toast.success(v.required ? "MFA activé" : "MFA désactivé");
@@ -122,7 +123,7 @@ export function UsersTab() {
       toast.success("MFA réinitialisé — l'utilisateur devra se ré-enrôler");
       qc.invalidateQueries({ queryKey: ["rbac", "user-profiles"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const bulkMfa = useMutation({

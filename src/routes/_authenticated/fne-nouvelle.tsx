@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   Select,
   SelectContent,
   SelectItem,
@@ -86,7 +87,7 @@ function NewFNE() {
       invalidateFne(qc);
       nav({ to: "/fne-detail/$factureId", params: { factureId: d.fne_id } });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const canSubmit =

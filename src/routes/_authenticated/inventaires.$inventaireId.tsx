@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowLeft, ClipboardList } from "lucide-react";
+import { friendlyError } from "@/lib/friendly-error";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -102,7 +103,7 @@ function InventaireDetailPage() {
       qc.invalidateQueries({ queryKey: ["inventaire-lignes", inventaireId] });
       qc.invalidateQueries({ queryKey: ["inventaires"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const regulariserMut = useMutation({
@@ -114,7 +115,7 @@ function InventaireDetailPage() {
       qc.invalidateQueries({ queryKey: ["produits"] });
       qc.invalidateQueries({ queryKey: ["stock_mouvements"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const annulerMut = useMutation({
@@ -123,7 +124,7 @@ function InventaireDetailPage() {
       toast.success("Inventaire annulé");
       navigate({ to: "/inventaires" });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const supprimerMut = useMutation({
@@ -132,7 +133,7 @@ function InventaireDetailPage() {
       toast.success("Inventaire supprimé");
       navigate({ to: "/inventaires" });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const verrouillerMut = useMutation({
@@ -142,7 +143,7 @@ function InventaireDetailPage() {
       qc.invalidateQueries({ queryKey: ["inventaire", inventaireId] });
       qc.invalidateQueries({ queryKey: ["inventaires"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const deverrouillerMut = useMutation({
@@ -152,7 +153,7 @@ function InventaireDetailPage() {
       qc.invalidateQueries({ queryKey: ["inventaire", inventaireId] });
       qc.invalidateQueries({ queryKey: ["inventaires"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;

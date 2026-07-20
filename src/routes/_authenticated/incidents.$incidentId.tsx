@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+import { friendlyError } from "@/lib/friendly-error";
   AlertTriangle,
   ArrowLeft,
   Calendar,
@@ -97,7 +98,7 @@ function IncidentDetailPage() {
       qc.invalidateQueries({ queryKey: ["stock"] });
       setConfirmCancel(false);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
