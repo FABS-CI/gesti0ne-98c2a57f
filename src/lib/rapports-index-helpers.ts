@@ -5,6 +5,8 @@ import type { LucideIcon } from "lucide-react";
 
 export type Col = { key: string; label: string; money?: boolean; date?: boolean };
 
+export type SummaryRow = { label: string; value: string };
+
 export type ReportDef = {
   table: string;
   label: string;
@@ -13,6 +15,12 @@ export type ReportDef = {
   color: string;
   columns: Col[];
   fetcher?: (exerciceId: string | null) => Promise<Record<string, unknown>[]>;
+  /**
+   * Construit le récapitulatif final (nb enregistrements + totaux financiers)
+   * à partir des lignes retournées par le fetcher. Reçoit uniquement les
+   * lignes de données (pas les entêtes de groupe).
+   */
+  summary?: (rows: Record<string, unknown>[]) => SummaryRow[];
   /**
    * Permission RBAC requise pour afficher/générer ce rapport (optionnel).
    * Ex : "rapports.voir_ca" pour les rapports contenant du chiffre d'affaires.
@@ -25,6 +33,7 @@ export const fmtVal = (v: unknown, c: Col) => {
   if (v == null || v === "") return "";
   if (c.money) return formatFCFA(Number(v));
   if (c.date) return fmtDate(v);
+  if (typeof v === "boolean") return v ? "Oui" : "Non";
   return String(v);
 };
 
@@ -79,5 +88,14 @@ export function exportReportPdf(def: ReportDef, rows: Record<string, unknown>[])
     }
     return def.columns.map((c) => fmtVal(r[c.key], c));
   });
-  exportPdf(def.label, headers, body);
+
+  // Récapitulatif : nombre d'enregistrements réels + totaux personnalisés
+  const dataRows = rows.filter((r) => r.__group__ == null);
+  const baseSummary: SummaryRow[] = [
+    { label: "Nombre d'enregistrements", value: String(dataRows.length) },
+  ];
+  const extra = def.summary ? def.summary(dataRows) : [];
+  const summary = [...baseSummary, ...extra];
+
+  exportPdf(def.label, headers, body, { summary, pageTitle: def.label });
 }
