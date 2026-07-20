@@ -6,6 +6,7 @@ import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CommandeForm } from "@/components/commandes/CommandeForm";
 import { usePermissions } from "@/hooks/use-permissions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const searchSchema = z.object({
   clientId: fallback(z.string().optional(), undefined).default(undefined),
@@ -14,6 +15,8 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/_authenticated/commandes/nouvelle")({
   validateSearch: zodValidator(searchSchema),
   component: CommandeNouvellePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function CommandeNouvellePage() {

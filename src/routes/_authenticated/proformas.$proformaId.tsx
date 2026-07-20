@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
   Table,
   TableBody,
   TableCell,
@@ -18,6 +19,8 @@ import {
 
 export const Route = createFileRoute("/_authenticated/proformas/$proformaId")({
   component: ProformaDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDate(d: string | null | undefined) {

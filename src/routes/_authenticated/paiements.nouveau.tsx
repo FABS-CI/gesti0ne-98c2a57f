@@ -35,6 +35,7 @@ import {
 import { getClient } from "@/lib/clients-api";
 import { validatePaiement } from "@/lib/paiement-recap";
 import { invalidatePaiement } from "@/lib/cache-invalidation";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const searchSchema = z.object({
   clientId: fallback(z.string().optional(), undefined).default(undefined),
@@ -43,6 +44,8 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/_authenticated/paiements/nouveau")({
   validateSearch: zodValidator(searchSchema),
   component: NouveauPaiementPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function NouveauPaiementPage() {

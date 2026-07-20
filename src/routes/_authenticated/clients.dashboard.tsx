@@ -19,11 +19,14 @@ import {
 import { getCrmDashboard } from "@/lib/crm-api";
 import { formatFCFA } from "@/lib/format";
 import { exportCsv } from "@/lib/export-csv";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const CrmCharts = lazy(() => import("@/components/clients/CrmCharts"));
 
 export const Route = createFileRoute("/_authenticated/clients/dashboard")({
   component: CrmDashboardPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function CrmDashboardPage() {

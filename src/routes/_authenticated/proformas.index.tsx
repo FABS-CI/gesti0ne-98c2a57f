@@ -14,6 +14,7 @@ import { SuperAdminDeleteButton } from "@/components/documents/SuperAdminDeleteB
 import { deleteProformaDefinitif } from "@/lib/proformas-api";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 async function buildProformaBlob(row: Record<string, unknown>): Promise<Blob> {
   const proformaId = row.proforma_id as string;
   const [lignes, clientInfo, totals] = await Promise.all([
@@ -44,6 +45,8 @@ function cacheKeyFor(row: Record<string, unknown>) {
 export const Route = createFileRoute("/_authenticated/proformas/")({
   head: () => authRouteHead("Proformas"),
   component: () => <ResourceManager config={config} />,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const config: ResourceConfig = {

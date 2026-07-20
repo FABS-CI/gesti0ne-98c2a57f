@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
   Table,
   TableBody,
   TableCell,
@@ -18,6 +19,8 @@ import {
 
 export const Route = createFileRoute("/_authenticated/retours/$retourId")({
   component: RetourDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDate(d: string | null | undefined) {
