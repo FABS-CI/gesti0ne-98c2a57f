@@ -4396,6 +4396,335 @@ export type Database = {
           },
         ]
       }
+      rbac2_audit: {
+        Row: {
+          action: string
+          actor_id: string | null
+          after: Json | null
+          at: string
+          before: Json | null
+          id: number
+          ip: unknown
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          after?: Json | null
+          at?: string
+          before?: Json | null
+          id?: number
+          ip?: unknown
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          after?: Json | null
+          at?: string
+          before?: Json | null
+          id?: number
+          ip?: unknown
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: []
+      }
+      rbac2_domains: {
+        Row: {
+          code: string
+          created_at: string
+          icon: string | null
+          label: string
+          sort: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          icon?: string | null
+          label: string
+          sort?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          icon?: string | null
+          label?: string
+          sort?: number
+        }
+        Relationships: []
+      }
+      rbac2_modules: {
+        Row: {
+          code: string
+          created_at: string
+          domain_code: string
+          icon: string | null
+          label: string
+          sort: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          domain_code: string
+          icon?: string | null
+          label: string
+          sort?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          domain_code?: string
+          icon?: string | null
+          label?: string
+          sort?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac2_modules_domain_code_fkey"
+            columns: ["domain_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_domains"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      rbac2_perm_deps: {
+        Row: {
+          perm_code: string
+          requires_code: string
+        }
+        Insert: {
+          perm_code: string
+          requires_code: string
+        }
+        Update: {
+          perm_code?: string
+          requires_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac2_perm_deps_perm_code_fkey"
+            columns: ["perm_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_permissions"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "rbac2_perm_deps_requires_code_fkey"
+            columns: ["requires_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_permissions"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      rbac2_permissions: {
+        Row: {
+          action: string
+          code: string
+          created_at: string
+          description: string | null
+          label: string
+          resource_code: string
+        }
+        Insert: {
+          action: string
+          code: string
+          created_at?: string
+          description?: string | null
+          label: string
+          resource_code: string
+        }
+        Update: {
+          action?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          label?: string
+          resource_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac2_permissions_resource_code_fkey"
+            columns: ["resource_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_resources"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      rbac2_resources: {
+        Row: {
+          code: string
+          created_at: string
+          kind: string
+          label: string
+          module_code: string
+          route: string | null
+          rpc: string | null
+          sort: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          kind?: string
+          label: string
+          module_code: string
+          route?: string | null
+          rpc?: string | null
+          sort?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          kind?: string
+          label?: string
+          module_code?: string
+          route?: string | null
+          rpc?: string | null
+          sort?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac2_resources_module_code_fkey"
+            columns: ["module_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_modules"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      rbac2_role_parents: {
+        Row: {
+          created_at: string
+          parent_code: string
+          role_code: string
+        }
+        Insert: {
+          created_at?: string
+          parent_code: string
+          role_code: string
+        }
+        Update: {
+          created_at?: string
+          parent_code?: string
+          role_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac2_role_parents_parent_code_fkey"
+            columns: ["parent_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_roles"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "rbac2_role_parents_role_code_fkey"
+            columns: ["role_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_roles"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      rbac2_role_perms: {
+        Row: {
+          created_at: string
+          granted: boolean
+          perm_code: string
+          role_code: string
+        }
+        Insert: {
+          created_at?: string
+          granted?: boolean
+          perm_code: string
+          role_code: string
+        }
+        Update: {
+          created_at?: string
+          granted?: boolean
+          perm_code?: string
+          role_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac2_role_perms_perm_code_fkey"
+            columns: ["perm_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_permissions"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "rbac2_role_perms_role_code_fkey"
+            columns: ["role_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_roles"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      rbac2_roles: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          is_system: boolean
+          label: string
+          sort: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          is_system?: boolean
+          label: string
+          sort?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          is_system?: boolean
+          label?: string
+          sort?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rbac2_user_roles: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          role_code: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          role_code: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          role_code?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac2_user_roles_role_code_fkey"
+            columns: ["role_code"]
+            isOneToOne: false
+            referencedRelation: "rbac2_roles"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       retour_lignes: {
         Row: {
           created_at: string
@@ -6698,7 +7027,7 @@ export type Database = {
         Returns: boolean
       }
       has_permission_v2: {
-        Args: { _perm: string; _user_id: string }
+        Args: { _perm_code: string; _user_id: string }
         Returns: boolean
       }
       has_role: {
