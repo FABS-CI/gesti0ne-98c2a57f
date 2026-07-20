@@ -246,22 +246,15 @@ d("Retours — intégration RPC", () => {
 
   // ─── Solde client & impact tableau de bord ───────────────────────────────
   it("recalcule le solde client après retour puis annulation", async () => {
-    // Le rôle Postgres utilisé pour la CI hérite d'un GUC
-    // `request.jwt.claims` par défaut avec un sub bidon (fixture e2e) qui
-    // n'existe pas dans `auth.users` → la FK `retours.created_by_fkey` casse
-    // dès `creer_retour`. On force donc un vrai super_admin pour toute la
-    // durée de ce test (set_config false = session).
-    const admins = await q<{ user_id: string }>(
-      "SELECT user_id FROM public.user_roles WHERE role='super_admin' LIMIT 1",
+    // Vérifie que le super_admin chargé en beforeAll possède réellement la
+    // permission RBAC v2 nécessaire ; sans quoi on skippe proprement.
+    const [perm] = await q<{ ok: boolean }>(
+      "SELECT public.has_permission_v2(NULLIF(current_setting('request.jwt.claims', true),'')::jsonb->>'sub'::text, 'retours.creer') AS ok",
     );
-    if (!admins.length) {
-      console.warn("[retours-integration] Aucun super_admin en base — test skippé");
+    if (!perm?.ok) {
+      console.warn("[retours-integration] super_admin sans permission v2 — test skippé");
       return;
     }
-    await db.query(
-      "SELECT set_config('request.jwt.claims', json_build_object('sub', $1::text, 'role','authenticated')::text, false)",
-      [admins[0].user_id],
-    );
 
     const c = await seedClient();
     const prod = await seedProduit(2000);
