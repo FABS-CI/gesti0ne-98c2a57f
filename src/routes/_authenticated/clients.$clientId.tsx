@@ -315,7 +315,7 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
           >
             Proformas ({counts.proformas})
           </TabsTrigger>
-          <TabsTrigger value="factures">Factures ({factures.length})</TabsTrigger>
+          <TabsTrigger value="factures">Factures ({counts.factures})</TabsTrigger>
           <TabsTrigger
             value="bl"
             {...prefetchOnHover(() => queryClient.prefetchQuery(clientBLQO(clientId)))}
