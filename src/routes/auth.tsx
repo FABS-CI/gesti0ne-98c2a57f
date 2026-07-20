@@ -12,6 +12,11 @@ import { applyRememberPolicy, initRememberPolicyFromStorage } from "@/lib/auth/r
 import { signInWithPasswordServer } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/auth")({
+  // L'authentification dépend exclusivement des API navigateur (storage,
+  // session et client d'auth). La rendre côté serveur peut laisser un
+  // Suspense dans le HTML alors que le chunk est déjà prêt côté client,
+  // ce qui provoque un mismatch d'hydratation dans la preview.
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Connexion — ERP FABS-CI" },
