@@ -42,6 +42,7 @@ import {
   clientPaiementsQO,
   clientLivraisonsQO,
 } from "@/lib/client-detail-queries";
+import { useClientRealtime } from "@/hooks/use-client-realtime";
 
 
 export const Route = createFileRoute("/_authenticated/clients/$clientId")({
