@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { friendlyError } from '@/lib/friendly-error';
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -223,7 +224,7 @@ function ApprovisionnementsPage() {
       });
       toast.success("Reçu généré", { id: tid });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur génération PDF", { id: tid });
+      toast.error(friendlyError(e, "Erreur génération PDF"), { id: tid });
     }
   }
 

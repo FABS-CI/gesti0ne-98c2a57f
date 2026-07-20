@@ -142,7 +142,7 @@ function ImportDonneesPage() {
       toast.success(`${inserted} ${cfg.label.toLowerCase()} importés avec succès`);
       reset();
     } catch (e) {
-      toast.error(`Échec import : ${e instanceof Error ? e.message : String(e)}`);
+      toast.error(friendlyError(e, "Échec import"));
     } finally {
       setImporting(false);
     }

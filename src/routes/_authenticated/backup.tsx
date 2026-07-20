@@ -327,7 +327,7 @@ function BackupPage() {
       .single();
     if (insErr || !created) {
       setRunning(false);
-      toast.error(insErr?.message ?? "Impossible de démarrer la sauvegarde");
+      toast.error(friendlyError(insErr, "Impossible de démarrer la sauvegarde"));
       return;
     }
     const backupId = created.backup_id as string;
