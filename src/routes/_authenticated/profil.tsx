@@ -72,7 +72,7 @@ function Profil() {
       .upload(path, file, { upsert: true, contentType: file.type });
     if (upErr) {
       setUploading(false);
-      toast.error(upErr.message);
+      toast.error(friendlyError(upErr));
       return;
     }
     const { error: updErr } = await supabase
@@ -80,7 +80,7 @@ function Profil() {
       .update({ avatar_url: path })
       .eq("id", user.id);
     setUploading(false);
-    if (updErr) toast.error(updErr.message);
+    if (updErr) toast.error(friendlyError(updErr));
     else {
       toast.success("Photo mise à jour");
       await queryClient.invalidateQueries({ queryKey: ["my-profile"] });

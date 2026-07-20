@@ -25,6 +25,7 @@ import { EmployeeSearchSelect } from "@/components/search/EmployeeSearchSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RhPageHeader } from "@/components/rh/RhPageHeader";
 import { useSaveHotkey } from "@/hooks/use-save-hotkey";
+import { friendlyError } from "@/lib/friendly-error";
 
 const emptyForm: CongeInput = {
   employe_id: "",
@@ -60,7 +61,7 @@ export function CongeForm(props: Props) {
         navigate({ to: "/conges" });
       }
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   function submit(continueFlag = false) {

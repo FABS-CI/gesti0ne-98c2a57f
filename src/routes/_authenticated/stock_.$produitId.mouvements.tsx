@@ -27,6 +27,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { usePermissions } from "@/hooks/use-permissions";
 import { invalidateStock } from "@/lib/cache-invalidation";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/stock_/$produitId/mouvements")({
   component: AjustementPage,
@@ -125,7 +126,7 @@ function AjustementPage() {
       invalidateStock(qc);
       navigate({ to: "/stock" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur lors de l'ajustement");
+      toast.error(friendlyError(err, "Erreur lors de l'ajustement"));
     } finally {
       setSubmitting(false);
     }

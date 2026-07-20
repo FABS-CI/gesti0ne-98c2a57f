@@ -37,6 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/transferts/$transfertId")({
   component: TransfertDetailPage,
@@ -82,7 +83,7 @@ function TransfertDetailPage() {
       toast.success("Transfert expédié, stocks mis à jour");
       invalidate();
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   const receptionner = useMutation({
@@ -91,7 +92,7 @@ function TransfertDetailPage() {
       toast.success("Transfert réceptionné");
       invalidate();
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   const annuler = useMutation({
@@ -100,7 +101,7 @@ function TransfertDetailPage() {
       toast.success("Transfert annulé");
       invalidate();
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   if (!transfert) {
@@ -129,14 +130,14 @@ function TransfertDetailPage() {
     try {
       await viewCached(cacheKey, buildBlob);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur aperçu");
+      toast.error(friendlyError(e, "Erreur aperçu"));
     }
   };
   const handlePrint = async () => {
     try {
       await printCached(cacheKey, buildBlob);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur impression");
+      toast.error(friendlyError(e, "Erreur impression"));
     }
   };
   const handleDownload = async () => {
@@ -151,7 +152,7 @@ function TransfertDetailPage() {
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur téléchargement");
+      toast.error(friendlyError(e, "Erreur téléchargement"));
     }
   };
 

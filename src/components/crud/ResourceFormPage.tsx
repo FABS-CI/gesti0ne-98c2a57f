@@ -11,6 +11,7 @@ import { useSaveHotkey } from "@/hooks/use-save-hotkey";
 
 import { buildEmpty, dynFrom, type ResourceConfig, type Row } from "./resource-manager-types";
 import { ResourceFormBody } from "./ResourceFormBody";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Props = {
   config: ResourceConfig;
@@ -133,7 +134,7 @@ export function ResourceFormPage({ config, mode, recordId, listPath }: Props) {
         if (res?.id) setSavedId(res.id);
       }
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   function submit(then: "list" | "stay" | "new") {

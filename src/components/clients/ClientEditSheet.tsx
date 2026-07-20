@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { friendlyError } from "@/lib/friendly-error";
 
 const MODES_PAIEMENT = [
   { value: "comptant", label: "Comptant" },
@@ -99,7 +100,7 @@ export function ClientEditSheet({
       qc.invalidateQueries({ queryKey: ["clients"] });
       onOpenChange(false);
     },
-    onError: (e) => toast.error(e instanceof Error ? `Échec : ${e.message}` : "Erreur inconnue"),
+    onError: (e) => toast.error(`Échec : ${friendlyError(e, "Erreur inconnue")}`),
   });
 
   const handleCancel = () => {

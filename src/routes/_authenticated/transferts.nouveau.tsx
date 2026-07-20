@@ -28,6 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/transferts/nouveau")({
   component: NouveauTransfertPage,
@@ -69,7 +70,7 @@ function NouveauTransfertPage() {
       toast.success(`Transfert ${t.numero} créé`);
       navigate({ to: "/transferts/$transfertId", params: { transfertId: t.transfert_id } });
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   function addLigne() {
