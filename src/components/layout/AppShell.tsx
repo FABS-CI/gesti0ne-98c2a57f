@@ -1,5 +1,6 @@
-import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouterState, Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { MobileBottomNav } from "./MobileBottomNav";
@@ -12,6 +13,7 @@ import { isUserRestricted } from "@/lib/permissions";
 import { useNotificationsRealtime } from "@/hooks/use-notifications-realtime";
 import { usePresenceBroadcast } from "@/hooks/use-presence-broadcast";
 import { useRealtimeBus } from "@/hooks/use-realtime-bus";
+import { useIdlePrefetch, type PrefetchTarget } from "@/hooks/use-idle-prefetch";
 import { ShieldAlert } from "lucide-react";
 import { ExerciceProvider } from "@/contexts/ExerciceContext";
 import { ExerciceReadOnlyBanner } from "./ExerciceReadOnlyBanner";
@@ -66,6 +68,22 @@ export function AppShell({ children }: { children: ReactNode }) {
       /* silencieux : fallback local */
     });
   }, []);
+
+  // Préchargement intelligent (Lot 7 perf) : à l'idle, on chauffe les
+  // routes les plus visitées après login pour supprimer la latence
+  // perçue au 1er clic sur la sidebar.
+  const queryClient = useQueryClient();
+  const prefetchTargets = useMemo<PrefetchTarget[]>(
+    () => [
+      { route: "/tableau-de-bord" },
+      { route: "/commandes" },
+      { route: "/factures" },
+      { route: "/clients" },
+      { route: "/stock" },
+    ],
+    [],
+  );
+  useIdlePrefetch(prefetchTargets, queryClient, !!user && !blocked);
 
   return (
     <ExerciceProvider>
