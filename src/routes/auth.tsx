@@ -97,9 +97,14 @@ function AuthPage() {
     }
     initRememberPolicyFromStorage();
     setAuthReady(true);
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard" });
-    });
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (data.session) navigate({ to: "/dashboard" });
+      })
+      .catch((sessionError) => {
+        console.warn("[auth] Vérification de session indisponible", sessionError);
+      });
   }, [navigate]);
 
   async function handleSubmit(e: React.FormEvent) {

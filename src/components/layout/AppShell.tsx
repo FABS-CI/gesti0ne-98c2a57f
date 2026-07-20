@@ -32,9 +32,14 @@ function usePerfOverlayEnabled() {
   const [enabled, setEnabled] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const check = () =>
-      localStorage.getItem("perfOverlay") === "1" ||
-      new URLSearchParams(window.location.search).get("debug") === "perf";
+    const check = () => {
+      const enabledFromUrl = new URLSearchParams(window.location.search).get("debug") === "perf";
+      try {
+        return localStorage.getItem("perfOverlay") === "1" || enabledFromUrl;
+      } catch {
+        return enabledFromUrl;
+      }
+    };
     setEnabled(check());
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && (e.key === "P" || e.key === "p")) setEnabled(true);

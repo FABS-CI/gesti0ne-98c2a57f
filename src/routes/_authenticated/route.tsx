@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect, retainSearchParams } from "@tanstack/react-router";
+import { createFileRoute, isRedirect, Outlet, redirect, retainSearchParams } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,9 +32,15 @@ export const Route = createFileRoute("/_authenticated")({
     // getUser() (network round-trip to Supabase Auth). The Supabase client
     // handles token refresh in the background; every protected server call
     // still re-validates the bearer token server-side via requireSupabaseAuth.
-    const { data, error } = await supabase.auth.getSession();
-    if (error || !data.session?.user) throw redirect({ to: "/auth" });
-    return { user: data.session.user };
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error || !data.session?.user) throw redirect({ to: "/auth" });
+      return { user: data.session.user };
+    } catch (error) {
+      if (isRedirect(error)) throw error;
+      console.warn("[auth] Session locale indisponible, retour à la connexion", error);
+      throw redirect({ to: "/auth" });
+    }
   },
   component: () => (
     <AppShell>
