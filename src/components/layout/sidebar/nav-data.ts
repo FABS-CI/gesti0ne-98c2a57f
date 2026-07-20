@@ -263,8 +263,8 @@ export const groups: Group[] = [
     superAdminOnly: true,
     items: [
       { title: "Utilisateurs", url: "/utilisateurs", icon: UserCog, ready: true },
-      { title: "Rôles & Permissions", url: "/roles-permissions", icon: ShieldCheck, ready: true },
-      { title: "Rôles & Permissions (v2)", url: "/admin/roles-v2", icon: ShieldCheck, ready: true },
+      { title: "Rôles & Permissions", url: "/admin/roles-v2", icon: ShieldCheck, ready: true },
+      // v1 legacy masquée du menu (tous les utilisateurs migrés) — accessible via /roles-permissions pour rollback
       { title: "Journal d'audit", url: "/audit", icon: History, ready: true },
       { title: "Backup", url: "/backup", icon: Database, ready: true },
       { title: "Santé du système", url: "/admin/sante-systeme", icon: Shield, ready: true },
