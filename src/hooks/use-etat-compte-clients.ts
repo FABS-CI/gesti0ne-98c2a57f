@@ -22,8 +22,9 @@ export type EtatCompteData = {
 export function useEtatCompteClients(q: string, exerciceId: string | null | undefined) {
   return useQuery<EtatCompteData>({
     queryKey: ["etat-compte", q, exerciceId],
+    staleTime: 60_000,
     queryFn: async () => {
-      // PostgREST plafonne à 1000 lignes/req → pagination explicite.
+      // 1) Charger tous les clients (une seule requête paginée large).
       const PAGE = 1000;
       const base: Omit<EtatCompteClient, "solde">[] = [];
       for (let from = 0; ; from += PAGE) {
@@ -40,36 +41,10 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
         if (page.length < PAGE) break;
       }
       if (base.length === 0)
-        return {
-          rows: [],
-          debugByClient: new Map(),
-          dateDebut: null,
-          dateFin: null,
-        };
-      const ids = base.map((c) => c.client_id);
+        return { rows: [], debugByClient: new Map(), dateDebut: null, dateFin: null };
 
-      let dateDebut: string | null = null;
-      let dateFin: string | null = null;
-      // Volontairement pas de filtre de période ici : l'état de compte agrège
-      // TOUTES les factures/paiements/avoirs du client pour éviter que des
-      // factures antérieures à l'exercice actif disparaissent du solde.
-      // (Le report d'ouverture reste géré via soldes_ouverture_clients.)
-
-      const CHUNK = 100;
-      const chunks: string[][] = [];
-      for (let i = 0; i < ids.length; i += CHUNK) chunks.push(ids.slice(i, i + CHUNK));
-
-      const runBatched = async <T>(
-        fn: (batch: string[]) => PromiseLike<{ data: T[] | null; error: unknown }>,
-      ): Promise<T[]> => {
-        const out: T[] = [];
-        for (const batch of chunks) {
-          const { data, error } = await fn(batch);
-          if (error) throw error;
-          if (data) out.push(...data);
-        }
-        return out;
-      };
+      const dateDebut: string | null = null;
+      const dateFin: string | null = null;
 
       type FactureRow = {
         facture_id: string;
@@ -92,50 +67,43 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
       };
       type OuvertureRow = { client_id: string; montant: number };
 
-      const [facturesData, paiementsData, avoirsData, ouverturesData] = await Promise.all([
-        runBatched<FactureRow>((batch) =>
-          supabase
-            .from("factures")
-            .select("facture_id, client_id, montant_total, date_facture")
-            .in("client_id", batch),
-        ),
-        runBatched<PaiementRow>((batch) =>
-          supabase
-            .from("paiements")
-            .select("montant, date_paiement, statut, factures!inner(client_id)")
-            .in("factures.client_id", batch),
-        ),
-        runBatched<AvoirRow>((batch) =>
-          supabase
-            .from("retours")
-            .select("client_id, facture_id, montant, date_retour, statut")
-            .in("client_id", batch),
-        ),
+      // 2) Charger les mouvements en une seule requête chacun
+      //    (pas de batch par 100 clients : c'était la cause des 30+ requêtes lentes).
+      const [facturesRes, paiementsRes, avoirsRes, ouverturesRes] = await Promise.all([
+        supabase
+          .from("factures")
+          .select("facture_id, client_id, montant_total, date_facture")
+          .not("client_id", "is", null),
+        supabase
+          .from("paiements")
+          .select("montant, date_paiement, statut, factures!inner(client_id)")
+          .not("factures.client_id", "is", null),
+        supabase
+          .from("retours")
+          .select("client_id, facture_id, montant, date_retour, statut")
+          .not("client_id", "is", null),
         exerciceId
-          ? runBatched<OuvertureRow>((batch) =>
-              supabase
-                .from("soldes_ouverture_clients")
-                .select("client_id, montant")
-                .eq("exercice_id", exerciceId)
-                .in("client_id", batch),
-            ).catch(() => [] as OuvertureRow[])
-          : Promise.resolve([] as OuvertureRow[]),
+          ? supabase
+              .from("soldes_ouverture_clients")
+              .select("client_id, montant")
+              .eq("exercice_id", exerciceId)
+          : Promise.resolve({ data: [] as OuvertureRow[], error: null }),
       ]);
+      if (facturesRes.error) throw facturesRes.error;
+      if (paiementsRes.error) throw paiementsRes.error;
+      if (avoirsRes.error) throw avoirsRes.error;
+      if ("error" in ouverturesRes && ouverturesRes.error) throw ouverturesRes.error;
 
+      const facturesData = (facturesRes.data ?? []) as FactureRow[];
+      const paiementsData = (paiementsRes.data ?? []) as PaiementRow[];
+      const avoirsData = (avoirsRes.data ?? []) as AvoirRow[];
+      const ouverturesData = (ouverturesRes.data ?? []) as OuvertureRow[];
 
       const byClient = new Map<
         string,
         {
-          factures: Array<{
-            facture_id: string;
-            date_facture: string;
-            montant_total: number | null;
-          }>;
-          paiements: Array<{
-            date_paiement: string;
-            montant: number | null;
-            statut: string | null;
-          }>;
+          factures: Array<{ facture_id: string; date_facture: string; montant_total: number | null }>;
+          paiements: Array<{ date_paiement: string; montant: number | null; statut: string | null }>;
           avoirs: Array<{ date_retour: string; montant: number | null; statut: string | null }>;
           soldeOuvertureRow: number;
         }
@@ -148,9 +116,7 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
         }
         return b;
       };
-      for (const o of ouverturesData) {
-        bucket(o.client_id).soldeOuvertureRow = Number(o.montant ?? 0);
-      }
+      for (const o of ouverturesData) bucket(o.client_id).soldeOuvertureRow = Number(o.montant ?? 0);
       for (const f of facturesData) {
         if (!f.client_id) continue;
         bucket(f.client_id).factures.push({
@@ -171,13 +137,8 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
       for (const a of avoirsData) {
         if (!a.client_id) continue;
         if (a.facture_id) {
-          const facture = bucket(a.client_id).factures.find(
-            (f) => f.facture_id === a.facture_id,
-          );
-          if (facture) {
-            facture.montant_total =
-              Number(facture.montant_total ?? 0) + Number(a.montant ?? 0);
-          }
+          const facture = bucket(a.client_id).factures.find((f) => f.facture_id === a.facture_id);
+          if (facture) facture.montant_total = Number(facture.montant_total ?? 0) + Number(a.montant ?? 0);
         }
         bucket(a.client_id).avoirs.push({
           date_retour: a.date_retour,
@@ -188,12 +149,11 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
 
       const debugByClient = new Map<string, SoldeDebug>();
       const rows: EtatCompteClient[] = base.map((c) => {
-        const b = byClient.get(c.client_id) ?? {
-          factures: [],
-          paiements: [],
-          avoirs: [],
-          soldeOuvertureRow: 0,
-        };
+        const b = byClient.get(c.client_id);
+        if (!b) {
+          // Client sans mouvement → solde 0, on évite computeSoldeClient.
+          return { ...c, solde: 0 };
+        }
         const r = computeSoldeClient({
           clientId: c.client_id,
           dateDebut,
