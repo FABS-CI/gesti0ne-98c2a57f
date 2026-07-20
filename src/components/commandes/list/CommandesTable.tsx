@@ -88,7 +88,7 @@ export function CommandesTable({
   const mobileCards = (
     <div className="space-y-2 p-2">
       {isLoading ? (
-        <div className="py-10 text-center text-muted-foreground">Chargement…</div>
+        <SkeletonList rows={6} />
       ) : items.length === 0 ? (
         <div className="py-8">{emptyState}</div>
       ) : (
