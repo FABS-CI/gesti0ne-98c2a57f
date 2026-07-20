@@ -686,17 +686,15 @@ export const REPORTS: ReportDef[] = [
       { key: "salaire_net", label: "Net", money: true },
       { key: "statut", label: "Statut" },
     ],
-    fetcher: async (exerciceId) => {
+    fetcher: async () => {
       const [{ data, error }, employes] = await Promise.all([
         (() => {
-          let q = supabase
+          return supabase
             .from("bulletins_paie")
             .select(
               "reference, employe_id, periode, date_bulletin, salaire_brut, cotisations, salaire_net, statut",
             )
             .order("date_bulletin", { ascending: false });
-          if (exerciceId) q = q.eq("exercice_id", exerciceId);
-          return q;
         })(),
         loadEmployeNames(),
       ]);
