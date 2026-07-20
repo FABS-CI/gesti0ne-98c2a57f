@@ -115,57 +115,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
           ? { label: "Impayés", cls: "bg-orange-500 text-white" }
           : { label: "Actif", cls: "bg-emerald-500 text-white" };
 
-  async function handleEtatCompte() {
-    setGenerating(true);
-    try {
-      const blob = await buildEtatCompteClientPDF({
-        clientId: client.client_id,
-        clientNom: client.nom,
-        clientTel: client.telephone,
-        representant: client.representant,
-      });
-      downloadBlob(blob, fileNameFor(`ETAT_COMPTE_${client.reference}`, client.nom));
-      toast.success("État de compte généré");
-    } catch (e) {
-      toast.error("Échec de la génération du PDF");
-      console.error(e);
-    } finally {
-      setGenerating(false);
-    }
-  }
-
-  async function handleHistoriquePdf() {
-    setHistoriqueBusy(true);
-    try {
-      // Historique PDF a besoin des relations complètes — récupère à la volée
-      const [commandes, paiements, proformas, bl, avoirs, livraisons] = await Promise.all([
-        queryClient.ensureQueryData(clientCommandesQO(clientId)),
-        queryClient.ensureQueryData(clientPaiementsQO(clientId)),
-        queryClient.ensureQueryData(clientProformasQO(clientId)),
-        queryClient.ensureQueryData(clientBLQO(clientId)),
-        queryClient.ensureQueryData(clientAvoirsQO(clientId)),
-        queryClient.ensureQueryData(clientLivraisonsQO(clientId)),
-      ]);
-      const blob = await buildClientHistoriquePDF(client, {
-        commandes,
-        factures,
-        paiements,
-        proformas,
-        bons_livraison: bl,
-        avoirs,
-        livraisons,
-      });
-      downloadBlob(blob, fileNameFor(`HISTORIQUE_${client.reference}`, client.nom));
-      toast.success("Historique généré");
-    } catch (e) {
-      toast.error("Échec de la génération de l'historique");
-      console.error(e);
-    } finally {
-      setHistoriqueBusy(false);
-    }
-  }
-
-  const rel = { factures, commandes: [], paiements: [], bons_livraison: [] };
 
   return (
     <div className="space-y-6">
