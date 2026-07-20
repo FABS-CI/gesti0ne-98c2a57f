@@ -191,7 +191,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
       </div>
 
       <ClientEditSheet client={client} open={editOpen} onOpenChange={setEditOpen} />
-      <ClientSoldeDialog open={soldeOpen} onOpenChange={setSoldeOpen} client={client} rel={rel as never} />
 
       {/* KPIs */}
       <Section fallback={<SkeletonKpiRow count={canSeeSolde ? 8 : 4} />}>
