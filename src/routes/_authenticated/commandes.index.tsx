@@ -20,6 +20,7 @@ import { DeleteCommandeDialog } from "@/components/commandes/list/DeleteCommande
 import { exportCommandesCsv, exportCommandesPdf } from "@/lib/commandes-list-export";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { RenderProfiler } from "@/hooks/use-render-profiler";
+import { SkeletonTable, SkeletonKpiRow } from "@/components/ui/skeletons";
 
 import { authRouteHead } from "@/lib/route-head";
 const COMMANDES_PAGE_SIZE = 50;
@@ -34,8 +35,22 @@ export const Route = createFileRoute("/_authenticated/commandes/")({
       page: fallback(z.number().int().min(1), 1).default(1),
     }),
   ),
+  pendingMs: 200,
+  pendingComponent: CommandesPending,
   component: CommandesPage,
 });
+
+function CommandesPending() {
+  return (
+    <div className="space-y-6">
+      <div className="h-9 w-64 animate-pulse rounded bg-muted" />
+      <SkeletonKpiRow count={4} />
+      <div className="rounded-xl border bg-card p-4">
+        <SkeletonTable rows={8} cols={6} />
+      </div>
+    </div>
+  );
+}
 
 function CommandesPage() {
   const navigate = useNavigate({ from: Route.fullPath });
