@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,6 +14,79 @@ export type AppRole =
   | "secretariat"
   | "assistante"
   | "service_logistique";
+
+type UserRolesRealtimeSubscription = {
+  userId: string;
+  channel: ReturnType<typeof supabase.channel>;
+  queryClients: Set<QueryClient>;
+  subscribers: number;
+};
+
+let activeUserRolesSubscription: UserRolesRealtimeSubscription | null = null;
+
+function makeUserRolesChannelName(userId: string) {
+  const suffix = globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2, 10);
+  return `user-roles-${userId}-${suffix}`;
+}
+
+function registerUserRolesRealtime(userId: string, queryClient: QueryClient) {
+  if (activeUserRolesSubscription?.userId === userId) {
+    const subscription = activeUserRolesSubscription;
+    subscription.subscribers += 1;
+    subscription.queryClients.add(queryClient);
+
+    return () => {
+      subscription.queryClients.delete(queryClient);
+      subscription.subscribers -= 1;
+      if (subscription.subscribers <= 0) {
+        void supabase.removeChannel(subscription.channel);
+        if (activeUserRolesSubscription === subscription) activeUserRolesSubscription = null;
+      }
+    };
+  }
+
+  if (activeUserRolesSubscription) {
+    void supabase.removeChannel(activeUserRolesSubscription.channel);
+    activeUserRolesSubscription = null;
+  }
+
+  const queryClients = new Set<QueryClient>([queryClient]);
+  const invalidateRoles = () => {
+    queryClients.forEach((client) =>
+      client.invalidateQueries({ queryKey: ["user-roles", userId] }),
+    );
+  };
+  const channel = supabase
+    .channel(makeUserRolesChannelName(userId))
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "user_roles", filter: `user_id=eq.${userId}` },
+      invalidateRoles,
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "rbac_user_roles", filter: `user_id=eq.${userId}` },
+      invalidateRoles,
+    )
+    .subscribe();
+
+  const subscription: UserRolesRealtimeSubscription = {
+    userId,
+    channel,
+    queryClients,
+    subscribers: 1,
+  };
+  activeUserRolesSubscription = subscription;
+
+  return () => {
+    subscription.queryClients.delete(queryClient);
+    subscription.subscribers -= 1;
+    if (subscription.subscribers <= 0) {
+      void supabase.removeChannel(subscription.channel);
+      if (activeUserRolesSubscription === subscription) activeUserRolesSubscription = null;
+    }
+  };
+}
 
 /**
  * P0 perf : mise en cache via React Query (staleTime long) pour éviter les
@@ -55,22 +129,7 @@ export function useUserRoles() {
   // Invalidation temps réel : si les rôles du user changent, on rafraîchit.
   useEffect(() => {
     if (!userId) return;
-    const channel = supabase
-      .channel(`user-roles-${userId}`)
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "user_roles", filter: `user_id=eq.${userId}` },
-        () => qc.invalidateQueries({ queryKey: ["user-roles", userId] }),
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "rbac_user_roles", filter: `user_id=eq.${userId}` },
-        () => qc.invalidateQueries({ queryKey: ["user-roles", userId] }),
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return registerUserRolesRealtime(userId, qc);
   }, [userId, qc]);
 
   const roles = data ?? [];
