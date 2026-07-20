@@ -393,7 +393,7 @@ function LogisticsCostsPage() {
                           >
                             <FileDown className="h-4 w-4" />
                           </Button>
-                          {r.validation_statut === "en_attente" && (
+                          {(r.validation_statut === "en_attente" || r.validation_statut === "brouillon") && (
                             <>
                               <Button aria-label="Valider le décaissement"
                                 variant="default"
