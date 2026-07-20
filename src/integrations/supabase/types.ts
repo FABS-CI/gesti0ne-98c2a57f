@@ -7321,6 +7321,40 @@ export type Database = {
         Args: { _accorde: boolean; _code: string; _role_id: string }
         Returns: undefined
       }
+      rbac2_audit_search: {
+        Args: {
+          _action?: string
+          _actor?: string
+          _from?: string
+          _limit?: number
+          _target_type?: string
+          _to?: string
+        }
+        Returns: {
+          action: string
+          actor_id: string | null
+          after: Json | null
+          at: string
+          before: Json | null
+          id: number
+          ip: unknown
+          target_id: string
+          target_type: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "rbac2_audit"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      rbac2_deps_transitive: {
+        Args: { _perm_code: string }
+        Returns: {
+          perm_code: string
+        }[]
+      }
+      rbac2_diagnose: { Args: never; Returns: Json }
       recalculer_solde_client: { Args: { _client_id: string }; Returns: number }
       recalculer_soldes_global_clients: { Args: never; Returns: number }
       receptionner_achat: { Args: { _achat_id: string }; Returns: undefined }
