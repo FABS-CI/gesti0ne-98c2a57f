@@ -80,6 +80,8 @@ function EtatComptePage() {
   }
 
   function handleExport() {
+    const totalImpaye = clients.reduce((s, c) => s + Number(c.solde), 0);
+    const nbDebiteurs = clients.filter((c) => Number(c.solde) > 0).length;
     exportCsv(
       "etat_compte_clients",
       ["Référence", "Client", "Représentant", "Tél. représentant", "Solde dû"],
@@ -90,6 +92,15 @@ function EtatComptePage() {
         c.telephone ?? "—",
         String(c.solde),
       ]),
+      {
+        summary: [
+          { label: "Nombre total de lignes", value: String(clients.length) },
+          { label: "Nombre de clients", value: String(clients.length) },
+          { label: "Clients débiteurs", value: String(nbDebiteurs) },
+          { label: "Total impayé (FCFA)", value: formatFCFA(totalImpaye) },
+          { label: "Date d'export", value: new Date().toLocaleString("fr-FR") },
+        ],
+      },
     );
   }
 
