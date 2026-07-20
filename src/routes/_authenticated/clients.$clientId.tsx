@@ -42,6 +42,7 @@ import {
   clientPaiementsQO,
   clientLivraisonsQO,
 } from "@/lib/client-detail-queries";
+import { useClientRealtime } from "@/hooks/use-client-realtime";
 
 
 export const Route = createFileRoute("/_authenticated/clients/$clientId")({
@@ -66,6 +67,8 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
   const [soldeOpen, setSoldeOpen] = useState(false);
   const { has } = usePermissions();
   const canSeeSolde = has("clients.voir_ca");
+
+  useClientRealtime(clientId);
 
   const { data: client } = useSuspenseQuery(clientQO(clientId));
   const { data: factures } = useSuspenseQuery(clientFacturesQO(clientId));
@@ -287,8 +290,12 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
             </>
           )}
           <Kpi label="Commandes" value={String(counts.commandes)} />
-          <Kpi label="Factures" value={String(factures.length)} />
+          <Kpi label="Factures" value={String(counts.factures)} />
           <Kpi label="Bons de livraison" value={String(counts.bl)} />
+          <Kpi label="Paiements" value={String(counts.paiements)} />
+          <Kpi label="Livraisons" value={String(counts.livraisons)} />
+          <Kpi label="Proformas" value={String(counts.proformas)} />
+          <Kpi label="Avoirs" value={String(counts.avoirs)} />
         </div>
       </Section>
 
@@ -308,7 +315,7 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
           >
             Proformas ({counts.proformas})
           </TabsTrigger>
-          <TabsTrigger value="factures">Factures ({factures.length})</TabsTrigger>
+          <TabsTrigger value="factures">Factures ({counts.factures})</TabsTrigger>
           <TabsTrigger
             value="bl"
             {...prefetchOnHover(() => queryClient.prefetchQuery(clientBLQO(clientId)))}
@@ -319,13 +326,13 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
             value="paiements"
             {...prefetchOnHover(() => queryClient.prefetchQuery(clientPaiementsQO(clientId)))}
           >
-            Paiements
+            Paiements ({counts.paiements})
           </TabsTrigger>
           <TabsTrigger
             value="livraisons"
             {...prefetchOnHover(() => queryClient.prefetchQuery(clientLivraisonsQO(clientId)))}
           >
-            Livraisons
+            Livraisons ({counts.livraisons})
           </TabsTrigger>
           <TabsTrigger
             value="avoirs"
@@ -382,7 +389,9 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
         </TabsContent>
 
         <TabsContent value="stats" className="space-y-4">
-          <ClientStatsTab factures={factures} commandesCount={counts.commandes} />
+          <Section fallback={<SkeletonKpiRow count={8} />}>
+            <LazyStatsTab clientId={clientId} client={client} counts={counts} factures={factures} />
+          </Section>
         </TabsContent>
 
         <TabsContent value="audit" className="space-y-3">
@@ -418,4 +427,35 @@ function LazyLivraisonsTab({ clientId }: { clientId: string }) {
 function LazyAvoirsTab({ clientId }: { clientId: string }) {
   const { data } = useSuspenseQuery(clientAvoirsQO(clientId));
   return <ClientAvoirsTab avoirs={data} />;
+}
+function LazyStatsTab({
+  clientId,
+  client,
+  counts,
+  factures,
+}: {
+  clientId: string;
+  client: Parameters<typeof ClientInfosTab>[0]["client"];
+  counts: {
+    commandes: number;
+    proformas: number;
+    bl: number;
+    avoirs: number;
+    factures: number;
+    paiements: number;
+    livraisons: number;
+  };
+  factures: Parameters<typeof ClientFacturesTab>[0]["factures"];
+}) {
+  const { data: commandes } = useSuspenseQuery(clientCommandesQO(clientId));
+  const { data: paiements } = useSuspenseQuery(clientPaiementsQO(clientId));
+  return (
+    <ClientStatsTab
+      client={client}
+      counts={counts}
+      factures={factures}
+      commandes={commandes}
+      paiements={paiements}
+    />
+  );
 }
