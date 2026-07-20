@@ -399,56 +399,10 @@ export async function generateBonTourneePDF(tourneeId: string): Promise<Blob> {
 
   drawSignatures(doc, afterY, ["Responsable logistique", "Chauffeur / Transporteur"], marginX);
 
-  // ── Détail par client / cartons ────────────────────────────────────────
-  const detailBody = list.map((r) => {
-    const infoCli = r.commandes?.client_id ? clientMap.get(r.commandes.client_id) : undefined;
-    const colis = r.commande_id ? colisMap.get(r.commande_id) : undefined;
-    const refs = r.commande_id ? (cartonsByCmd.get(r.commande_id) ?? []) : [];
-    const type = (r.type_livraison ?? "").toLowerCase();
-    const typeLabel = type.includes("expedi") || r.gare_nom ? "Expédition" : "Livraison";
-    return [
-      r.commandes?.reference ?? "—",
-      r.commandes?.client_nom ?? "—",
-      colis?.destinataire ?? r.commandes?.client_nom ?? "—",
-      infoCli?.adresse ?? "—",
-      r.ville_livraison ?? "—",
-      infoCli?.telephone ?? "—",
-      typeLabel,
-      String(refs.length || colis?.cartons || 0),
-      refs.join(", ") || "—",
-    ];
-  });
-  if (detailBody.length > 0) {
-    autoTable(doc, {
-      head: [
-        [
-          "Réf client",
-          "Client",
-          "Destinataire",
-          "Adresse",
-          "Ville",
-          "Téléphone",
-          "Type",
-          "Cartons",
-          "Références cartons",
-        ],
-      ],
-      body: detailBody,
-      startY: afterY + 30,
-      margin: { left: marginX, right: marginX },
-      styles: { fontSize: 7.5, cellPadding: 1.6, overflow: "linebreak" },
-      headStyles: PDF_TABLE.headStyles,
-      bodyStyles: PDF_TABLE.bodyStyles,
-      columnStyles: {
-        7: { halign: "right", cellWidth: 12 },
-        8: { cellWidth: 40 },
-      },
-      didDrawPage: () => {
-        drawHeader(doc, titre, template);
-        drawFooter(doc, `Bon de tournée ${t.reference}`, template);
-      },
-    });
-  }
+  // La rubrique détaillée « Réf client / Références cartons » a été retirée :
+  // toutes ses informations sont désormais présentes dans la table principale
+  // ci-dessus (colonne « Références cartons » incluse).
+
 
   addPageNumbers(doc);
   return doc.output("blob");
