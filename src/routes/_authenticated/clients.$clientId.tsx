@@ -68,6 +68,8 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
   const { has } = usePermissions();
   const canSeeSolde = has("clients.voir_ca");
 
+  useClientRealtime(clientId);
+
   const { data: client } = useSuspenseQuery(clientQO(clientId));
   const { data: factures } = useSuspenseQuery(clientFacturesQO(clientId));
   const { data: counts } = useSuspenseQuery(clientCountsQO(clientId));
