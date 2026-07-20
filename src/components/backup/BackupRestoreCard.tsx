@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/current-user";
+import { friendlyError } from '@/lib/friendly-error';
 import { useState } from "react";
 import {
   Loader2,
@@ -242,7 +243,7 @@ export function BackupRestoreCard() {
       setLastReport(null);
       toast.success(`Fichier chargé: ${f.name}`);
     } catch (err) {
-      toast.error(`Fichier invalide: ${(err as Error).message}`);
+      toast.error(friendlyError(err, "Fichier invalide"));
     }
   }
 

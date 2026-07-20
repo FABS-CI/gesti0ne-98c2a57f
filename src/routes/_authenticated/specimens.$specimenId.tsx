@@ -80,7 +80,7 @@ function SpecimenDetailPage() {
       });
       downloadBlob(blob, fileNameFor(data.numero, data.etablissement));
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setPrinting(false);
     }

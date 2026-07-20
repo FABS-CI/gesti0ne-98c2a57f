@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/current-user";
+import { friendlyError } from '@/lib/friendly-error';
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -67,7 +68,7 @@ function GoogleDriveAdminPage() {
       if (r.ok) toast.success("Connexion Google Drive validée");
       else toast.error(`Échec (${r.status})`);
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setChecking(false);
     }
@@ -80,7 +81,7 @@ function GoogleDriveAdminPage() {
       if (r.ok) toast.success(`Test upload OK — fichier ${r.name} créé puis supprimé`);
       else toast.error(`Upload échoué (${r.status})`);
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setUploading(false);
     }

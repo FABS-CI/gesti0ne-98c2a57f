@@ -206,7 +206,7 @@ function BackupPage() {
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       toast.success(`Téléchargé — ${res.name}`);
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setDownloadingId(null);
     }
@@ -221,7 +221,7 @@ function BackupPage() {
         `Export critique OK — ${res.users_count} comptes, ${res.files_count} fichiers`,
       );
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setCriticalRunning(false);
     }
@@ -236,7 +236,7 @@ function BackupPage() {
         `ZIP binaires OK — ${res.total_files} fichiers (${(res.zip_bytes / 1024 / 1024).toFixed(1)} Mo)`,
       );
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setBinariesRunning(false);
     }
@@ -308,7 +308,7 @@ function BackupPage() {
       const { assertPermission } = await import("@/lib/rbac-api");
       await assertPermission("backup.planifier");
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
       return;
     }
     setRunning(true);
@@ -391,7 +391,7 @@ function BackupPage() {
           });
           toast.success("Envoyée vers Google Drive");
         } catch (e) {
-          toast.error(`Google Drive: ${(e as Error).message}`);
+          toast.error(friendlyError(e, "Google Drive"));
         }
       }
       loadHistory();
@@ -406,7 +406,7 @@ function BackupPage() {
         })
         .eq("backup_id", backupId);
       await logAudit("backup_failed", backupId, { error: (e as Error).message });
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
       loadHistory();
     } finally {
       setRunning(false);
@@ -423,7 +423,7 @@ function BackupPage() {
       const { assertPermission } = await import("@/lib/rbac-api");
       await assertPermission("backup.exporter_csv");
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
       return;
     }
     try {
@@ -448,7 +448,7 @@ function BackupPage() {
         },
       );
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     }
   }
 

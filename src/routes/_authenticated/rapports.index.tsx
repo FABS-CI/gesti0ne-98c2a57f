@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from '@/lib/friendly-error';
 import { useState } from "react";
 import { FileBarChart } from "lucide-react";
 import { toast } from "sonner";
@@ -36,7 +37,7 @@ function RapportsPage() {
       exportReportPdf(def, rows);
       toast.success(`Rapport ${def.label} exporté`);
     } catch (e) {
-      toast.error(`Erreur: ${(e as Error).message}`);
+      toast.error(friendlyError(e, "Erreur"));
     } finally {
       setLoading(null);
     }

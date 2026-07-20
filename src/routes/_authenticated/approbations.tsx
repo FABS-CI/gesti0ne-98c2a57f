@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { friendlyError } from '@/lib/friendly-error';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { CheckCircle2, XCircle, Inbox, Loader2, FileCheck } from "lucide-react";
@@ -278,7 +279,7 @@ function DecisionDialog({
       qc.invalidateQueries({ queryKey: ["approbations"] });
       onClose();
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setBusy(false);
     }
