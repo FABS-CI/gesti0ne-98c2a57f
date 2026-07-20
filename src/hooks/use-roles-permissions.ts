@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   assignRoleToUser,
   bulkSetRolePermissions,
   copyRolePermissions,
@@ -19,6 +18,7 @@ import { friendlyError } from "@/lib/friendly-error";
   updateRole,
   type RbacRole,
 } from "@/lib/rbac-api";
+import { friendlyError } from "@/lib/friendly-error";
 
 // ── Rôles ──────────────────────────────────────────────────────────────────
 export function useRolesQuery() {

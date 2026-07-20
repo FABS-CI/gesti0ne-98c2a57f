@@ -51,13 +51,13 @@ import {
   setEmployeAccountBan,
 } from "@/lib/employe-account.functions";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { friendlyError } from "@/lib/friendly-error";
 
 function buildInitial(employe?: Employe): EmployeFormValues {
   const base: EmployeFormValues = {

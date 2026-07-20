@@ -17,13 +17,13 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import {
-import { friendlyError } from "@/lib/friendly-error";
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { friendlyError } from "@/lib/friendly-error";
 
 const MODES_PAIEMENT = [
   { value: "comptant", label: "Comptant" },
