@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { friendlyError } from '@/lib/friendly-error';
 import {
   useMutation,
   useQueryClient,
@@ -64,7 +65,7 @@ export function useOptimisticListMutation<TItem, TVars>(opts: {
       if (ctx?.previous) {
         for (const { key, data } of ctx.previous) qc.setQueryData(key, data);
       }
-      if (errorMessage) toast.error(errorMessage, { description: err.message });
+      if (errorMessage) toast.error(errorMessage, { description: friendlyError(err) });
     },
     onSuccess,
     onSettled: (data, err, vars, ctx) => {

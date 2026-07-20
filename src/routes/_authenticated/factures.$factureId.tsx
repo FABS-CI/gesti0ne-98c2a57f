@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { friendlyError } from '@/lib/friendly-error';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -107,7 +108,7 @@ function FactureDetailPage() {
       invalidateFne(qc, factureId);
     },
     onError: (e: Error) =>
-      toast.error("La certification a été refusée par la DGI", { description: e.message }),
+      toast.error("La certification a été refusée par la DGI", { description: friendlyError(e) }),
   });
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;

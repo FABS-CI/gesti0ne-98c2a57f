@@ -79,7 +79,7 @@ function FNEDetail() {
       qc.invalidateQueries({ queryKey: ["fne-list"] });
     },
     onError: (e: Error) =>
-      toast.error("Échec de la nouvelle tentative", { description: e.message }),
+      toast.error("Échec de la nouvelle tentative", { description: friendlyError(e) }),
   });
 
   const downloadJSON = () => {

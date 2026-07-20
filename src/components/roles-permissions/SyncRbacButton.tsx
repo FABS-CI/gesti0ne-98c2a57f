@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { friendlyError } from '@/lib/friendly-error';
 import { Loader2, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +21,7 @@ export function SyncRbacButton() {
     const { data, error } = await supabase.rpc("sync_rbac_matrix");
     setLoading(false);
     if (error) {
-      toast.error("Synchronisation refusée", { description: error.message });
+      toast.error("Synchronisation refusée", { description: friendlyError(error) });
       return;
     }
     setReport(data as Record<string, unknown>);

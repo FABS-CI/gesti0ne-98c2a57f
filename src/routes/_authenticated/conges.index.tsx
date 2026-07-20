@@ -36,6 +36,7 @@ import { EmptyState } from "@/components/common/EmptyState";
 
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from '@/lib/friendly-error';
 export const Route = createFileRoute("/_authenticated/conges/")({
   head: () => authRouteHead("Congés"),
   component: CongesListPage,
@@ -60,7 +61,7 @@ function CongesListPage() {
       queryClient.invalidateQueries({ queryKey: ["conges"] });
       toast.success("Statut mis à jour");
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   const deleteMutation = useMutation({
@@ -69,7 +70,7 @@ function CongesListPage() {
       queryClient.invalidateQueries({ queryKey: ["conges"] });
       toast.success("Demande supprimée");
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   return (

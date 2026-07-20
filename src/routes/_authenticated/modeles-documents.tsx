@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from '@/lib/friendly-error';
 import { useEffect, useState } from "react";
 import { FileText, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -161,7 +162,7 @@ function ModelesDocuments() {
       });
       downloadBlob(blob, fileNameFor("FA-2026-00042", "Apercu"));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur d'aperçu");
+      toast.error(friendlyError(e, "Erreur d'aperçu"));
     }
   };
 
@@ -242,7 +243,7 @@ function ModelesDocuments() {
       downloadBlob(blob, fileNameFor("FA-APERCU-CYCLE", "Apercu"));
       toast.success("Aperçu généré : vérifiez les bandeaux et sous-totaux par cycle");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur d'aperçu");
+      toast.error(friendlyError(e, "Erreur d'aperçu"));
     }
   };
 
@@ -258,7 +259,7 @@ function ModelesDocuments() {
       });
       downloadBlob(blob, fileNameFor("FA-APERCU", "Apercu"));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur d'aperçu");
+      toast.error(friendlyError(e, "Erreur d'aperçu"));
     }
   };
 

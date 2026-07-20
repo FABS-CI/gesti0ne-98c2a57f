@@ -23,6 +23,7 @@ import { DepotsTable } from "@/components/depots/DepotsTable";
 import { DepotFormDialog } from "@/components/depots/DepotFormDialog";
 import { useConfirmDelete } from "@/hooks/use-confirm-delete";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from '@/lib/friendly-error';
 
 export const Route = createFileRoute("/_authenticated/depots")({
   component: DepotsPage,
@@ -68,7 +69,7 @@ function DepotsPage() {
       toast.success(editing ? "Dépôt modifié" : "Dépôt créé");
       setOpen(false);
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   const del = useMutation({
@@ -77,7 +78,7 @@ function DepotsPage() {
       qc.invalidateQueries({ queryKey: ["depots"] });
       toast.success("Dépôt désactivé");
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   const promote = useMutation({
@@ -86,7 +87,7 @@ function DepotsPage() {
       qc.invalidateQueries({ queryKey: ["depots"] });
       toast.success("Dépôt principal mis à jour");
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   function openNew() {

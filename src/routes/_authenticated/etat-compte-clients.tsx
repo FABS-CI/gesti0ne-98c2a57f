@@ -27,6 +27,7 @@ import {
 import { EtatCompteDebugPanel } from "@/components/etat-compte/EtatCompteDebugPanel";
 import { EtatCompteTable } from "@/components/etat-compte/EtatCompteTable";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from '@/lib/friendly-error';
 
 export const Route = createFileRoute("/_authenticated/etat-compte-clients")({
   component: EtatComptePage,
@@ -155,7 +156,7 @@ function EtatComptePage() {
       downloadBlob(blob, fileNameFor(`EC_${c.reference}`, c.nom));
       toast.success(`État de compte ${c.nom} généré`);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur PDF");
+      toast.error(friendlyError(e, "Erreur PDF"));
     } finally {
       setBusy(null);
     }
@@ -171,7 +172,7 @@ function EtatComptePage() {
       downloadBlob(blob, fileNameFor(`Historique_${c.reference}`, c.nom));
       toast.success(`Historique ${c.nom} généré`);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur PDF");
+      toast.error(friendlyError(e, "Erreur PDF"));
     } finally {
       setHistoriqueBusy(null);
     }

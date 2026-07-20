@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from '@/lib/friendly-error';
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Download, Plus } from "lucide-react";
@@ -184,7 +185,7 @@ function ProduitsPage() {
       );
       toast.success(`${n} produit(s) exporté(s)`, { id: "produits-export" });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur export PDF", {
+      toast.error(friendlyError(e, "Erreur export PDF"), {
         id: "produits-export",
       });
     }

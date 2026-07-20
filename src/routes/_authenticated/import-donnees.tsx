@@ -37,6 +37,7 @@ import {
   type EntityKey,
 } from "@/lib/import-api";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from '@/lib/friendly-error';
 
 export const Route = createFileRoute("/_authenticated/import-donnees")({
   component: ImportDonneesPage,
@@ -114,7 +115,7 @@ function ImportDonneesPage() {
         setMapping(autoMapHeaders(hdrs, cfg.columns));
         toast.success(`${res.data.length} lignes lues`);
       },
-      error: (err) => toast.error(`Erreur CSV : ${err.message}`),
+      error: (err) => toast.error(friendlyError(err, "Erreur CSV")),
     });
   }
 
@@ -141,7 +142,7 @@ function ImportDonneesPage() {
       toast.success(`${inserted} ${cfg.label.toLowerCase()} importés avec succès`);
       reset();
     } catch (e) {
-      toast.error(`Échec import : ${e instanceof Error ? e.message : String(e)}`);
+      toast.error(friendlyError(e, "Échec import"));
     } finally {
       setImporting(false);
     }
