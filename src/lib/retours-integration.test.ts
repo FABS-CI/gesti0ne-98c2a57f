@@ -249,7 +249,7 @@ d("Retours — intégration RPC", () => {
     // Vérifie que le super_admin chargé en beforeAll possède réellement la
     // permission RBAC v2 nécessaire ; sans quoi on skippe proprement.
     const [perm] = await q<{ ok: boolean }>(
-      "SELECT public.has_permission_v2(NULLIF(current_setting('request.jwt.claims', true),'')::jsonb->>'sub'::text, 'retours.creer') AS ok",
+      "SELECT public.has_permission_v2((NULLIF(current_setting('request.jwt.claims', true),'')::jsonb->>'sub')::uuid, 'retours.creer') AS ok",
     );
     if (!perm?.ok) {
       console.warn("[retours-integration] super_admin sans permission v2 — test skippé");
