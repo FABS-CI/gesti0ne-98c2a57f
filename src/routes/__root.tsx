@@ -170,6 +170,8 @@ function RootComponent() {
 
   useEffect(() => {
     installClientErrorTracing();
+    // Lot 5 — Web Vitals (best-effort, ne bloque jamais le rendu)
+    import("../lib/web-vitals-reporter").then((m) => m.installWebVitals()).catch(() => {});
   }, []);
 
   useEffect(() => {
