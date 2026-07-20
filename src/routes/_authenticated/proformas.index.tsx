@@ -15,6 +15,7 @@ import { deleteProformaDefinitif } from "@/lib/proformas-api";
 
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 async function buildProformaBlob(row: Record<string, unknown>): Promise<Blob> {
   const proformaId = row.proforma_id as string;
   const [lignes, clientInfo, totals] = await Promise.all([
@@ -104,7 +105,7 @@ const config: ResourceConfig = {
         try {
           await viewCached(cacheKeyFor(row), () => buildProformaBlob(row));
         } catch (e) {
-          toast.error(e instanceof Error ? e.message : "Erreur aperçu");
+          toast.error(friendlyError(e, "Erreur aperçu"));
         }
       },
     },
@@ -116,7 +117,7 @@ const config: ResourceConfig = {
           const blob = await getOrCreatePdf(cacheKeyFor(row), () => buildProformaBlob(row));
           downloadBlob(blob, fileNameFor(row.reference as string, row.client_nom as string | null));
         } catch (e) {
-          toast.error(e instanceof Error ? e.message : "Erreur PDF");
+          toast.error(friendlyError(e, "Erreur PDF"));
         }
       },
     },
@@ -127,7 +128,7 @@ const config: ResourceConfig = {
         try {
           await printCached(cacheKeyFor(row), () => buildProformaBlob(row));
         } catch (e) {
-          toast.error(e instanceof Error ? e.message : "Erreur impression");
+          toast.error(friendlyError(e, "Erreur impression"));
         }
       },
     },

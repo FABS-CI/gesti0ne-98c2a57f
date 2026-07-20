@@ -58,6 +58,7 @@ import {
 
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 export const Route = createFileRoute("/_authenticated/paiements/")({
   head: () => authRouteHead("Paiements"),
   component: PaiementsPage,
@@ -348,7 +349,7 @@ function PaiementsPage() {
                               });
                               downloadBlob(blob, fileNameFor(p.reference, p.client_nom));
                             } catch (e) {
-                              toast.error(e instanceof Error ? e.message : "Erreur PDF");
+                              toast.error(friendlyError(e, "Erreur PDF"));
                             }
                           }}
                         >

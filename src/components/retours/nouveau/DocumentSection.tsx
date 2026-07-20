@@ -21,6 +21,7 @@ import {
   type FactureRetourOption,
 } from "@/lib/retours-api";
 import type { RetourFormValues } from "@/lib/retours-form";
+import { friendlyError } from "@/lib/friendly-error";
 
 type Props = {
   form: UseFormReturn<RetourFormValues>;
@@ -62,7 +63,7 @@ export function DocumentSection({ form, fa }: Props) {
         })),
       );
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     }
   };
 

@@ -35,6 +35,7 @@ import { DepotSortieField } from "@/components/stock/DepotSortieField";
 import { NumberField } from "./form/NumberField";
 import { InfoCell, SummaryCard } from "./form/SummaryCard";
 import { LignesSection, computeLigne } from "./form/LignesSection";
+import { friendlyError } from "@/lib/friendly-error";
 
 const ligneSchema = z.object({
   produit_id: z.string().min(1, "Sélectionnez un produit"),
@@ -243,7 +244,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
         autoValidated: true,
       });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(friendlyError(e)),
   });
 
   const onSubmit = form.handleSubmit(

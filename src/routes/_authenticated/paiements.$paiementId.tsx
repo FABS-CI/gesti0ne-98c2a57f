@@ -33,6 +33,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/paiements/$paiementId")({
   component: PaiementDetailPage,
@@ -73,7 +74,7 @@ function PaiementDetailPage() {
         clientId: (paiement as { client_id?: string } | undefined)?.client_id,
       });
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   const deleteMutation = useMutation({
@@ -89,7 +90,7 @@ function PaiementDetailPage() {
       });
       navigate({ to: "/paiements" });
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;

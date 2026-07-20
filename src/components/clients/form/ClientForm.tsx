@@ -63,6 +63,7 @@ import type { z } from "zod";
 type FormInput = z.input<typeof clientFormSchema>;
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { audit } from "@/lib/audit-client";
+import { friendlyError } from "@/lib/friendly-error";
 
 interface ClientFormProps {
   clientId?: string;
@@ -159,7 +160,7 @@ export function ClientForm({ clientId }: ClientFormProps) {
         () => navigate({ to: "/clients" }),
       );
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e) => toast.error(friendlyError(e, "Erreur")),
   });
 
   const onSubmit = form.handleSubmit((values) => saveMutation.mutate(values));
