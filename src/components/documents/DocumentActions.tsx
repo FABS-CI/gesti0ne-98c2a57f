@@ -1,3 +1,4 @@
+import { friendlyError } from '@/lib/friendly-error';
 import type { ComponentType, ReactNode } from "react";
 import {
   Eye,
@@ -84,7 +85,7 @@ export function DocumentActions({
     try {
       await fn();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : msg);
+      toast.error(friendlyError(e, msg));
     }
   };
 

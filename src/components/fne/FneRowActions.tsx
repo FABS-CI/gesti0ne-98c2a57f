@@ -1,3 +1,4 @@
+import { friendlyError } from '@/lib/friendly-error';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Stamp } from "lucide-react";
 import { toast } from "sonner";
@@ -53,7 +54,7 @@ export function FneRowActions({ facture, fneStatut }: Props) {
       qc.invalidateQueries({ queryKey: ["fne-list"] });
       qc.invalidateQueries({ queryKey: ["fne-stats"] });
     },
-    onError: (e: Error) => toast.error("Opération FNE refusée", { description: e.message }),
+    onError: (e: Error) => toast.error("Opération FNE refusée", { description: friendlyError(e) }),
   });
 
   const alreadySubmitted = fneStatut === "submitted" || fneStatut === "accepted";
