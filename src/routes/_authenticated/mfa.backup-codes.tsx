@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from '@/lib/friendly-error';
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ function Page() {
       setCodes(r.backupCodes);
       toast.success("Nouveaux codes générés");
     } catch (e) {
-      toast.error(String((e as Error).message ?? e));
+      toast.error(friendlyError(e));
     } finally {
       setBusy(false);
     }

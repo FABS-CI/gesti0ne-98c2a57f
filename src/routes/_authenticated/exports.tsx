@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { friendlyError } from '@/lib/friendly-error';
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Download, FileSpreadsheet, FileText, Archive, Loader2 } from "lucide-react";
@@ -79,7 +80,7 @@ function ExportsPage() {
       await fn();
       toast.success(`${label} téléchargé`);
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setBusy(null);
     }
@@ -91,7 +92,7 @@ function ExportsPage() {
       await exportFullBackupJSON();
       toast.success("Sauvegarde complète téléchargée");
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(friendlyError(e));
     } finally {
       setBusy(null);
     }

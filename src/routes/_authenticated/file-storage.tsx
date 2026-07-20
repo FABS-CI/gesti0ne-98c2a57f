@@ -66,7 +66,7 @@ function FileStoragePage() {
       toast.success("Fichier supprimé");
       qc.invalidateQueries({ queryKey: ["file-storage"] });
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(friendlyError(e)),
   });
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -80,7 +80,7 @@ function FileStoragePage() {
       toast.success("Fichier téléversé");
       qc.invalidateQueries({ queryKey: ["file-storage"] });
     } catch (err) {
-      toast.error((err as Error).message);
+      toast.error(friendlyError(err));
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
