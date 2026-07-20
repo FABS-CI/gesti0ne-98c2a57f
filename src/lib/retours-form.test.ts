@@ -7,6 +7,7 @@ const uuid2 = "22222222-2222-4222-8222-222222222222";
 const base = {
   date_retour: "2026-01-15",
   client_id: uuid,
+  type_retour: "physique" as const,
   etablissement: "ACME",
   representant_nom: "",
   telephone: "",
