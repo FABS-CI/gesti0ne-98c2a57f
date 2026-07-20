@@ -292,8 +292,9 @@ export async function generateBonTourneePDF(tourneeId: string): Promise<Blob> {
     clientsSet.add(nom);
     const infoCli = r.commandes?.client_id ? clientMap.get(r.commandes.client_id) : undefined;
     const colis = r.commande_id ? colisMap.get(r.commande_id) : undefined;
+    const refs = r.commande_id ? (cartonsByCmd.get(r.commande_id) ?? []) : [];
     // Cartons pour cette ligne = nb de références colis liées à la commande.
-    const cartons = Number(colis?.cartons ?? 0);
+    const cartons = Number(refs.length || colis?.cartons || 0);
     totalCartons += cartons;
     totalColis += 1;
     const type = (r.type_livraison ?? "").toLowerCase();
@@ -310,28 +311,26 @@ export async function generateBonTourneePDF(tourneeId: string): Promise<Blob> {
       infoCli?.adresse ?? "—",
       r.ville_livraison ?? "—",
       infoCli?.telephone ?? "—",
-      String(1),
-      String(cartons),
       typeLabel,
+      String(cartons),
+      refs.join(", ") || "—",
       STATUT_LIV_LABEL[r.statut ?? ""] ?? r.statut ?? "—",
-      "",
     ];
   });
 
   autoTable(doc, {
     head: [
       [
-        "Réf",
+        "Réf commande",
         "Client",
         "Destinataire",
         "Adresse",
         "Ville",
-        "Tél",
-        "Colis",
-        "Cart.",
+        "Téléphone",
         "Type",
+        "Cart.",
+        "Références cartons",
         "Statut",
-        "Signature",
       ],
     ],
     body,
@@ -341,10 +340,10 @@ export async function generateBonTourneePDF(tourneeId: string): Promise<Blob> {
     headStyles: PDF_TABLE.headStyles,
     bodyStyles: PDF_TABLE.bodyStyles,
     columnStyles: {
-      6: { halign: "right", cellWidth: 10 },
       7: { halign: "right", cellWidth: 10 },
-      10: { cellWidth: 22 },
+      8: { cellWidth: 38 },
     },
+
     didDrawPage: () => {
       drawHeader(doc, titre, template);
       drawFooter(doc, `Bon de tournée ${t.reference}`, template);
