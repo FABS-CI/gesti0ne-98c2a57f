@@ -10,6 +10,7 @@ import { periodeSchema, type Periode } from "@/lib/dashboard-helpers";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonKpiRow } from "@/components/ui/skeletons";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { WelcomeGreeting } from "@/components/dashboard/WelcomeGreeting";
 import { DashboardKpis } from "@/components/dashboard/DashboardKpis";
