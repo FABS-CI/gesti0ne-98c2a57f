@@ -180,6 +180,7 @@ import { Route as AuthenticatedAdminWebVitalsRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminSloRouteImport } from './routes/_authenticated/admin.slo'
 import { Route as AuthenticatedAdminSanteSystemeRouteImport } from './routes/_authenticated/admin.sante-systeme'
 import { Route as AuthenticatedAdminRpcErrorsRouteImport } from './routes/_authenticated/admin.rpc-errors'
+import { Route as AuthenticatedAdminRolesV2RouteImport } from './routes/_authenticated/admin.roles-v2'
 import { Route as AuthenticatedAdminPerfRouteImport } from './routes/_authenticated/admin.perf'
 import { Route as AuthenticatedAdminGoogleDriveRouteImport } from './routes/_authenticated/admin.google-drive'
 import { Route as AuthenticatedAdminDataQualityRouteImport } from './routes/_authenticated/admin.data-quality'
@@ -1185,6 +1186,12 @@ const AuthenticatedAdminRpcErrorsRoute =
     path: '/admin/rpc-errors',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminRolesV2Route =
+  AuthenticatedAdminRolesV2RouteImport.update({
+    id: '/admin/roles-v2',
+    path: '/admin/roles-v2',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminPerfRoute = AuthenticatedAdminPerfRouteImport.update({
   id: '/admin/perf',
   path: '/admin/perf',
@@ -1425,6 +1432,7 @@ export interface FileRoutesByFullPath {
   '/admin/data-quality': typeof AuthenticatedAdminDataQualityRoute
   '/admin/google-drive': typeof AuthenticatedAdminGoogleDriveRoute
   '/admin/perf': typeof AuthenticatedAdminPerfRoute
+  '/admin/roles-v2': typeof AuthenticatedAdminRolesV2Route
   '/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
   '/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
   '/admin/slo': typeof AuthenticatedAdminSloRoute
@@ -1600,6 +1608,7 @@ export interface FileRoutesByTo {
   '/admin/data-quality': typeof AuthenticatedAdminDataQualityRoute
   '/admin/google-drive': typeof AuthenticatedAdminGoogleDriveRoute
   '/admin/perf': typeof AuthenticatedAdminPerfRoute
+  '/admin/roles-v2': typeof AuthenticatedAdminRolesV2Route
   '/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
   '/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
   '/admin/slo': typeof AuthenticatedAdminSloRoute
@@ -1797,6 +1806,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/data-quality': typeof AuthenticatedAdminDataQualityRoute
   '/_authenticated/admin/google-drive': typeof AuthenticatedAdminGoogleDriveRoute
   '/_authenticated/admin/perf': typeof AuthenticatedAdminPerfRoute
+  '/_authenticated/admin/roles-v2': typeof AuthenticatedAdminRolesV2Route
   '/_authenticated/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
   '/_authenticated/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
   '/_authenticated/admin/slo': typeof AuthenticatedAdminSloRoute
@@ -1995,6 +2005,7 @@ export interface FileRouteTypes {
     | '/admin/data-quality'
     | '/admin/google-drive'
     | '/admin/perf'
+    | '/admin/roles-v2'
     | '/admin/rpc-errors'
     | '/admin/sante-systeme'
     | '/admin/slo'
@@ -2170,6 +2181,7 @@ export interface FileRouteTypes {
     | '/admin/data-quality'
     | '/admin/google-drive'
     | '/admin/perf'
+    | '/admin/roles-v2'
     | '/admin/rpc-errors'
     | '/admin/sante-systeme'
     | '/admin/slo'
@@ -2366,6 +2378,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/data-quality'
     | '/_authenticated/admin/google-drive'
     | '/_authenticated/admin/perf'
+    | '/_authenticated/admin/roles-v2'
     | '/_authenticated/admin/rpc-errors'
     | '/_authenticated/admin/sante-systeme'
     | '/_authenticated/admin/slo'
@@ -3680,6 +3693,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRpcErrorsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/roles-v2': {
+      id: '/_authenticated/admin/roles-v2'
+      path: '/admin/roles-v2'
+      fullPath: '/admin/roles-v2'
+      preLoaderRoute: typeof AuthenticatedAdminRolesV2RouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/perf': {
       id: '/_authenticated/admin/perf'
       path: '/admin/perf'
@@ -4454,6 +4474,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminDataQualityRoute: typeof AuthenticatedAdminDataQualityRoute
   AuthenticatedAdminGoogleDriveRoute: typeof AuthenticatedAdminGoogleDriveRoute
   AuthenticatedAdminPerfRoute: typeof AuthenticatedAdminPerfRoute
+  AuthenticatedAdminRolesV2Route: typeof AuthenticatedAdminRolesV2Route
   AuthenticatedAdminRpcErrorsRoute: typeof AuthenticatedAdminRpcErrorsRoute
   AuthenticatedAdminSanteSystemeRoute: typeof AuthenticatedAdminSanteSystemeRoute
   AuthenticatedAdminSloRoute: typeof AuthenticatedAdminSloRoute
@@ -4569,6 +4590,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminDataQualityRoute: AuthenticatedAdminDataQualityRoute,
   AuthenticatedAdminGoogleDriveRoute: AuthenticatedAdminGoogleDriveRoute,
   AuthenticatedAdminPerfRoute: AuthenticatedAdminPerfRoute,
+  AuthenticatedAdminRolesV2Route: AuthenticatedAdminRolesV2Route,
   AuthenticatedAdminRpcErrorsRoute: AuthenticatedAdminRpcErrorsRoute,
   AuthenticatedAdminSanteSystemeRoute: AuthenticatedAdminSanteSystemeRoute,
   AuthenticatedAdminSloRoute: AuthenticatedAdminSloRoute,
