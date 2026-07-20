@@ -56,7 +56,7 @@ async function seedCommandeAvecLigne(
 ): Promise<string> {
   const total = qte * prix;
   const [c] = await q<{ commande_id: string }>(
-    "INSERT INTO public.commandes(client_id, statut, exercice_id, montant_total) VALUES($1,'confirmee',$2,$3) RETURNING commande_id",
+    "INSERT INTO public.commandes(client_id, statut, exercice_id, montant_total) VALUES($1,'validee',$2,$3) RETURNING commande_id",
     [clientId, exerciceId, total],
   );
   createdCommandeIds.push(c.commande_id);
