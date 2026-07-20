@@ -143,3 +143,172 @@ export function SidebarNavGroup({
     </li>
   );
 }
+
+const SECTION_STORAGE_PREFIX = "fabs.sidebar.section.";
+
+function NavSections({
+  group,
+  currentPath,
+  activeText,
+  parentOpen,
+}: {
+  group: Group;
+  currentPath: string;
+  activeText: string;
+  parentOpen: boolean;
+}) {
+  const sections = useMemo(() => groupBySection(group.items), [group.items]);
+  const hasSections = sections.some((s) => s.name !== null);
+
+  if (!hasSections) {
+    return (
+      <>
+        {group.items.map((item) => (
+          <SidebarNavItem
+            key={item.title}
+            item={item}
+            group={group}
+            active={!!item.ready && currentPath === item.url}
+            activeText={activeText}
+          />
+        ))}
+      </>
+    );
+  }
+
+  return (
+    <>
+      {sections.map((section) =>
+        section.name === null ? (
+          section.items.map((item) => (
+            <SidebarNavItem
+              key={item.title}
+              item={item}
+              group={group}
+              active={!!item.ready && currentPath === item.url}
+              activeText={activeText}
+            />
+          ))
+        ) : (
+          <SubSection
+            key={section.name}
+            groupLabel={group.label}
+            name={section.name}
+            items={section.items}
+            group={group}
+            currentPath={currentPath}
+            activeText={activeText}
+            parentOpen={parentOpen}
+          />
+        ),
+      )}
+    </>
+  );
+}
+
+function SubSection({
+  groupLabel,
+  name,
+  items,
+  group,
+  currentPath,
+  activeText,
+  parentOpen,
+}: {
+  groupLabel: string;
+  name: string;
+  items: Item[];
+  group: Group;
+  currentPath: string;
+  activeText: string;
+  parentOpen: boolean;
+}) {
+  const storageKey = `${SECTION_STORAGE_PREFIX}${groupLabel}::${name}`;
+  const containsActive = items.some((i) => i.ready && currentPath === i.url);
+
+  const [open, setOpen] = useState<boolean>(() => {
+    if (typeof window === "undefined") return containsActive;
+    const raw = window.localStorage.getItem(storageKey);
+    if (raw === "1") return true;
+    if (raw === "0") return false;
+    return containsActive;
+  });
+
+  useEffect(() => {
+    if (containsActive) setOpen(true);
+  }, [containsActive]);
+
+  const toggle = () => {
+    setOpen((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(storageKey, next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
+
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={toggle}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 text-left transition-colors"
+        style={{
+          padding: "8px 10px",
+          borderRadius: "8px",
+          background: open ? `${group.color}18` : "transparent",
+          color: containsActive ? "#FFFFFF" : open ? group.color : "#94A3B8",
+          fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+        }}
+      >
+        {open ? (
+          <ChevronDown style={{ width: 14, height: 14, flexShrink: 0 }} />
+        ) : (
+          <ChevronRight style={{ width: 14, height: 14, flexShrink: 0 }} />
+        )}
+        <Folder style={{ width: 14, height: 14, flexShrink: 0 }} />
+        <span className="truncate">{name}</span>
+        <span
+          className="ml-auto shrink-0"
+          style={{ fontSize: 11, opacity: 0.7, fontWeight: 600 }}
+        >
+          {items.length}
+        </span>
+      </button>
+      <div
+        style={{
+          overflow: "hidden",
+          maxHeight: parentOpen && open ? "900px" : "0px",
+          opacity: parentOpen && open ? 1 : 0,
+          transition: "max-height 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.18s ease",
+        }}
+      >
+        <ul
+          className="mt-1 space-y-1"
+          style={{
+            marginLeft: "10px",
+            paddingLeft: "10px",
+            borderLeft: `1px dashed ${group.color}40`,
+          }}
+        >
+          {items.map((item) => (
+            <SidebarNavItem
+              key={item.title}
+              item={item}
+              group={group}
+              active={!!item.ready && currentPath === item.url}
+              activeText={activeText}
+            />
+          ))}
+        </ul>
+      </div>
+    </li>
+  );
+}
