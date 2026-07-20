@@ -1,8 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { listCommandes, deleteCommande, type Commande } from "@/lib/commandes-api";
-import { listClients } from "@/lib/clients-api";
-import { listProduits } from "@/lib/produits-api";
 import { describeSupabaseError } from "@/lib/rbac-api";
 import {
   convertirCommandeEnBL,
@@ -52,19 +50,11 @@ export function useCommandesList({
     staleTime: 30_000,
   });
 
-  const { data: clientsData } = useQuery({
-    queryKey: ["clients-mini"],
-    queryFn: () => listClients({ pageSize: 100, actif: true }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-  });
-
-  const { data: produitsData } = useQuery({
-    queryKey: ["produits-mini"],
-    queryFn: () => listProduits({ pageSize: 200, actif: true }),
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-  });
+  // P0 perf : ces sélecteurs (clients / produits) ne sont utilisés que par
+  // le formulaire de création. On les retire de la liste — la page /commandes
+  // n'a pas besoin de tirer 100 clients + 200 produits au montage.
+  const clientsData = undefined;
+  const produitsData = undefined;
 
   const deleteMutation = useMutation({
     mutationFn: ({ id, motif, force }: { id: string; motif?: string | null; force?: boolean }) =>

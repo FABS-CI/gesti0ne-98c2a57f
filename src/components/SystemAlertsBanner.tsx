@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
@@ -7,22 +7,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useUserRoles } from "@/hooks/use-user-roles";
 
 /**
- * Bannière globale d'alertes système :
- * - Interroge incident_alerts (source LIKE 'health.%', non résolues) toutes les 60s
- * - Affiche une bannière rouge sticky avec le nombre d'incidents actifs
- * - Émet un toast quand une nouvelle alerte apparaît
- * Visible uniquement pour les super-admins.
+ * Bannière globale d'alertes système.
+ * P2 perf : plus de polling 60s → une seule requête initiale, puis Realtime
+ * sur `incident_alerts` pour rester à jour sans marteler la base.
  */
 export function SystemAlertsBanner() {
   const { isSuperAdmin } = useUserRoles();
   const seen = useRef<Set<string>>(new Set());
   const initialized = useRef(false);
+  const qc = useQueryClient();
 
   const { data } = useQuery({
     queryKey: ["system-alerts-banner"],
     enabled: isSuperAdmin,
-    refetchInterval: 60_000,
-    staleTime: 55_000,
+    staleTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("incident_alerts")
@@ -35,6 +34,21 @@ export function SystemAlertsBanner() {
       return data ?? [];
     },
   });
+
+  useEffect(() => {
+    if (!isSuperAdmin) return;
+    const channel = supabase
+      .channel("incident-alerts-banner")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "incident_alerts" },
+        () => qc.invalidateQueries({ queryKey: ["system-alerts-banner"] }),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isSuperAdmin, qc]);
 
   useEffect(() => {
     if (!data) return;

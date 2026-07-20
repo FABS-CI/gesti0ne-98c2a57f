@@ -6945,6 +6945,7 @@ export type Database = {
         Args: { _exercice_id: string }
         Returns: Json
       }
+      purge_audit_logs_expired: { Args: never; Returns: number }
       purger_anciennes_sauvegardes: {
         Args: { _retention?: number; _type?: string }
         Returns: number
