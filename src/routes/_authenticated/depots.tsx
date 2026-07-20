@@ -22,9 +22,12 @@ import { DepotsFilters } from "@/components/depots/DepotsFilters";
 import { DepotsTable } from "@/components/depots/DepotsTable";
 import { DepotFormDialog } from "@/components/depots/DepotFormDialog";
 import { useConfirmDelete } from "@/hooks/use-confirm-delete";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/depots")({
   component: DepotsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function DepotsPage() {

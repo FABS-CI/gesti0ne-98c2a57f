@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 // Doublon supprimé — le détail d'une tournée vit dans le module /tournees.
 export const Route = createFileRoute("/_authenticated/livraison-suivi/tournees/$tourneeId")({

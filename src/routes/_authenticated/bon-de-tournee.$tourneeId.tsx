@@ -8,6 +8,7 @@ import { useIsEmbed } from "@/hooks/use-is-embed";
 import { useAuth } from "@/hooks/use-auth";
 import { COMPANY } from "@/lib/company";
 import { QrCode, Barcode } from "@/components/pdf/CodeVisuals";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const STATUT_META: Record<string, { label: string }> = {
   preparee: { label: "Préparée" },
@@ -31,6 +32,8 @@ const STATUT_META: Record<string, { label: string }> = {
 
 export const Route = createFileRoute("/_authenticated/bon-de-tournee/$tourneeId")({
   component: FeuilleTourneePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type TourneeInfo = {

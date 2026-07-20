@@ -5,9 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { usePermissions } from "@/hooks/use-permissions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/stock/audit")({
   component: StockAuditPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type Resume = {

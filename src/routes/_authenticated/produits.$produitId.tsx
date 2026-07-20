@@ -20,11 +20,14 @@ import { InventairesTab } from "@/components/produits/detail/InventairesTab";
 import { HistoriqueTab } from "@/components/produits/detail/HistoriqueTab";
 import { DepotsStockTab } from "@/components/produits/detail/DepotsStockTab";
 import { ProductCoverHero } from "@/components/produits/ProductCoverHero";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const StockAreaChart = lazy(() => import("@/components/charts/StockAreaChart"));
 
 export const Route = createFileRoute("/_authenticated/produits/$produitId")({
   component: ProduitDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ProduitDetailPage() {

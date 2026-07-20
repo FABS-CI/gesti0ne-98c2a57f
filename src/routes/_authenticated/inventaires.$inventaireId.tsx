@@ -23,9 +23,12 @@ import { exportInventaireCsv } from "@/lib/inventaire-detail-export";
 import { InventaireKpis } from "@/components/inventaires/detail/InventaireKpis";
 import { InventaireLignesTable } from "@/components/inventaires/detail/InventaireLignesTable";
 import { InventaireHeaderActions } from "@/components/inventaires/detail/InventaireHeaderActions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/inventaires/$inventaireId")({
   component: InventaireDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function InventaireDetailPage() {

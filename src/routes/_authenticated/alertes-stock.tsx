@@ -24,9 +24,12 @@ import {
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { listAlertesStock, listDepots } from "@/lib/depots-api";
 import { exportCsv } from "@/lib/export-csv";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/alertes-stock")({
   component: AlertesStockPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const SEV_LABEL: Record<

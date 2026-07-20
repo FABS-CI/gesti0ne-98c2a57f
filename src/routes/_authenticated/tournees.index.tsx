@@ -10,6 +10,7 @@ import { BACKOFF_INITIAL, nextBackoffDelay } from "@/lib/realtime-backoff";
 import { viewCached } from "@/lib/pdf/actions";
 import { invalidatePdfByPrefix } from "@/lib/pdf/pdfCache";
 import { generateBonTourneePDF, generateBonSortiePDF } from "@/lib/pdf/tourneePdf";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -236,6 +237,8 @@ function buildConfig(onCloturer: (tourneeId: string, ref: string) => void): Reso
 
 export const Route = createFileRoute("/_authenticated/tournees/")({
   component: TourneesPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function TourneesPage() {

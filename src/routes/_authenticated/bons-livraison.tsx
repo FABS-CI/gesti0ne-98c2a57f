@@ -50,9 +50,12 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { Can } from "@/components/rbac/Can";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
 import { invalidateColisage } from "@/lib/cache-invalidation";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/bons-livraison")({
   component: BonsLivraisonListPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDate(d: string | null | undefined) {

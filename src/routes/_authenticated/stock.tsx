@@ -35,9 +35,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/stock")({
   component: StockPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type EtatStock = { label: string; color: string };

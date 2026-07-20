@@ -38,9 +38,12 @@ import { Stat, TimelineRow } from "@/components/tournees/edit/parts";
 import { TourneeInfoCard } from "@/components/tournees/edit/TourneeInfoCard";
 import { TourneeCoutsCard } from "@/components/tournees/edit/TourneeCoutsCard";
 import { TourneeAuditCard } from "@/components/tournees/edit/TourneeAuditCard";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/tournees/$tourneeId")({
   component: EditTourneePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function EditTourneePage() {

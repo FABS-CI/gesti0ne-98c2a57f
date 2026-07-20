@@ -26,9 +26,12 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { usePermissions } from "@/hooks/use-permissions";
 import { invalidateStock } from "@/lib/cache-invalidation";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/stock_/$produitId/mouvements")({
   component: AjustementPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function etatStock(stock: number, seuil: number) {

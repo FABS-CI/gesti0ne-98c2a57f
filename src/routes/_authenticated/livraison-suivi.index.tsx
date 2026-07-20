@@ -25,9 +25,12 @@ import type { ColisInfo } from "@/lib/livraison-suivi/types";
 import { computeSuiviDefaults } from "@/lib/livraison-suivi/defaults";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/livraison-suivi/")({
   head: () => authRouteHead("Suivi de livraison"),
   component: LivraisonSuiviIndex,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function LivraisonSuiviIndex() {

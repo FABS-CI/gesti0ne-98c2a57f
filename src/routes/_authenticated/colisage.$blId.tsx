@@ -21,9 +21,12 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { ColisageActionButtons } from "@/components/colisage/ColisageActionButtons";
 import { ColisageForm } from "@/components/colisage/ColisageForm";
 import { EtiquettesSection } from "@/components/colisage/EtiquettesSection";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/colisage/$blId")({
   component: ColisageDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ColisageDetailPage() {
