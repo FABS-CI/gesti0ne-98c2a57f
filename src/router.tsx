@@ -3,19 +3,6 @@ import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 import { RouteError, RouteNotFound } from "./components/route-boundaries";
 
-
-/**
- * Indicateur de chargement léger affiché pendant la résolution d'une route.
- * Évite le "flash blanc" sans altérer le design des pages.
- */
-function RoutePending() {
-  return (
-    <div className="flex items-center justify-center py-10 text-muted-foreground">
-      <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
-    </div>
-  );
-}
-
 export const getRouter = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -48,17 +35,10 @@ export const getRouter = () => {
     // (staleTime 60 s ci-dessus). Sinon le cache de preload Router masque
     // les invalidations Query après mutations.
     defaultPreloadStaleTime: 0,
-    // Évite un rendu SSR du spinner sur les routes code-splittées pendant un
-    // cold start/HMR : si le client charge déjà la vraie page, React signale
-    // sinon un mismatch d'hydratation et le preview peut rester masqué par
-    // l'overlay d'erreur.
-    defaultPendingMs: 3000,
-    // Les routes protégées utilisent `ssr: false`. Leur fallback est rendu
-    // côté serveur, mais ne doit pas être artificiellement maintenu pendant
-    // l'hydratation : sinon React reçoit le spinner côté serveur et la vraie
-    // page côté client, ce qui peut laisser la preview bloquée sur le fallback.
-    defaultPendingMinMs: 0,
-    defaultPendingComponent: RoutePending,
+    // Ne pas définir de fallback pending global ici. Lors d'un cold start,
+    // le serveur peut encore résoudre un chunk alors que le navigateur l'a
+    // déjà chargé ; un spinner SSR produit alors un HTML différent du premier
+    // rendu client et déclenche une erreur d'hydratation dans la preview.
     defaultErrorComponent: RouteError,
     defaultNotFoundComponent: RouteNotFound,
   });

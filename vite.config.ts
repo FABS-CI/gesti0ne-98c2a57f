@@ -12,6 +12,16 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    router: {
+      codeSplittingOptions: {
+        // La route d'authentification est le point d'entrée de toute session.
+        // La garder dans le bundle principal évite qu'un cold start SSR rende
+        // un Suspense pendant que le client possède déjà son chunk, situation
+        // qui provoquait un mismatch d'hydratation et l'écran cerr_* du preview.
+        splitBehavior: ({ routeId }: { routeId: string }) =>
+          routeId === "/auth" ? [] : undefined,
+      },
+    },
   },
   vite: {
     plugins: [mcpPlugin()],
