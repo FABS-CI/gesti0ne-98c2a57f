@@ -27,20 +27,16 @@ type Hit = {
 
 async function search(q: string): Promise<Hit[]> {
   const term = q.trim();
-  if (term.length < 2) return [];
+  if (term.length < 3) return [];
   const like = `%${term}%`;
 
-  const [clients, reps, produits, factures, bls] = await Promise.all([
+  // Coalesce clients + représentants in a single query
+  const [clientsAll, produits, factures, bls] = await Promise.all([
     supabase
       .from("clients")
       .select("client_id, nom, ville, representant")
-      .ilike("nom", like)
-      .limit(8),
-    supabase
-      .from("clients")
-      .select("client_id, nom, representant")
-      .ilike("representant", like)
-      .limit(8),
+      .or(`nom.ilike.${like},representant.ilike.${like}`)
+      .limit(12),
     supabase
       .from("produits")
       .select("produit_id, titre, reference")
@@ -61,28 +57,34 @@ async function search(q: string): Promise<Hit[]> {
   ]);
 
   const hits: Hit[] = [];
+  const termLower = term.toLowerCase();
 
-  for (const c of clients.data ?? [])
-    hits.push({
-      id: `c-${c.client_id}`,
-      group: "Clients",
-      label: c.nom,
-      sub: [c.ville, c.representant].filter(Boolean).join(" · "),
-      to: "/clients/$clientId",
-      params: { clientId: c.client_id },
-      icon: Users,
-    });
-
-  for (const r of reps.data ?? [])
-    hits.push({
-      id: `r-${r.client_id}`,
-      group: "Représentants",
-      label: r.representant ?? "",
-      sub: `Client : ${r.nom}`,
-      to: "/clients/$clientId",
-      params: { clientId: r.client_id },
-      icon: UserCircle,
-    });
+  for (const c of clientsAll.data ?? []) {
+    const nomMatch = c.nom?.toLowerCase().includes(termLower);
+    if (nomMatch) {
+      hits.push({
+        id: `c-${c.client_id}`,
+        group: "Clients",
+        label: c.nom,
+        sub: [c.ville, c.representant].filter(Boolean).join(" · "),
+        to: "/clients/$clientId",
+        params: { clientId: c.client_id },
+        icon: Users,
+      });
+    }
+    const repMatch = c.representant?.toLowerCase().includes(termLower);
+    if (repMatch && !nomMatch) {
+      hits.push({
+        id: `r-${c.client_id}`,
+        group: "Représentants",
+        label: c.representant ?? "",
+        sub: `Client : ${c.nom}`,
+        to: "/clients/$clientId",
+        params: { clientId: c.client_id },
+        icon: UserCircle,
+      });
+    }
+  }
 
   for (const p of produits.data ?? [])
     hits.push({
