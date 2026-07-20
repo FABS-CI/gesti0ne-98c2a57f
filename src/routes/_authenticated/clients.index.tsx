@@ -31,10 +31,13 @@ import { RenderProfiler } from "@/hooks/use-render-profiler";
 import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/clients/")({
   head: () => authRouteHead("Clients"),
   validateSearch: z.object({ edit: z.string().optional() }),
   component: ClientsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ClientsPage() {

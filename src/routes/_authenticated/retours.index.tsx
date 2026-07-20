@@ -55,9 +55,12 @@ import { downloadBlob } from "@/lib/pdf/fabsTemplates";
 
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/retours/")({
   head: () => authRouteHead("Retours"),
   component: RetoursListPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDate(d: string | null | undefined) {

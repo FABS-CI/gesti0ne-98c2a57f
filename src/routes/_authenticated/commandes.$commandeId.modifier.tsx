@@ -9,9 +9,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CommandeForm, type CommandeFormValues } from "@/components/commandes/CommandeForm";
 import { usePermissions } from "@/hooks/use-permissions";
 import { getCommande, getCommandeLignes } from "@/lib/commandes-api";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/commandes/$commandeId/modifier")({
   component: CommandeModifierPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const STATUTS_MODIFIABLES = ["brouillon", "en_attente_validation"] as const;

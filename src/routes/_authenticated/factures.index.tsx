@@ -52,11 +52,14 @@ import { FacturePdfActions } from "@/components/factures/list/FacturePdfActions"
 import { SkeletonTable, SkeletonKpiRow } from "@/components/ui/skeletons";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/factures/")({
   head: () => authRouteHead("Factures"),
   pendingMs: 200,
   pendingComponent: FacturesPending,
   component: FacturesPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function FacturesPending() {

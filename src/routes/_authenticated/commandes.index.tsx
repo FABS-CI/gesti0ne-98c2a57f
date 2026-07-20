@@ -23,6 +23,7 @@ import { RenderProfiler } from "@/hooks/use-render-profiler";
 import { SkeletonTable, SkeletonKpiRow } from "@/components/ui/skeletons";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 const COMMANDES_PAGE_SIZE = 50;
 
 export const Route = createFileRoute("/_authenticated/commandes/")({
@@ -38,6 +39,8 @@ export const Route = createFileRoute("/_authenticated/commandes/")({
   pendingMs: 200,
   pendingComponent: CommandesPending,
   component: CommandesPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function CommandesPending() {

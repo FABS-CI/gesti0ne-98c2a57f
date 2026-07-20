@@ -38,10 +38,13 @@ import {
   clientLivraisonsQO,
 } from "@/lib/client-detail-queries";
 import { useClientRealtime } from "@/hooks/use-client-realtime";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 
 export const Route = createFileRoute("/_authenticated/clients/$clientId")({
   component: ClientDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ClientDetailPage() {
