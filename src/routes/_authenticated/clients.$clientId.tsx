@@ -428,3 +428,34 @@ function LazyAvoirsTab({ clientId }: { clientId: string }) {
   const { data } = useSuspenseQuery(clientAvoirsQO(clientId));
   return <ClientAvoirsTab avoirs={data} />;
 }
+function LazyStatsTab({
+  clientId,
+  client,
+  counts,
+  factures,
+}: {
+  clientId: string;
+  client: Parameters<typeof ClientInfosTab>[0]["client"];
+  counts: {
+    commandes: number;
+    proformas: number;
+    bl: number;
+    avoirs: number;
+    factures: number;
+    paiements: number;
+    livraisons: number;
+  };
+  factures: Parameters<typeof ClientFacturesTab>[0]["factures"];
+}) {
+  const { data: commandes } = useSuspenseQuery(clientCommandesQO(clientId));
+  const { data: paiements } = useSuspenseQuery(clientPaiementsQO(clientId));
+  return (
+    <ClientStatsTab
+      client={client}
+      counts={counts}
+      factures={factures}
+      commandes={commandes}
+      paiements={paiements}
+    />
+  );
+}
