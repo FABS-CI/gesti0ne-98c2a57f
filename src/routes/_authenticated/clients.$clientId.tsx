@@ -326,7 +326,7 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
             value="paiements"
             {...prefetchOnHover(() => queryClient.prefetchQuery(clientPaiementsQO(clientId)))}
           >
-            Paiements
+            Paiements ({counts.paiements})
           </TabsTrigger>
           <TabsTrigger
             value="livraisons"
