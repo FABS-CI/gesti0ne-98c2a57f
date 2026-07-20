@@ -1,15 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowLeft, FileDown, FileText, Mail, MessageCircle, Pencil, PlusCircle, Wallet, Eye } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, Mail, MessageCircle, Pencil, PlusCircle, Wallet } from "lucide-react";
 
 import { TYPE_COLOR } from "@/lib/company";
 import { formatFCFA } from "@/lib/format";
-import { downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
-import { buildEtatCompteClientPDF } from "@/lib/pdf/etat-compte-builder";
-import { buildClientHistoriquePDF } from "@/lib/pdf/client-historique-builder";
-import { ClientSoldeDialog } from "@/components/clients/detail/ClientSoldeDialog";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -62,9 +57,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [editOpen, setEditOpen] = useState(false);
-  const [generating, setGenerating] = useState(false);
-  const [historiqueBusy, setHistoriqueBusy] = useState(false);
-  const [soldeOpen, setSoldeOpen] = useState(false);
   const { has } = usePermissions();
   const canSeeSolde = has("clients.voir_ca");
 
@@ -123,57 +115,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
           ? { label: "Impayés", cls: "bg-orange-500 text-white" }
           : { label: "Actif", cls: "bg-emerald-500 text-white" };
 
-  async function handleEtatCompte() {
-    setGenerating(true);
-    try {
-      const blob = await buildEtatCompteClientPDF({
-        clientId: client.client_id,
-        clientNom: client.nom,
-        clientTel: client.telephone,
-        representant: client.representant,
-      });
-      downloadBlob(blob, fileNameFor(`ETAT_COMPTE_${client.reference}`, client.nom));
-      toast.success("État de compte généré");
-    } catch (e) {
-      toast.error("Échec de la génération du PDF");
-      console.error(e);
-    } finally {
-      setGenerating(false);
-    }
-  }
-
-  async function handleHistoriquePdf() {
-    setHistoriqueBusy(true);
-    try {
-      // Historique PDF a besoin des relations complètes — récupère à la volée
-      const [commandes, paiements, proformas, bl, avoirs, livraisons] = await Promise.all([
-        queryClient.ensureQueryData(clientCommandesQO(clientId)),
-        queryClient.ensureQueryData(clientPaiementsQO(clientId)),
-        queryClient.ensureQueryData(clientProformasQO(clientId)),
-        queryClient.ensureQueryData(clientBLQO(clientId)),
-        queryClient.ensureQueryData(clientAvoirsQO(clientId)),
-        queryClient.ensureQueryData(clientLivraisonsQO(clientId)),
-      ]);
-      const blob = await buildClientHistoriquePDF(client, {
-        commandes,
-        factures,
-        paiements,
-        proformas,
-        bons_livraison: bl,
-        avoirs,
-        livraisons,
-      });
-      downloadBlob(blob, fileNameFor(`HISTORIQUE_${client.reference}`, client.nom));
-      toast.success("Historique généré");
-    } catch (e) {
-      toast.error("Échec de la génération de l'historique");
-      console.error(e);
-    } finally {
-      setHistoriqueBusy(false);
-    }
-  }
-
-  const rel = { factures, commandes: [], paiements: [], bons_livraison: [] };
 
   return (
     <div className="space-y-6">
@@ -201,9 +142,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
           >
             <PlusCircle className="mr-2 h-4 w-4" /> Commander
           </Button>
-          <Button variant="outline" onClick={() => setSoldeOpen(true)}>
-            <Eye className="mr-2 h-4 w-4" /> Consulter le solde
-          </Button>
           <Button
             variant="secondary"
             onClick={() =>
@@ -211,14 +149,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
             }
           >
             <Wallet className="mr-2 h-4 w-4" /> Imputer un paiement
-          </Button>
-          <Button variant="outline" onClick={handleEtatCompte} disabled={generating}>
-            <FileDown className="mr-2 h-4 w-4" />
-            {generating ? "Génération…" : "État de compte (PDF)"}
-          </Button>
-          <Button variant="outline" onClick={handleHistoriquePdf} disabled={historiqueBusy}>
-            <FileText className="mr-2 h-4 w-4" />
-            {historiqueBusy ? "Génération…" : "Historique PDF"}
           </Button>
           <Badge style={{ backgroundColor: type?.bg ?? "#CFD8DC", color: type?.color ?? "#0A2540" }}>
             {type?.label ?? client.type_client}
@@ -261,7 +191,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
       </div>
 
       <ClientEditSheet client={client} open={editOpen} onOpenChange={setEditOpen} />
-      <ClientSoldeDialog open={soldeOpen} onOpenChange={setSoldeOpen} client={client} rel={rel as never} />
 
       {/* KPIs */}
       <Section fallback={<SkeletonKpiRow count={canSeeSolde ? 8 : 4} />}>

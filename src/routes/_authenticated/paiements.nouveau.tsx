@@ -8,12 +8,24 @@ import { toast } from "sonner";
 import { usePermissions } from "@/hooks/use-permissions";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClientSearchSelect } from "@/components/search/ClientSearchSelect";
 import { FacturesImpayeesCard } from "@/components/paiements/nouveau/FacturesImpayeesCard";
 import { PaiementFormCard, type FormState } from "@/components/paiements/nouveau/PaiementFormCard";
 import { RecapCard } from "@/components/paiements/nouveau/RecapCard";
+import { formatFCFA } from "@/lib/format";
+import { computeRecap } from "@/lib/paiement-recap";
 
 import {
   enregistrerPaiement,
@@ -45,6 +57,7 @@ function NouveauPaiementPage() {
   const [clientError, setClientError] = useState<string | null>(null);
   const [factureId, setFactureId] = useState<string | null>(null);
   const [mode, setMode] = useState<"draft" | "confirm">("draft");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (presetClientId && !clientNom) {
@@ -132,12 +145,23 @@ function NouveauPaiementPage() {
 
   const submit = () => {
     if (!validate() || !factureId) return;
+    setConfirmOpen(true);
+  };
+
+  const doSave = () => {
+    if (!factureId) return;
+    setConfirmOpen(false);
     mutation.mutate({ ...form, facture_id: factureId });
   };
 
   const preview = () => {
     if (validate()) setMode("confirm");
   };
+
+  const recap =
+    selectedFacture && form.montant > 0
+      ? computeRecap(selectedFacture.reference, Number(selectedFacture.solde), Number(form.montant))
+      : null;
 
   if (clientError) {
     return (
@@ -226,6 +250,36 @@ function NouveauPaiementPage() {
           mode={mode}
         />
       )}
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmer l'enregistrement du paiement</AlertDialogTitle>
+            <AlertDialogDescription>
+              Vérifiez le récapitulatif ci-dessous avant d'enregistrer définitivement le paiement.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {recap && selectedFacture && (
+            <div className="space-y-2 rounded-md border p-3 text-sm">
+              <div className="flex justify-between"><span className="text-muted-foreground">Client</span><span className="font-medium">{clientNom || "—"}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Facture</span><span className="font-mono text-xs">{recap.reference}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Date paiement</span><span>{form.date_paiement}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Mode</span><span className="capitalize">{form.mode_paiement}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Référence</span><span className="font-mono text-xs">{form.reference_paiement}</span></div>
+              <div className="my-2 border-t" />
+              <div className="flex justify-between"><span className="text-muted-foreground">Reste avant</span><span>{formatFCFA(recap.reste_avant)}</span></div>
+              <div className="flex justify-between text-primary"><span>Montant imputé</span><span className="font-semibold">{formatFCFA(recap.montant_impute)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Reste après</span><span className="font-semibold">{formatFCFA(recap.reste_apres)}</span></div>
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={doSave} disabled={mutation.isPending}>
+              {mutation.isPending ? "Enregistrement…" : "Confirmer et enregistrer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
