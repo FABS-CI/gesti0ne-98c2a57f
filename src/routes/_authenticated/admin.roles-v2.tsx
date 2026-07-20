@@ -207,6 +207,22 @@ function RolesV2Page() {
     setExpandedModules(s);
   };
 
+  // Fermeture transitive côté client des dépendances de permissions.
+  const depClosure = useCallback((permCode: string): Set<string> => {
+    const seen = new Set<string>();
+    const stack = [permCode];
+    while (stack.length) {
+      const cur = stack.pop()!;
+      for (const d of deps) {
+        if (d.perm_code === cur && !seen.has(d.requires_code)) {
+          seen.add(d.requires_code);
+          stack.push(d.requires_code);
+        }
+      }
+    }
+    return seen;
+  }, [deps]);
+
   const savePerm = async (roleCode: string, permCode: string, next: "grant" | "deny" | "clear") => {
     try {
       if (next === "clear") {
@@ -214,14 +230,34 @@ function RolesV2Page() {
           .delete().eq("role_code", roleCode).eq("perm_code", permCode);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("rbac2_role_perms")
-          .upsert({ role_code: roleCode, perm_code: permCode, granted: next === "grant" });
+        const rows: RolePerm[] = [{ role_code: roleCode, perm_code: permCode, granted: next === "grant" }];
+        // Auto-application des dépendances requises quand on accorde
+        if (next === "grant") {
+          for (const req of depClosure(permCode)) {
+            const already = rolePerms.some(
+              (x) => x.role_code === roleCode && x.perm_code === req && x.granted,
+            );
+            if (!already) rows.push({ role_code: roleCode, perm_code: req, granted: true });
+          }
+        }
+        const { error } = await supabase.from("rbac2_role_perms").upsert(rows);
         if (error) throw error;
+        if (rows.length > 1) {
+          toast.success(`Dépendances ajoutées : +${rows.length - 1}`);
+        }
       }
       // maj optimiste
       setRolePerms((prev) => {
-        const others = prev.filter((x) => !(x.role_code === roleCode && x.perm_code === permCode));
-        return next === "clear" ? others : [...others, { role_code: roleCode, perm_code: permCode, granted: next === "grant" }];
+        if (next === "clear") {
+          return prev.filter((x) => !(x.role_code === roleCode && x.perm_code === permCode));
+        }
+        const codesTouched = new Set<string>([permCode, ...(next === "grant" ? Array.from(depClosure(permCode)) : [])]);
+        const others = prev.filter((x) => !(x.role_code === roleCode && codesTouched.has(x.perm_code)));
+        const added: RolePerm[] = [{ role_code: roleCode, perm_code: permCode, granted: next === "grant" }];
+        if (next === "grant") {
+          for (const req of codesTouched) if (req !== permCode) added.push({ role_code: roleCode, perm_code: req, granted: true });
+        }
+        return [...others, ...added];
       });
     } catch (e) {
       toast.error(friendlyError(e));
