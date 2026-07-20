@@ -19,7 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
   ChevronDown, ChevronRight, Plus, Search, Shield, Users, Trash2, UserPlus, X,
-  CheckCircle2, XCircle, GitBranch, History as HistoryIcon,
+  CheckCircle2, XCircle, GitBranch, History as HistoryIcon, Stethoscope, Download, AlertTriangle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/roles-v2")({
