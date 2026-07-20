@@ -49,12 +49,27 @@ import {
 import { FacturesKpis } from "@/components/factures/list/FacturesKpis";
 import { FneStatusBadge } from "@/components/factures/list/FneStatusBadge";
 import { FacturePdfActions } from "@/components/factures/list/FacturePdfActions";
+import { SkeletonTable, SkeletonKpiRow } from "@/components/ui/skeletons";
 
 import { authRouteHead } from "@/lib/route-head";
 export const Route = createFileRoute("/_authenticated/factures/")({
   head: () => authRouteHead("Factures"),
+  pendingMs: 200,
+  pendingComponent: FacturesPending,
   component: FacturesPage,
 });
+
+function FacturesPending() {
+  return (
+    <div className="space-y-6">
+      <div className="h-9 w-48 animate-pulse rounded bg-muted" />
+      <SkeletonKpiRow count={4} />
+      <div className="rounded-lg border p-4">
+        <SkeletonTable rows={10} cols={7} />
+      </div>
+    </div>
+  );
+}
 
 function FacturesPage() {
   const pdf = usePdfDownload();
@@ -328,8 +343,8 @@ function FacturesPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={11} className="py-8 text-center text-muted-foreground">
-                    Chargement...
+                  <TableCell colSpan={11} className="p-4">
+                    <SkeletonTable rows={8} cols={7} />
                   </TableCell>
                 </TableRow>
               ) : factures.length === 0 ? (

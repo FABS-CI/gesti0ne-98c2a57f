@@ -13,6 +13,7 @@ import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { CommandeRow } from "@/components/commandes/CommandeRow";
 import { CommandeCard } from "@/components/commandes/CommandeCard";
 import { EmptyState } from "@/components/common/EmptyState";
+import { SkeletonTable, SkeletonList } from "@/components/ui/skeletons";
 import type { Commande } from "@/lib/commandes-api";
 
 export function CommandesTable({
@@ -87,7 +88,7 @@ export function CommandesTable({
   const mobileCards = (
     <div className="space-y-2 p-2">
       {isLoading ? (
-        <div className="py-10 text-center text-muted-foreground">Chargement…</div>
+        <SkeletonList rows={6} />
       ) : items.length === 0 ? (
         <div className="py-8">{emptyState}</div>
       ) : (
@@ -125,8 +126,8 @@ export function CommandesTable({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
-                  Chargement…
+                <TableCell colSpan={6} className="p-4">
+                  <SkeletonTable rows={8} cols={6} />
                 </TableCell>
               </TableRow>
             ) : items.length === 0 ? (
