@@ -8,12 +8,24 @@ import { toast } from "sonner";
 import { usePermissions } from "@/hooks/use-permissions";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClientSearchSelect } from "@/components/search/ClientSearchSelect";
 import { FacturesImpayeesCard } from "@/components/paiements/nouveau/FacturesImpayeesCard";
 import { PaiementFormCard, type FormState } from "@/components/paiements/nouveau/PaiementFormCard";
 import { RecapCard } from "@/components/paiements/nouveau/RecapCard";
+import { formatFCFA } from "@/lib/format";
+import { computeRecap } from "@/lib/paiement-recap";
 
 import {
   enregistrerPaiement,
