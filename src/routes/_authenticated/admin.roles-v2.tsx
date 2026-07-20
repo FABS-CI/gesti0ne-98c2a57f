@@ -703,6 +703,11 @@ function RoleDetailsPanel(props: {
   const [assignQuery, setAssignQuery] = useState("");
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [auditLoading, setAuditLoading] = useState(false);
+  const [auditActionFilter, setAuditActionFilter] = useState<string | null>(null);
+  const filteredAudit = useMemo(
+    () => audit.filter((a) => !auditActionFilter || a.action === auditActionFilter),
+    [audit, auditActionFilter],
+  );
 
   const loadAudit = useCallback(async () => {
     setAuditLoading(true);
