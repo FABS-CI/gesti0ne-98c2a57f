@@ -511,11 +511,19 @@ function RolesV2Page() {
                   chain.delete(selected.code);
                   return new Set(rolePerms.filter((x) => chain.has(x.role_code) && x.granted).map((x) => x.perm_code)).size;
                 })()}
+                allProfiles2={profiles}
               />
             )}
           </Card>
         </div>
       )}
+
+      <DiagnosticDialog
+        open={diagOpen}
+        onOpenChange={setDiagOpen}
+        roleByCode={roleByCode}
+        onGoRole={(code) => { setSelectedRole(code); setDiagOpen(false); }}
+      />
     </div>
   );
 }
