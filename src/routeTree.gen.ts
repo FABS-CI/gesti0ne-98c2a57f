@@ -176,6 +176,7 @@ import { Route as AuthenticatedClientsDashboardRouteImport } from './routes/_aut
 import { Route as AuthenticatedClientsClientIdRouteImport } from './routes/_authenticated/clients.$clientId'
 import { Route as AuthenticatedBonDeTourneeTourneeIdRouteImport } from './routes/_authenticated/bon-de-tournee.$tourneeId'
 import { Route as AuthenticatedBonDeSortieTourneeIdRouteImport } from './routes/_authenticated/bon-de-sortie.$tourneeId'
+import { Route as AuthenticatedAdminWebVitalsRouteImport } from './routes/_authenticated/admin.web-vitals'
 import { Route as AuthenticatedAdminSloRouteImport } from './routes/_authenticated/admin.slo'
 import { Route as AuthenticatedAdminSanteSystemeRouteImport } from './routes/_authenticated/admin.sante-systeme'
 import { Route as AuthenticatedAdminRpcErrorsRouteImport } from './routes/_authenticated/admin.rpc-errors'
@@ -1161,6 +1162,12 @@ const AuthenticatedBonDeSortieTourneeIdRoute =
     path: '/bon-de-sortie/$tourneeId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminWebVitalsRoute =
+  AuthenticatedAdminWebVitalsRouteImport.update({
+    id: '/admin/web-vitals',
+    path: '/admin/web-vitals',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminSloRoute = AuthenticatedAdminSloRouteImport.update({
   id: '/admin/slo',
   path: '/admin/slo',
@@ -1421,6 +1428,7 @@ export interface FileRoutesByFullPath {
   '/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
   '/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
   '/admin/slo': typeof AuthenticatedAdminSloRoute
+  '/admin/web-vitals': typeof AuthenticatedAdminWebVitalsRoute
   '/bon-de-sortie/$tourneeId': typeof AuthenticatedBonDeSortieTourneeIdRoute
   '/bon-de-tournee/$tourneeId': typeof AuthenticatedBonDeTourneeTourneeIdRoute
   '/clients/$clientId': typeof AuthenticatedClientsClientIdRouteWithChildren
@@ -1595,6 +1603,7 @@ export interface FileRoutesByTo {
   '/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
   '/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
   '/admin/slo': typeof AuthenticatedAdminSloRoute
+  '/admin/web-vitals': typeof AuthenticatedAdminWebVitalsRoute
   '/bon-de-sortie/$tourneeId': typeof AuthenticatedBonDeSortieTourneeIdRoute
   '/bon-de-tournee/$tourneeId': typeof AuthenticatedBonDeTourneeTourneeIdRoute
   '/clients/$clientId': typeof AuthenticatedClientsClientIdRouteWithChildren
@@ -1791,6 +1800,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
   '/_authenticated/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
   '/_authenticated/admin/slo': typeof AuthenticatedAdminSloRoute
+  '/_authenticated/admin/web-vitals': typeof AuthenticatedAdminWebVitalsRoute
   '/_authenticated/bon-de-sortie/$tourneeId': typeof AuthenticatedBonDeSortieTourneeIdRoute
   '/_authenticated/bon-de-tournee/$tourneeId': typeof AuthenticatedBonDeTourneeTourneeIdRoute
   '/_authenticated/clients/$clientId': typeof AuthenticatedClientsClientIdRouteWithChildren
@@ -1988,6 +1998,7 @@ export interface FileRouteTypes {
     | '/admin/rpc-errors'
     | '/admin/sante-systeme'
     | '/admin/slo'
+    | '/admin/web-vitals'
     | '/bon-de-sortie/$tourneeId'
     | '/bon-de-tournee/$tourneeId'
     | '/clients/$clientId'
@@ -2162,6 +2173,7 @@ export interface FileRouteTypes {
     | '/admin/rpc-errors'
     | '/admin/sante-systeme'
     | '/admin/slo'
+    | '/admin/web-vitals'
     | '/bon-de-sortie/$tourneeId'
     | '/bon-de-tournee/$tourneeId'
     | '/clients/$clientId'
@@ -2357,6 +2369,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/rpc-errors'
     | '/_authenticated/admin/sante-systeme'
     | '/_authenticated/admin/slo'
+    | '/_authenticated/admin/web-vitals'
     | '/_authenticated/bon-de-sortie/$tourneeId'
     | '/_authenticated/bon-de-tournee/$tourneeId'
     | '/_authenticated/clients/$clientId'
@@ -3639,6 +3652,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBonDeSortieTourneeIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/web-vitals': {
+      id: '/_authenticated/admin/web-vitals'
+      path: '/admin/web-vitals'
+      fullPath: '/admin/web-vitals'
+      preLoaderRoute: typeof AuthenticatedAdminWebVitalsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/slo': {
       id: '/_authenticated/admin/slo'
       path: '/admin/slo'
@@ -4437,6 +4457,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRpcErrorsRoute: typeof AuthenticatedAdminRpcErrorsRoute
   AuthenticatedAdminSanteSystemeRoute: typeof AuthenticatedAdminSanteSystemeRoute
   AuthenticatedAdminSloRoute: typeof AuthenticatedAdminSloRoute
+  AuthenticatedAdminWebVitalsRoute: typeof AuthenticatedAdminWebVitalsRoute
   AuthenticatedBonDeSortieTourneeIdRoute: typeof AuthenticatedBonDeSortieTourneeIdRoute
   AuthenticatedBonDeTourneeTourneeIdRoute: typeof AuthenticatedBonDeTourneeTourneeIdRoute
   AuthenticatedFneDetailFactureIdRoute: typeof AuthenticatedFneDetailFactureIdRoute
@@ -4551,6 +4572,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRpcErrorsRoute: AuthenticatedAdminRpcErrorsRoute,
   AuthenticatedAdminSanteSystemeRoute: AuthenticatedAdminSanteSystemeRoute,
   AuthenticatedAdminSloRoute: AuthenticatedAdminSloRoute,
+  AuthenticatedAdminWebVitalsRoute: AuthenticatedAdminWebVitalsRoute,
   AuthenticatedBonDeSortieTourneeIdRoute:
     AuthenticatedBonDeSortieTourneeIdRoute,
   AuthenticatedBonDeTourneeTourneeIdRoute:
