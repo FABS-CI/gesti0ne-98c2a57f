@@ -20,7 +20,9 @@ import { Separator } from "@/components/ui/separator";
 import {
   ChevronDown, ChevronRight, Plus, Search, Shield, Users, Trash2, UserPlus, X,
   CheckCircle2, XCircle, GitBranch, History as HistoryIcon, Stethoscope, Download, AlertTriangle,
+  RefreshCcw,
 } from "lucide-react";
+import { SyncCatalogDialog } from "@/components/roles-permissions/SyncCatalogDialog";
 
 export const Route = createFileRoute("/_authenticated/admin/roles-v2")({
   component: RolesV2Page,
@@ -79,6 +81,7 @@ function RolesV2Page() {
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
   const [diagOpen, setDiagOpen] = useState(false);
+  const [syncOpen, setSyncOpen] = useState(false);
 
   const reload = useCallback(async () => {
     setLoading(true);
@@ -369,12 +372,16 @@ function RolesV2Page() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setSyncOpen(true)}>
+            <RefreshCcw className="h-4 w-4 mr-2" />Synchroniser
+          </Button>
           <Button variant="outline" onClick={() => setDiagOpen(true)}>
             <Stethoscope className="h-4 w-4 mr-2" />Diagnostic
           </Button>
           <CreateRoleDialog onCreate={createRole} />
         </div>
       </div>
+      <SyncCatalogDialog open={syncOpen} onOpenChange={setSyncOpen} onApplied={() => { void reload(); }} />
 
       {loading ? (
         <Card className="p-8 text-center text-muted-foreground">Chargement du catalogue…</Card>
