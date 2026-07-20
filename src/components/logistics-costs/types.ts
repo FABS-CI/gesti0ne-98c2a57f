@@ -27,12 +27,14 @@ export type TourneeCout = {
 };
 
 export const VALIDATION_STATUTS = [
+  { value: "brouillon", label: "En attente de validation", color: "amber" },
   { value: "en_attente", label: "En attente de validation", color: "amber" },
   { value: "valide", label: "Validé", color: "blue" },
   { value: "refuse", label: "Refusé", color: "red" },
   { value: "annule", label: "Annulé", color: "gray" },
   { value: "decaisse", label: "Décaissement effectué", color: "green" },
 ] as const;
+
 
 export const TYPES = [
   { value: "livraison", label: "Livraison" },
