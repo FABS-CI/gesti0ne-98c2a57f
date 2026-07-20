@@ -3818,6 +3818,45 @@ export type Database = {
         }
         Relationships: []
       }
+      perf_web_vitals: {
+        Row: {
+          created_at: string
+          id: string
+          metric: string
+          navigation_type: string | null
+          rating: string
+          route: string | null
+          url: string | null
+          user_agent: string | null
+          user_id: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metric: string
+          navigation_type?: string | null
+          rating: string
+          route?: string | null
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metric?: string
+          navigation_type?: string | null
+          rating?: string
+          route?: string | null
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       plan_comptable: {
         Row: {
           actif: boolean
