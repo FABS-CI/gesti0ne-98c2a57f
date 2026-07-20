@@ -126,8 +126,8 @@ export function CommandesTable({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
-                  Chargement…
+                <TableCell colSpan={6} className="p-4">
+                  <SkeletonTable rows={8} cols={6} />
                 </TableCell>
               </TableRow>
             ) : items.length === 0 ? (
