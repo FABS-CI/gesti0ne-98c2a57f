@@ -451,7 +451,7 @@ export async function generateBonSortieCaissePDF(tourneeId: string): Promise<Blo
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const marginX = 14;
   const template = getActiveTemplate();
-  const titre = "BON DE SORTIE DE CAISSE DE TOURNEE";
+  const titre = "BON DE SORTIE DE CAISSE TOURNEE";
   drawHeader(doc, titre, template);
   let y = getPdfChromeBodyTop();
 
