@@ -32,12 +32,15 @@ import {
   type LigneUI,
 } from "@/components/achats/nouveau/LignesProduitsSection";
 import { QuickCreateProduitDialog } from "@/components/achats/nouveau/QuickCreateProduitDialog";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/achats/nouveau")({
   component: NouvelApprovisionnementPage,
   validateSearch: (s: Record<string, unknown>) => ({
     edit: typeof s.edit === "string" && s.edit ? String(s.edit) : undefined,
   }),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function NouvelApprovisionnementPage() {

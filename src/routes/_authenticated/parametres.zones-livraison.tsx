@@ -12,11 +12,14 @@ import { getParametre, setParametre } from "@/lib/parametres-api";
 import { COMMUNES_ABIDJAN, VILLES_CI, normalize as normLoc } from "@/lib/ci-locations";
 import { Combobox } from "@/components/ui/combobox";
 import { usePermissions } from "@/hooks/use-permissions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const KEY = "colisage.zones_livraison_directe";
 
 export const Route = createFileRoute("/_authenticated/parametres/zones-livraison")({
   component: ZonesLivraisonPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ZonesLivraisonPage() {

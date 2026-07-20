@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Download } from "lucide-react";
 import { ModulePlaceholder } from "@/components/common/ModulePlaceholder";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/paie-exports")({
   component: () => (
@@ -21,4 +22,6 @@ export const Route = createFileRoute("/_authenticated/paie-exports")({
       ]}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

@@ -24,9 +24,12 @@ import {
 } from "@/components/ui/table";
 import { exportCsv } from "@/lib/export-csv";
 import { formatFCFA } from "@/lib/format";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/rapports-logistique")({
   component: RapportsLogistique,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type Row = {

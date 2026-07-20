@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { mfaRegenerateBackupCodes } from "@/lib/mfa.functions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 function Page() {
   const regen = useServerFn(mfaRegenerateBackupCodes);
@@ -55,4 +56,6 @@ function Page() {
 
 export const Route = createFileRoute("/_authenticated/mfa/backup-codes")({
   component: Page,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

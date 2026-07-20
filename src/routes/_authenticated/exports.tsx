@@ -31,9 +31,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/exports")({
   component: ExportsGuard,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ExportsGuard() {

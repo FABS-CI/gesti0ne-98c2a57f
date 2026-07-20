@@ -3,6 +3,7 @@ import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const searchSchema = z.object({
   perm: fallback(z.string(), "").optional(),
@@ -12,6 +13,8 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/_authenticated/acces-refuse")({
   validateSearch: zodValidator(searchSchema),
   component: AccesRefusePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function AccesRefusePage() {

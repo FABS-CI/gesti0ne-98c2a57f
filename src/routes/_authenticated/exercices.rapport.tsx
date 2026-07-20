@@ -34,12 +34,15 @@ import {
 } from "@/components/ui/select";
 
 import { COMPARATIF_SEARCH_DEFAULTS } from "@/lib/route-schemas";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/exercices/rapport")({
   validateSearch: (s: Record<string, unknown>): { exercice?: string } => ({
     exercice: typeof s.exercice === "string" ? s.exercice : undefined,
   }),
   component: RapportExercicePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function RapportExercicePage() {

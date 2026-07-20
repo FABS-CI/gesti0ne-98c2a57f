@@ -27,9 +27,12 @@ import { getLignesPeriode } from "@/lib/compta-api";
 import { formatFCFA } from "@/lib/format";
 import { exportCsv } from "@/lib/export-csv";
 import { generateGrandLivrePDF } from "@/lib/pdf/pdfGenerator";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/grand-livre")({
   component: GrandLivrePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function GrandLivrePage() {

@@ -30,9 +30,12 @@ import { STATUT_SPECIMEN_LABEL, annulerSpecimen, getSpecimen } from "@/lib/speci
 import { invalidateSpecimen } from "@/lib/cache-invalidation";
 import { Can } from "@/components/rbac/Can";
 import { downloadBlob, fileNameFor, generateBonRemiseSpecimensPDF } from "@/lib/pdf/fabsTemplates";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/specimens/$specimenId")({
   component: SpecimenDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function SpecimenDetailPage() {

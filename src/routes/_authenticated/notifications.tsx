@@ -28,9 +28,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EmptyState } from "@/components/common/EmptyState";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
   component: NotificationsCentre,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDateTime(d: string) {

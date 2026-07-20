@@ -39,9 +39,12 @@ import { exportStorageBinariesZip } from "@/lib/gdrive-covers-zip.functions";
 import { downloadDriveFile } from "@/lib/gdrive-download.functions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@tanstack/react-router";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/backup")({
   component: BackupPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const TABLES = [

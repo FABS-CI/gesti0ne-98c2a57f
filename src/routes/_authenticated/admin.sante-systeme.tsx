@@ -16,9 +16,12 @@ import {
   Activity, RefreshCw, AlertTriangle, CheckCircle2, XCircle, AlertCircle,
   Users, Database, HardDrive, Shield, ServerCog, FileText, PlayCircle,
 } from "lucide-react";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/admin/sante-systeme")({
   component: SanteSystemePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const REFRESH_MS = 30_000;

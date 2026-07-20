@@ -18,9 +18,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/utilisateurs/production")({
   component: UtilisateursProductionPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type Row = Awaited<ReturnType<typeof listUsersForProduction>>[number];

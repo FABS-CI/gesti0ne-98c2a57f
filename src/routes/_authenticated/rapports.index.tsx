@@ -11,9 +11,12 @@ import { REPORTS } from "@/lib/rapports-index-defs";
 import { usePermissions } from "@/hooks/use-permissions";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/rapports/")({
   head: () => authRouteHead("Rapports"),
   component: RapportsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function RapportsPage() {

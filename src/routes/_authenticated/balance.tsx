@@ -20,9 +20,12 @@ import { getBalance } from "@/lib/compta-api";
 import { formatFCFA } from "@/lib/format";
 import { exportCsv } from "@/lib/export-csv";
 import { generateBalancePDF } from "@/lib/pdf/pdfGenerator";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/balance")({
   component: BalancePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function BalancePage() {

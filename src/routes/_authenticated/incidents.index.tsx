@@ -51,9 +51,12 @@ import { describeSupabaseError } from "@/lib/rbac-api";
 import { authRouteHead } from "@/lib/route-head";
 import { FilterBadges, type FilterBadge } from "@/components/common/FilterBadges";
 import { EmptyState } from "@/components/common/EmptyState";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/incidents/")({
   head: () => authRouteHead("Incidents"),
   component: IncidentsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const PAGE_SIZE = 20;

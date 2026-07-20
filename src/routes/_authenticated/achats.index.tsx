@@ -60,9 +60,12 @@ import { viewBlobAsync } from "@/lib/pdf/actions";
 import { authRouteHead } from "@/lib/route-head";
 import { FilterBadges, type FilterBadge } from "@/components/common/FilterBadges";
 import { EmptyState } from "@/components/common/EmptyState";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/achats/")({
   head: () => authRouteHead("Achats"),
   component: ApprovisionnementsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ApprovisionnementsPage() {

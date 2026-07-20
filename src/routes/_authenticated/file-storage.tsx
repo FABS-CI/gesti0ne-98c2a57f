@@ -16,9 +16,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Can } from "@/components/rbac/Can";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/file-storage")({
   component: FileStoragePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const BUCKET = "documents-fabs";

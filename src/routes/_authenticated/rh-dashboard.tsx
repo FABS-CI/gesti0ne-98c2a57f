@@ -18,11 +18,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRHDashboard } from "@/lib/rh-api";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const EffectifChart = lazy(() => import("@/components/rh/EffectifChart"));
 
 export const Route = createFileRoute("/_authenticated/rh-dashboard")({
   component: RHDashboardPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function formatFCFA(n: number) {

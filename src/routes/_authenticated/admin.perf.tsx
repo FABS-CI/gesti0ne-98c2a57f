@@ -13,9 +13,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Activity, RefreshCw, AlertTriangle } from "lucide-react";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/admin/perf")({
   component: PerfPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type PerfRow = {

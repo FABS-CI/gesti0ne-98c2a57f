@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BookOpen } from "lucide-react";
 import { ModulePlaceholder } from "@/components/common/ModulePlaceholder";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/ecritures-comptables")({
   component: () => (
@@ -22,4 +23,6 @@ export const Route = createFileRoute("/_authenticated/ecritures-comptables")({
       ]}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

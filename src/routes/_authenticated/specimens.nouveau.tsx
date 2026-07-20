@@ -17,9 +17,12 @@ import { specimenFormSchema, type SpecimenFormValues } from "@/lib/specimens-for
 import { InfosGeneralesSection } from "@/components/specimens/nouveau/InfosGeneralesSection";
 import { BeneficiaireSection } from "@/components/specimens/nouveau/BeneficiaireSection";
 import { LignesProduitsSection } from "@/components/specimens/nouveau/LignesProduitsSection";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/specimens/nouveau")({
   component: SpecimenNouveauPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function SpecimenNouveauPage() {

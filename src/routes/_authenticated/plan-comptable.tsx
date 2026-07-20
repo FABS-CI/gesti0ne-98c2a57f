@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ListTree } from "lucide-react";
 import { ModulePlaceholder } from "@/components/common/ModulePlaceholder";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/plan-comptable")({
   component: () => (
@@ -21,4 +22,6 @@ export const Route = createFileRoute("/_authenticated/plan-comptable")({
       ]}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

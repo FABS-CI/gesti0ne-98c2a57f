@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { GitBranch } from "lucide-react";
 import { ResourceManager } from "@/components/crud/ResourceManager";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/workflows-definitions")({
   component: () => (
@@ -47,4 +48,6 @@ export const Route = createFileRoute("/_authenticated/workflows-definitions")({
       }}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

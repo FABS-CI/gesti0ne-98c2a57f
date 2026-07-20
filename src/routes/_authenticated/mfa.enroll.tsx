@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MfaEnrollView } from "@/components/mfa/MfaEnrollView";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/mfa/enroll")({
   component: () => (
@@ -7,4 +8,6 @@ export const Route = createFileRoute("/_authenticated/mfa/enroll")({
       <MfaEnrollView />
     </div>
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

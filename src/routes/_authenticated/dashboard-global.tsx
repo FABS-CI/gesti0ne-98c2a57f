@@ -24,9 +24,12 @@ import { getDashboardCompta } from "@/lib/compta-api";
 import { getRHDashboard } from "@/lib/rh-api";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
 import { usePermissions } from "@/hooks/use-permissions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/dashboard-global")({
   component: DashboardGlobal,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type VentesStats = {

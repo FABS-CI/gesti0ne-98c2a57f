@@ -44,9 +44,12 @@ import {
 import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/fournisseurs/")({
   head: () => authRouteHead("Fournisseurs"),
   component: FournisseursPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const emptyForm: FournisseurInput = {

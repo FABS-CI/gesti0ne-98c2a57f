@@ -27,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const PERIODES = ["24h", "7j", "30j"] as const;
 type Periode = (typeof PERIODES)[number];
@@ -42,6 +43,8 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/_authenticated/admin/rpc-errors")({
   validateSearch: zodValidator(searchSchema),
   component: RpcErrorsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type RpcErrorRow = {

@@ -3,9 +3,12 @@ import { Wallet } from "lucide-react";
 import { ResourceManager, type ResourceConfig } from "@/components/crud/ResourceManager";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/paie/")({
   head: () => authRouteHead("Paie"),
   component: () => <ResourceManager config={config} />,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const statuts = [

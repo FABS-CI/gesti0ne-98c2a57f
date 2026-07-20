@@ -32,9 +32,12 @@ import {
   type FNEStatus,
 } from "@/lib/fne-api";
 import { formatFCFA } from "@/lib/format";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/fne-detail/$factureId")({
   component: FNEDetail,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function copy(v: string) {

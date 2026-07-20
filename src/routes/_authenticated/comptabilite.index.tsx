@@ -20,9 +20,12 @@ import { JournalTable } from "@/components/comptabilite/JournalTable";
 import { JournalPreviewDialog } from "@/components/comptabilite/JournalPreviewDialog";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/comptabilite/")({
   head: () => authRouteHead("Comptabilité"),
   component: ComptabilitePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const PDF_CACHE_MAX = 5;

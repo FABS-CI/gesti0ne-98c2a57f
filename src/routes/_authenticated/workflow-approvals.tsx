@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FileCheck } from "lucide-react";
 import { ResourceManager, type ResourceConfig } from "@/components/crud/ResourceManager";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/workflow-approvals")({
   component: () => <ResourceManager config={config} />,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const workflows = [

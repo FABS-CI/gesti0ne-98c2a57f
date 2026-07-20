@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Settings2 } from "lucide-react";
 import { ResourceManager } from "@/components/crud/ResourceManager";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/paie-parametres")({
   component: () => (
@@ -54,4 +55,6 @@ export const Route = createFileRoute("/_authenticated/paie-parametres")({
       }}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

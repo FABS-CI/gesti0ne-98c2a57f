@@ -26,9 +26,12 @@ import { RapportKpisGrid } from "@/components/rapports/analyse/RapportKpisGrid";
 import { AgregatCard } from "@/components/rapports/analyse/AgregatCard";
 import { ProduitsTab } from "@/components/rapports/analyse/ProduitsTab";
 import { TopFlopTab } from "@/components/rapports/analyse/TopFlopTab";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/rapports/analyse")({
   component: RapportsAnalysePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function RapportsAnalysePage() {

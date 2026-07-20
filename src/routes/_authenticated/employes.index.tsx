@@ -46,9 +46,12 @@ import {
 } from "@/components/ui/table";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/employes/")({
   head: () => authRouteHead("Employés"),
   component: EmployesPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function EmployesPage() {

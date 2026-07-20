@@ -23,9 +23,12 @@ import {
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { usePermissions } from "@/hooks/use-permissions";
 import { formatFCFA } from "@/lib/format";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/comptabilite/audit")({
   component: ComptaAuditPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type Resume = {

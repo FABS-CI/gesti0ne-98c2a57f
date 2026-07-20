@@ -36,9 +36,12 @@ import {
   insertBatch,
   type EntityKey,
 } from "@/lib/import-api";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/import-donnees")({
   component: ImportDonneesPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type ParsedRow = Record<string, string>;

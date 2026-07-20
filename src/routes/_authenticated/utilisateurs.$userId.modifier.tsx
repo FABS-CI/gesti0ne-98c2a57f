@@ -6,9 +6,12 @@ import {
   useUserProfilesQuery,
   useUserRoleAssignsQuery,
 } from "@/hooks/use-roles-permissions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/utilisateurs/$userId/modifier")({
   component: EditUserPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function EditUserPage() {

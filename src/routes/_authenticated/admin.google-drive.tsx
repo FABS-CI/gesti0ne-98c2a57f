@@ -10,9 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { checkGoogleDrive, testGoogleDriveUpload } from "@/lib/gdrive-admin.functions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/admin/google-drive")({
   component: GoogleDriveAdminPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type CheckOk = {

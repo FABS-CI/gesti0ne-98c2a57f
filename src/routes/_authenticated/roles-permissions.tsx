@@ -15,9 +15,12 @@ import { RolesConsole } from "@/components/roles-permissions/RolesConsole";
 import { UsersTab } from "@/components/roles-permissions/UsersTab";
 import { AuditTab } from "@/components/roles-permissions/AuditTab";
 import { SyncRbacButton } from "@/components/roles-permissions/SyncRbacButton";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/roles-permissions")({
   component: RolesPermissionsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function RolesPermissionsPage() {

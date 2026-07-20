@@ -24,9 +24,12 @@ import { EditExerciceDialog } from "@/components/exercices/index/EditExerciceDia
 import type { EditingExercice, PreviewResult } from "@/components/exercices/index/exercices-shared";
 
 import { COMPARATIF_SEARCH_DEFAULTS } from "@/lib/route-schemas";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/exercices")({
   component: ExercicesPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ExercicesPage() {

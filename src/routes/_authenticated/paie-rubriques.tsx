@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ListTree } from "lucide-react";
 import { ResourceManager } from "@/components/crud/ResourceManager";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/paie-rubriques")({
   component: () => (
@@ -140,4 +141,6 @@ export const Route = createFileRoute("/_authenticated/paie-rubriques")({
       }}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

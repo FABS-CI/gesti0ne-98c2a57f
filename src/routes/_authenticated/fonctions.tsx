@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Briefcase } from "lucide-react";
 import { ResourceManager } from "@/components/crud/ResourceManager";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/fonctions")({
   component: () => (
@@ -26,4 +27,6 @@ export const Route = createFileRoute("/_authenticated/fonctions")({
       }}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
