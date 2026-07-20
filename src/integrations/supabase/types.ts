@@ -7048,6 +7048,12 @@ export type Database = {
           permission_code: string
         }[]
       }
+      list_user_permissions_v2: {
+        Args: { _user_id: string }
+        Returns: {
+          permission_code: string
+        }[]
+      }
       livsuivi_avancer: {
         Args: {
           _commentaire?: string
