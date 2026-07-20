@@ -7034,6 +7034,8 @@ export type Database = {
         Args: { _filters?: Json; _limit?: number; _offset?: number }
         Returns: Json
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       soft_delete_employe: { Args: { _employe_id: string }; Returns: undefined }
       soumettre_commande: { Args: { _commande_id: string }; Returns: undefined }
       supprimer_achat: {
