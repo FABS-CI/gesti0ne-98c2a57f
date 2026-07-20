@@ -71,7 +71,7 @@ export function useOptimisticListMutation<TItem, TVars>(opts: {
       // Le Realtime bus déclenche déjà l'invalidation, mais on force ici
       // pour couvrir les tables non-realtime.
       qc.invalidateQueries({ queryKey });
-      onSettled?.(data, err, vars, ctx);
+      onSettled?.(data, err, vars, ctx, {} as never);
     },
   });
 }
