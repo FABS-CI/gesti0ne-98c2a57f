@@ -70,16 +70,8 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
   const { data: client } = useSuspenseQuery(clientQO(clientId));
   const { data: factures } = useSuspenseQuery(clientFacturesQO(clientId));
   const { data: counts } = useSuspenseQuery(clientCountsQO(clientId));
-
   // Précharge en idle les onglets les plus consultés (commandes, paiements, proformas)
-  useIdlePrefetch(
-    [
-      { query: { ...clientCommandesQO(clientId) } },
-      { query: { ...clientPaiementsQO(clientId) } },
-      { query: { ...clientProformasQO(clientId) } },
-    ],
-    queryClient,
-  );
+  useIdlePrefetch(clientId, queryClient);
 
   const prefetchOnHover = (fn: () => void) => ({ onMouseEnter: fn, onFocus: fn });
 
