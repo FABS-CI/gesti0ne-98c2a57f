@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PlayCircle } from "lucide-react";
 import { ModulePlaceholder } from "@/components/common/ModulePlaceholder";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/paie-generation")({
   component: () => (
@@ -22,4 +23,6 @@ export const Route = createFileRoute("/_authenticated/paie-generation")({
       ]}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

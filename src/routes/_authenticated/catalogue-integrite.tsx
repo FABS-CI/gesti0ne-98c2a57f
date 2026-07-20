@@ -23,9 +23,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/catalogue-integrite")({
   component: IntegritePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function StatCard({

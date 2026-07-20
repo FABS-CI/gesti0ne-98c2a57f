@@ -31,6 +31,7 @@ import {
 } from "@/lib/fne-api";
 import { formatFCFA } from "@/lib/format";
 import { invalidateFne } from "@/lib/cache-invalidation";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/fne-nouvelle")({ component: NewFNE });
 

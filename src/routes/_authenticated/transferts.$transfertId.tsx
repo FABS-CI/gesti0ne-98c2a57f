@@ -36,9 +36,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/transferts/$transfertId")({
   component: TransfertDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const labels: Record<Transfert["statut"], string> = {

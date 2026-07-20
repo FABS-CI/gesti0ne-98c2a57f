@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 // Route statique prioritaire sur /produits/$produitId — redirige vers la page
 // dédiée aux alertes de stock pour éviter la collision avec le détail produit.

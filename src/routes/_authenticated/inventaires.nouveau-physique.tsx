@@ -18,9 +18,12 @@ import { listDepots } from "@/lib/depots-api";
 import { supabase } from "@/integrations/supabase/client";
 import { creerInventairePhysique } from "@/lib/inventaires-api";
 import { usePermissions } from "@/hooks/use-permissions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/inventaires/nouveau-physique")({
   component: NouveauPhysiquePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function NouveauPhysiquePage() {

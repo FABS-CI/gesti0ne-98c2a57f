@@ -29,9 +29,12 @@ import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
 import { authRouteHead } from "@/lib/route-head";
 import { FilterBadges, type FilterBadge } from "@/components/common/FilterBadges";
 import { EmptyState } from "@/components/common/EmptyState";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/colisage/")({
   head: () => authRouteHead("Colisage"),
   component: ColisageListPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDate(d: string | null | undefined) {

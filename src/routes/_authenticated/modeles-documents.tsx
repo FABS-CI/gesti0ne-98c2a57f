@@ -34,9 +34,12 @@ import { LogoAndPerTypeCard } from "@/components/modeles-documents/LogoAndPerTyp
 import { TemplateCard } from "@/components/modeles-documents/TemplateCard";
 import { TemplateEditorDialog } from "@/components/modeles-documents/TemplateEditorDialog";
 import { useConfirmDelete } from "@/hooks/use-confirm-delete";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/modeles-documents")({
   component: ModelesDocuments,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ModelesDocuments() {

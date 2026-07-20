@@ -25,9 +25,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/comptabilite/nouvelle")({
   component: NouvelleEcriturePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type LigneForm = {

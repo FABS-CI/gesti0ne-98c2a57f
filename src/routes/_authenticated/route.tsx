@@ -6,6 +6,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { RouteGuard } from "@/components/rbac/RouteGuard";
 import { MfaGate } from "@/components/mfa/MfaGate";
 import { ActifGate } from "@/components/rbac/ActifGate";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 // NB: pas de `z.enum()` ici — un enum fermé dans validateSearch peut faire
 // throw en SSR au lieu de retomber sur le fallback (cf. TanStack search-params
@@ -53,4 +54,6 @@ export const Route = createFileRoute("/_authenticated")({
       </ActifGate>
     </AppShell>
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

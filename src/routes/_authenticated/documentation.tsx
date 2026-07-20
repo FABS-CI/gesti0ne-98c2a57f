@@ -6,10 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { DOC_SECTIONS, type DocSection } from "@/lib/documentation-data";
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/documentation")({
   head: () => authRouteHead("Documentation"),
   component: DocumentationPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function normalize(s: string) {

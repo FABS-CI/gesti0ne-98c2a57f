@@ -24,9 +24,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useUserRoles } from "@/hooks/use-user-roles";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/admin/data-quality")({
   component: DataQualityPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type Duplicate = {

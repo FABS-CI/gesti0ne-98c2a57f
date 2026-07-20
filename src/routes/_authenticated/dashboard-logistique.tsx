@@ -19,9 +19,12 @@ import { formatFCFA } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { genererAlertes } from "@/lib/notifications-api";
 import { toast } from "sonner";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/dashboard-logistique")({
   component: DashboardLogistique,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type Stats = {

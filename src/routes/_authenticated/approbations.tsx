@@ -21,9 +21,12 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/approbations")({
   component: ApprobationsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type Statut = "en_attente" | "approuve" | "rejete";

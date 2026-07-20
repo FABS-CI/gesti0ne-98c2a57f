@@ -35,10 +35,13 @@ import { useConfirmDelete } from "@/hooks/use-confirm-delete";
 
 import { zodValidator } from "@tanstack/zod-adapter";
 import { commandeRefSearchSchema, COMMANDE_REF_SEARCH_DEFAULTS } from "@/lib/route-schemas";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/livraison-suivi/$commandeRef")({
   validateSearch: zodValidator(commandeRefSearchSchema),
   component: SuiviDetail,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const META_LABEL: Record<string, string> = {

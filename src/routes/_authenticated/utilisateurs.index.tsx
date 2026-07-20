@@ -2,9 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { UsersTab } from "@/components/roles-permissions/UsersTab";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/utilisateurs/")({
   head: () => authRouteHead("Utilisateurs"),
   component: UtilisateursPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function UtilisateursPage() {

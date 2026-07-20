@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WidgetCard } from "@/components/dashboard/WidgetCard";
 import { usePermissions } from "@/hooks/use-permissions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const SortableWidgetGrid = lazy(() => import("@/components/dashboard/SortableWidgetGrid"));
 
@@ -22,6 +23,8 @@ const SENSITIVE_WIDGETS: WidgetId[] = ["ca_mois", "paiements_recus_mois"];
 
 export const Route = createFileRoute("/_authenticated/mon-dashboard")({
   component: MonDashboard,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function MonDashboard() {

@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { formatFCFA } from "@/lib/format";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/paie-dashboard")({
   component: PaieDashboardPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function PaieDashboardPage() {

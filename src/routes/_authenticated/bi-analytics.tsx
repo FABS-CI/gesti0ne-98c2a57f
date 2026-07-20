@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatFCFA } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const CashflowChart = lazy(() =>
   import("@/components/bi/BiCharts").then((m) => ({ default: m.CashflowChart })),
@@ -22,6 +23,8 @@ const ChartFallback = () => <Skeleton className="h-full w-full" />;
 
 export const Route = createFileRoute("/_authenticated/bi-analytics")({
   component: BiAnalytics,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const MONTHS = [

@@ -15,6 +15,7 @@ import {
   STATUT_LABEL,
   STATUT_COLOR,
 } from "@/lib/livraison-suivi-api";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export type ValidateButtonState = {
   isPending: boolean;
@@ -51,6 +52,8 @@ export function formatAdresseLivraison(
 
 export const Route = createFileRoute("/_authenticated/livraison-suivi/$commandeRef/remise")({
   component: RemisePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function RemisePage() {

@@ -45,9 +45,12 @@ import {
 import { usePermissions } from "@/hooks/use-permissions";
 import { buildIncidentPdfBlob, incidentPdfFilename } from "@/lib/incidents-pdf";
 import { printCached, viewCached } from "@/lib/pdf/actions";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/incidents/$incidentId")({
   component: IncidentDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDate(d: string | null | undefined) {

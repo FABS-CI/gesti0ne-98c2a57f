@@ -8,9 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/admin/audit-paiements/$auditId")({
   component: AuditPaiementDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDateTime(d: string) {

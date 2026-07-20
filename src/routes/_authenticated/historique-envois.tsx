@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { History } from "lucide-react";
 import { ResourceManager } from "@/components/crud/ResourceManager";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const CANAUX = [
   { value: "email", label: "Email", color: "#3B82F6" },
@@ -47,4 +48,6 @@ export const Route = createFileRoute("/_authenticated/historique-envois")({
       }}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

@@ -17,9 +17,12 @@ import {
 } from "@/components/ui/table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/admin/audit-paiements")({
   component: AuditPaiementsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDateTime(d: string) {

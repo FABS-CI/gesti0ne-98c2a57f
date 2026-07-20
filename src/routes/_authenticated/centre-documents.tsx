@@ -39,9 +39,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/centre-documents")({
   component: CentreDocumentsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type DocKind = "factures" | "proformas" | "bons_livraison" | "bons_retour";

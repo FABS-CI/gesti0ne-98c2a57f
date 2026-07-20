@@ -20,9 +20,12 @@ import {
   DeclarationPreviewDialog,
   type PreviewState,
 } from "@/components/paie-declarations/DeclarationPreviewDialog";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/paie-declarations")({
   component: DeclarationsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function DeclarationsPage() {

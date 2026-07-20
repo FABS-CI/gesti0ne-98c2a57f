@@ -30,9 +30,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/achats/$achatId")({
   component: AchatDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function frDate(d: string | null | undefined) {

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Send } from "lucide-react";
 import { ResourceManager } from "@/components/crud/ResourceManager";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const STATUTS = [
   { value: "planifiee", label: "Planifiée", color: "#94A3B8" },
@@ -62,4 +63,6 @@ export const Route = createFileRoute("/_authenticated/expeditions")({
       }}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

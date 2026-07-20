@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 type Tournee = {
   reference: string;
@@ -38,6 +39,8 @@ type Expedition = {
 
 export const Route = createFileRoute("/_authenticated/tournees-bl/$tourneeId")({
   component: BLPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function BLPage() {

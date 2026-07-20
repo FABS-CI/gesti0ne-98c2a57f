@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FileText } from "lucide-react";
 import { ModulePlaceholder } from "@/components/common/ModulePlaceholder";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/etats-comptables")({
   component: () => (
@@ -18,4 +19,6 @@ export const Route = createFileRoute("/_authenticated/etats-comptables")({
       bullets={["Bilan actif / passif", "Compte de résultat", "Annexes réglementaires"]}
     />
   ),
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

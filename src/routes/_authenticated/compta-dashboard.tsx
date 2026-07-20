@@ -19,9 +19,12 @@ import { Label } from "@/components/ui/label";
 import { getDashboardCompta } from "@/lib/compta-api";
 import { formatFCFA } from "@/lib/format";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/compta-dashboard")({
   component: ComptaDashboard,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ComptaDashboard() {

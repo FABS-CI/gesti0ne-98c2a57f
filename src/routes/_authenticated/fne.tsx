@@ -16,6 +16,7 @@ import { FNELogsPanel } from "@/components/fne/FNELogsPanel";
 import { FNESettingsPanel } from "@/components/fne/FNESettingsPanel";
 import { FNEDashboardTab } from "@/components/fne/FNEDashboardTab";
 import { FNEFacturesTab } from "@/components/fne/FNEFacturesTab";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 type FNETab = "dashboard" | "factures" | "logs" | "settings";
 
@@ -27,6 +28,8 @@ export const Route = createFileRoute("/_authenticated/fne")({
       return { tab: t };
     return {};
   },
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const FNE_ORANGE = "#FF6200";

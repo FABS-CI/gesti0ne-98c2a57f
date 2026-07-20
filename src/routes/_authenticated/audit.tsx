@@ -27,9 +27,12 @@ import { EventDetailDialog } from "@/components/audit/EventDetailDialog";
 import { AuditCharts } from "@/components/audit/AuditCharts";
 import { AuditLiveBar, type PresetKey } from "@/components/audit/AuditLiveBar";
 import { Badge } from "@/components/ui/badge";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/audit")({
   component: AuditPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function AuditPage() {

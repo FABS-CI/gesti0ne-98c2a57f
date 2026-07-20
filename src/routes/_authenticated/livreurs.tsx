@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { User } from "lucide-react";
 import { ResourceManager, type ResourceConfig } from "@/components/crud/ResourceManager";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const config: ResourceConfig = {
   table: "livreurs",
@@ -47,4 +48,6 @@ const config: ResourceConfig = {
 
 export const Route = createFileRoute("/_authenticated/livreurs")({
   component: () => <ResourceManager config={config} />,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });

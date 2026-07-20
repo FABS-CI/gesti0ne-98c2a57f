@@ -18,12 +18,15 @@ import {
   type SortKey,
 } from "@/components/exercices/comparatif/ComparatifFilters";
 import { ComparatifTable } from "@/components/exercices/comparatif/ComparatifTable";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const LS_KEY = "exercices-comparatif-state-v1";
 
 export const Route = createFileRoute("/_authenticated/exercices/comparatif")({
   validateSearch: zodValidator(comparatifSearchSchema),
   component: ComparatifPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ComparatifPage() {

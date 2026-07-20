@@ -16,6 +16,7 @@ import { WelcomeGreeting } from "@/components/dashboard/WelcomeGreeting";
 import { DashboardKpis } from "@/components/dashboard/DashboardKpis";
 import { DashboardChartsSection } from "@/components/dashboard/DashboardChartsSection";
 import { MesRaccourcisCard } from "@/components/dashboard/MesRaccourcisCard";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 // Chargés à la demande : PDF/PNG export (html-to-image, jspdf) et sections
 // non critiques du dashboard — ne pénalisent plus le TTI initial.
@@ -33,6 +34,8 @@ const DashboardStockAlerts = lazy(() =>
 export const Route = createFileRoute("/_authenticated/dashboard")({
   validateSearch: zodValidator(periodeSchema),
   component: Dashboard,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function Dashboard() {

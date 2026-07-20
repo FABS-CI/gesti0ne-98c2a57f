@@ -26,9 +26,12 @@ import {
 } from "@/components/ui/select";
 import { EtatCompteDebugPanel } from "@/components/etat-compte/EtatCompteDebugPanel";
 import { EtatCompteTable } from "@/components/etat-compte/EtatCompteTable";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/etat-compte-clients")({
   component: EtatComptePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function EtatComptePage() {

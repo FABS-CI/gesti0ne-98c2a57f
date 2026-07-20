@@ -3,9 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getConge } from "@/lib/rh-api";
 import { CongeForm } from "@/components/conges/CongeForm";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/conges/$congeId/modifier")({
   component: EditCongePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function EditCongePage() {

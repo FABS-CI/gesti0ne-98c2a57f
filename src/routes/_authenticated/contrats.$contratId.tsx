@@ -9,9 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RhPageHeader } from "@/components/rh/RhPageHeader";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/contrats/$contratId")({
   component: ContratDetailPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type Contrat = {

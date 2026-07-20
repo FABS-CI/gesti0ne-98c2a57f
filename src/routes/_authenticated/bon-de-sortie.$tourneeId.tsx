@@ -11,9 +11,12 @@ import {
   BonDocumentFooter,
   BonDocumentPage,
 } from "@/components/pdf/BonDocumentChrome";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/bon-de-sortie/$tourneeId")({
   component: BonDeSortiePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 type TourneeInfo = {

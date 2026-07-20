@@ -18,9 +18,12 @@ import { FecValidationCards } from "@/components/comptabilite/fec/FecValidationC
 import { FecPreviewCard } from "@/components/comptabilite/fec/FecPreviewCard";
 import { FecColonnesCard } from "@/components/comptabilite/fec/FecColonnesCard";
 import { FecProgressCard } from "@/components/comptabilite/fec/FecProgressCard";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/comptabilite/fec")({
   component: FecExportPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function FecExportPage() {

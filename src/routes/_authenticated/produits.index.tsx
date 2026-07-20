@@ -32,9 +32,12 @@ import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import { describeSupabaseError } from "@/lib/rbac-api";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/produits/")({
   head: () => authRouteHead("Produits"),
   component: ProduitsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function ProduitsPage() {

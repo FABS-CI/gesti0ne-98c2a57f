@@ -38,6 +38,7 @@ import {
 import { ColisPickerTable } from "@/components/tournees/create/ColisPickerTable";
 import { NewTourneeInfoCard } from "@/components/tournees/create/NewTourneeInfoCard";
 import { NewTourneeCoutsCard } from "@/components/tournees/create/NewTourneeCoutsCard";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const searchSchema = z.object({
   preselect: fallback(z.string(), "").default(""),
@@ -47,6 +48,8 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/_authenticated/tournees/nouvelle")({
   validateSearch: zodValidator(searchSchema),
   component: NouvelleTourneePage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 function NouvelleTourneePage() {

@@ -28,9 +28,12 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FinancesKpis } from "@/components/finances/FinancesKpis";
 import { TransactionsTable } from "@/components/finances/TransactionsTable";
 import { TransactionFormDialog } from "@/components/finances/TransactionFormDialog";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/finances")({
   component: FinancesPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const emptyForm: TransactionInput = {

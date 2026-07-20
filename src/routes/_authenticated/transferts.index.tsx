@@ -36,9 +36,12 @@ import { useConfirmDelete } from "@/hooks/use-confirm-delete";
 import { EmptyState } from "@/components/common/EmptyState";
 
 import { authRouteHead } from "@/lib/route-head";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 export const Route = createFileRoute("/_authenticated/transferts/")({
   head: () => authRouteHead("Transferts"),
   component: TransfertsPage,
+  errorComponent: RouteError,
+  notFoundComponent: RouteNotFound,
 });
 
 const statutColors: Record<
