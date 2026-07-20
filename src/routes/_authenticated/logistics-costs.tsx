@@ -46,7 +46,6 @@ export const Route = createFileRoute("/_authenticated/logistics-costs")({
 function LogisticsCostsPage() {
   const qc = useQueryClient();
   const { has, isSuperAdmin } = usePermissions();
-  const canValidate = isSuperAdmin || has("tournees.valider_couts");
   const canCancel = isSuperAdmin || has("tournees.annuler_validation");
 
 
@@ -394,24 +393,28 @@ function LogisticsCostsPage() {
                           >
                             <FileDown className="h-4 w-4" />
                           </Button>
-                          {canValidate && r.validation_statut === "en_attente" && (
+                          {r.validation_statut === "en_attente" && (
                             <>
                               <Button aria-label="Valider le décaissement"
-                                variant="ghost"
-                                size="icon"
+                                variant="default"
+                                size="sm"
                                 title="Valider le décaissement"
                                 onClick={() => setValidating(r)}
+                                className="gap-1"
                               >
-                                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                                <CheckCircle2 className="h-4 w-4" />
+                                Valider
                               </Button>
-                              <Button aria-label="Refuser"
-                                variant="ghost"
-                                size="icon"
-                                title="Refuser"
-                                onClick={() => setRefusing(r)}
-                              >
-                                <XCircle className="h-4 w-4 text-red-600" />
-                              </Button>
+                              {(isSuperAdmin || has("tournees.valider_couts")) && (
+                                <Button aria-label="Refuser"
+                                  variant="ghost"
+                                  size="icon"
+                                  title="Refuser"
+                                  onClick={() => setRefusing(r)}
+                                >
+                                  <XCircle className="h-4 w-4 text-red-600" />
+                                </Button>
+                              )}
                             </>
                           )}
                           {canCancel && r.validation_statut === "decaisse" && (
