@@ -43,10 +43,8 @@ function toForm(c: Client): ClientInput {
   return {
     nom: c.nom,
     type_client: c.type_client,
-    contact_principal: c.contact_principal ?? "",
     representant: c.representant ?? "",
     telephone: c.telephone ?? "",
-    telephone2: c.telephone2 ?? "",
     email: c.email ?? "",
     adresse: c.adresse ?? "",
     quartier: c.quartier ?? "",
@@ -65,6 +63,7 @@ function toForm(c: Client): ClientInput {
     notes: c.notes ?? "",
   };
 }
+
 
 export function ClientEditSheet({
   client,
@@ -141,12 +140,6 @@ export function ClientEditSheet({
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Contact principal">
-              <Input
-                value={form.contact_principal ?? ""}
-                onChange={(e) => set("contact_principal", e.target.value)}
-              />
-            </Field>
             <Field label="Représentant">
               <Input
                 value={form.representant ?? ""}
@@ -162,12 +155,7 @@ export function ClientEditSheet({
                 onChange={(e) => set("telephone", e.target.value)}
               />
             </Field>
-            <Field label="Téléphone 2">
-              <Input
-                value={form.telephone2 ?? ""}
-                onChange={(e) => set("telephone2", e.target.value)}
-              />
-            </Field>
+
             <Field label="Email">
               <Input
                 type="email"

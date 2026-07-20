@@ -17,14 +17,13 @@ export const clientFormSchema = z.object({
   type_client: z.string().min(1, "Type obligatoire"),
   statut: z.enum(["actif", "inactif"]).default("actif"),
   representant: z.string().max(200).optional().or(z.literal("")),
-  contact_principal: z.string().max(200).optional().or(z.literal("")),
 
   // 2. Coordonnées
   telephone: z.string().max(50).optional().or(z.literal("")),
-  telephone2: z.string().max(50).optional().or(z.literal("")),
   whatsapp: z.string().max(50).optional().or(z.literal("")),
   email: z.string().email("Email invalide").max(255).optional().or(z.literal("")),
   site_web: z.string().max(255).optional().or(z.literal("")),
+
 
   // 3. Adresse
   pays: z.string().max(100).optional().or(z.literal("")),
@@ -87,9 +86,9 @@ const META_KEYS = [
   "zone_livraison",
   "depot_defaut",
   "moyen_livraison",
-  "contact_principal",
   "statut",
 ] as const;
+
 
 type MetaExtra = Partial<Record<(typeof META_KEYS)[number], unknown>>;
 

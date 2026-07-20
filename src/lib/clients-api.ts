@@ -7,7 +7,6 @@ export type Client = {
   type_client: string;
   representant: string | null;
   telephone: string | null;
-  telephone2: string | null;
   email: string | null;
   adresse: string | null;
   ville: string | null;
@@ -15,7 +14,6 @@ export type Client = {
   commune: string | null;
   bp: string | null;
   pays: string | null;
-  contact_principal: string | null;
   nif: string | null;
   regime_fiscal: string | null;
   categorie: string | null;
@@ -38,7 +36,6 @@ export type ClientInput = {
   type_client: string;
   representant?: string | null;
   telephone?: string | null;
-  telephone2?: string | null;
   email?: string | null;
   adresse?: string | null;
   quartier?: string | null;
@@ -46,7 +43,6 @@ export type ClientInput = {
   ville?: string | null;
   bp?: string | null;
   pays?: string | null;
-  contact_principal?: string | null;
   nif?: string | null;
   regime_fiscal?: string | null;
   categorie?: string | null;
@@ -57,6 +53,7 @@ export type ClientInput = {
   plafond_credit?: number;
   notes?: string | null;
 };
+
 
 export type ListClientsParams = {
   q?: string;
