@@ -73,12 +73,12 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
 
   // Précharge en idle les onglets les plus consultés (commandes, paiements, proformas)
   useIdlePrefetch(
-    () => {
-      queryClient.prefetchQuery(clientCommandesQO(clientId));
-      queryClient.prefetchQuery(clientPaiementsQO(clientId));
-      queryClient.prefetchQuery(clientProformasQO(clientId));
-    },
-    [clientId],
+    [
+      { query: { ...clientCommandesQO(clientId) } },
+      { query: { ...clientPaiementsQO(clientId) } },
+      { query: { ...clientProformasQO(clientId) } },
+    ],
+    queryClient,
   );
 
   const prefetchOnHover = (fn: () => void) => ({ onMouseEnter: fn, onFocus: fn });
