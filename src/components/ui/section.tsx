@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
  */
 
 function DefaultErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  const message = error instanceof Error ? error.message : String(error ?? "");
   return (
     <div
       role="alert"
@@ -26,8 +27,8 @@ function DefaultErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
           Impossible d'afficher cette section
         </span>
       </div>
-      {error?.message ? (
-        <p className="text-xs text-muted-foreground">{error.message}</p>
+      {message ? (
+        <p className="text-xs text-muted-foreground">{message}</p>
       ) : null}
       <Button
         size="sm"
