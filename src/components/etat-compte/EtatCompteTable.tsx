@@ -108,20 +108,6 @@ export function EtatCompteTable({ clients, isLoading, busy, historiqueBusy, onPd
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => onHistorique?.(c)}
-                        disabled={!onHistorique || historiqueBusy === c.client_id}
-                        title="Historique PDF"
-                      >
-                        {historiqueBusy === c.client_id ? (
-                          <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                        ) : (
-                          <FileText className="h-3.5 w-3.5 mr-1.5" />
-                        )}
-                        Historique
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
                         onClick={() => onPdf(c)}
                         disabled={busy === c.client_id}
                         title="État de compte PDF"

@@ -2859,9 +2859,8 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     showQr: false,
     docType: "etat_compte",
   });
-  let y = drawHeader(ctx, "État de Compte Client");
+  let y = drawHeader(ctx, "RELEVÉ DE COMPTE CLIENT");
   y -= 8;
-  y = drawV2Title(ctx, "RELEVÉ CHRONOLOGIQUE DES OPÉRATIONS", y);
 
   // ---------- Bloc infos client + période ----------
   const colR = MARGIN.x + CONTENT_W / 2;

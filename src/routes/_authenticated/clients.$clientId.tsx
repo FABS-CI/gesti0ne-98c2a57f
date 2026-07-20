@@ -201,9 +201,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
           >
             <PlusCircle className="mr-2 h-4 w-4" /> Commander
           </Button>
-          <Button variant="outline" onClick={() => setSoldeOpen(true)}>
-            <Eye className="mr-2 h-4 w-4" /> Consulter le solde
-          </Button>
           <Button
             variant="secondary"
             onClick={() =>
@@ -211,14 +208,6 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
             }
           >
             <Wallet className="mr-2 h-4 w-4" /> Imputer un paiement
-          </Button>
-          <Button variant="outline" onClick={handleEtatCompte} disabled={generating}>
-            <FileDown className="mr-2 h-4 w-4" />
-            {generating ? "Génération…" : "État de compte (PDF)"}
-          </Button>
-          <Button variant="outline" onClick={handleHistoriquePdf} disabled={historiqueBusy}>
-            <FileText className="mr-2 h-4 w-4" />
-            {historiqueBusy ? "Génération…" : "Historique PDF"}
           </Button>
           <Badge style={{ backgroundColor: type?.bg ?? "#CFD8DC", color: type?.color ?? "#0A2540" }}>
             {type?.label ?? client.type_client}
