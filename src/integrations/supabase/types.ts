@@ -783,7 +783,6 @@ export type Database = {
           categorie: string | null
           client_id: string
           commune: string | null
-          contact_principal: string | null
           created_at: string
           delai_paiement: number | null
           email: string | null
@@ -804,7 +803,6 @@ export type Database = {
           solde_points: number | null
           statut: string | null
           telephone: string | null
-          telephone2: string | null
           type_client: string | null
           updated_at: string
           ville: string | null
@@ -816,7 +814,6 @@ export type Database = {
           categorie?: string | null
           client_id?: string
           commune?: string | null
-          contact_principal?: string | null
           created_at?: string
           delai_paiement?: number | null
           email?: string | null
@@ -837,7 +834,6 @@ export type Database = {
           solde_points?: number | null
           statut?: string | null
           telephone?: string | null
-          telephone2?: string | null
           type_client?: string | null
           updated_at?: string
           ville?: string | null
@@ -849,7 +845,6 @@ export type Database = {
           categorie?: string | null
           client_id?: string
           commune?: string | null
-          contact_principal?: string | null
           created_at?: string
           delai_paiement?: number | null
           email?: string | null
@@ -870,7 +865,6 @@ export type Database = {
           solde_points?: number | null
           statut?: string | null
           telephone?: string | null
-          telephone2?: string | null
           type_client?: string | null
           updated_at?: string
           ville?: string | null
