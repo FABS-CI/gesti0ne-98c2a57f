@@ -157,13 +157,43 @@ export const clientCountsQO = (clientId: string) =>
   queryOptions({
     queryKey: ["client", clientId, "counts"],
     queryFn: async () => {
-      const [commandes, proformas, bl, avoirs] = await Promise.all([
+      const [commandes, proformas, bl, avoirs, factures, factureRows, blRows] = await Promise.all([
         headCount("commandes", clientId),
         headCount("proformas", clientId),
         headCount("bons_livraison", clientId),
         headCount("retours", clientId),
+        headCount("factures", clientId),
+        supabase.from("factures").select("facture_id").eq("client_id", clientId),
+        supabase.from("bons_livraison").select("bl_id").eq("client_id", clientId),
       ]);
-      return { commandes, proformas, bl, avoirs };
+      const factureIds = (factureRows.data ?? []).map((f) => f.facture_id);
+      const blIds = (blRows.data ?? []).map((b) => b.bl_id);
+
+      const [paiementsRes, livraisonsRes] = await Promise.all([
+        factureIds.length
+          ? supabase
+              .from("paiements")
+              .select("*", { count: "exact", head: true })
+              .in("facture_id", factureIds)
+          : Promise.resolve({ count: 0 } as { count: number | null }),
+        blIds.length
+          ? supabase
+              .from("livraisons")
+              .select("*", { count: "exact", head: true })
+              .in("bl_id", blIds)
+          : Promise.resolve({ count: 0 } as { count: number | null }),
+      ]);
+
+      return {
+        commandes,
+        proformas,
+        bl,
+        avoirs,
+        factures,
+        paiements: paiementsRes.count ?? 0,
+        livraisons: livraisonsRes.count ?? 0,
+      };
     },
     staleTime: SLICE_STALE,
   });
+
