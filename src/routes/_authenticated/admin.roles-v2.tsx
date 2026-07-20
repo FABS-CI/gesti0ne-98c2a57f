@@ -968,3 +968,172 @@ function CreateRoleDialog({ onCreate }: { onCreate: (code: string, label: string
     </Dialog>
   );
 }
+
+// ---- Diagnostic dialog ----
+type DiagnosticReport = {
+  roles_sans_permission: Array<{ code: string; label: string }>;
+  roles_sans_utilisateur: Array<{ code: string; label: string }>;
+  grants_orphelins: Array<{ role: string; perm: string }>;
+  dependances_manquantes: Array<{ role: string; perm: string; manque: string }>;
+  ressources_sans_permission: Array<{ code: string; label: string }>;
+  cycles_heritage: Array<{ role: string }>;
+  generated_at: string;
+};
+
+function DiagnosticDialog(props: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  roleByCode: Map<string, Role>;
+  onGoRole: (code: string) => void;
+}) {
+  const { open, onOpenChange, roleByCode, onGoRole } = props;
+  const [loading, setLoading] = useState(false);
+  const [report, setReport] = useState<DiagnosticReport | null>(null);
+
+  const run = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.rpc("rbac2_diagnose");
+      if (error) throw error;
+      setReport(data as unknown as DiagnosticReport);
+    } catch (e) {
+      toast.error(friendlyError(e));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { if (open) run(); }, [open, run]);
+
+  const sections: Array<{ key: keyof DiagnosticReport; title: string; render: (row: unknown) => React.ReactNode }> = [
+    {
+      key: "roles_sans_permission",
+      title: "Rôles sans permission accordée",
+      render: (row) => {
+        const r = row as { code: string; label: string };
+        return (
+          <button className="text-left hover:underline" onClick={() => onGoRole(r.code)}>
+            {r.label} <span className="text-muted-foreground">({r.code})</span>
+          </button>
+        );
+      },
+    },
+    {
+      key: "roles_sans_utilisateur",
+      title: "Rôles sans utilisateur",
+      render: (row) => {
+        const r = row as { code: string; label: string };
+        return (
+          <button className="text-left hover:underline" onClick={() => onGoRole(r.code)}>
+            {r.label} <span className="text-muted-foreground">({r.code})</span>
+          </button>
+        );
+      },
+    },
+    {
+      key: "dependances_manquantes",
+      title: "Dépendances manquantes",
+      render: (row) => {
+        const r = row as { role: string; perm: string; manque: string };
+        const label = roleByCode.get(r.role)?.label ?? r.role;
+        return (
+          <span>
+            <button className="hover:underline font-medium" onClick={() => onGoRole(r.role)}>{label}</button>
+            {" — "}<code className="text-[11px]">{r.perm}</code> nécessite <code className="text-[11px]">{r.manque}</code>
+          </span>
+        );
+      },
+    },
+    {
+      key: "grants_orphelins",
+      title: "Grants orphelins (permission supprimée du catalogue)",
+      render: (row) => {
+        const r = row as { role: string; perm: string };
+        return <span><code>{r.role}</code> → <code>{r.perm}</code></span>;
+      },
+    },
+    {
+      key: "ressources_sans_permission",
+      title: "Ressources sans permission",
+      render: (row) => {
+        const r = row as { code: string; label: string };
+        return <span>{r.label} <code className="text-[11px]">({r.code})</code></span>;
+      },
+    },
+    {
+      key: "cycles_heritage",
+      title: "Cycles d'héritage détectés",
+      render: (row) => {
+        const r = row as { role: string };
+        return <code className="text-red-600">{r.role}</code>;
+      },
+    },
+  ];
+
+  const totalIssues = report
+    ? sections.reduce((n, s) => n + ((report[s.key] as unknown[])?.length ?? 0), 0)
+    : 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Stethoscope className="h-5 w-5 text-primary" />
+            Diagnostic RBAC
+            {report && (
+              <Badge variant={totalIssues > 0 ? "destructive" : "secondary"} className="ml-2">
+                {totalIssues} anomalie{totalIssues > 1 ? "s" : ""}
+              </Badge>
+            )}
+          </DialogTitle>
+          <DialogDescription>
+            Analyse du catalogue, des rôles, des attributions et des dépendances entre permissions.
+          </DialogDescription>
+        </DialogHeader>
+
+        {loading && <div className="py-8 text-center text-sm text-muted-foreground">Analyse en cours…</div>}
+        {!loading && report && totalIssues === 0 && (
+          <div className="py-6 text-center text-emerald-600 flex flex-col items-center gap-2">
+            <CheckCircle2 className="h-8 w-8" />
+            <div className="font-medium">Aucune anomalie détectée.</div>
+          </div>
+        )}
+        {!loading && report && totalIssues > 0 && (
+          <ScrollArea className="max-h-[60vh]">
+            <div className="space-y-3 pr-3">
+              {sections.map((s) => {
+                const rows = (report[s.key] as unknown[]) ?? [];
+                if (rows.length === 0) return null;
+                return (
+                  <div key={s.key} className="border rounded-md">
+                    <div className="px-3 py-2 border-b bg-muted/40 flex items-center gap-2 text-sm font-medium">
+                      <AlertTriangle className="h-4 w-4 text-amber-600" />
+                      {s.title}
+                      <Badge variant="outline" className="ml-auto">{rows.length}</Badge>
+                    </div>
+                    <ul className="p-2 space-y-1 text-sm">
+                      {rows.slice(0, 40).map((row, i) => (
+                        <li key={i} className="px-2 py-1 rounded hover:bg-muted">{s.render(row)}</li>
+                      ))}
+                      {rows.length > 40 && (
+                        <li className="px-2 py-1 text-xs italic text-muted-foreground">
+                          … {rows.length - 40} autres non affichés
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
+        )}
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>Fermer</Button>
+          <Button variant="outline" onClick={run} disabled={loading}>Relancer</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
