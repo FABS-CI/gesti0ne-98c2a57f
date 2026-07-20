@@ -147,7 +147,6 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
   // Fallback: enrich missing contact/address fields from the client record
   type ClientFallback = {
     telephone: string | null;
-    telephone2: string | null;
     ville: string | null;
     adresse: string | null;
     representant: string | null;
@@ -157,7 +156,7 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
   if (data.client_id) {
     const { data: cli } = await supabase
       .from("clients")
-      .select("nom, telephone, telephone2, ville, adresse, representant")
+      .select("nom, telephone, ville, adresse, representant")
       .eq("client_id", data.client_id)
       .maybeSingle();
     clientFallback = (cli as ClientFallback | null) ?? null;
@@ -165,7 +164,8 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
 
 
   const telephone =
-    cmd?.telephone ?? clientFallback?.telephone ?? clientFallback?.telephone2 ?? null;
+    cmd?.telephone ?? clientFallback?.telephone ?? null;
+
 
   return {
     bl_id: data.bl_id,

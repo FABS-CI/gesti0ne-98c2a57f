@@ -28,9 +28,8 @@ export const REPORTS: ReportDef[] = [
     color: "#3B82F6",
     columns: [
       { key: "nom", label: "Client" },
-      { key: "telephone", label: "Phone" },
+      { key: "telephone", label: "Téléphone" },
       { key: "representant", label: "Représentant" },
-      { key: "telephone2", label: "Phone Repre." },
       { key: "email", label: "Email" },
       { key: "type_client", label: "Type" },
       { key: "plafond_credit", label: "Plafond", money: true },
@@ -40,7 +39,7 @@ export const REPORTS: ReportDef[] = [
       const { data, error } = await supabase
         .from("clients")
         .select(
-          "nom, telephone, telephone2, representant, email, type_client, ville, plafond_credit, solde",
+          "nom, telephone, representant, email, type_client, ville, plafond_credit, solde",
         )
         .order("ville", { ascending: true })
         .order("nom", { ascending: true })
@@ -55,12 +54,12 @@ export const REPORTS: ReportDef[] = [
           out.push({ __group__: v.toUpperCase() });
           current = v;
         }
-        if (!r.telephone2) r.telephone2 = r.telephone;
         out.push(r);
       }
       return out;
     },
   },
+
   {
     table: "commandes",
     permission: "rapports.voir_ca",

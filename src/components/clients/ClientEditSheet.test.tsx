@@ -11,7 +11,6 @@ const client: Client = {
   type_client: "librairie",
   representant: null,
   telephone: null,
-  telephone2: null,
   email: null,
   adresse: null,
   ville: "Abidjan",
@@ -19,7 +18,7 @@ const client: Client = {
   quartier: null,
   bp: null,
   pays: "Côte d'Ivoire",
-  contact_principal: null,
+
   nif: null,
   regime_fiscal: null,
   categorie: null,

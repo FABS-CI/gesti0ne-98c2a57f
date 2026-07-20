@@ -22,20 +22,11 @@ export function ClientInfosTab({ client, typeLabel }: ClientInfosTabProps) {
         <CardContent className="grid gap-4 pt-2 sm:grid-cols-2 lg:grid-cols-3">
           <Info
             icon={<User className="h-4 w-4" />}
-            label="Contact principal"
-            value={client.contact_principal}
-          />
-          <Info
-            icon={<User className="h-4 w-4" />}
-            label="Commercial affecté"
+            label="Représentant"
             value={client.representant}
           />
           <Info icon={<Phone className="h-4 w-4" />} label="Téléphone" value={client.telephone} />
-          <Info
-            icon={<Phone className="h-4 w-4" />}
-            label="Téléphone 2"
-            value={client.telephone2}
-          />
+
           <Info icon={<Mail className="h-4 w-4" />} label="Email" value={client.email} />
           <Info icon={<MapPin className="h-4 w-4" />} label="Adresse" value={client.adresse} />
           <Info icon={<MapPin className="h-4 w-4" />} label="Quartier" value={client.quartier} />

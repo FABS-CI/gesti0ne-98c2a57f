@@ -237,7 +237,6 @@ export function ClientForm({ clientId }: ClientFormProps) {
                 ]}
               />
               <TextField control={form.control} name="representant" label="Représentant" />
-              <TextField control={form.control} name="contact_principal" label="Fonction" />
             </CardContent>
           </Card>
 
@@ -245,8 +244,8 @@ export function ClientForm({ clientId }: ClientFormProps) {
           <Card className="overflow-hidden">
             <SectionHeader icon={Phone} title="Coordonnées" color="#0EA5E9" />
             <CardContent className="grid gap-4 sm:grid-cols-2">
-              <TextField control={form.control} name="telephone" label="Téléphone principal" />
-              <TextField control={form.control} name="telephone2" label="Téléphone secondaire" />
+              <TextField control={form.control} name="telephone" label="Téléphone" />
+
               <TextField control={form.control} name="whatsapp" label="WhatsApp" />
               <TextField control={form.control} name="email" label="Email" type="email" />
               <TextField control={form.control} name="site_web" label="Site Web" className="sm:col-span-2" />
