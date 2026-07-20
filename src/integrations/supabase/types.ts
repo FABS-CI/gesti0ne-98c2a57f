@@ -7355,6 +7355,17 @@ export type Database = {
         }[]
       }
       rbac2_diagnose: { Args: never; Returns: Json }
+      rbac2_list_rpcs: {
+        Args: never
+        Returns: {
+          is_security_definer: boolean
+          name: string
+        }[]
+      }
+      rbac2_sync_catalog: {
+        Args: { _apply?: boolean; _inventory: Json }
+        Returns: Json
+      }
       recalculer_solde_client: { Args: { _client_id: string }; Returns: number }
       recalculer_soldes_global_clients: { Args: never; Returns: number }
       receptionner_achat: { Args: { _achat_id: string }; Returns: undefined }
