@@ -870,11 +870,38 @@ function RoleDetailsPanel(props: {
 
           {tab === "audit" && (
             <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <select
+                  className="h-8 rounded-md border bg-background px-2 text-xs flex-1"
+                  onChange={(e) => setAuditActionFilter(e.target.value || null)}
+                  value={auditActionFilter ?? ""}
+                >
+                  <option value="">Toutes actions</option>
+                  <option value="INSERT">Ajout</option>
+                  <option value="UPDATE">Modification</option>
+                  <option value="DELETE">Suppression</option>
+                </select>
+                <Button size="sm" variant="outline" onClick={() => {
+                  const rows = [["date", "action", "cible", "acteur", "avant", "après"]];
+                  filteredAudit.forEach((a) => rows.push([
+                    a.at, a.action, a.target_type, a.actor_id ?? "",
+                    JSON.stringify(a.before ?? ""), JSON.stringify(a.after ?? ""),
+                  ]));
+                  const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+                  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url; a.download = `audit-${role.code}-${new Date().toISOString().slice(0, 10)}.csv`;
+                  a.click(); URL.revokeObjectURL(url);
+                }}>
+                  <Download className="h-3 w-3 mr-1" />CSV
+                </Button>
+              </div>
               {auditLoading && <div className="text-sm text-muted-foreground">Chargement…</div>}
-              {!auditLoading && audit.length === 0 && (
-                <div className="italic text-sm text-muted-foreground">Aucun événement récent.</div>
+              {!auditLoading && filteredAudit.length === 0 && (
+                <div className="italic text-sm text-muted-foreground">Aucun événement.</div>
               )}
-              {audit.map((a) => (
+              {filteredAudit.map((a) => (
                 <div key={a.id} className="text-xs border-l-2 border-primary pl-2 py-1">
                   <div className="flex items-center gap-2">
                     <HistoryIcon className="h-3 w-3 text-muted-foreground" />
