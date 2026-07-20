@@ -36,6 +36,7 @@ import { getClient } from "@/lib/clients-api";
 import { validatePaiement } from "@/lib/paiement-recap";
 import { invalidatePaiement } from "@/lib/cache-invalidation";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { friendlyError } from "@/lib/friendly-error";
 
 const searchSchema = z.object({
   clientId: fallback(z.string().optional(), undefined).default(undefined),
@@ -125,7 +126,7 @@ function NouveauPaiementPage() {
         navigate({ to: "/clients/$clientId", params: { clientId: presetClientId } });
       else navigate({ to: "/paiements" });
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e: unknown) => toast.error(friendlyError(e, "Erreur")),
   });
 
   function validate() {
