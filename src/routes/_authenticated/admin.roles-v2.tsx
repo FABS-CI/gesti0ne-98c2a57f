@@ -72,11 +72,13 @@ function RolesV2Page() {
   const [roleParents, setRoleParents] = useState<RoleParent[]>([]);
   const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [deps, setDeps] = useState<PermDep[]>([]);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState<string | null>(null);
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
   const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set());
+  const [diagOpen, setDiagOpen] = useState(false);
 
   const reload = useCallback(async () => {
     setLoading(true);
