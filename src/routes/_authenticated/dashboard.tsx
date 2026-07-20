@@ -109,11 +109,7 @@ function Dashboard() {
 
       {isLoading ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="h-28 w-full rounded-xl" />
-            ))}
-          </div>
+          <SkeletonKpiRow count={8} />
           <Skeleton className="h-72 w-full rounded-xl" />
           <div className="grid gap-4 lg:grid-cols-2">
             <Skeleton className="h-64 w-full rounded-xl" />
