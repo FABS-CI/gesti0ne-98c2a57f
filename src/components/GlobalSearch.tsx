@@ -126,7 +126,7 @@ async function search(q: string): Promise<Hit[]> {
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const debounced = useDebouncedValue(value, 200);
+  const debounced = useDebouncedValue(value, 350);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -143,8 +143,9 @@ export function GlobalSearch() {
   const { data: hits = [], isFetching } = useQuery({
     queryKey: ["global-search", debounced],
     queryFn: () => search(debounced),
-    enabled: debounced.trim().length >= 2,
-    staleTime: 30_000,
+    enabled: debounced.trim().length >= 3,
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
   });
 
   const grouped = useMemo(() => {
