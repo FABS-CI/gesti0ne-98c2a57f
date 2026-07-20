@@ -23,8 +23,9 @@ export default defineTool({
     let q = supabase
       .from("clients")
       .select(
-        "client_id, reference, nom, type_client, ville, commune, quartier, telephone, telephone2, contact_principal, representant, categorie, secteur_activite, statut",
+        "client_id, reference, nom, type_client, ville, commune, quartier, telephone, representant, categorie, secteur_activite, statut",
       )
+
       .limit(1);
     if (client_id) q = q.eq("client_id", client_id);
     else if (reference) q = q.eq("reference", reference);

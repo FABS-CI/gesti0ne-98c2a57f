@@ -125,9 +125,8 @@ export const emptyClientFormValues: ClientFormValues = {
   type_client: "autre",
   statut: "actif",
   representant: "",
-  contact_principal: "",
   telephone: "",
-  telephone2: "",
+
   whatsapp: "",
   email: "",
   site_web: "",
@@ -170,9 +169,8 @@ export function clientToFormValues(c: Client): ClientFormValues {
     type_client: c.type_client ?? "autre",
     statut: (c.statut === "inactif" || c.actif === false) ? "inactif" : "actif",
     representant: c.representant ?? "",
-    contact_principal: (meta.contact_principal as string) ?? c.contact_principal ?? "",
     telephone: c.telephone ?? "",
-    telephone2: c.telephone2 ?? "",
+
     whatsapp: (meta.whatsapp as string) ?? "",
     email: c.email ?? "",
     site_web: (meta.site_web as string) ?? "",
@@ -215,7 +213,6 @@ export function formValuesToClientInput(v: ClientFormValues): ClientInput {
     type_client: v.type_client,
     representant: empty(v.representant),
     telephone: empty(v.telephone),
-    telephone2: empty(v.telephone2),
     email: empty(v.email),
     adresse: empty(v.adresse),
     quartier: empty(v.quartier),
@@ -223,7 +220,7 @@ export function formValuesToClientInput(v: ClientFormValues): ClientInput {
     ville: empty(v.ville),
     bp: empty(v.bp),
     pays: empty(v.pays),
-    contact_principal: empty(v.contact_principal),
+
     nif: empty(v.nif),
     regime_fiscal: empty(v.regime_fiscal),
     categorie: empty(v.categorie),

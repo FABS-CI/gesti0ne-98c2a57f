@@ -149,7 +149,7 @@ export async function loadClientDocInfo(
   const { data } = await supabase
     .from("clients")
     .select(
-      "reference, nom, representant, telephone, telephone2, email, adresse, ville, quartier, pays, nif",
+      "reference, nom, representant, telephone, email, adresse, ville, quartier, pays, nif",
     )
     .eq("client_id", clientId)
     .maybeSingle();
@@ -158,8 +158,8 @@ export async function loadClientDocInfo(
     clientNom: data.nom,
     codeClient: data.reference,
     representant: data.representant,
-    representantTel: data.telephone ?? data.telephone2,
-    clientTel: data.telephone2 ?? data.telephone,
+    representantTel: data.telephone,
+    clientTel: data.telephone,
     emailClient: data.email,
     adresseClient: data.adresse,
     villeClient: data.ville,
@@ -168,6 +168,7 @@ export async function loadClientDocInfo(
     ncc: data.nif,
   };
 }
+
 
 /** Récupère les infos client à partir d'une commande. */
 export async function loadClientInfoForCommande(commandeId: string): Promise<DocClientInfo> {

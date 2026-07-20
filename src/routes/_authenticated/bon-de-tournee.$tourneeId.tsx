@@ -189,7 +189,7 @@ async function fetchFeuille(tourneeId: string): Promise<FeuilleData> {
     clientIds.length
       ? supabase
           .from("clients")
-          .select("client_id, telephone, telephone2, adresse, commune, ville, contact_principal")
+          .select("client_id, telephone, adresse, commune, ville")
           .in("client_id", clientIds)
       : Promise.resolve({ data: [] as unknown[] }),
     commandeIds.length
@@ -211,26 +211,23 @@ async function fetchFeuille(tourneeId: string): Promise<FeuilleData> {
     string,
     {
       telephone: string | null;
-      telephone2: string | null;
       adresse: string | null;
       commune: string | null;
       ville: string | null;
-      contact_principal: string | null;
     }
   >();
   (
     (clientsRes.data ?? []) as Array<{
       client_id: string;
       telephone: string | null;
-      telephone2: string | null;
       adresse: string | null;
       commune: string | null;
       ville: string | null;
-      contact_principal: string | null;
     }>
   ).forEach((c) => {
     clientMap.set(c.client_id, c);
   });
+
 
   const factureMap = new Map<
     string,
@@ -308,8 +305,9 @@ async function fetchFeuille(tourneeId: string): Promise<FeuilleData> {
       facture_reste: factureReste,
       facture_mode: null,
       client_nom: cmd?.client_nom ?? null,
-      contact: cli?.contact_principal ?? cmd?.representant_nom ?? null,
-      telephone: cmd?.telephone ?? cli?.telephone ?? cli?.telephone2 ?? null,
+      contact: cmd?.representant_nom ?? null,
+      telephone: cmd?.telephone ?? cli?.telephone ?? null,
+
       adresse: cmd?.adresse ?? cli?.adresse ?? null,
       commune: cli?.commune ?? null,
       ville_livraison: r.ville_livraison ?? cmd?.ville ?? cli?.ville ?? null,
