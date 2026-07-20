@@ -57,6 +57,7 @@ function NouveauPaiementPage() {
   const [clientError, setClientError] = useState<string | null>(null);
   const [factureId, setFactureId] = useState<string | null>(null);
   const [mode, setMode] = useState<"draft" | "confirm">("draft");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (presetClientId && !clientNom) {
@@ -144,12 +145,23 @@ function NouveauPaiementPage() {
 
   const submit = () => {
     if (!validate() || !factureId) return;
+    setConfirmOpen(true);
+  };
+
+  const doSave = () => {
+    if (!factureId) return;
+    setConfirmOpen(false);
     mutation.mutate({ ...form, facture_id: factureId });
   };
 
   const preview = () => {
     if (validate()) setMode("confirm");
   };
+
+  const recap =
+    selectedFacture && form.montant > 0
+      ? computeRecap(selectedFacture.reference, Number(selectedFacture.solde), Number(form.montant))
+      : null;
 
   if (clientError) {
     return (
