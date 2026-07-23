@@ -1,91 +1,116 @@
-# Refonte RBAC v2 — inspirée Odoo Enterprise
+# Lot unique — Centre d'Approbation + Workflow Retours v2
 
-Livraison **phasée** en 3 itérations. Chaque phase est validable indépendamment ; l'ancien module `rbac_*` reste **en lecture** pour rollback jusqu'à la fin de la Phase 3.
+## Décisions actées
 
----
+- **Rôles cumulés autorisés**, sauf combinaison interdite `commercial + comptable` (violation SoD, contrôlée à l'affectation et au runtime).
+- **Verrouillage optimiste** via `version_no` sur `retours` et `workflow_approvals` (409 si conflit).
+- **Notifications in-app + email** (Resend). SMS/WhatsApp = phase 2.
+- **Audit permanent**, jamais purgé.
+- **Migration auto** des retours existants (1 seul retour `accepte` en base → mappé `cloture`).
 
-## Modèle de données (schéma v2, nouvelles tables)
+## Livrables
 
-Nouvelles tables (l'ancien `rbac_permissions` / `rbac_roles` / `rbac_user_roles` / `rbac_role_permissions` reste intact) :
+### 1. Base de données (migrations)
 
-```text
-rbac2_domains         (code, label, icon, sort)                          -- Commercial, Stocks, Compta...
-rbac2_modules         (code, domain_code, label, icon, sort)             -- Catalogue, Factures, Dépôts...
-rbac2_resources       (code, module_code, label, kind, route|rpc|null)   -- 1 écran / 1 RPC / 1 export
-rbac2_permissions     (code UNIQUE, resource_code, action, label)        -- resource:action
-rbac2_perm_deps       (perm_code, requires_code)                         -- dépendances auto
-rbac2_roles           (code, label, description, is_system, sort)
-rbac2_role_parents    (role_code, parent_code)                           -- héritage MULTIPLE
-rbac2_role_perms      (role_code, perm_code, granted bool)               -- grant explicite / deny
-rbac2_user_roles      (user_id, role_code, granted_by, granted_at)
-rbac2_audit           (actor_id, action, target_type, target_id, before jsonb, after jsonb, ip, at)
-```
+**a) Refonte `workflow_approvals` (moteur transversal)**
+Ajout de colonnes : `module` (retours/paiements/couts_logistiques/annulation_facture/ecriture_manuelle), `niveau_urgence`, `sla_deadline`, `version_no`, `historique jsonb[]`, `pieces_jointes jsonb`, `simulation_financiere jsonb` (snapshot avant validation), `decision_details jsonb` (option comptable choisie + montants).
+Nouveaux statuts unifiés : `en_attente` → `valide` | `refuse` | `complement_demande` → `cloture` | `annule`.
 
-- `action` ∈ voir, creer, modifier, supprimer, valider, annuler, approuver, refuser, cloturer, exporter_pdf, exporter_excel, imprimer, importer, restaurer, archiver, deverrouiller, admin (+ actions métier détectées).
-- `has_permission_v2(user, perm_code)` = SECURITY DEFINER qui résout héritage multiple (fermeture transitive via récursif CTE) + deny explicite prioritaire.
-- Fonction de compat `has_permission()` (ancien nom) : d'abord v2, fallback v1 pendant migration.
+**b) Refonte `retours` (workflow 6 statuts)**
+Statuts stricts : `demande_creee` → `attente_reception` → `receptionne` → `attente_validation_compta` → `valide_compta` → `cloture`. Branches : `refus_magasin`, `refus_compta`, `annule`.
+Ajout `receptionne_par`, `receptionne_at`, `valide_compta_par`, `valide_compta_at`, `version_no`, `workflow_approval_id`.
+Ajout sur `retour_lignes` : `quantite_demandee`, `quantite_recue`, `etat_reception` (conforme/endommage/refuse), `commentaire_reception`.
 
-Grants standards (`authenticated` + `service_role`). RLS : lecture pour tous authentifiés, écriture réservée à `has_permission_v2(auth.uid(), 'rbac:admin')`.
+**c) RLS resserrée**
+Remplacement des `USING (true)` sur retours par policies scindées :
+- `SELECT` : tout authentifié
+- `INSERT` : `has_permission('retours.creer')`
+- `UPDATE` : `has_permission('retours.receptionner')` OU `has_permission('retours.valider_compta')` OU `has_permission('retours.annuler')` selon transition (contrôlé par RPC)
 
----
+**d) Nouvelles permissions RBAC**
+`retours.receptionner`, `retours.refuser_magasin`, `retours.valider_compta`, `retours.refuser_compta`, `retours.forcer_cloture`, `approbations.voir`, `approbations.valider`, `approbations.refuser`, `approbations.forcer`, `approbations.rouvrir`.
+Affectation aux rôles existants : Commercial / Gestionnaire stock / Comptable / Assistante comptable / Super Admin.
 
-## Phase 1 — Fondation & UI Odoo-like (livrable immédiat)
+**e) Contrainte SoD**
+Trigger sur `rbac2_user_roles` bloquant l'affectation simultanée `commercial` + `comptable` au même utilisateur.
 
-**Backend**
-- Migration créant les 10 tables + `has_permission_v2` + trigger audit.
-- Seed initial du **catalogue** : domaines, modules, ressources et permissions dérivés du `nav-data.ts` existant + liste RPC actuels (extraction via `psql` sur `pg_proc`) + routes `src/routes/_authenticated/*`.
-- Seed des rôles système : `super_admin`, `admin`, `directeur_general`, `directeur_commercial`, `commercial`, `comptable`, `magasinier`, `rh`, `preparateur`, `livreur`, `employe` avec parents.
-- Migration des attributions actuelles `rbac_user_roles` → `rbac2_user_roles` (mapping par code).
+**f) RPC transactionnelles (une par transition, `SECURITY DEFINER` + `has_permission` interne)**
+- `retour_creer_demande(payload)` → statut `demande_creee` + insert `workflow_approvals` (module=`retours`, statut=`en_attente` côté magasin)
+- `retour_receptionner(retour_id, lignes, version_no)` → transaction : maj lignes reçues, mvts stock, `stocks_depots`, statut `receptionne` → auto-transition `attente_validation_compta` + création approbation compta
+- `retour_refuser_magasin(retour_id, motif, version_no)`
+- `retour_simulation_financiere(retour_id)` (lecture pure) → renvoie facture, TVA, payé, restant, historique paiements, lignes retournables, impacts calculés
+- `retour_valider_compta(retour_id, option, montants, version_no)` où `option ∈ (diminuer_solde|creer_avoir|preparer_remboursement|aucun_impact)` → transaction unique : écritures compta, avoir si demandé, maj solde client, historique, statut `cloture`
+- `retour_refuser_compta(retour_id, motif, version_no)`
+- `retour_forcer_cloture(retour_id, motif)` (super_admin)
+- `approbation_valider/refuser/complement/forcer/rouvrir` (génériques)
 
-**Frontend** — nouvelle route `/_authenticated/admin/roles-v2`
-- Layout 3 colonnes type Odoo : liste rôles ↔ arbre permissions ↔ panneau détails.
-- Arbre permissions replié par **domaine > module > ressource** avec compteur, barre de progression, icônes.
-- Recherche instantanée + filtres (action, domaine, type).
-- Fiche rôle : résumé, nb utilisateurs, permissions accordées / refusées / héritées (badges de couleur), parents multiples éditables.
-- Attribution rôle→user avec récapitulatif modal (modules accessibles, menus visibles, restrictions) avant validation.
+Chaque RPC : contrôles métier (facture non annulée, exercice ouvert, quantités ≤ retournables, doublons), verrou optimiste (raise si `version_no` ne matche pas), écriture audit détaillée (ancien/nouveau, IP via `inet_client_addr()`), insert notifications.
 
-**Compatibilité**
-- Ancien menu Admin > Rôles conservé, badge "v1 (lecture seule)".
-- Nouveau menu Admin > **Rôles & Permissions**.
+**g) Migration des retours existants**
+`UPDATE retours SET statut = CASE statut WHEN 'accepte' THEN 'cloture' WHEN 'en_cours' THEN 'attente_reception' ELSE statut END` + création rétroactive d'un `workflow_approvals` clôturé pour chaque retour existant.
 
----
+### 2. Server functions
 
-## Phase 2 — Dépendances & Diagnostic (itération suivante)
+Fichiers `src/lib/retours-v2.functions.ts` et `src/lib/approbations.functions.ts` — chacun avec `.middleware([requireSupabaseAuth])`, appel des RPC ci-dessus, mapping vers DTO client. Gestion 409 (conflit version) → toast dédié.
 
-- Éditeur graphique de dépendances (`Créer facture` ⇒ `Voir clients`, `Voir produits`…).
-- Résolution auto : cocher une perm coche ses `requires` (visuellement grisées, décochables uniquement en retirant la parente).
-- **Moteur de diagnostic** : orphelines, doublons, conflits, menus sans perm, routes non protégées, RPC non sécurisés. Rapport avec propositions de correction (non appliquées auto).
-- Journal d'audit consultable avec filtres + export CSV.
+### 3. Frontend
 
----
+**Routes**
+- `/_authenticated/retours` (liste, filtres par statut/module/dépôt/période)
+- `/_authenticated/retours/nouveau` — formulaire Commercial (existant, adapté au nouveau flux)
+- `/_authenticated/retours/$retourId` — écran unifié avec sections dynamiques selon rôle/statut
+- `/_authenticated/retours/$retourId/receptionner` — écran Gestionnaire stock
+- `/_authenticated/approbations` — refonte complète (Centre d'Approbation)
+- `/_authenticated/approbations/$approvalId` — écran générique 4 sections (Infos / Situation facture / Articles / Simulation financière) + boutons contextuels par rôle
 
-## Phase 3 — Synchronisation automatique (itération finale)
+**Composants**
+- `<WorkflowStatusBadge>` (6 statuts + refus/annule)
+- `<WorkflowTimeline>` (historique visuel)
+- `<SimulationFinancierePanel>` (section 4 du cahier)
+- `<ValidationCompaDialog>` (choix option + popup confirmation + récap montants)
+- `<ReceptionRetourForm>` (contrôle qté/état ligne à ligne)
+- `<ApprobationCenterTable>` (tableau de bord filtrable multi-modules)
+- `<RaccourciApprobationsCard>` sur dashboard (compteur "En attente pour vous")
 
-- Bouton **Synchroniser** : scan runtime de `nav-data.ts`, du router (`routeTree.gen.ts`), des RPC (`pg_proc`) et de la table `rbac2_resources`.
-- Diff visuel : nouvelles ressources détectées, obsolètes, non couvertes.
-- Création des permissions manquantes en un clic, sans toucher aux personnalisations.
-- Retrait/archivage de l'ancien module `rbac_*` après validation utilisateur.
+Boutons visibles/désactivés dynamiquement via `usePermissions()` + état du dossier (mapping strict cahier §5.5).
 
----
+### 4. Notifications
+
+Extension de `notifications` + trigger DB : à chaque transition, insert notifications ciblées (commercial du dossier / gestionnaires stock / comptables / super admins) avec deep-link vers l'écran d'approbation. Email transactionnel via Resend (template par type).
+
+### 5. Audit
+
+Écritures dans `audit_logs` à chaque RPC : user, rôle, IP, ancien statut, nouveau statut, payload, motif, deep-link. Vue `v_retours_audit` pour affichage timeline.
+
+## Plan de tests inclus
+
+Suite `supabase/tests/retour_workflow.test.sql` couvrant : retour simple/partiel/total/multiple, refus magasin, refus compta, double validation bloquée, conflit `version_no`, utilisateur non autorisé, rollback (simulation d'erreur en cours de validation compta), SoD (commercial+comptable rejeté), migration des retours existants.
 
 ## Détails techniques
 
-- **Héritage multiple** résolu côté SQL par CTE récursive dans `has_permission_v2`, cache client (`use-user-permissions-v2`) 10 min avec invalidation Realtime sur `rbac2_role_perms`, `rbac2_user_roles`, `rbac2_role_parents`.
-- **Deny explicite** > grant hérité > grant direct.
-- **Audit** : trigger AFTER INSERT/UPDATE/DELETE sur `rbac2_role_perms`, `rbac2_user_roles`, `rbac2_roles`, `rbac2_role_parents` → écrit dans `rbac2_audit` avec `auth.uid()` et `inet_client_addr()`.
-- **Serveur** : fonction serveur `sync_rbac_catalog` (Phase 3) qui reçoit l'inventaire calculé côté client (routes + RPC + menus) et upsert dans `rbac2_resources`.
-- **Zéro breaking** : les composants qui appellent `has_permission(code)` continuent de fonctionner grâce à la fonction de compat.
+```text
+Flux runtime d'une validation comptable
+─────────────────────────────────────────
+Client → useServerFn(retour_valider_compta)
+       → attachSupabaseAuth (bearer)
+       → RPC retour_valider_compta(_id, _option, _montants, _version)
+           BEGIN
+             SELECT ... FOR UPDATE (retour)
+             IF version_no != _version → RAISE 'CONFLICT'
+             IF NOT has_permission('retours.valider_compta') → RAISE
+             IF exercice fermé → RAISE
+             INSERT ecritures_comptables + ecriture_lignes
+             IF option='creer_avoir' → INSERT facture (type=avoir)
+             UPDATE compte client (solde)
+             UPDATE retours SET statut='cloture', version_no+=1
+             UPDATE workflow_approvals SET statut='valide'
+             INSERT audit_logs + notifications
+           COMMIT (ou ROLLBACK complet)
+       → Client invalide queries (retours, dashboard, etat_compte)
+```
 
----
+Ordre d'exécution : (1) migration DB → approbation utilisateur → (2) types Supabase régénérés → (3) server functions + frontend → (4) tests SQL → (5) publication.
 
-## Ce qui n'est PAS inclus (par choix)
+**Durée estimée** : ~2h de génération, changements sur ~35 fichiers, 1 migration lourde.
 
-- Analyse AST profonde des `.tsx` pour extraire chaque `<Button>` : trop fragile, remplacé par la déclaration explicite `resources` + sync Phase 3.
-- Génération auto de composants `<Can permission="…">` sur chaque bouton existant : nécessiterait refactor massif — proposé en Phase 4 optionnelle.
-- Rétrocompatibilité des composants `use-user-roles` : conservés, alimentés par v2 via la fonction de compat.
-
----
-
-## Prochaine étape
-
-Sur validation, je démarre **Phase 1** = migration SQL + seed + nouvelle console `/admin/roles-v2`. Environ 5-8 messages successifs (migration → seed → UI liste rôles → UI arbre perms → UI détails/attribution → tests).
+Confirmez pour que je lance la migration DB en premier.

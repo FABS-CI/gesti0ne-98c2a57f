@@ -4727,39 +4727,51 @@ export type Database = {
       }
       retour_lignes: {
         Row: {
+          commentaire_reception: string | null
           created_at: string
           designation: string | null
+          etat_reception: string | null
           ligne_id: string
           motif: string | null
           prix_unitaire: number | null
           produit_id: string | null
           quantite: number | null
+          quantite_demandee: number | null
+          quantite_recue: number | null
           reference_produit: string | null
           retour_id: string
           total_ligne: number | null
           updated_at: string
         }
         Insert: {
+          commentaire_reception?: string | null
           created_at?: string
           designation?: string | null
+          etat_reception?: string | null
           ligne_id?: string
           motif?: string | null
           prix_unitaire?: number | null
           produit_id?: string | null
           quantite?: number | null
+          quantite_demandee?: number | null
+          quantite_recue?: number | null
           reference_produit?: string | null
           retour_id: string
           total_ligne?: number | null
           updated_at?: string
         }
         Update: {
+          commentaire_reception?: string | null
           created_at?: string
           designation?: string | null
+          etat_reception?: string | null
           ligne_id?: string
           motif?: string | null
           prix_unitaire?: number | null
           produit_id?: string | null
           quantite?: number | null
+          quantite_demandee?: number | null
+          quantite_recue?: number | null
           reference_produit?: string | null
           retour_id?: string
           total_ligne?: number | null
@@ -4799,10 +4811,15 @@ export type Database = {
           livraison_id: string | null
           montant: number | null
           motif: string | null
+          motif_refus_compta: string | null
+          motif_refus_magasin: string | null
           nb_produits: number
           notes: string | null
           numero: string | null
           observations: string | null
+          receptionne_at: string | null
+          receptionne_par: string | null
+          receptionne_par_nom: string | null
           reference: string | null
           representant_nom: string | null
           retour_id: string
@@ -4811,7 +4828,12 @@ export type Database = {
           total_quantite: number
           type_retour: string
           updated_at: string
+          valide_compta_at: string | null
+          valide_compta_par: string | null
+          valide_compta_par_nom: string | null
+          version_no: number
           ville: string | null
+          workflow_approval_id: string | null
         }
         Insert: {
           adresse?: string | null
@@ -4829,10 +4851,15 @@ export type Database = {
           livraison_id?: string | null
           montant?: number | null
           motif?: string | null
+          motif_refus_compta?: string | null
+          motif_refus_magasin?: string | null
           nb_produits?: number
           notes?: string | null
           numero?: string | null
           observations?: string | null
+          receptionne_at?: string | null
+          receptionne_par?: string | null
+          receptionne_par_nom?: string | null
           reference?: string | null
           representant_nom?: string | null
           retour_id?: string
@@ -4841,7 +4868,12 @@ export type Database = {
           total_quantite?: number
           type_retour?: string
           updated_at?: string
+          valide_compta_at?: string | null
+          valide_compta_par?: string | null
+          valide_compta_par_nom?: string | null
+          version_no?: number
           ville?: string | null
+          workflow_approval_id?: string | null
         }
         Update: {
           adresse?: string | null
@@ -4859,10 +4891,15 @@ export type Database = {
           livraison_id?: string | null
           montant?: number | null
           motif?: string | null
+          motif_refus_compta?: string | null
+          motif_refus_magasin?: string | null
           nb_produits?: number
           notes?: string | null
           numero?: string | null
           observations?: string | null
+          receptionne_at?: string | null
+          receptionne_par?: string | null
+          receptionne_par_nom?: string | null
           reference?: string | null
           representant_nom?: string | null
           retour_id?: string
@@ -4871,7 +4908,12 @@ export type Database = {
           total_quantite?: number
           type_retour?: string
           updated_at?: string
+          valide_compta_at?: string | null
+          valide_compta_par?: string | null
+          valide_compta_par_nom?: string | null
+          version_no?: number
           ville?: string | null
+          workflow_approval_id?: string | null
         }
         Relationships: [
           {
@@ -5793,15 +5835,24 @@ export type Database = {
           commentaire: string | null
           created_at: string
           decided_at: string | null
+          decision_details: Json | null
           demandeur_id: string | null
           demandeur_nom: string | null
           entity_id: string | null
           entity_type: string
+          historique: Json
           id: string
           metadata: Json
+          module: string | null
+          motif_refus: string | null
+          niveau_urgence: string
+          pieces_jointes: Json
           reference: string | null
+          simulation_financiere: Json | null
+          sla_deadline: string | null
           statut: string
           updated_at: string
+          version_no: number
           workflow_code: string
         }
         Insert: {
@@ -5810,15 +5861,24 @@ export type Database = {
           commentaire?: string | null
           created_at?: string
           decided_at?: string | null
+          decision_details?: Json | null
           demandeur_id?: string | null
           demandeur_nom?: string | null
           entity_id?: string | null
           entity_type: string
+          historique?: Json
           id?: string
           metadata?: Json
+          module?: string | null
+          motif_refus?: string | null
+          niveau_urgence?: string
+          pieces_jointes?: Json
           reference?: string | null
+          simulation_financiere?: Json | null
+          sla_deadline?: string | null
           statut?: string
           updated_at?: string
+          version_no?: number
           workflow_code: string
         }
         Update: {
@@ -5827,15 +5887,24 @@ export type Database = {
           commentaire?: string | null
           created_at?: string
           decided_at?: string | null
+          decision_details?: Json | null
           demandeur_id?: string | null
           demandeur_nom?: string | null
           entity_id?: string | null
           entity_type?: string
+          historique?: Json
           id?: string
           metadata?: Json
+          module?: string | null
+          motif_refus?: string | null
+          niveau_urgence?: string
+          pieces_jointes?: Json
           reference?: string | null
+          simulation_financiere?: Json | null
+          sla_deadline?: string | null
           statut?: string
           updated_at?: string
+          version_no?: number
           workflow_code?: string
         }
         Relationships: []
@@ -6322,11 +6391,25 @@ export type Database = {
           journal: string
         }[]
       }
+      _current_user_display_name: { Args: never; Returns: string }
       _delete_ecriture_piece: { Args: { _piece: string }; Returns: undefined }
       _journal_id: { Args: { _code: string }; Returns: string }
       _next_ref: {
         Args: { _col: string; _prefix: string; _table: unknown }
         Returns: string
+      }
+      _notifier_role: {
+        Args: {
+          _document_id: string
+          _document_reference: string
+          _document_type: string
+          _lien: string
+          _message: string
+          _module: string
+          _role_code: string
+          _titre: string
+        }
+        Returns: undefined
       }
       _recalc_solde_client_internal: {
         Args: { _client_id: string }
@@ -6404,6 +6487,10 @@ export type Database = {
       annuler_transfert: { Args: { _transfert_id: string }; Returns: undefined }
       annuler_validation_tournee: {
         Args: { _motif?: string; _tournee_id: string }
+        Returns: undefined
+      }
+      approbation_rouvrir: {
+        Args: { _approval_id: string; _motif: string }
         Returns: undefined
       }
       assert_permission: { Args: { _perm: string }; Returns: undefined }
@@ -6788,10 +6875,15 @@ export type Database = {
           livraison_id: string | null
           montant: number | null
           motif: string | null
+          motif_refus_compta: string | null
+          motif_refus_magasin: string | null
           nb_produits: number
           notes: string | null
           numero: string | null
           observations: string | null
+          receptionne_at: string | null
+          receptionne_par: string | null
+          receptionne_par_nom: string | null
           reference: string | null
           representant_nom: string | null
           retour_id: string
@@ -6800,7 +6892,12 @@ export type Database = {
           total_quantite: number
           type_retour: string
           updated_at: string
+          valide_compta_at: string | null
+          valide_compta_par: string | null
+          valide_compta_par_nom: string | null
+          version_no: number
           ville: string | null
+          workflow_approval_id: string | null
         }[]
         SetofOptions: {
           from: "*"
@@ -7450,6 +7547,37 @@ export type Database = {
         }[]
       }
       restore_employe: { Args: { _employe_id: string }; Returns: undefined }
+      retour_creer_demande: { Args: { _payload: Json }; Returns: string }
+      retour_forcer_cloture: {
+        Args: { _motif: string; _retour_id: string }
+        Returns: undefined
+      }
+      retour_receptionner: {
+        Args: { _lignes: Json; _retour_id: string; _version: number }
+        Returns: undefined
+      }
+      retour_refuser_compta: {
+        Args: { _motif: string; _retour_id: string; _version: number }
+        Returns: undefined
+      }
+      retour_refuser_magasin: {
+        Args: { _motif: string; _retour_id: string; _version: number }
+        Returns: undefined
+      }
+      retour_simulation_financiere: {
+        Args: { _retour_id: string }
+        Returns: Json
+      }
+      retour_valider_compta: {
+        Args: {
+          _commentaire?: string
+          _montants: Json
+          _option: string
+          _retour_id: string
+          _version: number
+        }
+        Returns: undefined
+      }
       search_clients_crm: {
         Args: { _filters?: Json; _limit?: number; _offset?: number }
         Returns: Json
