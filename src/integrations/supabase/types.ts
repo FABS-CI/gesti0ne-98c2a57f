@@ -6391,11 +6391,25 @@ export type Database = {
           journal: string
         }[]
       }
+      _current_user_display_name: { Args: never; Returns: string }
       _delete_ecriture_piece: { Args: { _piece: string }; Returns: undefined }
       _journal_id: { Args: { _code: string }; Returns: string }
       _next_ref: {
         Args: { _col: string; _prefix: string; _table: unknown }
         Returns: string
+      }
+      _notifier_role: {
+        Args: {
+          _document_id: string
+          _document_reference: string
+          _document_type: string
+          _lien: string
+          _message: string
+          _module: string
+          _role_code: string
+          _titre: string
+        }
+        Returns: undefined
       }
       _recalc_solde_client_internal: {
         Args: { _client_id: string }
@@ -6473,6 +6487,10 @@ export type Database = {
       annuler_transfert: { Args: { _transfert_id: string }; Returns: undefined }
       annuler_validation_tournee: {
         Args: { _motif?: string; _tournee_id: string }
+        Returns: undefined
+      }
+      approbation_rouvrir: {
+        Args: { _approval_id: string; _motif: string }
         Returns: undefined
       }
       assert_permission: { Args: { _perm: string }; Returns: undefined }
@@ -7529,6 +7547,37 @@ export type Database = {
         }[]
       }
       restore_employe: { Args: { _employe_id: string }; Returns: undefined }
+      retour_creer_demande: { Args: { _payload: Json }; Returns: string }
+      retour_forcer_cloture: {
+        Args: { _motif: string; _retour_id: string }
+        Returns: undefined
+      }
+      retour_receptionner: {
+        Args: { _lignes: Json; _retour_id: string; _version: number }
+        Returns: undefined
+      }
+      retour_refuser_compta: {
+        Args: { _motif: string; _retour_id: string; _version: number }
+        Returns: undefined
+      }
+      retour_refuser_magasin: {
+        Args: { _motif: string; _retour_id: string; _version: number }
+        Returns: undefined
+      }
+      retour_simulation_financiere: {
+        Args: { _retour_id: string }
+        Returns: Json
+      }
+      retour_valider_compta: {
+        Args: {
+          _commentaire?: string
+          _montants: Json
+          _option: string
+          _retour_id: string
+          _version: number
+        }
+        Returns: undefined
+      }
       search_clients_crm: {
         Args: { _filters?: Json; _limit?: number; _offset?: number }
         Returns: Json
