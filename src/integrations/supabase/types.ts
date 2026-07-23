@@ -4727,39 +4727,51 @@ export type Database = {
       }
       retour_lignes: {
         Row: {
+          commentaire_reception: string | null
           created_at: string
           designation: string | null
+          etat_reception: string | null
           ligne_id: string
           motif: string | null
           prix_unitaire: number | null
           produit_id: string | null
           quantite: number | null
+          quantite_demandee: number | null
+          quantite_recue: number | null
           reference_produit: string | null
           retour_id: string
           total_ligne: number | null
           updated_at: string
         }
         Insert: {
+          commentaire_reception?: string | null
           created_at?: string
           designation?: string | null
+          etat_reception?: string | null
           ligne_id?: string
           motif?: string | null
           prix_unitaire?: number | null
           produit_id?: string | null
           quantite?: number | null
+          quantite_demandee?: number | null
+          quantite_recue?: number | null
           reference_produit?: string | null
           retour_id: string
           total_ligne?: number | null
           updated_at?: string
         }
         Update: {
+          commentaire_reception?: string | null
           created_at?: string
           designation?: string | null
+          etat_reception?: string | null
           ligne_id?: string
           motif?: string | null
           prix_unitaire?: number | null
           produit_id?: string | null
           quantite?: number | null
+          quantite_demandee?: number | null
+          quantite_recue?: number | null
           reference_produit?: string | null
           retour_id?: string
           total_ligne?: number | null
@@ -4799,10 +4811,15 @@ export type Database = {
           livraison_id: string | null
           montant: number | null
           motif: string | null
+          motif_refus_compta: string | null
+          motif_refus_magasin: string | null
           nb_produits: number
           notes: string | null
           numero: string | null
           observations: string | null
+          receptionne_at: string | null
+          receptionne_par: string | null
+          receptionne_par_nom: string | null
           reference: string | null
           representant_nom: string | null
           retour_id: string
@@ -4811,7 +4828,12 @@ export type Database = {
           total_quantite: number
           type_retour: string
           updated_at: string
+          valide_compta_at: string | null
+          valide_compta_par: string | null
+          valide_compta_par_nom: string | null
+          version_no: number
           ville: string | null
+          workflow_approval_id: string | null
         }
         Insert: {
           adresse?: string | null
@@ -4829,10 +4851,15 @@ export type Database = {
           livraison_id?: string | null
           montant?: number | null
           motif?: string | null
+          motif_refus_compta?: string | null
+          motif_refus_magasin?: string | null
           nb_produits?: number
           notes?: string | null
           numero?: string | null
           observations?: string | null
+          receptionne_at?: string | null
+          receptionne_par?: string | null
+          receptionne_par_nom?: string | null
           reference?: string | null
           representant_nom?: string | null
           retour_id?: string
@@ -4841,7 +4868,12 @@ export type Database = {
           total_quantite?: number
           type_retour?: string
           updated_at?: string
+          valide_compta_at?: string | null
+          valide_compta_par?: string | null
+          valide_compta_par_nom?: string | null
+          version_no?: number
           ville?: string | null
+          workflow_approval_id?: string | null
         }
         Update: {
           adresse?: string | null
@@ -4859,10 +4891,15 @@ export type Database = {
           livraison_id?: string | null
           montant?: number | null
           motif?: string | null
+          motif_refus_compta?: string | null
+          motif_refus_magasin?: string | null
           nb_produits?: number
           notes?: string | null
           numero?: string | null
           observations?: string | null
+          receptionne_at?: string | null
+          receptionne_par?: string | null
+          receptionne_par_nom?: string | null
           reference?: string | null
           representant_nom?: string | null
           retour_id?: string
@@ -4871,7 +4908,12 @@ export type Database = {
           total_quantite?: number
           type_retour?: string
           updated_at?: string
+          valide_compta_at?: string | null
+          valide_compta_par?: string | null
+          valide_compta_par_nom?: string | null
+          version_no?: number
           ville?: string | null
+          workflow_approval_id?: string | null
         }
         Relationships: [
           {
@@ -5793,15 +5835,24 @@ export type Database = {
           commentaire: string | null
           created_at: string
           decided_at: string | null
+          decision_details: Json | null
           demandeur_id: string | null
           demandeur_nom: string | null
           entity_id: string | null
           entity_type: string
+          historique: Json
           id: string
           metadata: Json
+          module: string | null
+          motif_refus: string | null
+          niveau_urgence: string
+          pieces_jointes: Json
           reference: string | null
+          simulation_financiere: Json | null
+          sla_deadline: string | null
           statut: string
           updated_at: string
+          version_no: number
           workflow_code: string
         }
         Insert: {
@@ -5810,15 +5861,24 @@ export type Database = {
           commentaire?: string | null
           created_at?: string
           decided_at?: string | null
+          decision_details?: Json | null
           demandeur_id?: string | null
           demandeur_nom?: string | null
           entity_id?: string | null
           entity_type: string
+          historique?: Json
           id?: string
           metadata?: Json
+          module?: string | null
+          motif_refus?: string | null
+          niveau_urgence?: string
+          pieces_jointes?: Json
           reference?: string | null
+          simulation_financiere?: Json | null
+          sla_deadline?: string | null
           statut?: string
           updated_at?: string
+          version_no?: number
           workflow_code: string
         }
         Update: {
@@ -5827,15 +5887,24 @@ export type Database = {
           commentaire?: string | null
           created_at?: string
           decided_at?: string | null
+          decision_details?: Json | null
           demandeur_id?: string | null
           demandeur_nom?: string | null
           entity_id?: string | null
           entity_type?: string
+          historique?: Json
           id?: string
           metadata?: Json
+          module?: string | null
+          motif_refus?: string | null
+          niveau_urgence?: string
+          pieces_jointes?: Json
           reference?: string | null
+          simulation_financiere?: Json | null
+          sla_deadline?: string | null
           statut?: string
           updated_at?: string
+          version_no?: number
           workflow_code?: string
         }
         Relationships: []
@@ -6788,10 +6857,15 @@ export type Database = {
           livraison_id: string | null
           montant: number | null
           motif: string | null
+          motif_refus_compta: string | null
+          motif_refus_magasin: string | null
           nb_produits: number
           notes: string | null
           numero: string | null
           observations: string | null
+          receptionne_at: string | null
+          receptionne_par: string | null
+          receptionne_par_nom: string | null
           reference: string | null
           representant_nom: string | null
           retour_id: string
@@ -6800,7 +6874,12 @@ export type Database = {
           total_quantite: number
           type_retour: string
           updated_at: string
+          valide_compta_at: string | null
+          valide_compta_par: string | null
+          valide_compta_par_nom: string | null
+          version_no: number
           ville: string | null
+          workflow_approval_id: string | null
         }[]
         SetofOptions: {
           from: "*"
