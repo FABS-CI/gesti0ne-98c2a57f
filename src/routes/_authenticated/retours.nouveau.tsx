@@ -8,7 +8,7 @@ import { ArrowLeft, RotateCcw, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type Client } from "@/lib/clients-api";
 import { type Produit } from "@/lib/produits-api";
-import { creerRetour } from "@/lib/retours-api";
+import { creerRetourDemande } from "@/lib/retours-api";
 import { invalidateRetour } from "@/lib/cache-invalidation";
 import { usePermissions } from "@/hooks/use-permissions";
 import { listDepots } from "@/lib/depots-api";
