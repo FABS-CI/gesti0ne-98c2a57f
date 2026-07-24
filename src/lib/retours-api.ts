@@ -3,12 +3,23 @@ import { getDepotDefautId } from "@/lib/parametres-api";
 import { assertPermission } from "@/lib/rbac-api";
 
 export const STATUTS_RETOUR = [
+  { value: "demande_creee", label: "Demande créée", color: "#6366F1" },
+  { value: "en_attente_magasin", label: "En attente magasin", color: "#F97316" },
+  { value: "receptionne", label: "Réceptionné", color: "#0EA5E9" },
+  { value: "en_attente_compta", label: "En attente compta", color: "#F59E0B" },
+  { value: "valide", label: "Validé", color: "#10B981" },
+  { value: "refuse_magasin", label: "Refusé (magasin)", color: "#EF4444" },
+  { value: "refuse_compta", label: "Refusé (compta)", color: "#DC2626" },
+  { value: "cloture", label: "Clôturé", color: "#374151" },
+  // Legacy
   { value: "accepte", label: "Accepté", color: "#10B981" },
-  { value: "annule", label: "Annulé", color: "#EF4444" },
+  { value: "annule", label: "Annulé", color: "#6B7280" },
 ] as const;
 
 export const STATUT_RETOUR_LABEL: Record<string, { label: string; color: string }> =
   Object.fromEntries(STATUTS_RETOUR.map((s) => [s.value, { label: s.label, color: s.color }]));
+
+export type RetourStatut = (typeof STATUTS_RETOUR)[number]["value"];
 
 export type Retour = {
   retour_id: string;
