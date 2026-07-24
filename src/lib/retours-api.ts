@@ -49,6 +49,17 @@ export type Retour = {
   created_by_nom: string | null;
   created_at: string;
   updated_at: string;
+  // Workflow v2
+  receptionne_par?: string | null;
+  receptionne_par_nom?: string | null;
+  receptionne_at?: string | null;
+  valide_compta_par?: string | null;
+  valide_compta_par_nom?: string | null;
+  valide_compta_at?: string | null;
+  motif_refus_magasin?: string | null;
+  motif_refus_compta?: string | null;
+  version_no?: number | null;
+  workflow_approval_id?: string | null;
 };
 
 export type RetourLigne = {
@@ -62,6 +73,10 @@ export type RetourLigne = {
   total_ligne: number;
   motif: string | null;
   created_at: string;
+  quantite_demandee?: number | null;
+  quantite_recue?: number | null;
+  etat_reception?: string | null;
+  commentaire_reception?: string | null;
 };
 
 export type RetourWithLignes = Retour & { lignes: RetourLigne[] };
