@@ -80,6 +80,30 @@ export function InfosSection({ form, depots }: Props) {
             </Select>
           </div>
         )}
+        <div>
+          <Label>Niveau d'urgence</Label>
+          <Select
+            value={form.watch("niveau_urgence") ?? "normal"}
+            onValueChange={(v) =>
+              form.setValue("niveau_urgence", v as "normal" | "urgent" | "critique", {
+                shouldValidate: true,
+              })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="normal">Normal</SelectItem>
+              <SelectItem value="urgent">Urgent</SelectItem>
+              <SelectItem value="critique">Critique</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="motif">Motif principal</Label>
+          <Input id="motif" placeholder="Ex : produit défectueux, erreur de livraison…" {...form.register("motif")} />
+        </div>
         <div className="md:col-span-2">
           <Label htmlFor="observations">Observations</Label>
           <Textarea id="observations" rows={2} {...form.register("observations")} />
