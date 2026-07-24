@@ -8,7 +8,7 @@ import { ArrowLeft, RotateCcw, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { type Client } from "@/lib/clients-api";
 import { type Produit } from "@/lib/produits-api";
-import { creerRetour } from "@/lib/retours-api";
+import { creerRetourDemande } from "@/lib/retours-api";
 import { invalidateRetour } from "@/lib/cache-invalidation";
 import { usePermissions } from "@/hooks/use-permissions";
 import { listDepots } from "@/lib/depots-api";
@@ -47,6 +47,8 @@ function RetourNouveauPage() {
       adresse: "",
       observations: "",
       depot_id: "",
+      niveau_urgence: "normal",
+      motif: "",
       lignes: [],
     },
   });
@@ -66,7 +68,7 @@ function RetourNouveauPage() {
 
   const mutation = useMutation({
     mutationFn: (values: RetourFormValues) =>
-      creerRetour({
+      creerRetourDemande({
         date_retour: values.date_retour,
         client_id: values.client_id,
         type_retour: values.type_retour,
@@ -79,6 +81,8 @@ function RetourNouveauPage() {
         adresse: values.adresse || null,
         observations: values.observations || null,
         depot_id: values.type_retour === "avoir" ? null : values.depot_id || null,
+        niveau_urgence: values.niveau_urgence ?? "normal",
+        motif: values.motif || null,
         lignes: values.lignes.map((l) => ({
           produit_id: l.produit_id,
           reference_produit: l.reference_produit ?? null,
@@ -88,7 +92,7 @@ function RetourNouveauPage() {
         })),
       }),
     onSuccess: (_data, values) => {
-      toast.success("Retour enregistré avec succès");
+      toast.success("Demande de retour créée — en attente magasin");
       invalidateRetour(qc, { clientId: values.client_id });
       navigate({ to: "/retours" });
     },

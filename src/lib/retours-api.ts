@@ -3,12 +3,23 @@ import { getDepotDefautId } from "@/lib/parametres-api";
 import { assertPermission } from "@/lib/rbac-api";
 
 export const STATUTS_RETOUR = [
+  { value: "demande_creee", label: "Demande créée", color: "#6366F1" },
+  { value: "en_attente_magasin", label: "En attente magasin", color: "#F97316" },
+  { value: "receptionne", label: "Réceptionné", color: "#0EA5E9" },
+  { value: "en_attente_compta", label: "En attente compta", color: "#F59E0B" },
+  { value: "valide", label: "Validé", color: "#10B981" },
+  { value: "refuse_magasin", label: "Refusé (magasin)", color: "#EF4444" },
+  { value: "refuse_compta", label: "Refusé (compta)", color: "#DC2626" },
+  { value: "cloture", label: "Clôturé", color: "#374151" },
+  // Legacy
   { value: "accepte", label: "Accepté", color: "#10B981" },
-  { value: "annule", label: "Annulé", color: "#EF4444" },
+  { value: "annule", label: "Annulé", color: "#6B7280" },
 ] as const;
 
 export const STATUT_RETOUR_LABEL: Record<string, { label: string; color: string }> =
   Object.fromEntries(STATUTS_RETOUR.map((s) => [s.value, { label: s.label, color: s.color }]));
+
+export type RetourStatut = (typeof STATUTS_RETOUR)[number]["value"];
 
 export type Retour = {
   retour_id: string;
@@ -38,6 +49,17 @@ export type Retour = {
   created_by_nom: string | null;
   created_at: string;
   updated_at: string;
+  // Workflow v2
+  receptionne_par?: string | null;
+  receptionne_par_nom?: string | null;
+  receptionne_at?: string | null;
+  valide_compta_par?: string | null;
+  valide_compta_par_nom?: string | null;
+  valide_compta_at?: string | null;
+  motif_refus_magasin?: string | null;
+  motif_refus_compta?: string | null;
+  version_no?: number | null;
+  workflow_approval_id?: string | null;
 };
 
 export type RetourLigne = {
@@ -51,6 +73,10 @@ export type RetourLigne = {
   total_ligne: number;
   motif: string | null;
   created_at: string;
+  quantite_demandee?: number | null;
+  quantite_recue?: number | null;
+  etat_reception?: string | null;
+  commentaire_reception?: string | null;
 };
 
 export type RetourWithLignes = Retour & { lignes: RetourLigne[] };
@@ -241,4 +267,204 @@ export async function searchFacturesClient(
   const { data, error } = await query;
   if (error) throw error;
   return (data ?? []) as FactureRetourOption[];
+}
+
+// ============================================================================
+// Workflow v2 — Retours (moteur d'approbation transversal)
+// ============================================================================
+
+export type CreerRetourDemandePayload = RetourInput & {
+  niveau_urgence?: "normal" | "urgent" | "critique";
+  motif?: string | null;
+};
+
+/** Crée une demande de retour (workflow v2, magasin en attente). */
+export async function creerRetourDemande(input: CreerRetourDemandePayload): Promise<string> {
+  await assertPermission("retours.creer");
+  const type_retour = input.type_retour ?? "physique";
+  const depot_id =
+    type_retour === "avoir" ? null : (input.depot_id ?? (await getDepotDefautId()));
+  const payload = {
+    date_retour: input.date_retour ?? new Date().toISOString().slice(0, 10),
+    client_id: input.client_id,
+    type_retour,
+    etablissement: input.etablissement ?? null,
+    representant_nom: input.representant_nom ?? null,
+    telephone: input.telephone ?? null,
+    ville: input.ville ?? null,
+    adresse: input.adresse ?? null,
+    depot_id,
+    observations: input.observations ?? null,
+    notes: input.notes ?? null,
+    facture_id: input.facture_id ?? null,
+    livraison_id: input.livraison_id ?? null,
+    niveau_urgence: input.niveau_urgence ?? "normal",
+    motif: input.motif ?? null,
+    lignes: input.lignes.map((l) => ({
+      produit_id: l.produit_id,
+      reference_produit: l.reference_produit ?? null,
+      designation: l.designation,
+      quantite_demandee: l.quantite,
+      motif: l.motif ?? null,
+    })),
+  };
+  const { data, error } = await (
+    supabase as unknown as {
+      rpc: (n: string, a: { _payload: unknown }) => Promise<{ data: unknown; error: Error | null }>;
+    }
+  ).rpc("retour_creer_demande", { _payload: payload });
+  if (error) throw error;
+  return data as string;
+}
+
+export type ReceptionLigneInput = {
+  ligne_id: string;
+  quantite_recue: number;
+  etat_reception?: "conforme" | "endommage" | "manquant" | "refuse";
+  commentaire_reception?: string | null;
+};
+
+/** Réception physique par le magasin — impacte le stock. */
+export async function receptionnerRetour(args: {
+  retour_id: string;
+  version: number;
+  lignes: ReceptionLigneInput[];
+}): Promise<void> {
+  const { error } = await (
+    supabase as unknown as {
+      rpc: (
+        n: string,
+        a: { _retour_id: string; _version: number; _lignes: unknown },
+      ) => Promise<{ error: Error | null }>;
+    }
+  ).rpc("retour_receptionner", {
+    _retour_id: args.retour_id,
+    _version: args.version,
+    _lignes: args.lignes,
+  });
+  if (error) throw error;
+}
+
+export async function refuserRetourMagasin(args: {
+  retour_id: string;
+  version: number;
+  motif: string;
+}): Promise<void> {
+  const { error } = await (
+    supabase as unknown as {
+      rpc: (
+        n: string,
+        a: { _retour_id: string; _version: number; _motif: string },
+      ) => Promise<{ error: Error | null }>;
+    }
+  ).rpc("retour_refuser_magasin", {
+    _retour_id: args.retour_id,
+    _version: args.version,
+    _motif: args.motif,
+  });
+  if (error) throw error;
+}
+
+export async function refuserRetourCompta(args: {
+  retour_id: string;
+  version: number;
+  motif: string;
+}): Promise<void> {
+  const { error } = await (
+    supabase as unknown as {
+      rpc: (
+        n: string,
+        a: { _retour_id: string; _version: number; _motif: string },
+      ) => Promise<{ error: Error | null }>;
+    }
+  ).rpc("retour_refuser_compta", {
+    _retour_id: args.retour_id,
+    _version: args.version,
+    _motif: args.motif,
+  });
+  if (error) throw error;
+}
+
+export type SimulationFinanciere = {
+  montant_total?: number;
+  impact_solde?: number;
+  avoir_disponible?: number;
+  remboursement_possible?: boolean;
+  details?: Record<string, unknown>;
+  [k: string]: unknown;
+};
+
+export async function getRetourSimulation(retour_id: string): Promise<SimulationFinanciere> {
+  const { data, error } = await (
+    supabase as unknown as {
+      rpc: (
+        n: string,
+        a: { _retour_id: string },
+      ) => Promise<{ data: unknown; error: Error | null }>;
+    }
+  ).rpc("retour_simulation_financiere", { _retour_id: retour_id });
+  if (error) throw error;
+  return (data ?? {}) as SimulationFinanciere;
+}
+
+export type ValidationComptaOption = "solde" | "avoir" | "remboursement";
+
+export async function validerRetourCompta(args: {
+  retour_id: string;
+  version: number;
+  option: ValidationComptaOption;
+  montants?: Record<string, number>;
+  commentaire?: string | null;
+}): Promise<void> {
+  const { error } = await (
+    supabase as unknown as {
+      rpc: (
+        n: string,
+        a: {
+          _retour_id: string;
+          _version: number;
+          _option: string;
+          _montants: unknown;
+          _commentaire: string | null;
+        },
+      ) => Promise<{ error: Error | null }>;
+    }
+  ).rpc("retour_valider_compta", {
+    _retour_id: args.retour_id,
+    _version: args.version,
+    _option: args.option,
+    _montants: args.montants ?? {},
+    _commentaire: args.commentaire ?? null,
+  });
+  if (error) throw error;
+}
+
+export async function forcerClotureRetour(args: {
+  retour_id: string;
+  motif: string;
+}): Promise<void> {
+  const { error } = await (
+    supabase as unknown as {
+      rpc: (
+        n: string,
+        a: { _retour_id: string; _motif: string },
+      ) => Promise<{ error: Error | null }>;
+    }
+  ).rpc("retour_forcer_cloture", { _retour_id: args.retour_id, _motif: args.motif });
+  if (error) throw error;
+}
+
+export async function rouvrirApprobation(args: {
+  approval_id: string;
+  motif: string;
+}): Promise<void> {
+  const { error } = await (
+    supabase as unknown as {
+      rpc: (
+        n: string,
+        a: { _approval_id: string; _motif: string },
+      ) => Promise<{ error: Error | null }>;
+    }
+  ).rpc("approbation_rouvrir", { _approval_id: args.approval_id, _motif: args.motif });
+  if (error) throw error;
 }

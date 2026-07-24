@@ -24,6 +24,8 @@ export const retourFormSchema = z
     adresse: z.string().optional(),
     observations: z.string().optional(),
     depot_id: z.string().optional(),
+    niveau_urgence: z.enum(["normal", "urgent", "critique"]).optional(),
+    motif: z.string().optional(),
     lignes: z.array(retourLigneSchema).min(1, "Ajoutez au moins une ligne produit"),
   })
   .superRefine((val, ctx) => {
