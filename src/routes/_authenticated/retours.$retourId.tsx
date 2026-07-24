@@ -1,12 +1,61 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, User, Package, Calendar, MapPin, Phone, Printer } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import {
+  ArrowLeft,
+  User,
+  Package,
+  Calendar,
+  MapPin,
+  Phone,
+  Printer,
+  PackageCheck,
+  XCircle,
+  Calculator,
+  CheckCircle2,
+  Lock,
+} from "lucide-react";
+import { toast } from "sonner";
 
-import { getRetour, STATUT_RETOUR_LABEL } from "@/lib/retours-api";
+import {
+  getRetour,
+  STATUT_RETOUR_LABEL,
+  receptionnerRetour,
+  refuserRetourMagasin,
+  refuserRetourCompta,
+  getRetourSimulation,
+  validerRetourCompta,
+  forcerClotureRetour,
+  type ReceptionLigneInput,
+  type ValidationComptaOption,
+  type SimulationFinanciere,
+} from "@/lib/retours-api";
+import { usePermissions } from "@/hooks/use-permissions";
+import { invalidateRetour } from "@/lib/cache-invalidation";
+import { friendlyError } from "@/lib/friendly-error";
+import { formatFCFA } from "@/lib/format";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -27,12 +76,69 @@ function frDate(d: string | null | undefined) {
   return d ? new Date(d).toLocaleDateString("fr-FR") : "—";
 }
 
+const WORKFLOW_STEPS = [
+  { key: "demande_creee", label: "Demande" },
+  { key: "en_attente_magasin", label: "Attente magasin" },
+  { key: "receptionne", label: "Réceptionné" },
+  { key: "en_attente_compta", label: "Attente compta" },
+  { key: "valide", label: "Validé" },
+  { key: "cloture", label: "Clôturé" },
+] as const;
+
+function WorkflowTimeline({ statut }: { statut: string }) {
+  const currentIdx = WORKFLOW_STEPS.findIndex((s) => s.key === statut);
+  const refused = statut === "refuse_magasin" || statut === "refuse_compta";
+  return (
+    <div className="flex flex-wrap items-center gap-2 text-xs">
+      {WORKFLOW_STEPS.map((s, i) => {
+        const done = !refused && currentIdx >= i;
+        const active = !refused && currentIdx === i;
+        return (
+          <div key={s.key} className="flex items-center gap-2">
+            <div
+              className={`rounded-full px-3 py-1 border ${
+                active
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : done
+                  ? "bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300"
+                  : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {s.label}
+            </div>
+            {i < WORKFLOW_STEPS.length - 1 && <span className="text-muted-foreground">→</span>}
+          </div>
+        );
+      })}
+      {refused && (
+        <Badge variant="destructive" className="ml-2">
+          {STATUT_RETOUR_LABEL[statut]?.label ?? "Refusé"}
+        </Badge>
+      )}
+    </div>
+  );
+}
+
 function RetourDetailPage() {
   const { retourId } = Route.useParams();
+  const qc = useQueryClient();
+  const { has, isSuperAdmin } = usePermissions();
+
   const { data: retour, isLoading } = useQuery({
     queryKey: ["retour", retourId],
     queryFn: () => getRetour(retourId),
   });
+
+  const [receptionOpen, setReceptionOpen] = useState(false);
+  const [refusMagasinOpen, setRefusMagasinOpen] = useState(false);
+  const [refusComptaOpen, setRefusComptaOpen] = useState(false);
+  const [validationOpen, setValidationOpen] = useState(false);
+  const [clotureOpen, setClotureOpen] = useState(false);
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["retour", retourId] });
+    invalidateRetour(qc, { clientId: retour?.client_id ?? undefined });
+  };
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
   if (!retour)
@@ -47,6 +153,17 @@ function RetourDetailPage() {
 
   const st = STATUT_RETOUR_LABEL[retour.statut];
   const titre = retour.numero ?? retour.reference;
+  const version = retour.version_no ?? 1;
+
+  const canReceptionner =
+    retour.statut === "en_attente_magasin" && (isSuperAdmin || has("retours.receptionner"));
+  const canValiderCompta =
+    retour.statut === "en_attente_compta" && (isSuperAdmin || has("retours.valider_compta"));
+  const canRefuserMagasin =
+    retour.statut === "en_attente_magasin" && (isSuperAdmin || has("retours.refuser_magasin"));
+  const canRefuserCompta =
+    retour.statut === "en_attente_compta" && (isSuperAdmin || has("retours.refuser_compta"));
+  const canForcerCloture = isSuperAdmin && retour.statut !== "cloture";
 
   return (
     <div className="space-y-6 p-6">
@@ -60,7 +177,7 @@ function RetourDetailPage() {
           <div>
             <h1 className="text-xl font-bold">{titre}</h1>
             <p className="text-sm text-muted-foreground">
-              {retour.etablissement ?? retour.client_nom ?? "—"}
+              {retour.etablissement ?? retour.client_nom ?? "—"} · v{version}
             </p>
           </div>
         </div>
@@ -77,65 +194,107 @@ function RetourDetailPage() {
         </div>
       </div>
 
+      <Card>
+        <CardContent className="py-4">
+          <WorkflowTimeline statut={retour.statut} />
+        </CardContent>
+      </Card>
+
+      {/* Barre d'actions selon rôle */}
+      {(canReceptionner ||
+        canValiderCompta ||
+        canRefuserMagasin ||
+        canRefuserCompta ||
+        canForcerCloture) && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm">Actions disponibles</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            {canReceptionner && (
+              <Button onClick={() => setReceptionOpen(true)}>
+                <PackageCheck className="h-4 w-4 mr-2" />
+                Réceptionner
+              </Button>
+            )}
+            {canRefuserMagasin && (
+              <Button variant="destructive" onClick={() => setRefusMagasinOpen(true)}>
+                <XCircle className="h-4 w-4 mr-2" />
+                Refuser (magasin)
+              </Button>
+            )}
+            {canValiderCompta && (
+              <Button onClick={() => setValidationOpen(true)}>
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                Simuler & valider
+              </Button>
+            )}
+            {canRefuserCompta && (
+              <Button variant="destructive" onClick={() => setRefusComptaOpen(true)}>
+                <XCircle className="h-4 w-4 mr-2" />
+                Refuser (compta)
+              </Button>
+            )}
+            {canForcerCloture && (
+              <Button variant="outline" onClick={() => setClotureOpen(true)}>
+                <Lock className="h-4 w-4 mr-2" />
+                Forcer clôture
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-              <User className="h-4 w-4" /> Client
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="font-medium">
-            {retour.etablissement ?? retour.client_nom ?? "—"}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-              <User className="h-4 w-4" /> Représentant
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="font-medium">{retour.representant_nom ?? "—"}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Phone className="h-4 w-4" /> Téléphone
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="font-medium">{retour.telephone ?? "—"}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4" /> Ville
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="font-medium">{retour.ville ?? "—"}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" /> Date
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="font-medium">{frDate(retour.date_retour)}</CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Package className="h-4 w-4" /> Produits
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="font-medium">
-            {retour.nb_produits} ({retour.total_quantite} unités)
-          </CardContent>
-        </Card>
-        <Card className="sm:col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Enregistré par</CardTitle>
-          </CardHeader>
-          <CardContent className="font-medium">{retour.created_by_nom ?? "—"}</CardContent>
-        </Card>
+        <InfoCard icon={<User className="h-4 w-4" />} title="Client">
+          {retour.etablissement ?? retour.client_nom ?? "—"}
+        </InfoCard>
+        <InfoCard icon={<User className="h-4 w-4" />} title="Représentant">
+          {retour.representant_nom ?? "—"}
+        </InfoCard>
+        <InfoCard icon={<Phone className="h-4 w-4" />} title="Téléphone">
+          {retour.telephone ?? "—"}
+        </InfoCard>
+        <InfoCard icon={<MapPin className="h-4 w-4" />} title="Ville">
+          {retour.ville ?? "—"}
+        </InfoCard>
+        <InfoCard icon={<Calendar className="h-4 w-4" />} title="Date">
+          {frDate(retour.date_retour)}
+        </InfoCard>
+        <InfoCard icon={<Package className="h-4 w-4" />} title="Produits">
+          {retour.nb_produits} ({retour.total_quantite} unités)
+        </InfoCard>
+        <InfoCard title="Créé par">{retour.created_by_nom ?? "—"}</InfoCard>
+        <InfoCard title="Réceptionné par">
+          {retour.receptionne_par_nom ? (
+            <>
+              {retour.receptionne_par_nom}
+              <div className="text-xs text-muted-foreground">{frDate(retour.receptionne_at)}</div>
+            </>
+          ) : (
+            "—"
+          )}
+        </InfoCard>
+        <InfoCard title="Validé compta">
+          {retour.valide_compta_par_nom ? (
+            <>
+              {retour.valide_compta_par_nom}
+              <div className="text-xs text-muted-foreground">{frDate(retour.valide_compta_at)}</div>
+            </>
+          ) : (
+            "—"
+          )}
+        </InfoCard>
+        {retour.motif_refus_magasin && (
+          <InfoCard title="Motif refus magasin">
+            <span className="text-destructive">{retour.motif_refus_magasin}</span>
+          </InfoCard>
+        )}
+        {retour.motif_refus_compta && (
+          <InfoCard title="Motif refus compta">
+            <span className="text-destructive">{retour.motif_refus_compta}</span>
+          </InfoCard>
+        )}
       </div>
 
       <Card>
@@ -151,7 +310,9 @@ function RetourDetailPage() {
                 <TableRow>
                   <TableHead>Désignation</TableHead>
                   <TableHead>Référence</TableHead>
-                  <TableHead className="text-right">Quantité</TableHead>
+                  <TableHead className="text-right">Qté demandée</TableHead>
+                  <TableHead className="text-right">Qté reçue</TableHead>
+                  <TableHead>État</TableHead>
                   <TableHead>Motif</TableHead>
                 </TableRow>
               </TableHeader>
@@ -162,7 +323,11 @@ function RetourDetailPage() {
                     <TableCell className="font-mono text-xs">
                       {l.reference_produit ?? "—"}
                     </TableCell>
-                    <TableCell className="text-right">{l.quantite}</TableCell>
+                    <TableCell className="text-right">
+                      {l.quantite_demandee ?? l.quantite}
+                    </TableCell>
+                    <TableCell className="text-right">{l.quantite_recue ?? "—"}</TableCell>
+                    <TableCell className="text-xs">{l.etat_reception ?? "—"}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {l.motif ?? "—"}
                     </TableCell>
@@ -184,6 +349,404 @@ function RetourDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Dialogs */}
+      {receptionOpen && (
+        <ReceptionDialog
+          retourId={retour.retour_id}
+          version={version}
+          lignes={retour.lignes}
+          onClose={() => setReceptionOpen(false)}
+          onDone={invalidate}
+        />
+      )}
+      {refusMagasinOpen && (
+        <MotifDialog
+          title="Refuser la demande (magasin)"
+          onSubmit={async (motif) => {
+            await refuserRetourMagasin({ retour_id: retour.retour_id, version, motif });
+          }}
+          onClose={() => setRefusMagasinOpen(false)}
+          onDone={invalidate}
+        />
+      )}
+      {refusComptaOpen && (
+        <MotifDialog
+          title="Refuser la validation (compta)"
+          onSubmit={async (motif) => {
+            await refuserRetourCompta({ retour_id: retour.retour_id, version, motif });
+          }}
+          onClose={() => setRefusComptaOpen(false)}
+          onDone={invalidate}
+        />
+      )}
+      {validationOpen && (
+        <ValidationComptaDialog
+          retourId={retour.retour_id}
+          version={version}
+          onClose={() => setValidationOpen(false)}
+          onDone={invalidate}
+        />
+      )}
+      {clotureOpen && (
+        <MotifDialog
+          title="Forcer la clôture du retour"
+          submitLabel="Clôturer"
+          onSubmit={async (motif) => {
+            await forcerClotureRetour({ retour_id: retour.retour_id, motif });
+          }}
+          onClose={() => setClotureOpen(false)}
+          onDone={invalidate}
+        />
+      )}
     </div>
+  );
+}
+
+function InfoCard({
+  icon,
+  title,
+  children,
+}: {
+  icon?: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+          {icon}
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="font-medium">{children}</CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
+// Reception Dialog
+// ============================================================================
+function ReceptionDialog({
+  retourId,
+  version,
+  lignes,
+  onClose,
+  onDone,
+}: {
+  retourId: string;
+  version: number;
+  lignes: Array<{
+    ligne_id: string;
+    designation: string;
+    reference_produit: string | null;
+    quantite: number;
+    quantite_demandee?: number | null;
+  }>;
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const [rows, setRows] = useState<ReceptionLigneInput[]>(() =>
+    lignes.map((l) => ({
+      ligne_id: l.ligne_id,
+      quantite_recue: Number(l.quantite_demandee ?? l.quantite),
+      etat_reception: "conforme",
+      commentaire_reception: "",
+    })),
+  );
+
+  const mutation = useMutation({
+    mutationFn: () => receptionnerRetour({ retour_id: retourId, version, lignes: rows }),
+    onSuccess: () => {
+      toast.success("Réception enregistrée — stock mis à jour");
+      onDone();
+      onClose();
+    },
+    onError: (e: Error) => toast.error(friendlyError(e)),
+  });
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>Réceptionner le retour</DialogTitle>
+        </DialogHeader>
+        <div className="max-h-[60vh] overflow-y-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Article</TableHead>
+                <TableHead className="text-right">Demandé</TableHead>
+                <TableHead className="text-right">Reçu</TableHead>
+                <TableHead>État</TableHead>
+                <TableHead>Commentaire</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {lignes.map((l, i) => (
+                <TableRow key={l.ligne_id}>
+                  <TableCell>
+                    <div className="font-medium">{l.designation}</div>
+                    <div className="text-xs text-muted-foreground">{l.reference_produit ?? "—"}</div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {Number(l.quantite_demandee ?? l.quantite)}
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      type="number"
+                      min={0}
+                      value={rows[i]?.quantite_recue ?? 0}
+                      onChange={(e) => {
+                        const v = Number(e.target.value);
+                        setRows((prev) =>
+                          prev.map((r, idx) => (idx === i ? { ...r, quantite_recue: v } : r)),
+                        );
+                      }}
+                      className="w-24 text-right"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      value={rows[i]?.etat_reception ?? "conforme"}
+                      onValueChange={(v) =>
+                        setRows((prev) =>
+                          prev.map((r, idx) =>
+                            idx === i
+                              ? { ...r, etat_reception: v as ReceptionLigneInput["etat_reception"] }
+                              : r,
+                          ),
+                        )
+                      }
+                    >
+                      <SelectTrigger className="w-36">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="conforme">Conforme</SelectItem>
+                        <SelectItem value="endommage">Endommagé</SelectItem>
+                        <SelectItem value="manquant">Manquant</SelectItem>
+                        <SelectItem value="refuse">Refusé</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      value={rows[i]?.commentaire_reception ?? ""}
+                      onChange={(e) =>
+                        setRows((prev) =>
+                          prev.map((r, idx) =>
+                            idx === i ? { ...r, commentaire_reception: e.target.value } : r,
+                          ),
+                        )
+                      }
+                      placeholder="Optionnel"
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Annuler
+          </Button>
+          <Button onClick={() => mutation.mutate()} disabled={mutation.isPending}>
+            {mutation.isPending ? "Enregistrement…" : "Confirmer la réception"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ============================================================================
+// Motif dialog (refus, clôture)
+// ============================================================================
+function MotifDialog({
+  title,
+  submitLabel = "Confirmer",
+  onSubmit,
+  onClose,
+  onDone,
+}: {
+  title: string;
+  submitLabel?: string;
+  onSubmit: (motif: string) => Promise<void>;
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const [motif, setMotif] = useState("");
+  const mutation = useMutation({
+    mutationFn: () => onSubmit(motif.trim()),
+    onSuccess: () => {
+      toast.success("Action enregistrée");
+      onDone();
+      onClose();
+    },
+    onError: (e: Error) => toast.error(friendlyError(e)),
+  });
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-2">
+          <Label htmlFor="motif">Motif *</Label>
+          <Textarea
+            id="motif"
+            rows={4}
+            value={motif}
+            onChange={(e) => setMotif(e.target.value)}
+            placeholder="Expliquez clairement la décision…"
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Annuler
+          </Button>
+          <Button
+            onClick={() => mutation.mutate()}
+            disabled={mutation.isPending || motif.trim().length < 3}
+          >
+            {mutation.isPending ? "…" : submitLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ============================================================================
+// Validation compta (simulation + options)
+// ============================================================================
+function ValidationComptaDialog({
+  retourId,
+  version,
+  onClose,
+  onDone,
+}: {
+  retourId: string;
+  version: number;
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const { data: simulation, isLoading } = useQuery({
+    queryKey: ["retour-simulation", retourId],
+    queryFn: () => getRetourSimulation(retourId),
+  });
+  const [option, setOption] = useState<ValidationComptaOption>("solde");
+  const [commentaire, setCommentaire] = useState("");
+
+  const mutation = useMutation({
+    mutationFn: () =>
+      validerRetourCompta({
+        retour_id: retourId,
+        version,
+        option,
+        commentaire: commentaire.trim() || null,
+      }),
+    onSuccess: () => {
+      toast.success("Retour validé");
+      onDone();
+      onClose();
+    },
+    onError: (e: Error) => toast.error(friendlyError(e)),
+  });
+
+  const optionsAvailable = useMemo(() => {
+    const s = (simulation ?? {}) as SimulationFinanciere;
+    return {
+      solde: true,
+      avoir: true,
+      remboursement: s.remboursement_possible !== false,
+    };
+  }, [simulation]);
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>
+            <Calculator className="inline h-5 w-5 mr-2" />
+            Simulation financière & validation
+          </DialogTitle>
+        </DialogHeader>
+
+        {isLoading ? (
+          <Skeleton className="h-32 w-full" />
+        ) : (
+          <div className="space-y-3">
+            <div className="rounded-md border bg-muted/40 p-3 space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Montant du retour</span>
+                <span className="font-semibold">
+                  {formatFCFA(Number(simulation?.montant_total ?? 0))}
+                </span>
+              </div>
+              {simulation?.impact_solde !== undefined && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Impact solde client</span>
+                  <span className="font-semibold">
+                    {formatFCFA(Number(simulation.impact_solde))}
+                  </span>
+                </div>
+              )}
+              {simulation?.avoir_disponible !== undefined && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Avoir disponible</span>
+                  <span className="font-semibold">
+                    {formatFCFA(Number(simulation.avoir_disponible))}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Option de traitement</Label>
+              <Select value={option} onValueChange={(v) => setOption(v as ValidationComptaOption)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="solde" disabled={!optionsAvailable.solde}>
+                    Créditer le solde client
+                  </SelectItem>
+                  <SelectItem value="avoir" disabled={!optionsAvailable.avoir}>
+                    Émettre un avoir
+                  </SelectItem>
+                  <SelectItem value="remboursement" disabled={!optionsAvailable.remboursement}>
+                    Remboursement (caisse/banque)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="com">Commentaire</Label>
+              <Textarea
+                id="com"
+                rows={3}
+                value={commentaire}
+                onChange={(e) => setCommentaire(e.target.value)}
+                placeholder="Optionnel"
+              />
+            </div>
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Annuler
+          </Button>
+          <Button onClick={() => mutation.mutate()} disabled={mutation.isPending || isLoading}>
+            {mutation.isPending ? "Validation…" : "Valider"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
