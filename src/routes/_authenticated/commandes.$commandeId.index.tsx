@@ -1,14 +1,34 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Calendar, FileText, Pencil, Receipt, User } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Ban, Calendar, FileText, Pencil, Receipt, User } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { getCommande, getCommandeLignes, STATUT_LABEL } from "@/lib/commandes-api";
+import {
+  demanderAnnulationCommande,
+  getCommande,
+  getCommandeLignes,
+  STATUT_LABEL,
+} from "@/lib/commandes-api";
+import { friendlyError } from "@/lib/friendly-error";
 import { formatFCFA } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePermissions } from "@/hooks/use-permissions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -25,6 +45,7 @@ export const Route = createFileRoute("/_authenticated/commandes/$commandeId/")({
   notFoundComponent: RouteNotFound,
 });
 
+
 function frDate(d: string | null | undefined) {
   return d ? new Date(d).toLocaleDateString("fr-FR") : "—";
 }
@@ -33,6 +54,10 @@ function CommandeDetailPage() {
   const { commandeId } = Route.useParams();
   const { has: hasPermission, isSuperAdmin } = usePermissions();
   const canModifier = hasPermission("commandes.modifier");
+  const canDemanderAnnulation = hasPermission("commandes.supprimer") || isSuperAdmin;
+  const queryClient = useQueryClient();
+  const [annulOpen, setAnnulOpen] = useState(false);
+  const [annulMotif, setAnnulMotif] = useState("");
   const { data: commande, isLoading } = useQuery({
     queryKey: ["commande", commandeId],
     queryFn: () => getCommande(commandeId),
@@ -41,6 +66,19 @@ function CommandeDetailPage() {
     queryKey: ["commande-lignes", commandeId],
     queryFn: () => getCommandeLignes(commandeId),
   });
+  const annulMut = useMutation({
+    mutationFn: () => demanderAnnulationCommande(commandeId, annulMotif.trim()),
+    onSuccess: () => {
+      toast.success("Demande d'annulation envoyée pour approbation");
+      queryClient.invalidateQueries({ queryKey: ["commande", commandeId] });
+      queryClient.invalidateQueries({ queryKey: ["commandes"] });
+      queryClient.invalidateQueries({ queryKey: ["approbations"] });
+      setAnnulOpen(false);
+      setAnnulMotif("");
+    },
+    onError: (e) => toast.error(friendlyError(e, "Impossible de demander l'annulation")),
+  });
+
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
   if (!commande)
@@ -87,7 +125,21 @@ function CommandeDetailPage() {
               </Link>
             </Button>
           )}
+        {canDemanderAnnulation &&
+          commande.statut !== "annulee" &&
+          commande.statut !== "annulation_en_attente" && (
+            <Button variant="outline" size="sm" onClick={() => setAnnulOpen(true)}>
+              <Ban className="mr-2 h-4 w-4 text-destructive" />
+              Demander l'annulation
+            </Button>
+          )}
+        {commande.statut === "annulation_en_attente" && (
+          <Badge variant="outline" className="border-amber-500 text-amber-600">
+            En attente d'approbation
+          </Badge>
+        )}
       </div>
+
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -203,6 +255,46 @@ function CommandeDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      <AlertDialog open={annulOpen} onOpenChange={setAnnulOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Demander l'annulation de la commande ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              La commande passera en statut « Annulation en attente ». Un comptable devra approuver
+              ou rejeter la demande depuis le centre d'approbations.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-1 py-2">
+            <Label htmlFor="motif-annul-cmd">
+              Motif <span className="text-destructive">*</span>
+            </Label>
+            <Textarea
+              id="motif-annul-cmd"
+              value={annulMotif}
+              onChange={(e) => setAnnulMotif(e.target.value)}
+              placeholder="Justification (erreur, demande client, doublon…)"
+              rows={3}
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Retour</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (!annulMotif.trim()) {
+                  toast.error("Motif obligatoire");
+                  return;
+                }
+                annulMut.mutate();
+              }}
+              disabled={annulMut.isPending || !annulMotif.trim()}
+            >
+              Envoyer la demande
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
