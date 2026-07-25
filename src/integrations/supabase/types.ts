@@ -6489,6 +6489,29 @@ export type Database = {
         Args: { _motif?: string; _tournee_id: string }
         Returns: undefined
       }
+      approbation_creer: {
+        Args: {
+          p_entity_id: string
+          p_entity_type: string
+          p_metadata?: Json
+          p_module: string
+          p_montant?: number
+          p_motif?: string
+          p_reference: string
+          p_sla_heures?: number
+          p_urgence?: string
+          p_workflow_code: string
+        }
+        Returns: string
+      }
+      approbation_decider: {
+        Args: {
+          p_approbation_id: string
+          p_commentaire?: string
+          p_decision: string
+        }
+        Returns: Json
+      }
       approbation_rouvrir: {
         Args: { _approval_id: string; _motif: string }
         Returns: undefined
@@ -6601,6 +6624,10 @@ export type Database = {
       }
       clients_facets: { Args: never; Returns: Json }
       cloturer_tournee: { Args: { _tournee_id: string }; Returns: undefined }
+      commande_demander_annulation: {
+        Args: { p_commande_id: string; p_motif: string }
+        Returns: string
+      }
       compta_balance: {
         Args: { p_exercice_id?: string; p_from?: string; p_to?: string }
         Returns: {

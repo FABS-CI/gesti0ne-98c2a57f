@@ -493,33 +493,21 @@ function DecisionDialog({
       const decisionNote = `[${isApprove ? "Approuvée" : "Rejetée"} par ${actorName}${
         comment ? ` — ${comment}` : ""
       }]`;
-      const newCommentaire = [row.commentaire, decisionNote].filter(Boolean).join("\n");
 
-      const { error } = await supabase
-        .from("workflow_approvals")
-        .update({
-          statut: action,
-          commentaire: newCommentaire,
-          motif_refus: !isApprove ? comment || null : null,
-          approbateur_id: user?.id ?? null,
-          approbateur_nom: actorName,
-          decided_at: new Date().toISOString(),
-        })
-        .eq("id", row.id);
+      const { error } = await supabase.rpc("approbation_decider", {
+        p_approbation_id: row.id,
+        p_decision: isApprove ? "approuve" : "rejete",
+        p_commentaire: comment || decisionNote,
+      });
       if (error) throw error;
 
-      await supabase.from("notifications").insert({
-        titre: `Demande ${row.reference ?? row.id.slice(0, 8)} ${isApprove ? "approuvée" : "rejetée"}`,
-        message: `${TYPE_LABEL[typeKey] ?? typeKey} de ${row.demandeur_nom ?? "—"}${
-          comment ? ` — ${comment}` : ""
-        }`,
-        type_notification: isApprove ? "succes" : "alerte",
-        lu: false,
-        date_notification: new Date().toISOString().slice(0, 10),
-      });
-
-      toast.success(`Demande ${isApprove ? "approuvée" : "rejetée"}`);
+      toast.success(
+        `Demande ${isApprove ? "approuvée" : "rejetée"} — impact appliqué au module ${row.module ?? typeKey}`,
+      );
       qc.invalidateQueries({ queryKey: ["approbations"] });
+      qc.invalidateQueries({ queryKey: ["paiements"] });
+      qc.invalidateQueries({ queryKey: ["commandes"] });
+      qc.invalidateQueries({ queryKey: ["couts_logistiques"] });
       onClose();
     } catch (e) {
       toast.error(friendlyError(e));
