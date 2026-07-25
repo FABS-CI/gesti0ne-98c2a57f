@@ -151,19 +151,20 @@ function useApprovals(statut: Statut) {
       const { data, error } = await supabase
         .from("workflow_approvals")
         .select(
-          "id, workflow_code, entity_type, entity_id, module, niveau_urgence, sla_deadline, reference, demandeur_nom, statut, commentaire, motif_refus, metadata, simulation_financiere, created_at",
+          "id, workflow_code, entity_type, entity_id, module, niveau_urgence, sla_deadline, reference, demandeur_nom, approbateur_nom, statut, commentaire, motif_refus, metadata, simulation_financiere, historique, decided_at, created_at",
         )
         .eq("statut", statut)
         .order("niveau_urgence", { ascending: true })
         .order("sla_deadline", { ascending: true, nullsFirst: false })
         .order("created_at", { ascending: false })
-        .limit(300);
+        .limit(500);
       if (error) throw error;
       return (data ?? []) as unknown as Approval[];
     },
     staleTime: 30_000,
   });
 }
+
 
 function ApprobationsPage() {
   const [tab, setTab] = useState<Statut>("en_attente");
