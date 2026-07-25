@@ -255,6 +255,46 @@ function CommandeDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      <AlertDialog open={annulOpen} onOpenChange={setAnnulOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Demander l'annulation de la commande ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              La commande passera en statut « Annulation en attente ». Un comptable devra approuver
+              ou rejeter la demande depuis le centre d'approbations.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-1 py-2">
+            <Label htmlFor="motif-annul-cmd">
+              Motif <span className="text-destructive">*</span>
+            </Label>
+            <Textarea
+              id="motif-annul-cmd"
+              value={annulMotif}
+              onChange={(e) => setAnnulMotif(e.target.value)}
+              placeholder="Justification (erreur, demande client, doublon…)"
+              rows={3}
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Retour</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (!annulMotif.trim()) {
+                  toast.error("Motif obligatoire");
+                  return;
+                }
+                annulMut.mutate();
+              }}
+              disabled={annulMut.isPending || !annulMotif.trim()}
+            >
+              Envoyer la demande
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
