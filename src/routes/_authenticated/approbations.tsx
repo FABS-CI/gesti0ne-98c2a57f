@@ -636,6 +636,11 @@ function ApprovalCard({
     <Card>
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-4 flex-wrap">
+          {onToggleSelect && isPending && (
+            <div className="pt-1">
+              <Checkbox checked={!!selected} onCheckedChange={onToggleSelect} />
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="outline">{TYPE_LABEL[typeKey] ?? typeKey}</Badge>
@@ -643,6 +648,13 @@ function ApprovalCard({
                 {row.reference ?? row.id.slice(0, 8)}
               </span>
               <Badge style={{ background: meta.color, color: "white" }}>{meta.label}</Badge>
+              {delegataire && (
+                <Badge variant="secondary" className="gap-1">
+                  <Users className="h-3 w-3" /> Délégué à {delegataire}
+                  {delegueParNom ? ` (par ${delegueParNom})` : ""}
+                </Badge>
+              )}
+
               {row.niveau_urgence && row.niveau_urgence !== "normal" && (
                 <Badge style={{ background: urg.color, color: "white" }} className="gap-1">
                   <AlertTriangle className="h-3 w-3" /> {urg.label}
