@@ -125,7 +125,21 @@ function CommandeDetailPage() {
               </Link>
             </Button>
           )}
+        {canDemanderAnnulation &&
+          commande.statut !== "annulee" &&
+          commande.statut !== "annulation_en_attente" && (
+            <Button variant="outline" size="sm" onClick={() => setAnnulOpen(true)}>
+              <Ban className="mr-2 h-4 w-4 text-destructive" />
+              Demander l'annulation
+            </Button>
+          )}
+        {commande.statut === "annulation_en_attente" && (
+          <Badge variant="outline" className="border-amber-500 text-amber-600">
+            En attente d'approbation
+          </Badge>
+        )}
       </div>
+
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
