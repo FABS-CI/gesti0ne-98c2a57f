@@ -6520,6 +6520,19 @@ export type Database = {
         }
         Returns: Json
       }
+      approbation_decider_lot: {
+        Args: { p_commentaire?: string; p_decision: string; p_ids: string[] }
+        Returns: Json
+      }
+      approbation_deleguer: {
+        Args: {
+          p_approbation_id: string
+          p_commentaire?: string
+          p_delegataire_id: string
+          p_expire_at?: string
+        }
+        Returns: undefined
+      }
       approbation_rouvrir: {
         Args: { _approval_id: string; _motif: string }
         Returns: undefined
