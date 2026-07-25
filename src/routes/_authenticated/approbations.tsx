@@ -48,6 +48,8 @@ import {
 } from "@/components/ui/dialog";
 import { FilterBadges, type FilterBadge } from "@/components/common/FilterBadges";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { Checkbox } from "@/components/ui/checkbox";
+
 
 export const Route = createFileRoute("/_authenticated/approbations")({
   component: ApprobationsPage,
