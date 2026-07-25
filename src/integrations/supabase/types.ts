@@ -6244,6 +6244,14 @@ export type Database = {
         }
         Relationships: []
       }
+      v_approbations_en_attente_count: {
+        Row: {
+          critiques: number | null
+          sla_depasses: number | null
+          total: number | null
+        }
+        Relationships: []
+      }
       v_colisage_responsables: {
         Row: {
           actif: boolean | null
@@ -7495,6 +7503,13 @@ export type Database = {
       rbac2_sync_catalog: {
         Args: { _apply?: boolean; _inventory: Json }
         Returns: Json
+      }
+      recalculer_sla_approbations: {
+        Args: never
+        Returns: {
+          mis_a_jour: number
+          notifies: number
+        }[]
       }
       recalculer_solde_client: { Args: { _client_id: string }; Returns: number }
       recalculer_soldes_global_clients: { Args: never; Returns: number }
