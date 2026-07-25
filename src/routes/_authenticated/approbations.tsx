@@ -493,6 +493,33 @@ function ApprovalsList({
         </div>
       )}
 
+      {!isHistory && filtered.length > 0 && (
+        <div className="flex items-center gap-3 flex-wrap px-1">
+          <Checkbox
+            checked={selected.size > 0 && selected.size === filtered.length}
+            onCheckedChange={(v) => {
+              if (v) setSelected(new Set(filtered.map((r) => r.id)));
+              else setSelected(new Set());
+            }}
+          />
+          <span className="text-xs text-muted-foreground">
+            {selected.size > 0
+              ? `${selected.size} sélectionnée${selected.size > 1 ? "s" : ""}`
+              : "Tout sélectionner"}
+          </span>
+          {selected.size > 0 && (
+            <div className="flex gap-2 ml-auto">
+              <Button size="sm" variant="outline" onClick={() => setBulkDialog("rejete")}>
+                <XCircle className="h-4 w-4 mr-1.5" /> Rejeter en lot
+              </Button>
+              <Button size="sm" onClick={() => setBulkDialog("approuve")}>
+                <CheckCircle2 className="h-4 w-4 mr-1.5" /> Approuver en lot
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
       {filtered.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
@@ -506,8 +533,22 @@ function ApprovalsList({
             <ApprovalCard
               key={row.id}
               row={row}
+              selected={selected.has(row.id)}
+              onToggleSelect={
+                !isHistory
+                  ? () => {
+                      setSelected((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(row.id)) next.delete(row.id);
+                        else next.add(row.id);
+                        return next;
+                      });
+                    }
+                  : undefined
+              }
               onAction={(action) => setDialog({ row, action })}
               onTimeline={() => setTimelineRow(row)}
+              onDelegate={() => setDelegateRow(row)}
             />
           ))}
         </div>
@@ -519,9 +560,26 @@ function ApprovalsList({
       {timelineRow && (
         <TimelineDialog row={timelineRow} onClose={() => setTimelineRow(null)} />
       )}
+      {delegateRow && (
+        <DelegateDialog row={delegateRow} onClose={() => setDelegateRow(null)} />
+      )}
+      {bulkDialog && (
+        <BulkDecisionDialog
+          ids={Array.from(selected)}
+          action={bulkDialog}
+          onClose={(done) => {
+            setBulkDialog(null);
+            if (done) {
+              setSelected(new Set());
+              qc.invalidateQueries({ queryKey: ["approbations"] });
+            }
+          }}
+        />
+      )}
     </>
   );
 }
+
 
 
 function KpiCard({ label, value, color }: { label: string; value: string; color?: string }) {
