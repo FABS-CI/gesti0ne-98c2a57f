@@ -1,5 +1,27 @@
 import { Link } from "@tanstack/react-router";
 import type { Group, Item } from "./nav-data";
+import { useApprobationsCount } from "@/hooks/use-approbations-count";
+
+function BadgeApprobations() {
+  const { total, critiques } = useApprobationsCount();
+  if (!total) return null;
+  const isCritical = critiques > 0;
+  return (
+    <span
+      aria-label={`${total} approbation${total > 1 ? "s" : ""} en attente`}
+      className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums"
+      style={{
+        background: isCritical ? "#DC2626" : "#F59E0B",
+        color: "#FFFFFF",
+        minWidth: 20,
+        textAlign: "center",
+        boxShadow: isCritical ? "0 0 0 2px rgba(220,38,38,0.25)" : "none",
+      }}
+    >
+      {total > 99 ? "99+" : total}
+    </span>
+  );
+}
 
 export function SidebarNavItem({
   item,
@@ -51,14 +73,17 @@ export function SidebarNavItem({
       >
         <Icon style={{ width: "20px", height: "20px", flexShrink: 0 }} />
         <span className="truncate">{item.title}</span>
-        {active && (
+        {item.badge === "approbations" ? (
+          <BadgeApprobations />
+        ) : active ? (
           <span
             aria-hidden
             className="ml-auto h-2 w-2 shrink-0 rounded-full"
             style={{ background: "#FFFFFF" }}
           />
-        )}
+        ) : null}
       </Link>
     </li>
   );
 }
+

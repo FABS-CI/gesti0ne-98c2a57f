@@ -54,6 +54,8 @@ export type Item = {
    * Uniquement visuel : n'affecte ni le routage, ni le RBAC, ni les URLs.
    */
   section?: string;
+  /** Si défini, affiche un badge dynamique piloté par ce hook. */
+  badge?: "approbations";
 };
 export type Group = {
   label: string;
@@ -105,6 +107,7 @@ export const groups: Group[] = [
       { title: "Paiements", url: "/paiements", icon: CreditCard, ready: true },
       { title: "Retours", url: "/retours", icon: RotateCcw, ready: true },
       { title: "Spécimens", url: "/specimens", icon: Gift, ready: true },
+      { title: "Approbations", url: "/approbations", icon: ShieldCheck, ready: true, badge: "approbations" },
     ],
   },
   {
