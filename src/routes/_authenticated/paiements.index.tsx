@@ -292,12 +292,24 @@ function PaiementsPage() {
                         {formatFCFA(Number(p.montant))}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant="outline"
-                          style={{ color: statutMeta?.color, borderColor: statutMeta?.color }}
-                        >
-                          {statutMeta?.label ?? p.statut}
-                        </Badge>
+                        <div className="flex flex-wrap items-center gap-1">
+                          <Badge
+                            variant="outline"
+                            style={{ color: statutMeta?.color, borderColor: statutMeta?.color }}
+                          >
+                            {statutMeta?.label ?? p.statut}
+                          </Badge>
+                          {(p.statut === "en_attente" ||
+                            p.statut === "en_attente_validation") && (
+                            <Link
+                              to="/approbations"
+                              className="inline-flex items-center rounded-full border border-amber-500 px-2 py-0.5 text-[10px] font-medium text-amber-600 hover:bg-amber-50"
+                              title="En attente d'approbation — voir le centre"
+                            >
+                              ⏳ Approbation
+                            </Link>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-right">
                         {p.statut !== "annule" && (
