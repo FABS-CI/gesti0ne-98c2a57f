@@ -740,3 +740,121 @@ function DecisionDialog({
     </Dialog>
   );
 }
+
+function TimelineDialog({ row, onClose }: { row: Approval; onClose: () => void }) {
+  const entries: HistoriqueEntry[] = Array.isArray(row.historique) ? row.historique : [];
+  const objet = getMetaString(row.metadata, "objet");
+  const typeKey = row.entity_type ?? row.workflow_code ?? "autre";
+
+  const events: HistoriqueEntry[] = [
+    { at: row.created_at, action: "cree", by_name: row.demandeur_nom ?? undefined },
+    ...entries,
+  ];
+  if (row.decided_at && !entries.some((e) => e.action === row.statut)) {
+    events.push({
+      at: row.decided_at,
+      action: row.statut,
+      by_name: row.approbateur_nom ?? undefined,
+      commentaire: row.motif_refus ?? row.commentaire ?? undefined,
+    });
+  }
+  events.sort(
+    (a, b) => new Date(a.at ?? 0).getTime() - new Date(b.at ?? 0).getTime(),
+  );
+
+  const actionLabel = (a?: string) => {
+    switch (a) {
+      case "cree":
+        return "Demande créée";
+      case "approuve":
+      case "approuvee":
+        return "Approuvée";
+      case "rejete":
+      case "rejetee":
+        return "Rejetée";
+      case "commentaire":
+        return "Commentaire";
+      case "escalade":
+        return "Escaladée";
+      default:
+        return a ?? "Événement";
+    }
+  };
+  const actionColor = (a?: string) => {
+    if (a === "approuve" || a === "approuvee") return "#10B981";
+    if (a === "rejete" || a === "rejetee") return "#EF4444";
+    if (a === "cree") return "#3B82F6";
+    return "#64748B";
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <History className="h-5 w-5" />
+            Historique — {row.reference ?? row.id.slice(0, 8)}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="rounded-md border p-3 text-xs space-y-1 bg-muted/30">
+            <p>
+              <span className="text-muted-foreground">Type :</span>{" "}
+              {TYPE_LABEL[typeKey] ?? typeKey}
+            </p>
+            {objet && (
+              <p>
+                <span className="text-muted-foreground">Objet :</span> {objet}
+              </p>
+            )}
+            <p>
+              <span className="text-muted-foreground">Statut :</span> {row.statut}
+            </p>
+          </div>
+          <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+            {events.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Aucun événement enregistré.
+              </p>
+            ) : (
+              events.map((e, i) => (
+                <div key={i} className="flex gap-3">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className="h-3 w-3 rounded-full mt-1.5"
+                      style={{ background: actionColor(e.action) }}
+                    />
+                    {i < events.length - 1 && <div className="w-px flex-1 bg-border mt-1" />}
+                  </div>
+                  <div className="flex-1 pb-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium">{actionLabel(e.action)}</span>
+                      {e.by_name && (
+                        <span className="text-xs text-muted-foreground">par {e.by_name}</span>
+                      )}
+                    </div>
+                    {e.at && (
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(e.at), "dd MMM yyyy 'à' HH:mm", { locale: fr })}
+                      </p>
+                    )}
+                    {e.commentaire && (
+                      <p className="text-xs mt-1 border-l-2 pl-2 italic whitespace-pre-line">
+                        {e.commentaire}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Fermer
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
