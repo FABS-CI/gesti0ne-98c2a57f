@@ -1,14 +1,34 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Calendar, FileText, Pencil, Receipt, User } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Ban, Calendar, FileText, Pencil, Receipt, User } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { getCommande, getCommandeLignes, STATUT_LABEL } from "@/lib/commandes-api";
+import {
+  demanderAnnulationCommande,
+  getCommande,
+  getCommandeLignes,
+  STATUT_LABEL,
+} from "@/lib/commandes-api";
+import { friendlyError } from "@/lib/friendly-error";
 import { formatFCFA } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePermissions } from "@/hooks/use-permissions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Table,
   TableBody,
@@ -24,6 +44,7 @@ export const Route = createFileRoute("/_authenticated/commandes/$commandeId/")({
   errorComponent: RouteError,
   notFoundComponent: RouteNotFound,
 });
+
 
 function frDate(d: string | null | undefined) {
   return d ? new Date(d).toLocaleDateString("fr-FR") : "—";
