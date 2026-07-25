@@ -185,6 +185,7 @@ import { Route as AuthenticatedAdminPerfRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminGoogleDriveRouteImport } from './routes/_authenticated/admin.google-drive'
 import { Route as AuthenticatedAdminDataQualityRouteImport } from './routes/_authenticated/admin.data-quality'
 import { Route as AuthenticatedAdminAuditPaiementsRouteImport } from './routes/_authenticated/admin.audit-paiements'
+import { Route as AuthenticatedAdminApprobationSeuilsRouteImport } from './routes/_authenticated/admin.approbation-seuils'
 import { Route as AuthenticatedAchatsNouveauRouteImport } from './routes/_authenticated/achats.nouveau'
 import { Route as AuthenticatedAchatsAchatIdRouteImport } from './routes/_authenticated/achats.$achatId'
 import { Route as AuthenticatedAbsencesNouveauRouteImport } from './routes/_authenticated/absences.nouveau'
@@ -1215,6 +1216,12 @@ const AuthenticatedAdminAuditPaiementsRoute =
     path: '/admin/audit-paiements',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminApprobationSeuilsRoute =
+  AuthenticatedAdminApprobationSeuilsRouteImport.update({
+    id: '/admin/approbation-seuils',
+    path: '/admin/approbation-seuils',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAchatsNouveauRoute =
   AuthenticatedAchatsNouveauRouteImport.update({
     id: '/achats/nouveau',
@@ -1428,6 +1435,7 @@ export interface FileRoutesByFullPath {
   '/absences/nouveau': typeof AuthenticatedAbsencesNouveauRoute
   '/achats/$achatId': typeof AuthenticatedAchatsAchatIdRoute
   '/achats/nouveau': typeof AuthenticatedAchatsNouveauRoute
+  '/admin/approbation-seuils': typeof AuthenticatedAdminApprobationSeuilsRoute
   '/admin/audit-paiements': typeof AuthenticatedAdminAuditPaiementsRouteWithChildren
   '/admin/data-quality': typeof AuthenticatedAdminDataQualityRoute
   '/admin/google-drive': typeof AuthenticatedAdminGoogleDriveRoute
@@ -1604,6 +1612,7 @@ export interface FileRoutesByTo {
   '/absences/nouveau': typeof AuthenticatedAbsencesNouveauRoute
   '/achats/$achatId': typeof AuthenticatedAchatsAchatIdRoute
   '/achats/nouveau': typeof AuthenticatedAchatsNouveauRoute
+  '/admin/approbation-seuils': typeof AuthenticatedAdminApprobationSeuilsRoute
   '/admin/audit-paiements': typeof AuthenticatedAdminAuditPaiementsRouteWithChildren
   '/admin/data-quality': typeof AuthenticatedAdminDataQualityRoute
   '/admin/google-drive': typeof AuthenticatedAdminGoogleDriveRoute
@@ -1802,6 +1811,7 @@ export interface FileRoutesById {
   '/_authenticated/absences/nouveau': typeof AuthenticatedAbsencesNouveauRoute
   '/_authenticated/achats/$achatId': typeof AuthenticatedAchatsAchatIdRoute
   '/_authenticated/achats/nouveau': typeof AuthenticatedAchatsNouveauRoute
+  '/_authenticated/admin/approbation-seuils': typeof AuthenticatedAdminApprobationSeuilsRoute
   '/_authenticated/admin/audit-paiements': typeof AuthenticatedAdminAuditPaiementsRouteWithChildren
   '/_authenticated/admin/data-quality': typeof AuthenticatedAdminDataQualityRoute
   '/_authenticated/admin/google-drive': typeof AuthenticatedAdminGoogleDriveRoute
@@ -2001,6 +2011,7 @@ export interface FileRouteTypes {
     | '/absences/nouveau'
     | '/achats/$achatId'
     | '/achats/nouveau'
+    | '/admin/approbation-seuils'
     | '/admin/audit-paiements'
     | '/admin/data-quality'
     | '/admin/google-drive'
@@ -2177,6 +2188,7 @@ export interface FileRouteTypes {
     | '/absences/nouveau'
     | '/achats/$achatId'
     | '/achats/nouveau'
+    | '/admin/approbation-seuils'
     | '/admin/audit-paiements'
     | '/admin/data-quality'
     | '/admin/google-drive'
@@ -2374,6 +2386,7 @@ export interface FileRouteTypes {
     | '/_authenticated/absences/nouveau'
     | '/_authenticated/achats/$achatId'
     | '/_authenticated/achats/nouveau'
+    | '/_authenticated/admin/approbation-seuils'
     | '/_authenticated/admin/audit-paiements'
     | '/_authenticated/admin/data-quality'
     | '/_authenticated/admin/google-drive'
@@ -3728,6 +3741,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAuditPaiementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/approbation-seuils': {
+      id: '/_authenticated/admin/approbation-seuils'
+      path: '/admin/approbation-seuils'
+      fullPath: '/admin/approbation-seuils'
+      preLoaderRoute: typeof AuthenticatedAdminApprobationSeuilsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/achats/nouveau': {
       id: '/_authenticated/achats/nouveau'
       path: '/achats/nouveau'
@@ -4470,6 +4490,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedWorkflowsDefinitionsRoute: typeof AuthenticatedWorkflowsDefinitionsRoute
   AuthenticatedAchatsAchatIdRoute: typeof AuthenticatedAchatsAchatIdRoute
   AuthenticatedAchatsNouveauRoute: typeof AuthenticatedAchatsNouveauRoute
+  AuthenticatedAdminApprobationSeuilsRoute: typeof AuthenticatedAdminApprobationSeuilsRoute
   AuthenticatedAdminAuditPaiementsRoute: typeof AuthenticatedAdminAuditPaiementsRouteWithChildren
   AuthenticatedAdminDataQualityRoute: typeof AuthenticatedAdminDataQualityRoute
   AuthenticatedAdminGoogleDriveRoute: typeof AuthenticatedAdminGoogleDriveRoute
@@ -4585,6 +4606,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedWorkflowsDefinitionsRoute,
   AuthenticatedAchatsAchatIdRoute: AuthenticatedAchatsAchatIdRoute,
   AuthenticatedAchatsNouveauRoute: AuthenticatedAchatsNouveauRoute,
+  AuthenticatedAdminApprobationSeuilsRoute:
+    AuthenticatedAdminApprobationSeuilsRoute,
   AuthenticatedAdminAuditPaiementsRoute:
     AuthenticatedAdminAuditPaiementsRouteWithChildren,
   AuthenticatedAdminDataQualityRoute: AuthenticatedAdminDataQualityRoute,

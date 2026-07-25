@@ -221,6 +221,51 @@ export type Database = {
         }
         Relationships: []
       }
+      approbation_seuils: {
+        Row: {
+          actif: boolean
+          created_at: string
+          description: string | null
+          id: string
+          module: string
+          seuil_critique: number
+          seuil_urgent: number
+          sla_critique_heures: number
+          sla_normal_heures: number
+          sla_urgent_heures: number
+          type_operation: string
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          module: string
+          seuil_critique?: number
+          seuil_urgent?: number
+          sla_critique_heures?: number
+          sla_normal_heures?: number
+          sla_urgent_heures?: number
+          type_operation?: string
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          module?: string
+          seuil_critique?: number
+          seuil_urgent?: number
+          sla_critique_heures?: number
+          sla_normal_heures?: number
+          sla_urgent_heures?: number
+          type_operation?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       approvisionnement_lignes: {
         Row: {
           approvisionnement_id: string
@@ -6392,6 +6437,13 @@ export type Database = {
       }
     }
     Functions: {
+      _calc_urgence_sla: {
+        Args: { p_module: string; p_montant: number; p_type_operation?: string }
+        Returns: {
+          deadline: string
+          urgence: string
+        }[]
+      }
       _compte_mode_paiement: {
         Args: { _mode: string }
         Returns: {

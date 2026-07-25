@@ -271,6 +271,8 @@ export const groups: Group[] = [
       { title: "Journal d'audit", url: "/audit", icon: History, ready: true },
       { title: "Backup", url: "/backup", icon: Database, ready: true },
       { title: "Santé du système", url: "/admin/sante-systeme", icon: Shield, ready: true },
+      { title: "Seuils d'approbation", url: "/admin/approbation-seuils", icon: Shield, ready: true },
+
     ],
   },
   {

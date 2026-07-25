@@ -170,7 +170,9 @@ export const ROUTE_TO_PERMISSION: Record<string, RoutePermissionRequirement> = {
   // Lot F — mappings manquants détectés par l'audit Lot E
   "/admin/google-drive": "integrations.acceder_parametres",
   "/admin/rpc-errors": "audit.voir",
+  "/admin/approbation-seuils": "workflows.acceder_parametres",
   "/conges-en-cours": "conges.voir",
+
 };
 
 /**
