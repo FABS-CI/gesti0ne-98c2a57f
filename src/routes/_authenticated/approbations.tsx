@@ -14,7 +14,10 @@ import {
   Search,
   History,
   Download,
+  UserPlus,
+  Users,
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { formatDistanceToNow, formatDistanceToNowStrict, isPast, differenceInMinutes, format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -45,6 +48,8 @@ import {
 } from "@/components/ui/dialog";
 import { FilterBadges, type FilterBadge } from "@/components/common/FilterBadges";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { Checkbox } from "@/components/ui/checkbox";
+
 
 export const Route = createFileRoute("/_authenticated/approbations")({
   component: ApprobationsPage,
@@ -277,14 +282,19 @@ function ApprovalsList({
   search: string;
 }) {
   const { data = [], isLoading } = useApprovals(statut);
+  const qc = useQueryClient();
   const [dialog, setDialog] = useState<{ row: Approval; action: "approuve" | "rejete" } | null>(
     null,
   );
   const [timelineRow, setTimelineRow] = useState<Approval | null>(null);
+  const [delegateRow, setDelegateRow] = useState<Approval | null>(null);
+  const [bulkDialog, setBulkDialog] = useState<"approuve" | "rejete" | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [approbateurQ, setApprobateurQ] = useState("");
   const isHistory = statut !== "en_attente";
+
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -483,6 +493,33 @@ function ApprovalsList({
         </div>
       )}
 
+      {!isHistory && filtered.length > 0 && (
+        <div className="flex items-center gap-3 flex-wrap px-1">
+          <Checkbox
+            checked={selected.size > 0 && selected.size === filtered.length}
+            onCheckedChange={(v) => {
+              if (v) setSelected(new Set(filtered.map((r) => r.id)));
+              else setSelected(new Set());
+            }}
+          />
+          <span className="text-xs text-muted-foreground">
+            {selected.size > 0
+              ? `${selected.size} sélectionnée${selected.size > 1 ? "s" : ""}`
+              : "Tout sélectionner"}
+          </span>
+          {selected.size > 0 && (
+            <div className="flex gap-2 ml-auto">
+              <Button size="sm" variant="outline" onClick={() => setBulkDialog("rejete")}>
+                <XCircle className="h-4 w-4 mr-1.5" /> Rejeter en lot
+              </Button>
+              <Button size="sm" onClick={() => setBulkDialog("approuve")}>
+                <CheckCircle2 className="h-4 w-4 mr-1.5" /> Approuver en lot
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
       {filtered.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
@@ -496,8 +533,22 @@ function ApprovalsList({
             <ApprovalCard
               key={row.id}
               row={row}
+              selected={selected.has(row.id)}
+              onToggleSelect={
+                !isHistory
+                  ? () => {
+                      setSelected((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(row.id)) next.delete(row.id);
+                        else next.add(row.id);
+                        return next;
+                      });
+                    }
+                  : undefined
+              }
               onAction={(action) => setDialog({ row, action })}
               onTimeline={() => setTimelineRow(row)}
+              onDelegate={() => setDelegateRow(row)}
             />
           ))}
         </div>
@@ -509,9 +560,26 @@ function ApprovalsList({
       {timelineRow && (
         <TimelineDialog row={timelineRow} onClose={() => setTimelineRow(null)} />
       )}
+      {delegateRow && (
+        <DelegateDialog row={delegateRow} onClose={() => setDelegateRow(null)} />
+      )}
+      {bulkDialog && (
+        <BulkDecisionDialog
+          ids={Array.from(selected)}
+          action={bulkDialog}
+          onClose={(done) => {
+            setBulkDialog(null);
+            if (done) {
+              setSelected(new Set());
+              qc.invalidateQueries({ queryKey: ["approbations"] });
+            }
+          }}
+        />
+      )}
     </>
   );
 }
+
 
 
 function KpiCard({ label, value, color }: { label: string; value: string; color?: string }) {
@@ -529,12 +597,18 @@ function KpiCard({ label, value, color }: { label: string; value: string; color?
 
 function ApprovalCard({
   row,
+  selected,
+  onToggleSelect,
   onAction,
   onTimeline,
+  onDelegate,
 }: {
   row: Approval;
+  selected?: boolean;
+  onToggleSelect?: () => void;
   onAction: (action: "approuve" | "rejete") => void;
   onTimeline: () => void;
+  onDelegate?: () => void;
 }) {
 
   const navigate = useNavigate();
@@ -546,6 +620,8 @@ function ApprovalCard({
   const montant = getMetaNumber(row.metadata, "montant");
   const urg = URGENCE_META[row.niveau_urgence ?? "normal"] ?? URGENCE_META.normal;
   const slaOver = row.sla_deadline ? isPast(new Date(row.sla_deadline)) : false;
+  const delegataire = getMetaString(row.metadata, "delegataire_nom");
+  const delegueParNom = getMetaString(row.metadata, "delegue_par");
 
   const openDetail = () => {
     if (mod === "retour" && row.entity_id) {
@@ -555,10 +631,16 @@ function ApprovalCard({
 
   const canOpenDetail = mod === "retour" && !!row.entity_id;
 
+
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-start justify-between gap-4 flex-wrap">
+          {onToggleSelect && isPending && (
+            <div className="pt-1">
+              <Checkbox checked={!!selected} onCheckedChange={onToggleSelect} />
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="outline">{TYPE_LABEL[typeKey] ?? typeKey}</Badge>
@@ -566,6 +648,13 @@ function ApprovalCard({
                 {row.reference ?? row.id.slice(0, 8)}
               </span>
               <Badge style={{ background: meta.color, color: "white" }}>{meta.label}</Badge>
+              {delegataire && (
+                <Badge variant="secondary" className="gap-1">
+                  <Users className="h-3 w-3" /> Délégué à {delegataire}
+                  {delegueParNom ? ` (par ${delegueParNom})` : ""}
+                </Badge>
+              )}
+
               {row.niveau_urgence && row.niveau_urgence !== "normal" && (
                 <Badge style={{ background: urg.color, color: "white" }} className="gap-1">
                   <AlertTriangle className="h-3 w-3" /> {urg.label}
@@ -611,6 +700,11 @@ function ApprovalCard({
             <Button size="sm" variant="ghost" onClick={onTimeline}>
               <History className="h-4 w-4 mr-1.5" /> Historique
             </Button>
+            {isPending && onDelegate && (
+              <Button size="sm" variant="ghost" onClick={onDelegate}>
+                <UserPlus className="h-4 w-4 mr-1.5" /> Déléguer
+              </Button>
+            )}
             {canOpenDetail && (
               <Button size="sm" variant="outline" onClick={openDetail}>
                 <ExternalLink className="h-4 w-4 mr-1.5" /> Ouvrir la fiche
@@ -627,6 +721,7 @@ function ApprovalCard({
               </>
             )}
           </div>
+
 
         </div>
       </CardContent>
@@ -852,6 +947,196 @@ function TimelineDialog({ row, onClose }: { row: Approval; onClose: () => void }
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             Fermer
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function BulkDecisionDialog({
+  ids,
+  action,
+  onClose,
+}: {
+  ids: string[];
+  action: "approuve" | "rejete";
+  onClose: (done: boolean) => void;
+}) {
+  const [comment, setComment] = useState("");
+  const [busy, setBusy] = useState(false);
+  const isApprove = action === "approuve";
+  const meta = STATUT_META[action];
+
+  const submit = async () => {
+    try {
+      setBusy(true);
+      const { data, error } = await supabase.rpc("approbation_decider_lot", {
+        p_ids: ids,
+        p_decision: action,
+        p_commentaire: comment || null,
+      });
+      if (error) throw error;
+      const res = (data ?? {}) as { ok?: number; ko?: number };
+      const ok = res.ok ?? 0;
+      const ko = res.ko ?? 0;
+      if (ko > 0) {
+        toast.warning(`${ok} traitée${ok > 1 ? "s" : ""}, ${ko} en erreur.`);
+      } else {
+        toast.success(`${ok} demande${ok > 1 ? "s" : ""} ${isApprove ? "approuvée" : "rejetée"}${ok > 1 ? "s" : ""}.`);
+      }
+      onClose(true);
+    } catch (e) {
+      toast.error(friendlyError(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose(false)}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {isApprove ? "Approuver" : "Rejeter"} {ids.length} demande{ids.length > 1 ? "s" : ""}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Chaque demande sera traitée individuellement avec ses impacts métier. Un rapport détaillera les éventuelles erreurs.
+          </p>
+          <div>
+            <label className="text-xs font-medium mb-1 block">
+              Commentaire {isApprove ? "(optionnel)" : "(recommandé)"}
+            </label>
+            <Textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder={isApprove ? "Motif d'approbation…" : "Motif de rejet…"}
+              rows={3}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onClose(false)} disabled={busy}>
+            Annuler
+          </Button>
+          <Button
+            onClick={submit}
+            disabled={busy}
+            style={{ background: meta.color, color: "white" }}
+          >
+            {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Confirmer ({ids.length})
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DelegateDialog({ row, onClose }: { row: Approval; onClose: () => void }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const [delegataireId, setDelegataireId] = useState<string>("");
+  const [comment, setComment] = useState("");
+  const [expireAt, setExpireAt] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const { data: approbateurs = [] } = useQuery({
+    queryKey: ["approbateurs-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, nom_complet, email")
+        .neq("id", user?.id ?? "")
+        .order("nom_complet", { ascending: true })
+        .limit(200);
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+
+  const submit = async () => {
+    if (!delegataireId) {
+      toast.error("Choisir un délégataire");
+      return;
+    }
+    try {
+      setBusy(true);
+      const { error } = await supabase.rpc("approbation_deleguer", {
+        p_approbation_id: row.id,
+        p_delegataire_id: delegataireId,
+        p_commentaire: comment || null,
+        p_expire_at: expireAt ? new Date(expireAt).toISOString() : null,
+      });
+      if (error) throw error;
+      toast.success("Demande déléguée");
+      qc.invalidateQueries({ queryKey: ["approbations"] });
+      onClose();
+    } catch (e) {
+      toast.error(friendlyError(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <UserPlus className="h-5 w-5" /> Déléguer la demande
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="rounded-md border p-3 text-sm">
+            <p className="text-xs text-muted-foreground">Demande</p>
+            <p className="font-medium">
+              {row.reference ?? row.id.slice(0, 8)} — {getMetaString(row.metadata, "objet") ?? "—"}
+            </p>
+          </div>
+          <div>
+            <label className="text-xs font-medium mb-1 block">Déléguer à</label>
+            <Select value={delegataireId} onValueChange={setDelegataireId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choisir un utilisateur…" />
+              </SelectTrigger>
+              <SelectContent>
+                {approbateurs.map((a) => (
+                  <SelectItem key={a.id} value={a.id}>
+                    {a.nom_complet || a.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs font-medium mb-1 block">Expire le (optionnel)</label>
+            <Input
+              type="datetime-local"
+              value={expireAt}
+              onChange={(e) => setExpireAt(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium mb-1 block">Commentaire (optionnel)</label>
+            <Textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Contexte de la délégation…"
+              rows={3}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={busy}>
+            Annuler
+          </Button>
+          <Button onClick={submit} disabled={busy || !delegataireId}>
+            {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Déléguer
           </Button>
         </DialogFooter>
       </DialogContent>
