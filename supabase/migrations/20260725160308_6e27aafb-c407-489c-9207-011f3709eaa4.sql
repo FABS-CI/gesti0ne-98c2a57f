@@ -1,0 +1,1 @@
+ALTER VIEW public.v_approbations_en_attente_count SET (security_invoker = on);
