@@ -597,12 +597,18 @@ function KpiCard({ label, value, color }: { label: string; value: string; color?
 
 function ApprovalCard({
   row,
+  selected,
+  onToggleSelect,
   onAction,
   onTimeline,
+  onDelegate,
 }: {
   row: Approval;
+  selected?: boolean;
+  onToggleSelect?: () => void;
   onAction: (action: "approuve" | "rejete") => void;
   onTimeline: () => void;
+  onDelegate?: () => void;
 }) {
 
   const navigate = useNavigate();
@@ -614,6 +620,8 @@ function ApprovalCard({
   const montant = getMetaNumber(row.metadata, "montant");
   const urg = URGENCE_META[row.niveau_urgence ?? "normal"] ?? URGENCE_META.normal;
   const slaOver = row.sla_deadline ? isPast(new Date(row.sla_deadline)) : false;
+  const delegataire = getMetaString(row.metadata, "delegataire_nom");
+  const delegueParNom = getMetaString(row.metadata, "delegue_par");
 
   const openDetail = () => {
     if (mod === "retour" && row.entity_id) {
@@ -622,6 +630,7 @@ function ApprovalCard({
   };
 
   const canOpenDetail = mod === "retour" && !!row.entity_id;
+
 
   return (
     <Card>
