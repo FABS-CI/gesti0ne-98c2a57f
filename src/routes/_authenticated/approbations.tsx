@@ -530,10 +530,13 @@ function KpiCard({ label, value, color }: { label: string; value: string; color?
 function ApprovalCard({
   row,
   onAction,
+  onTimeline,
 }: {
   row: Approval;
   onAction: (action: "approuve" | "rejete") => void;
+  onTimeline: () => void;
 }) {
+
   const navigate = useNavigate();
   const meta = STATUT_META[row.statut as Statut] ?? STATUT_META.en_attente;
   const isPending = row.statut === "en_attente";
