@@ -12,10 +12,13 @@ import {
   Clock,
   ExternalLink,
   Search,
+  History,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
-import { formatDistanceToNow, formatDistanceToNowStrict, isPast } from "date-fns";
+import { formatDistanceToNow, formatDistanceToNowStrict, isPast, differenceInMinutes, format } from "date-fns";
 import { fr } from "date-fns/locale";
+
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
