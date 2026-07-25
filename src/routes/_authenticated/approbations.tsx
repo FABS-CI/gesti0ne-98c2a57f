@@ -90,6 +90,15 @@ const STATUT_META: Record<Statut, { label: string; color: string }> = {
   rejete: { label: "Rejetée", color: "#EF4444" },
 };
 
+type HistoriqueEntry = {
+  at?: string;
+  action?: string;
+  by?: string;
+  by_name?: string;
+  commentaire?: string;
+  [k: string]: unknown;
+};
+
 type Approval = {
   id: string;
   workflow_code: string | null;
@@ -100,13 +109,17 @@ type Approval = {
   sla_deadline: string | null;
   reference: string | null;
   demandeur_nom: string | null;
+  approbateur_nom: string | null;
   statut: string;
   commentaire: string | null;
   motif_refus: string | null;
   metadata: Record<string, unknown> | null;
   simulation_financiere: Record<string, unknown> | null;
+  historique: HistoriqueEntry[] | null;
+  decided_at: string | null;
   created_at: string;
 };
+
 
 function getMetaString(meta: Record<string, unknown> | null, key: string): string | null {
   if (!meta) return null;
