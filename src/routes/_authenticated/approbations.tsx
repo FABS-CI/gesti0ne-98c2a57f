@@ -280,16 +280,33 @@ function ApprovalsList({
   const [dialog, setDialog] = useState<{ row: Approval; action: "approuve" | "rejete" } | null>(
     null,
   );
+  const [timelineRow, setTimelineRow] = useState<Approval | null>(null);
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [approbateurQ, setApprobateurQ] = useState("");
+  const isHistory = statut !== "en_attente";
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const appQ = approbateurQ.trim().toLowerCase();
+    const from = dateFrom ? new Date(dateFrom + "T00:00:00") : null;
+    const to = dateTo ? new Date(dateTo + "T23:59:59") : null;
     return data.filter((r) => {
       if (moduleFilter !== "all" && deriveModule(r) !== moduleFilter) return false;
       if (urgenceFilter !== "all" && (r.niveau_urgence ?? "normal") !== urgenceFilter) return false;
+      if (isHistory && appQ) {
+        if (!(r.approbateur_nom ?? "").toLowerCase().includes(appQ)) return false;
+      }
+      if (isHistory && (from || to)) {
+        const d = r.decided_at ? new Date(r.decided_at) : new Date(r.created_at);
+        if (from && d < from) return false;
+        if (to && d > to) return false;
+      }
       if (q) {
         const hay = [
           r.reference,
           r.demandeur_nom,
+          r.approbateur_nom,
           r.workflow_code,
           r.entity_type,
           getMetaString(r.metadata, "objet"),
@@ -301,7 +318,7 @@ function ApprovalsList({
       }
       return true;
     });
-  }, [data, moduleFilter, urgenceFilter, search]);
+  }, [data, moduleFilter, urgenceFilter, search, approbateurQ, dateFrom, dateTo, isHistory]);
 
   const kpis = useMemo(() => {
     const total = filtered.length;
@@ -313,8 +330,75 @@ function ApprovalsList({
       (acc, r) => acc + (getMetaNumber(r.metadata, "montant") ?? 0),
       0,
     );
-    return { total, critiques, slaDepasse, montantTotal };
+    const decided = filtered.filter((r) => r.decided_at);
+    const delaiMoyenMin =
+      decided.length > 0
+        ? Math.round(
+            decided.reduce(
+              (acc, r) =>
+                acc + differenceInMinutes(new Date(r.decided_at!), new Date(r.created_at)),
+              0,
+            ) / decided.length,
+          )
+        : 0;
+    return { total, critiques, slaDepasse, montantTotal, delaiMoyenMin };
   }, [filtered]);
+
+  const exportCsv = () => {
+    const rows = [
+      [
+        "Référence",
+        "Module",
+        "Type",
+        "Objet",
+        "Demandeur",
+        "Approbateur",
+        "Statut",
+        "Urgence",
+        "Montant",
+        "Créé le",
+        "Décidé le",
+        "Délai (min)",
+        "Motif refus",
+        "Commentaire",
+      ],
+      ...filtered.map((r) => [
+        r.reference ?? r.id.slice(0, 8),
+        deriveModule(r),
+        r.entity_type ?? r.workflow_code ?? "",
+        getMetaString(r.metadata, "objet") ?? "",
+        r.demandeur_nom ?? "",
+        r.approbateur_nom ?? "",
+        r.statut,
+        r.niveau_urgence ?? "normal",
+        String(getMetaNumber(r.metadata, "montant") ?? ""),
+        format(new Date(r.created_at), "yyyy-MM-dd HH:mm"),
+        r.decided_at ? format(new Date(r.decided_at), "yyyy-MM-dd HH:mm") : "",
+        r.decided_at
+          ? String(differenceInMinutes(new Date(r.decided_at), new Date(r.created_at)))
+          : "",
+        r.motif_refus ?? "",
+        (r.commentaire ?? "").replace(/\r?\n/g, " "),
+      ]),
+    ];
+    const csv = rows
+      .map((r) =>
+        r
+          .map((c) => {
+            const s = String(c ?? "");
+            return /[",;\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+          })
+          .join(";"),
+      )
+      .join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `approbations-${statut}-${format(new Date(), "yyyyMMdd-HHmm")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   if (isLoading) {
     return (
@@ -326,6 +410,43 @@ function ApprovalsList({
 
   return (
     <>
+      {isHistory && (
+        <div className="flex flex-wrap items-end gap-2">
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Décidé du</label>
+            <Input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="w-[160px]"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">au</label>
+            <Input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="w-[160px]"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground block mb-1">Approbateur</label>
+            <Input
+              value={approbateurQ}
+              onChange={(e) => setApprobateurQ(e.target.value)}
+              placeholder="Nom approbateur…"
+              className="w-[200px]"
+            />
+          </div>
+          <div className="ml-auto">
+            <Button variant="outline" size="sm" onClick={exportCsv} disabled={filtered.length === 0}>
+              <Download className="h-4 w-4 mr-1.5" /> Exporter CSV
+            </Button>
+          </div>
+        </div>
+      )}
+
       {statut === "en_attente" && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <KpiCard label="À traiter" value={kpis.total.toString()} />
@@ -343,6 +464,25 @@ function ApprovalsList({
         </div>
       )}
 
+      {isHistory && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <KpiCard label="Total" value={kpis.total.toString()} />
+          <KpiCard
+            label="Délai moyen"
+            value={
+              kpis.delaiMoyenMin < 60
+                ? `${kpis.delaiMoyenMin} min`
+                : `${Math.round(kpis.delaiMoyenMin / 60)} h`
+            }
+          />
+          <KpiCard label="Montant cumulé" value={formatFCFA(kpis.montantTotal)} />
+          <KpiCard
+            label="Export"
+            value={`${filtered.length} ligne${filtered.length > 1 ? "s" : ""}`}
+          />
+        </div>
+      )}
+
       {filtered.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
@@ -357,6 +497,7 @@ function ApprovalsList({
               key={row.id}
               row={row}
               onAction={(action) => setDialog({ row, action })}
+              onTimeline={() => setTimelineRow(row)}
             />
           ))}
         </div>
@@ -365,9 +506,13 @@ function ApprovalsList({
       {dialog && (
         <DecisionDialog row={dialog.row} action={dialog.action} onClose={() => setDialog(null)} />
       )}
+      {timelineRow && (
+        <TimelineDialog row={timelineRow} onClose={() => setTimelineRow(null)} />
+      )}
     </>
   );
 }
+
 
 function KpiCard({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
