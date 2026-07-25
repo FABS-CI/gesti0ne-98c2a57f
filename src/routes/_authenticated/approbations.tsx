@@ -608,6 +608,9 @@ function ApprovalCard({
             )}
           </div>
           <div className="flex gap-2 flex-wrap">
+            <Button size="sm" variant="ghost" onClick={onTimeline}>
+              <History className="h-4 w-4 mr-1.5" /> Historique
+            </Button>
             {canOpenDetail && (
               <Button size="sm" variant="outline" onClick={openDetail}>
                 <ExternalLink className="h-4 w-4 mr-1.5" /> Ouvrir la fiche
@@ -624,6 +627,7 @@ function ApprovalCard({
               </>
             )}
           </div>
+
         </div>
       </CardContent>
     </Card>
