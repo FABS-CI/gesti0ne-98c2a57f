@@ -282,14 +282,19 @@ function ApprovalsList({
   search: string;
 }) {
   const { data = [], isLoading } = useApprovals(statut);
+  const qc = useQueryClient();
   const [dialog, setDialog] = useState<{ row: Approval; action: "approuve" | "rejete" } | null>(
     null,
   );
   const [timelineRow, setTimelineRow] = useState<Approval | null>(null);
+  const [delegateRow, setDelegateRow] = useState<Approval | null>(null);
+  const [bulkDialog, setBulkDialog] = useState<"approuve" | "rejete" | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [approbateurQ, setApprobateurQ] = useState("");
   const isHistory = statut !== "en_attente";
+
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
