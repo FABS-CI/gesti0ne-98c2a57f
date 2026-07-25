@@ -953,3 +953,193 @@ function TimelineDialog({ row, onClose }: { row: Approval; onClose: () => void }
     </Dialog>
   );
 }
+
+function BulkDecisionDialog({
+  ids,
+  action,
+  onClose,
+}: {
+  ids: string[];
+  action: "approuve" | "rejete";
+  onClose: (done: boolean) => void;
+}) {
+  const [comment, setComment] = useState("");
+  const [busy, setBusy] = useState(false);
+  const isApprove = action === "approuve";
+  const meta = STATUT_META[action];
+
+  const submit = async () => {
+    try {
+      setBusy(true);
+      const { data, error } = await supabase.rpc("approbation_decider_lot", {
+        p_ids: ids,
+        p_decision: action,
+        p_commentaire: comment || null,
+      });
+      if (error) throw error;
+      const res = (data ?? {}) as { ok?: number; ko?: number };
+      const ok = res.ok ?? 0;
+      const ko = res.ko ?? 0;
+      if (ko > 0) {
+        toast.warning(`${ok} traitée${ok > 1 ? "s" : ""}, ${ko} en erreur.`);
+      } else {
+        toast.success(`${ok} demande${ok > 1 ? "s" : ""} ${isApprove ? "approuvée" : "rejetée"}${ok > 1 ? "s" : ""}.`);
+      }
+      onClose(true);
+    } catch (e) {
+      toast.error(friendlyError(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose(false)}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {isApprove ? "Approuver" : "Rejeter"} {ids.length} demande{ids.length > 1 ? "s" : ""}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Chaque demande sera traitée individuellement avec ses impacts métier. Un rapport détaillera les éventuelles erreurs.
+          </p>
+          <div>
+            <label className="text-xs font-medium mb-1 block">
+              Commentaire {isApprove ? "(optionnel)" : "(recommandé)"}
+            </label>
+            <Textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder={isApprove ? "Motif d'approbation…" : "Motif de rejet…"}
+              rows={3}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onClose(false)} disabled={busy}>
+            Annuler
+          </Button>
+          <Button
+            onClick={submit}
+            disabled={busy}
+            style={{ background: meta.color, color: "white" }}
+          >
+            {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Confirmer ({ids.length})
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DelegateDialog({ row, onClose }: { row: Approval; onClose: () => void }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const [delegataireId, setDelegataireId] = useState<string>("");
+  const [comment, setComment] = useState("");
+  const [expireAt, setExpireAt] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const { data: approbateurs = [] } = useQuery({
+    queryKey: ["approbateurs-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, nom_complet, email")
+        .neq("id", user?.id ?? "")
+        .order("nom_complet", { ascending: true })
+        .limit(200);
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+
+  const submit = async () => {
+    if (!delegataireId) {
+      toast.error("Choisir un délégataire");
+      return;
+    }
+    try {
+      setBusy(true);
+      const { error } = await supabase.rpc("approbation_deleguer", {
+        p_approbation_id: row.id,
+        p_delegataire_id: delegataireId,
+        p_commentaire: comment || null,
+        p_expire_at: expireAt ? new Date(expireAt).toISOString() : null,
+      });
+      if (error) throw error;
+      toast.success("Demande déléguée");
+      qc.invalidateQueries({ queryKey: ["approbations"] });
+      onClose();
+    } catch (e) {
+      toast.error(friendlyError(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <UserPlus className="h-5 w-5" /> Déléguer la demande
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="rounded-md border p-3 text-sm">
+            <p className="text-xs text-muted-foreground">Demande</p>
+            <p className="font-medium">
+              {row.reference ?? row.id.slice(0, 8)} — {getMetaString(row.metadata, "objet") ?? "—"}
+            </p>
+          </div>
+          <div>
+            <label className="text-xs font-medium mb-1 block">Déléguer à</label>
+            <Select value={delegataireId} onValueChange={setDelegataireId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choisir un utilisateur…" />
+              </SelectTrigger>
+              <SelectContent>
+                {approbateurs.map((a) => (
+                  <SelectItem key={a.id} value={a.id}>
+                    {a.nom_complet || a.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <label className="text-xs font-medium mb-1 block">Expire le (optionnel)</label>
+            <Input
+              type="datetime-local"
+              value={expireAt}
+              onChange={(e) => setExpireAt(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium mb-1 block">Commentaire (optionnel)</label>
+            <Textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Contexte de la délégation…"
+              rows={3}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={busy}>
+            Annuler
+          </Button>
+          <Button onClick={submit} disabled={busy || !delegataireId}>
+            {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Déléguer
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
