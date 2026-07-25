@@ -14,7 +14,10 @@ import {
   Search,
   History,
   Download,
+  UserPlus,
+  Users,
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { formatDistanceToNow, formatDistanceToNowStrict, isPast, differenceInMinutes, format } from "date-fns";
 import { fr } from "date-fns/locale";
