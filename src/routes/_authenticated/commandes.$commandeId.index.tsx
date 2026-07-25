@@ -54,6 +54,10 @@ function CommandeDetailPage() {
   const { commandeId } = Route.useParams();
   const { has: hasPermission, isSuperAdmin } = usePermissions();
   const canModifier = hasPermission("commandes.modifier");
+  const canDemanderAnnulation = hasPermission("commandes.supprimer") || isSuperAdmin;
+  const queryClient = useQueryClient();
+  const [annulOpen, setAnnulOpen] = useState(false);
+  const [annulMotif, setAnnulMotif] = useState("");
   const { data: commande, isLoading } = useQuery({
     queryKey: ["commande", commandeId],
     queryFn: () => getCommande(commandeId),
@@ -62,6 +66,19 @@ function CommandeDetailPage() {
     queryKey: ["commande-lignes", commandeId],
     queryFn: () => getCommandeLignes(commandeId),
   });
+  const annulMut = useMutation({
+    mutationFn: () => demanderAnnulationCommande(commandeId, annulMotif.trim()),
+    onSuccess: () => {
+      toast.success("Demande d'annulation envoyée pour approbation");
+      queryClient.invalidateQueries({ queryKey: ["commande", commandeId] });
+      queryClient.invalidateQueries({ queryKey: ["commandes"] });
+      queryClient.invalidateQueries({ queryKey: ["approbations"] });
+      setAnnulOpen(false);
+      setAnnulMotif("");
+    },
+    onError: (e) => toast.error(friendlyError(e, "Impossible de demander l'annulation")),
+  });
+
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
   if (!commande)
