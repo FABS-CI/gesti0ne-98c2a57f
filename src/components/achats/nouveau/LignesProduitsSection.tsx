@@ -19,6 +19,8 @@ export type LigneUI = {
   designation: string;
   quantite: number;
   prix_unitaire: number;
+  /** Remise en pourcentage (0-100). */
+  remise_pct: number;
 };
 
 export const emptyLigne = (): LigneUI => ({
@@ -27,7 +29,15 @@ export const emptyLigne = (): LigneUI => ({
   designation: "",
   quantite: 1,
   prix_unitaire: 0,
+  remise_pct: 0,
 });
+
+/** Montant d'une ligne après remise. */
+export function montantLigne(l: Pick<LigneUI, "quantite" | "prix_unitaire" | "remise_pct">): number {
+  const brut = (l.quantite || 0) * (l.prix_unitaire || 0);
+  const pct = Math.min(Math.max(l.remise_pct || 0, 0), 100);
+  return Math.round(brut * (1 - pct / 100) * 100) / 100;
+}
 
 type Props = {
   lignes: LigneUI[];
@@ -63,10 +73,11 @@ export function LignesProduitsSection({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[35%]">Produit</TableHead>
+            <TableHead className="w-[32%]">Produit</TableHead>
             <TableHead>Référence</TableHead>
-            <TableHead className="text-right w-24">Qté *</TableHead>
-            <TableHead className="text-right w-32">Prix achat</TableHead>
+            <TableHead className="text-right w-20">Qté *</TableHead>
+            <TableHead className="text-right w-28">Prix achat</TableHead>
+            <TableHead className="text-right w-24">Remise (%)</TableHead>
             <TableHead className="text-right w-32">Total</TableHead>
             <TableHead className="w-12" />
           </TableRow>
@@ -112,8 +123,23 @@ export function LignesProduitsSection({
                   className="text-right h-9"
                 />
               </TableCell>
+              <TableCell className="text-right">
+                <Input
+                  type="number"
+                  min={0}
+                  max={100}
+                  step="0.01"
+                  value={l.remise_pct}
+                  onChange={(e) =>
+                    onUpdate(i, {
+                      remise_pct: Math.min(Math.max(Number(e.target.value) || 0, 0), 100),
+                    })
+                  }
+                  className="text-right h-9"
+                />
+              </TableCell>
               <TableCell className="text-right font-semibold">
-                {formatFCFA((l.quantite || 0) * (l.prix_unitaire || 0))}
+                {formatFCFA(montantLigne(l))}
               </TableCell>
               <TableCell>
                 <Button
