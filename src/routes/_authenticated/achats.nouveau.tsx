@@ -272,6 +272,24 @@ function NouvelApprovisionnementPage() {
         </div>
       </div>
 
+      {!isEdit && draft.pendingDraft ? (
+        <DraftRestoreBanner
+          label="bon de réception"
+          updatedAt={draft.pendingDraft.updatedAt}
+          onDiscard={() => void draft.discard()}
+          onRestore={() => {
+            const v = draft.restore();
+            if (!v) return;
+            setFournisseurId(v.fournisseurId ?? "");
+            setDepotId(v.depotId ?? "");
+            setDate(v.date ?? date);
+            setReferenceFournisseur(v.referenceFournisseur ?? "");
+            setNotes(v.notes ?? "");
+            setLignes(v.lignes?.length ? v.lignes : [emptyLigne()]);
+          }}
+        />
+      ) : null}
+
       <InfosGeneralesSection
         fournisseurId={fournisseurId}
         onFournisseurChange={setFournisseurId}
