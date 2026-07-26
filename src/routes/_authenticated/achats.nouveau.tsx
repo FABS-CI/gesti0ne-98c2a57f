@@ -29,9 +29,12 @@ import { InfosGeneralesSection } from "@/components/achats/nouveau/InfosGenerale
 import {
   LignesProduitsSection,
   emptyLigne,
+  montantLigne,
   type LigneUI,
 } from "@/components/achats/nouveau/LignesProduitsSection";
 import { QuickCreateProduitDialog } from "@/components/achats/nouveau/QuickCreateProduitDialog";
+import { useServerDraft } from "@/hooks/use-server-draft";
+import { DraftRestoreBanner } from "@/components/ui/draft-restore-banner";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/achats/nouveau")({
@@ -90,6 +93,7 @@ function NouvelApprovisionnementPage() {
             designation: l.designation,
             quantite: Number(l.quantite),
             prix_unitaire: Number(l.prix_unitaire),
+            remise_pct: Number(l.remise_pct ?? 0),
           }))
         : [emptyLigne()],
     );
@@ -111,11 +115,29 @@ function NouvelApprovisionnementPage() {
     }
   }, [depotId, depotsActifs]);
 
-  const montantTotal = useMemo(
-    () => lignes.reduce((s, l) => s + (l.quantite || 0) * (l.prix_unitaire || 0), 0),
-    [lignes],
-  );
+  const montantTotal = useMemo(() => lignes.reduce((s, l) => s + montantLigne(l), 0), [lignes]);
   const qteTotale = useMemo(() => lignes.reduce((s, l) => s + (l.quantite || 0), 0), [lignes]);
+
+  // Brouillon serveur (reprise de saisie) — création uniquement
+  const draftValue = useMemo(
+    () => ({ fournisseurId, depotId, date, referenceFournisseur, notes, lignes }),
+    [fournisseurId, depotId, date, referenceFournisseur, notes, lignes],
+  );
+  const draft = useServerDraft<typeof draftValue>({
+    docType: "bon_reception",
+    value: draftValue,
+    enabled: !isEdit,
+    isEmpty: (v) => !v.fournisseurId && v.lignes.every((l) => !l.produit_id && !l.designation),
+  });
+
+  // Clé d'idempotence stable pour toute la durée de saisie (anti-doublon)
+  const idempotencyKey = useMemo(
+    () =>
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `appro-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    [],
+  );
 
   const saveMutation = useMutation({
     mutationFn: () => {
@@ -125,12 +147,14 @@ function NouvelApprovisionnementPage() {
         date_achat: date,
         reference_fournisseur: referenceFournisseur || null,
         notes: notes || null,
+        idempotency_key: isEdit ? null : idempotencyKey,
         lignes: lignes.map((l) => ({
           produit_id: l.produit_id,
           reference_produit: l.reference_produit || null,
           designation: l.designation,
           quantite: l.quantite,
           prix_unitaire: l.prix_unitaire,
+          remise_pct: l.remise_pct ?? 0,
         })),
       };
       return isEdit
@@ -146,6 +170,7 @@ function NouvelApprovisionnementPage() {
         qc.invalidateQueries({ queryKey: ["achat", editId] });
         qc.invalidateQueries({ queryKey: ["achat-lignes", editId] });
       }
+      if (!isEdit) void draft.markConverted();
       setConfirmOpen(false);
       navigate({ to: "/achats" });
     },

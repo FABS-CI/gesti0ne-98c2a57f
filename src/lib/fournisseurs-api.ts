@@ -2,6 +2,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type Fournisseur = {
   fournisseur_id: string;
+  /** Référence unique auto-générée (FRS-0001). Lecture seule. */
+  reference: string | null;
   raison_sociale: string;
   contact: string | null;
   email: string | null;
@@ -25,7 +27,10 @@ export type FournisseurInput = {
 
 export async function listFournisseurs(q?: string) {
   let query = supabase.from("fournisseurs").select("*");
-  if (q) query = query.or(`raison_sociale.ilike.%${q}%,contact.ilike.%${q}%,ville.ilike.%${q}%`);
+  if (q)
+    query = query.or(
+      `raison_sociale.ilike.%${q}%,contact.ilike.%${q}%,ville.ilike.%${q}%,reference.ilike.%${q}%`,
+    );
   query = query.order("raison_sociale", { ascending: true });
   const { data, error } = await query;
   if (error) throw error;

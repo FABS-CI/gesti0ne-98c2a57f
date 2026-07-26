@@ -66,6 +66,7 @@ export type Database = {
           produit_id: string | null
           quantite: number
           reference_produit: string | null
+          remise_pct: number
           total_ligne: number
         }
         Insert: {
@@ -77,6 +78,7 @@ export type Database = {
           produit_id?: string | null
           quantite?: number
           reference_produit?: string | null
+          remise_pct?: number
           total_ligne?: number
         }
         Update: {
@@ -88,6 +90,7 @@ export type Database = {
           produit_id?: string | null
           quantite?: number
           reference_produit?: string | null
+          remise_pct?: number
           total_ligne?: number
         }
         Relationships: [
@@ -111,6 +114,7 @@ export type Database = {
           exercice_id: string | null
           fournisseur_id: string | null
           fournisseur_nom: string | null
+          idempotency_key: string | null
           libelle: string
           montant: number
           notes: string | null
@@ -130,6 +134,7 @@ export type Database = {
           exercice_id?: string | null
           fournisseur_id?: string | null
           fournisseur_nom?: string | null
+          idempotency_key?: string | null
           libelle?: string
           montant?: number
           notes?: string | null
@@ -149,6 +154,7 @@ export type Database = {
           exercice_id?: string | null
           fournisseur_id?: string | null
           fournisseur_nom?: string | null
+          idempotency_key?: string | null
           libelle?: string
           montant?: number
           notes?: string | null
@@ -1235,6 +1241,7 @@ export type Database = {
           depot_id: string | null
           etablissement: string | null
           exercice_id: string | null
+          idempotency_key: string | null
           montant_total: number
           montant_ttc: number
           montant_tva: number
@@ -1278,6 +1285,7 @@ export type Database = {
           depot_id?: string | null
           etablissement?: string | null
           exercice_id?: string | null
+          idempotency_key?: string | null
           montant_total?: number
           montant_ttc?: number
           montant_tva?: number
@@ -1321,6 +1329,7 @@ export type Database = {
           depot_id?: string | null
           etablissement?: string | null
           exercice_id?: string | null
+          idempotency_key?: string | null
           montant_total?: number
           montant_ttc?: number
           montant_tva?: number
@@ -1706,6 +1715,42 @@ export type Database = {
           type_depot?: string
           updated_at?: string
           ville?: string | null
+        }
+        Relationships: []
+      }
+      document_drafts: {
+        Row: {
+          created_at: string
+          doc_type: string
+          draft_id: string
+          entity_id: string | null
+          id: string
+          payload: Json
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doc_type: string
+          draft_id: string
+          entity_id?: string | null
+          id?: string
+          payload?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          draft_id?: string
+          entity_id?: string | null
+          id?: string
+          payload?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -2610,6 +2655,7 @@ export type Database = {
           email: string | null
           fournisseur_id: string
           raison_sociale: string
+          reference: string | null
           telephone: string | null
           updated_at: string
           ville: string | null
@@ -2622,6 +2668,7 @@ export type Database = {
           email?: string | null
           fournisseur_id?: string
           raison_sociale: string
+          reference?: string | null
           telephone?: string | null
           updated_at?: string
           ville?: string | null
@@ -2634,6 +2681,7 @@ export type Database = {
           email?: string | null
           fournisseur_id?: string
           raison_sociale?: string
+          reference?: string | null
           telephone?: string | null
           updated_at?: string
           ville?: string | null
@@ -3667,6 +3715,7 @@ export type Database = {
           date_paiement: string
           exercice_id: string | null
           facture_id: string | null
+          idempotency_key: string | null
           mode_paiement: string
           montant: number
           motif_rejet: string | null
@@ -3692,6 +3741,7 @@ export type Database = {
           date_paiement?: string
           exercice_id?: string | null
           facture_id?: string | null
+          idempotency_key?: string | null
           mode_paiement?: string
           montant?: number
           motif_rejet?: string | null
@@ -3717,6 +3767,7 @@ export type Database = {
           date_paiement?: string
           exercice_id?: string | null
           facture_id?: string | null
+          idempotency_key?: string | null
           mode_paiement?: string
           montant?: number
           motif_rejet?: string | null
@@ -6513,6 +6564,7 @@ export type Database = {
           date_paiement: string
           exercice_id: string | null
           facture_id: string | null
+          idempotency_key: string | null
           mode_paiement: string
           montant: number
           motif_rejet: string | null
@@ -6831,6 +6883,7 @@ export type Database = {
           depot_id: string | null
           etablissement: string | null
           exercice_id: string | null
+          idempotency_key: string | null
           montant_total: number
           montant_ttc: number
           montant_tva: number
@@ -7078,6 +7131,7 @@ export type Database = {
           exercice_id: string | null
           fournisseur_id: string | null
           fournisseur_nom: string | null
+          idempotency_key: string | null
           libelle: string
           montant: number
           notes: string | null
@@ -7105,6 +7159,7 @@ export type Database = {
           date_paiement: string
           exercice_id: string | null
           facture_id: string | null
+          idempotency_key: string | null
           mode_paiement: string
           montant: number
           motif_rejet: string | null
@@ -7400,6 +7455,7 @@ export type Database = {
           exercice_id: string | null
           fournisseur_id: string | null
           fournisseur_nom: string | null
+          idempotency_key: string | null
           libelle: string
           montant: number
           notes: string | null
@@ -7437,6 +7493,7 @@ export type Database = {
           depot_id: string | null
           etablissement: string | null
           exercice_id: string | null
+          idempotency_key: string | null
           montant_total: number
           montant_ttc: number
           montant_tva: number
@@ -7602,6 +7659,7 @@ export type Database = {
           date_paiement: string
           exercice_id: string | null
           facture_id: string | null
+          idempotency_key: string | null
           mode_paiement: string
           montant: number
           motif_rejet: string | null
@@ -7804,6 +7862,7 @@ export type Database = {
           date_paiement: string
           exercice_id: string | null
           facture_id: string | null
+          idempotency_key: string | null
           mode_paiement: string
           montant: number
           motif_rejet: string | null

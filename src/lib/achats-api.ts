@@ -37,6 +37,8 @@ export type AchatLigne = {
   designation: string;
   quantite: number;
   prix_unitaire: number;
+  /** Remise appliquée à la ligne, en pourcentage (0-100). */
+  remise_pct: number;
   total_ligne: number;
   created_at: string;
 };
@@ -47,6 +49,8 @@ export type ApprovisionnementLigneInput = {
   designation: string;
   quantite: number;
   prix_unitaire: number;
+  /** Remise en pourcentage (0-100). */
+  remise_pct?: number;
 };
 
 export type ApprovisionnementInput = {
@@ -55,6 +59,8 @@ export type ApprovisionnementInput = {
   date_achat: string;
   reference_fournisseur?: string | null;
   notes?: string | null;
+  /** Clé d'idempotence générée à l'ouverture du formulaire (anti-doublon). */
+  idempotency_key?: string | null;
   lignes: ApprovisionnementLigneInput[];
 };
 
@@ -158,12 +164,14 @@ export async function creerApprovisionnement(input: ApprovisionnementInput) {
     date_achat: input.date_achat,
     reference_fournisseur: input.reference_fournisseur ?? null,
     notes: input.notes ?? null,
+    idempotency_key: input.idempotency_key ?? null,
     lignes: input.lignes.map((l) => ({
       produit_id: l.produit_id,
       reference_produit: l.reference_produit ?? null,
       designation: l.designation,
       quantite: l.quantite,
       prix_unitaire: l.prix_unitaire,
+      remise_pct: l.remise_pct ?? 0,
     })),
   };
   const { data, error } = await callRpc("enregistrer_approvisionnement", {
@@ -186,6 +194,7 @@ export async function modifierApprovisionnement(id: string, input: Approvisionne
       designation: l.designation,
       quantite: l.quantite,
       prix_unitaire: l.prix_unitaire,
+      remise_pct: l.remise_pct ?? 0,
     })),
   };
   const { data, error } = await supabase.rpc("modifier_approvisionnement" as never, {
