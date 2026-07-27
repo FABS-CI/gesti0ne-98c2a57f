@@ -282,7 +282,7 @@ const TITRES: Record<DocType, string> = {
   RP: "Reçu de Paiement",
   BP: "Bulletin de Paie",
   SP: "Bon de Remise de Spécimens",
-  BA: "Bon de Réception (Approvisionnement)",
+  BA: "Bon de Réception",
   BT: "Bon de Transfert Inter-dépôts",
 };
 
@@ -1760,7 +1760,12 @@ async function buildTableDoc(
     partyLabel?: string;
   } = {},
 ): Promise<Blob> {
-  const sigLabel = opts.signatures === "bl" ? "Signature du Réceptionnaire" : "La Comptabilité";
+  const sigLabel =
+    type === "BA"
+      ? "Responsable de la gestion des stocks"
+      : opts.signatures === "bl"
+        ? "Signature du Réceptionnaire"
+        : "La Comptabilité";
   const DT_MAP: Record<DocType, SettingsDocType> = {
     FC: "facture",
     PF: "proforma",
@@ -2479,7 +2484,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
 
   // Signatures (3 colonnes)
   const sigY = Math.max(y, BODY_BOTTOM_Y + 10);
-  const sigLabels = ["Le Client", "Le Caissier", "Le Responsable Comptable"];
+  const sigLabels = ["Le Client", "La Comptabilité"];
   const sigW = CONTENT_W / 3;
   sigLabels.forEach((lbl, i) => {
     const cx = MARGIN.x + sigW * i + sigW / 2;
