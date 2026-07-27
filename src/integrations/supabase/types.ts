@@ -4819,7 +4819,10 @@ export type Database = {
           is_system: boolean
           label: string
           sort: number
+          statut: string
           updated_at: string
+          valide_at: string | null
+          valide_by: string | null
         }
         Insert: {
           code: string
@@ -4828,7 +4831,10 @@ export type Database = {
           is_system?: boolean
           label: string
           sort?: number
+          statut?: string
           updated_at?: string
+          valide_at?: string | null
+          valide_by?: string | null
         }
         Update: {
           code?: string
@@ -4837,7 +4843,10 @@ export type Database = {
           is_system?: boolean
           label?: string
           sort?: number
+          statut?: string
           updated_at?: string
+          valide_at?: string | null
+          valide_by?: string | null
         }
         Relationships: []
       }
