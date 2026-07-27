@@ -13,8 +13,7 @@ import {
 } from "@/lib/clients-api";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useActifsExerciceIds } from "@/hooks/use-actifs-exercice";
-import { useUserRoles } from "@/hooks/use-user-roles";
-import { isReadOnly } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/use-permissions";
 import { CrmFiltersPanel } from "@/components/clients/CrmFilters";
 import { searchClientsCrm, type CrmFilters } from "@/lib/crm-api";
 import { describeSupabaseError } from "@/lib/rbac-api";
@@ -44,8 +43,8 @@ export const Route = createFileRoute("/_authenticated/clients/")({
 function ClientsPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { roles } = useUserRoles();
-  const readOnly = isReadOnly("clients", roles);
+  const { has: hasPermission } = usePermissions();
+  const readOnly = !hasPermission("clients.creer") && !hasPermission("clients.modifier");
   const { edit: editId } = Route.useSearch();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");

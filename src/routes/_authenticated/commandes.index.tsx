@@ -10,7 +10,6 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
 import { useUserRoles } from "@/hooks/use-user-roles";
 import { usePermissions } from "@/hooks/use-permissions";
-import { isReadOnly } from "@/lib/permissions";
 import { useCommandesList } from "@/hooks/use-commandes-list";
 import { CommandesCycleSteps } from "@/components/commandes/list/CommandesCycleSteps";
 import { CommandesKpis } from "@/components/commandes/list/CommandesKpis";
@@ -64,11 +63,11 @@ function CommandesPage() {
   const q = useDebouncedValue(search, 300);
   const [advanced, setAdvanced] = useState<AdvancedFilters>({});
   const exerciceId = useExerciceConsulteId();
-  const { roles, isSuperAdmin } = useUserRoles();
+  const { isSuperAdmin } = useUserRoles();
   const { has: hasPermission } = usePermissions();
   const canValider = hasPermission("commandes.valider");
   const canModifier = hasPermission("commandes.modifier");
-  const readOnly = isReadOnly("commandes", roles);
+  const readOnly = !canModifier && !hasPermission("commandes.creer");
   const [commandeToDelete, setCommandeToDelete] = useState<Commande | null>(null);
 
   useEffect(() => {

@@ -9,7 +9,7 @@ import { useIdleTimeout } from "@/hooks/useIdleTimeout";
 import { IdleWarningModal } from "@/components/IdleWarningModal";
 import { loadDocumentSettings } from "@/lib/document-settings-api";
 import { useAuth } from "@/hooks/use-auth";
-import { isUserRestricted } from "@/lib/permissions";
+import { useRouteRestrictions } from "@/hooks/use-route-restrictions";
 import { useNotificationsRealtime } from "@/hooks/use-notifications-realtime";
 import { usePresenceBroadcast } from "@/hooks/use-presence-broadcast";
 import { useRealtimeBus } from "@/hooks/use-realtime-bus";
@@ -54,7 +54,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { showWarning, countdown, extendSession, handleLogout } = useIdleTimeout();
   const { user } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const blocked = isUserRestricted(user?.email, pathname);
+  const { isRestricted } = useRouteRestrictions();
+  const blocked = isRestricted(pathname);
   const moduleThemeVars = buildModuleThemeVars(getModuleColor(pathname));
   const perfOverlayEnabled = usePerfOverlayEnabled();
 

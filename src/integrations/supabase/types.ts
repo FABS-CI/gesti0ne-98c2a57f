@@ -4161,6 +4161,7 @@ export type Database = {
           nom: string | null
           nom_complet: string | null
           prenom: string | null
+          route_restrictions: string[]
           service_id: string | null
           statut: string
           telephone: string | null
@@ -4185,6 +4186,7 @@ export type Database = {
           nom?: string | null
           nom_complet?: string | null
           prenom?: string | null
+          route_restrictions?: string[]
           service_id?: string | null
           statut?: string
           telephone?: string | null
@@ -4209,6 +4211,7 @@ export type Database = {
           nom?: string | null
           nom_complet?: string | null
           prenom?: string | null
+          route_restrictions?: string[]
           service_id?: string | null
           statut?: string
           telephone?: string | null
