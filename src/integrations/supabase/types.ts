@@ -6765,6 +6765,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      approbation_escalader_sla: { Args: never; Returns: Json }
       approbation_rouvrir: {
         Args: { _approval_id: string; _motif: string }
         Returns: undefined
