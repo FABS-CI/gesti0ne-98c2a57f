@@ -7,7 +7,7 @@ import { invalidateCommande, invalidateFacture, invalidateColisage } from "@/lib
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Info, Percent, Save, User } from "lucide-react";
+import { Info, Loader2, Percent, Save, User } from "lucide-react";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useServerDraft } from "@/hooks/use-server-draft";
 import { DraftRestoreBanner } from "@/components/ui/draft-restore-banner";

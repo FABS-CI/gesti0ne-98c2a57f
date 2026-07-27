@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft, Save, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Loader2, Save, ShoppingBag } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
