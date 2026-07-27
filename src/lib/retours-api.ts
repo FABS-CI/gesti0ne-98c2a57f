@@ -153,46 +153,10 @@ export async function getRetour(id: string): Promise<RetourWithLignes | null> {
   return { ...(data as Retour), lignes: (lignes ?? []) as RetourLigne[] };
 }
 
-export async function creerRetour(input: RetourInput): Promise<Retour> {
-  await assertPermission("retours.creer");
-  const type_retour = input.type_retour ?? "physique";
-  const depot_id =
-    type_retour === "avoir" ? null : (input.depot_id ?? (await getDepotDefautId()));
-  const payload = {
-    date_retour: input.date_retour ?? new Date().toISOString().slice(0, 10),
-    client_id: input.client_id,
-    type_retour,
-    etablissement: input.etablissement ?? null,
-    representant_nom: input.representant_nom ?? null,
-    telephone: input.telephone ?? null,
-    ville: input.ville ?? null,
-    adresse: input.adresse ?? null,
-    depot_id,
-    observations: input.observations ?? null,
-    notes: input.notes ?? null,
-    facture_id: input.facture_id ?? null,
-    livraison_id: input.livraison_id ?? null,
-    lignes: input.lignes.map((l) => ({
-      produit_id: l.produit_id,
-      reference_produit: l.reference_produit ?? null,
-      designation: l.designation,
-      quantite: l.quantite,
-      motif: l.motif ?? null,
-    })),
-  };
+// `creerRetour` (RPC historique `creer_retour`, statut « accepte ») a été retiré :
+// le workflow v2 à 9 statuts passe désormais par `creerRetourDemande` puis
+// réception magasin et validation comptable.
 
-  const { data, error } = await (
-    supabase as unknown as {
-      rpc: (
-        name: string,
-        args: { _payload: unknown },
-      ) => Promise<{ data: unknown; error: Error | null }>;
-    }
-  ).rpc("creer_retour", { _payload: payload });
-
-  if (error) throw error;
-  return data as Retour;
-}
 
 export async function annulerRetour(id: string): Promise<void> {
   await assertPermission("retours.annuler");
