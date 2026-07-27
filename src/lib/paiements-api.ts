@@ -153,6 +153,7 @@ export type EnregistrerPaiementInput = {
   banque?: string | null;
   num_transaction?: string | null;
   observations?: string | null;
+  idempotency_key?: string | null;
 };
 
 export async function enregistrerPaiement(input: EnregistrerPaiementInput) {

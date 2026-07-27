@@ -1,0 +1,188 @@
+ALTER TABLE public.commandes ADD COLUMN IF NOT EXISTS idempotency_key text;
+ALTER TABLE public.paiements ADD COLUMN IF NOT EXISTS idempotency_key text;
+CREATE UNIQUE INDEX IF NOT EXISTS commandes_idempotency_key_uidx ON public.commandes(idempotency_key) WHERE idempotency_key IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS paiements_idempotency_key_uidx ON public.paiements(idempotency_key) WHERE idempotency_key IS NOT NULL;
+
+CREATE OR REPLACE FUNCTION public.creer_commande(_payload jsonb)
+ RETURNS SETOF commandes
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_id uuid;
+  v_ref text;
+  v_ligne jsonb;
+  v_tva numeric := COALESCE((_payload->>'taux_tva')::numeric, 0);
+  v_remise_g numeric := COALESCE((_payload->>'remise_globale_pct')::numeric, 0);
+  v_total_ht_brut numeric := 0;
+  v_total_remises numeric := 0;
+  v_total_ht_net numeric;
+  v_remise_g_mnt numeric;
+  v_tva_mnt numeric;
+  v_ttc numeric;
+  v_nb int := 0;
+  v_qte int := 0;
+  v_qte_l numeric; v_pu numeric; v_rpct numeric; v_rmnt numeric; v_tot numeric;
+  v_can_valider boolean;
+  v_uid uuid := auth.uid();
+  v_pro_id uuid;
+  v_pro_ref text;
+  v_ex uuid;
+  v_idem text := NULLIF(_payload->>'idempotency_key','');
+  v_existing uuid;
+BEGIN
+  PERFORM public.assert_permission('commandes.creer');
+
+  IF v_idem IS NOT NULL THEN
+    SELECT commande_id INTO v_existing FROM public.commandes WHERE idempotency_key = v_idem;
+    IF v_existing IS NOT NULL THEN
+      RETURN QUERY SELECT * FROM public.commandes WHERE commande_id = v_existing;
+      RETURN;
+    END IF;
+  END IF;
+
+  v_ref := public._next_ref('CMD', 'public.commandes', 'reference');
+  v_can_valider := (v_uid IS NOT NULL AND public.has_permission_v2(v_uid, 'commandes.valider'));
+  v_ex := NULLIF(_payload->>'exercice_id','')::uuid;
+
+  INSERT INTO public.commandes(
+    reference, client_id, client_nom, etablissement, representant_nom, telephone, ville, adresse,
+    observations, statut, remise_globale_pct, taux_tva, exercice_id, depot_id, created_by, idempotency_key
+  ) VALUES (
+    v_ref,
+    NULLIF(_payload->>'client_id','')::uuid,
+    _payload->>'client_nom',
+    _payload->>'etablissement',
+    _payload->>'representant_nom',
+    _payload->>'telephone',
+    _payload->>'ville',
+    _payload->>'adresse',
+    _payload->>'observations',
+    'en_attente_validation',
+    v_remise_g, v_tva,
+    v_ex,
+    NULLIF(_payload->>'depot_id','')::uuid,
+    v_uid,
+    v_idem
+  ) RETURNING commande_id INTO v_id;
+
+  FOR v_ligne IN SELECT * FROM jsonb_array_elements(COALESCE(_payload->'lignes','[]'::jsonb)) LOOP
+    v_qte_l := COALESCE((v_ligne->>'quantite')::numeric, 0);
+    v_pu    := COALESCE((v_ligne->>'prix_unitaire')::numeric, 0);
+    v_rpct  := COALESCE((v_ligne->>'remise_pct')::numeric, 0);
+    v_rmnt  := ROUND(v_qte_l * v_pu * v_rpct / 100, 2);
+    v_tot   := ROUND(v_qte_l * v_pu - v_rmnt, 2);
+    INSERT INTO public.commande_lignes(
+      commande_id, produit_id, reference_produit, designation, quantite, prix_unitaire,
+      remise_pct, montant_remise, total_ligne, total_ht_ligne
+    ) VALUES (
+      v_id,
+      NULLIF(v_ligne->>'produit_id','')::uuid,
+      v_ligne->>'reference_produit',
+      COALESCE(v_ligne->>'designation',''),
+      v_qte_l::int, v_pu, v_rpct, v_rmnt, v_tot, v_tot
+    );
+    v_total_ht_brut := v_total_ht_brut + v_qte_l * v_pu;
+    v_total_remises := v_total_remises + v_rmnt;
+    v_nb := v_nb + 1;
+    v_qte := v_qte + v_qte_l::int;
+  END LOOP;
+
+  v_total_ht_net := v_total_ht_brut - v_total_remises;
+  v_remise_g_mnt := ROUND(v_total_ht_net * v_remise_g / 100, 2);
+  v_total_ht_net := v_total_ht_net - v_remise_g_mnt;
+  v_tva_mnt := ROUND(v_total_ht_net * v_tva / 100, 2);
+  v_ttc := v_total_ht_net + v_tva_mnt;
+
+  UPDATE public.commandes SET
+    nb_produits = v_nb, total_quantite = v_qte,
+    total_ht_brut = v_total_ht_brut, total_remises_lignes = v_total_remises,
+    total_ht_net = v_total_ht_net, remise_globale_montant = v_remise_g_mnt,
+    montant_tva = v_tva_mnt, montant_ttc = v_ttc,
+    net_a_payer = v_ttc, montant_total = v_ttc
+  WHERE commande_id = v_id;
+
+  v_pro_ref := public._next_ref('PRO', 'public.proformas', 'reference');
+  INSERT INTO public.proformas(reference, client_id, client_nom, commande_id, date_proforma, date_validite, montant_total, statut, notes)
+  VALUES (v_pro_ref,
+          NULLIF(_payload->>'client_id','')::uuid,
+          _payload->>'client_nom',
+          v_id, current_date, current_date + 30, v_ttc, 'emise',
+          'Proforma générée automatiquement depuis '||v_ref)
+  RETURNING proforma_id INTO v_pro_id;
+
+  INSERT INTO public.proforma_lignes(proforma_id, produit_id, reference_produit, designation, quantite, prix_unitaire, total_ligne)
+  SELECT v_pro_id, produit_id, reference_produit, designation, quantite, prix_unitaire, total_ligne
+  FROM public.commande_lignes WHERE commande_id = v_id;
+
+  IF v_can_valider THEN
+    PERFORM public.valider_commande(v_id);
+  END IF;
+
+  RETURN QUERY SELECT * FROM public.commandes WHERE commande_id = v_id;
+END; $function$;
+
+CREATE OR REPLACE FUNCTION public.enregistrer_paiement(_payload jsonb)
+ RETURNS SETOF paiements
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  v_id uuid;
+  v_ref text;
+  v_facture_id uuid := NULLIF(_payload->>'facture_id','')::uuid;
+  v_montant numeric := COALESCE((_payload->>'montant')::numeric, 0);
+  v_client_id uuid;
+  v_client_nom text;
+  v_new_paye numeric; v_total numeric;
+  v_date date := COALESCE((_payload->>'date_paiement')::date, current_date);
+  v_ex uuid;
+  v_idem text := NULLIF(_payload->>'idempotency_key','');
+  v_existing uuid;
+BEGIN
+  PERFORM public.assert_permission('paiements.creer');
+
+  IF v_idem IS NOT NULL THEN
+    SELECT paiement_id INTO v_existing FROM public.paiements WHERE idempotency_key = v_idem;
+    IF v_existing IS NOT NULL THEN
+      RETURN QUERY SELECT * FROM public.paiements WHERE paiement_id = v_existing;
+      RETURN;
+    END IF;
+  END IF;
+
+  IF v_facture_id IS NULL THEN RAISE EXCEPTION 'facture_id obligatoire'; END IF;
+  SELECT client_id, client_nom, montant_total, montant_paye INTO v_client_id, v_client_nom, v_total, v_new_paye
+    FROM public.factures WHERE facture_id = v_facture_id;
+  IF v_total IS NULL THEN RAISE EXCEPTION 'Facture introuvable'; END IF;
+
+  v_ex := public._resolve_exercice_id(v_date);
+  IF v_ex IS NULL THEN
+    SELECT exercice_id INTO v_ex FROM public.exercices_comptables WHERE is_actif ORDER BY date_debut DESC LIMIT 1;
+  END IF;
+
+  v_ref := public._next_ref('PAI', 'public.paiements', 'reference');
+
+  INSERT INTO public.paiements(
+    reference, facture_id, client_nom, date_paiement, montant, mode_paiement,
+    statut, notes, reference_paiement, banque, num_transaction, observations, cree_par, exercice_id,
+    idempotency_key
+  ) VALUES (
+    v_ref, v_facture_id, v_client_nom, v_date, v_montant,
+    COALESCE(_payload->>'mode_paiement','especes'), 'valide',
+    _payload->>'notes', _payload->>'reference_paiement', _payload->>'banque',
+    _payload->>'num_transaction', _payload->>'observations', auth.uid(), v_ex,
+    v_idem
+  ) RETURNING paiement_id INTO v_id;
+
+  v_new_paye := COALESCE(v_new_paye,0) + v_montant;
+  UPDATE public.factures SET
+    montant_paye = v_new_paye,
+    statut = CASE WHEN v_new_paye >= v_total THEN 'payee' WHEN v_new_paye > 0 THEN 'partielle' ELSE 'impayee' END
+  WHERE facture_id = v_facture_id;
+
+  PERFORM public._recalc_solde_client_internal(v_client_id);
+
+  RETURN QUERY SELECT * FROM public.paiements WHERE paiement_id = v_id;
+END; $function$;
