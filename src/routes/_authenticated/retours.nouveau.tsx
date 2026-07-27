@@ -191,7 +191,11 @@ function RetourNouveauPage() {
             <Link to="/retours">Annuler</Link>
           </Button>
           <Button type="submit" disabled={mutation.isPending}>
-            <Save className="h-4 w-4 mr-2" />
+            {mutation.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4 mr-2" />
+            )}
             {mutation.isPending ? "Enregistrement…" : "Enregistrer"}
           </Button>
         </div>
