@@ -79,3 +79,11 @@ Rôles demandés manquants ou mal nommés : `rh` existe mais sans utilisateur, `
 À conserver : `rbac2_audit` + `rbac_audit_log` (historiques, append-only), `profiles`, `auth.users`, toutes les données métier, `route-permissions.ts` (à régénérer, pas à jeter).
 
 Migration préalable obligatoire : réécrire les **224 policies** qui référencent `has_role(...,'app_role')` avant de supprimer `user_roles`, sinon perte totale d'accès.
+
+---
+
+## Étape R4 — Unification des sources de vérité des rôles (fait)
+
+- Trigger `trg_rbac_user_roles_propagate` sur `rbac_user_roles` : toute attribution/retrait est propagée automatiquement vers `rbac2_user_roles` (par `code`) et vers `user_roles` (enum `app_role`, encore utilisé par `has_role()` dans les policies RLS). Backfill effectué.
+- `use-user-roles.ts` lit désormais `rbac2_user_roles` (tous les rôles v2 actifs) + `user_roles`, au lieu de ne récupérer que `super_admin` depuis v1. Realtime déplacé sur `rbac2_user_roles`.
+- Effet : plus d'écart silencieux UI / RLS entre les trois registres, quel que soit le chemin d'écriture (console RBAC, `users-admin.functions.ts`, SQL direct).
