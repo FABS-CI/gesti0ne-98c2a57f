@@ -65,7 +65,7 @@ function registerUserRolesRealtime(userId: string, queryClient: QueryClient) {
     )
     .on(
       "postgres_changes",
-      { event: "*", schema: "public", table: "rbac_user_roles", filter: `user_id=eq.${userId}` },
+      { event: "*", schema: "public", table: "rbac2_user_roles", filter: `user_id=eq.${userId}` },
       invalidateRoles,
     )
     .subscribe();
