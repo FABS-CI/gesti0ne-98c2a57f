@@ -265,6 +265,7 @@ export const groups: Group[] = [
     shadow: "rgba(99,102,241,0.3)",
     superAdminOnly: true,
     items: [
+      { title: "Tableau de bord sécurité", url: "/admin/securite", icon: Shield, ready: true },
       { title: "Utilisateurs", url: "/utilisateurs", icon: UserCog, ready: true },
       { title: "Rôles & Permissions", url: "/admin/roles-v2", icon: ShieldCheck, ready: true },
       // v1 legacy masquée du menu (tous les utilisateurs migrés) — accessible via /roles-permissions pour rollback
