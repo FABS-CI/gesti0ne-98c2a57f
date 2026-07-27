@@ -153,6 +153,7 @@ import { Route as AuthenticatedInventairesNouveauPhysiqueRouteImport } from './r
 import { Route as AuthenticatedInventairesInventaireIdRouteImport } from './routes/_authenticated/inventaires.$inventaireId'
 import { Route as AuthenticatedIncidentsNouveauRouteImport } from './routes/_authenticated/incidents.nouveau'
 import { Route as AuthenticatedIncidentsIncidentIdRouteImport } from './routes/_authenticated/incidents.$incidentId'
+import { Route as AuthenticatedFournisseursNouveauRouteImport } from './routes/_authenticated/fournisseurs.nouveau'
 import { Route as AuthenticatedFournisseursFournisseurIdRouteImport } from './routes/_authenticated/fournisseurs.$fournisseurId'
 import { Route as AuthenticatedFneDetailFactureIdRouteImport } from './routes/_authenticated/fne-detail.$factureId'
 import { Route as AuthenticatedFacturesFactureIdRouteImport } from './routes/_authenticated/factures.$factureId'
@@ -198,6 +199,7 @@ import { Route as AuthenticatedUtilisateursUserIdModifierRouteImport } from './r
 import { Route as AuthenticatedStockProduitIdMouvementsRouteImport } from './routes/_authenticated/stock_.$produitId.mouvements'
 import { Route as AuthenticatedLivraisonSuiviTourneesTourneeIdRouteImport } from './routes/_authenticated/livraison-suivi.tournees.$tourneeId'
 import { Route as AuthenticatedLivraisonSuiviCommandeRefRemiseRouteImport } from './routes/_authenticated/livraison-suivi.$commandeRef.remise'
+import { Route as AuthenticatedFournisseursFournisseurIdModifierRouteImport } from './routes/_authenticated/fournisseurs.$fournisseurId_.modifier'
 import { Route as AuthenticatedEvaluationsEvaluationIdModifierRouteImport } from './routes/_authenticated/evaluations.$evaluationId.modifier'
 import { Route as AuthenticatedEmployesEmployeIdModifierRouteImport } from './routes/_authenticated/employes.$employeId.modifier'
 import { Route as AuthenticatedContratsContratIdModifierRouteImport } from './routes/_authenticated/contrats.$contratId.modifier'
@@ -1026,6 +1028,12 @@ const AuthenticatedIncidentsIncidentIdRoute =
     path: '/$incidentId',
     getParentRoute: () => AuthenticatedIncidentsRoute,
   } as any)
+const AuthenticatedFournisseursNouveauRoute =
+  AuthenticatedFournisseursNouveauRouteImport.update({
+    id: '/nouveau',
+    path: '/nouveau',
+    getParentRoute: () => AuthenticatedFournisseursRoute,
+  } as any)
 const AuthenticatedFournisseursFournisseurIdRoute =
   AuthenticatedFournisseursFournisseurIdRouteImport.update({
     id: '/$fournisseurId',
@@ -1293,6 +1301,12 @@ const AuthenticatedLivraisonSuiviCommandeRefRemiseRoute =
     path: '/remise',
     getParentRoute: () => AuthenticatedLivraisonSuiviCommandeRefRoute,
   } as any)
+const AuthenticatedFournisseursFournisseurIdModifierRoute =
+  AuthenticatedFournisseursFournisseurIdModifierRouteImport.update({
+    id: '/$fournisseurId_/modifier',
+    path: '/$fournisseurId/modifier',
+    getParentRoute: () => AuthenticatedFournisseursRoute,
+  } as any)
 const AuthenticatedEvaluationsEvaluationIdModifierRoute =
   AuthenticatedEvaluationsEvaluationIdModifierRouteImport.update({
     id: '/$evaluationId/modifier',
@@ -1468,6 +1482,7 @@ export interface FileRoutesByFullPath {
   '/factures/$factureId': typeof AuthenticatedFacturesFactureIdRoute
   '/fne-detail/$factureId': typeof AuthenticatedFneDetailFactureIdRoute
   '/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRoute
+  '/fournisseurs/nouveau': typeof AuthenticatedFournisseursNouveauRoute
   '/incidents/$incidentId': typeof AuthenticatedIncidentsIncidentIdRoute
   '/incidents/nouveau': typeof AuthenticatedIncidentsNouveauRoute
   '/inventaires/$inventaireId': typeof AuthenticatedInventairesInventaireIdRoute
@@ -1531,6 +1546,7 @@ export interface FileRoutesByFullPath {
   '/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
   '/employes/$employeId/modifier': typeof AuthenticatedEmployesEmployeIdModifierRoute
   '/evaluations/$evaluationId/modifier': typeof AuthenticatedEvaluationsEvaluationIdModifierRoute
+  '/fournisseurs/$fournisseurId/modifier': typeof AuthenticatedFournisseursFournisseurIdModifierRoute
   '/livraison-suivi/$commandeRef/remise': typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRoute
   '/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
   '/stock/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
@@ -1644,6 +1660,7 @@ export interface FileRoutesByTo {
   '/factures/$factureId': typeof AuthenticatedFacturesFactureIdRoute
   '/fne-detail/$factureId': typeof AuthenticatedFneDetailFactureIdRoute
   '/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRoute
+  '/fournisseurs/nouveau': typeof AuthenticatedFournisseursNouveauRoute
   '/incidents/$incidentId': typeof AuthenticatedIncidentsIncidentIdRoute
   '/incidents/nouveau': typeof AuthenticatedIncidentsNouveauRoute
   '/inventaires/$inventaireId': typeof AuthenticatedInventairesInventaireIdRoute
@@ -1707,6 +1724,7 @@ export interface FileRoutesByTo {
   '/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
   '/employes/$employeId/modifier': typeof AuthenticatedEmployesEmployeIdModifierRoute
   '/evaluations/$evaluationId/modifier': typeof AuthenticatedEvaluationsEvaluationIdModifierRoute
+  '/fournisseurs/$fournisseurId/modifier': typeof AuthenticatedFournisseursFournisseurIdModifierRoute
   '/livraison-suivi/$commandeRef/remise': typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRoute
   '/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
   '/stock/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
@@ -1844,6 +1862,7 @@ export interface FileRoutesById {
   '/_authenticated/factures/$factureId': typeof AuthenticatedFacturesFactureIdRoute
   '/_authenticated/fne-detail/$factureId': typeof AuthenticatedFneDetailFactureIdRoute
   '/_authenticated/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRoute
+  '/_authenticated/fournisseurs/nouveau': typeof AuthenticatedFournisseursNouveauRoute
   '/_authenticated/incidents/$incidentId': typeof AuthenticatedIncidentsIncidentIdRoute
   '/_authenticated/incidents/nouveau': typeof AuthenticatedIncidentsNouveauRoute
   '/_authenticated/inventaires/$inventaireId': typeof AuthenticatedInventairesInventaireIdRoute
@@ -1907,6 +1926,7 @@ export interface FileRoutesById {
   '/_authenticated/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
   '/_authenticated/employes/$employeId/modifier': typeof AuthenticatedEmployesEmployeIdModifierRoute
   '/_authenticated/evaluations/$evaluationId/modifier': typeof AuthenticatedEvaluationsEvaluationIdModifierRoute
+  '/_authenticated/fournisseurs/$fournisseurId_/modifier': typeof AuthenticatedFournisseursFournisseurIdModifierRoute
   '/_authenticated/livraison-suivi/$commandeRef/remise': typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRoute
   '/_authenticated/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
   '/_authenticated/stock_/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
@@ -2044,6 +2064,7 @@ export interface FileRouteTypes {
     | '/factures/$factureId'
     | '/fne-detail/$factureId'
     | '/fournisseurs/$fournisseurId'
+    | '/fournisseurs/nouveau'
     | '/incidents/$incidentId'
     | '/incidents/nouveau'
     | '/inventaires/$inventaireId'
@@ -2107,6 +2128,7 @@ export interface FileRouteTypes {
     | '/contrats/$contratId/modifier'
     | '/employes/$employeId/modifier'
     | '/evaluations/$evaluationId/modifier'
+    | '/fournisseurs/$fournisseurId/modifier'
     | '/livraison-suivi/$commandeRef/remise'
     | '/livraison-suivi/tournees/$tourneeId'
     | '/stock/$produitId/mouvements'
@@ -2220,6 +2242,7 @@ export interface FileRouteTypes {
     | '/factures/$factureId'
     | '/fne-detail/$factureId'
     | '/fournisseurs/$fournisseurId'
+    | '/fournisseurs/nouveau'
     | '/incidents/$incidentId'
     | '/incidents/nouveau'
     | '/inventaires/$inventaireId'
@@ -2283,6 +2306,7 @@ export interface FileRouteTypes {
     | '/contrats/$contratId/modifier'
     | '/employes/$employeId/modifier'
     | '/evaluations/$evaluationId/modifier'
+    | '/fournisseurs/$fournisseurId/modifier'
     | '/livraison-suivi/$commandeRef/remise'
     | '/livraison-suivi/tournees/$tourneeId'
     | '/stock/$produitId/mouvements'
@@ -2419,6 +2443,7 @@ export interface FileRouteTypes {
     | '/_authenticated/factures/$factureId'
     | '/_authenticated/fne-detail/$factureId'
     | '/_authenticated/fournisseurs/$fournisseurId'
+    | '/_authenticated/fournisseurs/nouveau'
     | '/_authenticated/incidents/$incidentId'
     | '/_authenticated/incidents/nouveau'
     | '/_authenticated/inventaires/$inventaireId'
@@ -2482,6 +2507,7 @@ export interface FileRouteTypes {
     | '/_authenticated/contrats/$contratId/modifier'
     | '/_authenticated/employes/$employeId/modifier'
     | '/_authenticated/evaluations/$evaluationId/modifier'
+    | '/_authenticated/fournisseurs/$fournisseurId_/modifier'
     | '/_authenticated/livraison-suivi/$commandeRef/remise'
     | '/_authenticated/livraison-suivi/tournees/$tourneeId'
     | '/_authenticated/stock_/$produitId/mouvements'
@@ -3517,6 +3543,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIncidentsIncidentIdRouteImport
       parentRoute: typeof AuthenticatedIncidentsRoute
     }
+    '/_authenticated/fournisseurs/nouveau': {
+      id: '/_authenticated/fournisseurs/nouveau'
+      path: '/nouveau'
+      fullPath: '/fournisseurs/nouveau'
+      preLoaderRoute: typeof AuthenticatedFournisseursNouveauRouteImport
+      parentRoute: typeof AuthenticatedFournisseursRoute
+    }
     '/_authenticated/fournisseurs/$fournisseurId': {
       id: '/_authenticated/fournisseurs/$fournisseurId'
       path: '/$fournisseurId'
@@ -3832,6 +3865,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRouteImport
       parentRoute: typeof AuthenticatedLivraisonSuiviCommandeRefRoute
     }
+    '/_authenticated/fournisseurs/$fournisseurId_/modifier': {
+      id: '/_authenticated/fournisseurs/$fournisseurId_/modifier'
+      path: '/$fournisseurId/modifier'
+      fullPath: '/fournisseurs/$fournisseurId/modifier'
+      preLoaderRoute: typeof AuthenticatedFournisseursFournisseurIdModifierRouteImport
+      parentRoute: typeof AuthenticatedFournisseursRoute
+    }
     '/_authenticated/evaluations/$evaluationId/modifier': {
       id: '/_authenticated/evaluations/$evaluationId/modifier'
       path: '/$evaluationId/modifier'
@@ -4143,14 +4183,20 @@ const AuthenticatedFacturesRouteWithChildren =
 
 interface AuthenticatedFournisseursRouteChildren {
   AuthenticatedFournisseursFournisseurIdRoute: typeof AuthenticatedFournisseursFournisseurIdRoute
+  AuthenticatedFournisseursNouveauRoute: typeof AuthenticatedFournisseursNouveauRoute
   AuthenticatedFournisseursIndexRoute: typeof AuthenticatedFournisseursIndexRoute
+  AuthenticatedFournisseursFournisseurIdModifierRoute: typeof AuthenticatedFournisseursFournisseurIdModifierRoute
 }
 
 const AuthenticatedFournisseursRouteChildren: AuthenticatedFournisseursRouteChildren =
   {
     AuthenticatedFournisseursFournisseurIdRoute:
       AuthenticatedFournisseursFournisseurIdRoute,
+    AuthenticatedFournisseursNouveauRoute:
+      AuthenticatedFournisseursNouveauRoute,
     AuthenticatedFournisseursIndexRoute: AuthenticatedFournisseursIndexRoute,
+    AuthenticatedFournisseursFournisseurIdModifierRoute:
+      AuthenticatedFournisseursFournisseurIdModifierRoute,
   }
 
 const AuthenticatedFournisseursRouteWithChildren =
