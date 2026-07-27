@@ -282,7 +282,7 @@ const TITRES: Record<DocType, string> = {
   RP: "Reçu de Paiement",
   BP: "Bulletin de Paie",
   SP: "Bon de Remise de Spécimens",
-  BA: "Bon de Réception (Approvisionnement)",
+  BA: "Bon de Réception",
   BT: "Bon de Transfert Inter-dépôts",
 };
 
@@ -1760,7 +1760,12 @@ async function buildTableDoc(
     partyLabel?: string;
   } = {},
 ): Promise<Blob> {
-  const sigLabel = opts.signatures === "bl" ? "Signature du Réceptionnaire" : "La Comptabilité";
+  const sigLabel =
+    type === "BA"
+      ? "Responsable de la gestion des stocks"
+      : opts.signatures === "bl"
+        ? "Signature du Réceptionnaire"
+        : "La Comptabilité";
   const DT_MAP: Record<DocType, SettingsDocType> = {
     FC: "facture",
     PF: "proforma",
@@ -2290,7 +2295,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
     title: TITRES.RP,
     reference: data.reference,
     date: data.date,
-    signatureLabel: "Le Caissier",
+    signatureLabel: "La Comptabilité",
     showQr: false,
     docType: "recu",
   });
@@ -2311,14 +2316,14 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
   let y = drawHeader(ctx, TITRES.RP);
   y -= 14;
 
-  // Titre centré
-  textCenter(ctx, "REÇU DE PAIEMENT", PAGE.w / 2, y, {
-    size: 16,
-    bold: true,
-    color: ctx.theme.title,
+  // Bande orange (titre déjà porté par l'en-tête)
+  ctx.page.drawRectangle({
+    x: MARGIN.x,
+    y: y - 4,
+    width: CONTENT_W,
+    height: 3,
+    color: FABS_COLORS.orange ?? ctx.theme.title,
   });
-  y -= 6;
-  hline(ctx, y);
   y -= 20;
 
   // Deux colonnes : Client (gauche) / Paiement (droite)
@@ -2477,10 +2482,11 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
   }
   y -= 46;
 
-  // Signatures (3 colonnes)
+  // Signatures (2 colonnes)
   const sigY = Math.max(y, BODY_BOTTOM_Y + 10);
-  const sigLabels = ["Le Client", "Le Caissier", "Le Responsable Comptable"];
-  const sigW = CONTENT_W / 3;
+  const sigLabels = ["Le Client", "La Comptabilité"];
+  const sigW = CONTENT_W / sigLabels.length;
+  
   sigLabels.forEach((lbl, i) => {
     const cx = MARGIN.x + sigW * i + sigW / 2;
     textCenter(ctx, lbl, cx, sigY, { size: 9, bold: true });
