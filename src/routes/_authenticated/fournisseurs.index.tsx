@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Truck, Search, Plus, Download, Pencil, Trash2 } from "lucide-react";
@@ -7,11 +7,8 @@ import { toast } from "sonner";
 
 import {
   listFournisseurs,
-  createFournisseur,
-  updateFournisseur,
   deleteFournisseur,
   type Fournisseur,
-  type FournisseurInput,
 } from "@/lib/fournisseurs-api";
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -34,13 +31,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 
 import { authRouteHead } from "@/lib/route-head";
@@ -52,23 +42,11 @@ export const Route = createFileRoute("/_authenticated/fournisseurs/")({
   notFoundComponent: RouteNotFound,
 });
 
-const emptyForm: FournisseurInput = {
-  raison_sociale: "",
-  contact: "",
-  email: "",
-  telephone: "",
-  adresse: "",
-  ville: "",
-  actif: true,
-};
-
 function FournisseursPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const q = useDebouncedValue(search, 300);
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<Fournisseur | null>(null);
-  const [form, setForm] = useState<FournisseurInput>(emptyForm);
+  const navigate = useNavigate();
   const [actifsExercice, setActifsExercice] = useState(false);
 
   const { data: fournisseursRaw = [], isLoading } = useQuery({
@@ -80,20 +58,6 @@ function FournisseursPage() {
     actifsExercice && actifsIds
       ? fournisseursRaw.filter((f) => actifsIds.has(f.fournisseur_id))
       : fournisseursRaw;
-
-  const saveMutation = useMutation({
-    mutationFn: (input: FournisseurInput) =>
-      editing ? updateFournisseur(editing.fournisseur_id, input) : createFournisseur(input),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fournisseurs"] });
-      toast.success(editing ? "Fournisseur modifié" : "Fournisseur ajouté");
-      setOpen(false);
-    },
-    onError: (e: unknown) => {
-      const d = describeSupabaseError(e);
-      toast.error(d.title, { description: d.message });
-    },
-  });
 
   const deleteMutation = useMutation({
     mutationFn: ({ id, motif }: { id: string; motif: string | null }) =>
@@ -118,38 +82,15 @@ function FournisseursPage() {
   };
 
   function openNew() {
-    setEditing(null);
-    setForm(emptyForm);
-    setOpen(true);
-  }
-
-  function openEdit(f: Fournisseur) {
-    setEditing(f);
-    setForm({
-      raison_sociale: f.raison_sociale,
-      contact: f.contact ?? "",
-      email: f.email ?? "",
-      telephone: f.telephone ?? "",
-      adresse: f.adresse ?? "",
-      ville: f.ville ?? "",
-      actif: f.actif,
-    });
-    setOpen(true);
-  }
-
-  function submit() {
-    if (!form.raison_sociale.trim()) {
-      toast.error("La raison sociale est requise");
-      return;
-    }
-    saveMutation.mutate(form);
+    navigate({ to: "/fournisseurs/nouveau" });
   }
 
   function handleExport() {
     exportCsv(
       "fournisseurs.csv",
-      ["Raison sociale", "Contact", "Email", "Téléphone", "Ville", "Statut"],
+      ["Référence", "Raison sociale", "Contact", "Email", "Téléphone", "Ville", "Statut"],
       fournisseurs.map((f) => [
+        f.reference ?? "",
         f.raison_sociale,
         f.contact ?? "",
         f.email ?? "",
@@ -237,6 +178,7 @@ function FournisseursPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Référence</TableHead>
                 <TableHead>Raison sociale</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Email</TableHead>
@@ -249,13 +191,13 @@ function FournisseursPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                  <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                     Chargement...
                   </TableCell>
                 </TableRow>
               ) : fournisseurs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-10 text-center">
+                  <TableCell colSpan={8} className="py-10 text-center">
                     <EmptyState
                       variant={hasActiveFilters ? "compact" : "rich"}
                       icon={Truck}
@@ -284,6 +226,7 @@ function FournisseursPage() {
               ) : (
                 fournisseurs.map((f) => (
                   <TableRow key={f.fournisseur_id}>
+                    <TableCell className="font-mono text-xs">{f.reference ?? "—"}</TableCell>
                     <TableCell className="font-medium">{f.raison_sociale}</TableCell>
                     <TableCell>{f.contact ?? "—"}</TableCell>
                     <TableCell>{f.email ?? "—"}</TableCell>
@@ -295,8 +238,13 @@ function FournisseursPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" onClick={() => openEdit(f)}>
-                        <Pencil className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" asChild>
+                        <Link
+                          to="/fournisseurs/$fournisseurId/modifier"
+                          params={{ fournisseurId: f.fournisseur_id }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Link>
                       </Button>
                       <Can permission="fournisseurs.supprimer">
                         <Button
@@ -315,74 +263,6 @@ function FournisseursPage() {
           </Table>
         </ResponsiveTable>
       </div>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editing ? "Modifier le fournisseur" : "Nouveau fournisseur"}</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label>Raison sociale</Label>
-              <Input
-                value={form.raison_sociale}
-                onChange={(e) => setForm((f) => ({ ...f, raison_sociale: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Contact</Label>
-              <Input
-                value={form.contact ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, contact: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Email</Label>
-              <Input
-                type="email"
-                value={form.email ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Téléphone</Label>
-              <Input
-                value={form.telephone ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, telephone: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Ville</Label>
-              <Input
-                value={form.ville ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, ville: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label>Adresse</Label>
-              <Input
-                value={form.adresse ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, adresse: e.target.value }))}
-              />
-            </div>
-            <div className="flex items-center gap-2 sm:col-span-2">
-              <Switch
-                checked={form.actif}
-                onCheckedChange={(v) => setForm((f) => ({ ...f, actif: v }))}
-              />
-              <Label>Actif</Label>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Annuler
-            </Button>
-            <Button onClick={submit} disabled={saveMutation.isPending}>
-              {editing ? "Enregistrer" : "Créer"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <ConfirmDeleteDialog
         open={!!toDelete}
