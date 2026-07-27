@@ -85,13 +85,22 @@ export type AchatArticleFilters = {
 
 /** Renvoie les ids d'approvisionnements contenant au moins une ligne correspondant aux filtres. */
 async function findAchatIdsByArticle(f: AchatArticleFilters): Promise<string[]> {
-  const needsProduit = !!f.categorie;
-  let query = supabase
-    .from("achat_lignes")
-    .select(needsProduit ? "achat_id, produits!inner(categorie)" : "achat_id");
+  let produitIds: string[] | null = null;
+  if (f.categorie) {
+    const { data: prods, error: prodErr } = await supabase
+      .from("produits")
+      .select("produit_id")
+      .eq("categorie", f.categorie)
+      .limit(5000);
+    if (prodErr) throw prodErr;
+    produitIds = (prods ?? []).map((p) => p.produit_id);
+    if (produitIds.length === 0) return [];
+  }
+
+  let query = supabase.from("achat_lignes").select("achat_id");
   if (f.article) query = query.ilike("designation", `%${f.article}%`);
   if (f.refArticle) query = query.ilike("reference_produit", `%${f.refArticle}%`);
-  if (f.categorie) query = query.eq("produits.categorie", f.categorie);
+  if (produitIds) query = query.in("produit_id", produitIds);
   const { data, error } = await query.limit(5000);
   if (error) throw error;
   return Array.from(new Set(((data ?? []) as { achat_id: string }[]).map((r) => r.achat_id)));
