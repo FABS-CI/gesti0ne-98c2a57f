@@ -166,6 +166,17 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     return { brut, remisesLignes, htNet, remiseGlobaleMontant, htApresRG, tva, ttc };
   }, [lignesWatch, remiseGlobalePct, tauxTva]);
 
+  // --- Brouillon serveur (reprise de saisie) — création uniquement ---
+  const draftWatch = useWatch({ control: form.control }) as Partial<CommandeFormValues>;
+  const draft = useServerDraft<Partial<CommandeFormValues>>({
+    docType: "commande",
+    value: draftWatch,
+    enabled: mode === "create",
+    isEmpty: (v) => !v.client_id && !(v.lignes ?? []).some((l) => l?.produit_id || l?.designation),
+  });
+
+
+
   const mutation = useMutation({
     mutationFn: (values: CommandeFormValues) => {
       const payload = {
