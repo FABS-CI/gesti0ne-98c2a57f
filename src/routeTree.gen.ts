@@ -179,6 +179,7 @@ import { Route as AuthenticatedBonDeTourneeTourneeIdRouteImport } from './routes
 import { Route as AuthenticatedBonDeSortieTourneeIdRouteImport } from './routes/_authenticated/bon-de-sortie.$tourneeId'
 import { Route as AuthenticatedAdminWebVitalsRouteImport } from './routes/_authenticated/admin.web-vitals'
 import { Route as AuthenticatedAdminSloRouteImport } from './routes/_authenticated/admin.slo'
+import { Route as AuthenticatedAdminSecuriteRouteImport } from './routes/_authenticated/admin.securite'
 import { Route as AuthenticatedAdminSanteSystemeRouteImport } from './routes/_authenticated/admin.sante-systeme'
 import { Route as AuthenticatedAdminRpcErrorsRouteImport } from './routes/_authenticated/admin.rpc-errors'
 import { Route as AuthenticatedAdminRolesV2RouteImport } from './routes/_authenticated/admin.roles-v2'
@@ -1183,6 +1184,12 @@ const AuthenticatedAdminSloRoute = AuthenticatedAdminSloRouteImport.update({
   path: '/admin/slo',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminSecuriteRoute =
+  AuthenticatedAdminSecuriteRouteImport.update({
+    id: '/admin/securite',
+    path: '/admin/securite',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminSanteSystemeRoute =
   AuthenticatedAdminSanteSystemeRouteImport.update({
     id: '/admin/sante-systeme',
@@ -1457,6 +1464,7 @@ export interface FileRoutesByFullPath {
   '/admin/roles-v2': typeof AuthenticatedAdminRolesV2Route
   '/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
   '/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
+  '/admin/securite': typeof AuthenticatedAdminSecuriteRoute
   '/admin/slo': typeof AuthenticatedAdminSloRoute
   '/admin/web-vitals': typeof AuthenticatedAdminWebVitalsRoute
   '/bon-de-sortie/$tourneeId': typeof AuthenticatedBonDeSortieTourneeIdRoute
@@ -1636,6 +1644,7 @@ export interface FileRoutesByTo {
   '/admin/roles-v2': typeof AuthenticatedAdminRolesV2Route
   '/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
   '/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
+  '/admin/securite': typeof AuthenticatedAdminSecuriteRoute
   '/admin/slo': typeof AuthenticatedAdminSloRoute
   '/admin/web-vitals': typeof AuthenticatedAdminWebVitalsRoute
   '/bon-de-sortie/$tourneeId': typeof AuthenticatedBonDeSortieTourneeIdRoute
@@ -1837,6 +1846,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/roles-v2': typeof AuthenticatedAdminRolesV2Route
   '/_authenticated/admin/rpc-errors': typeof AuthenticatedAdminRpcErrorsRoute
   '/_authenticated/admin/sante-systeme': typeof AuthenticatedAdminSanteSystemeRoute
+  '/_authenticated/admin/securite': typeof AuthenticatedAdminSecuriteRoute
   '/_authenticated/admin/slo': typeof AuthenticatedAdminSloRoute
   '/_authenticated/admin/web-vitals': typeof AuthenticatedAdminWebVitalsRoute
   '/_authenticated/bon-de-sortie/$tourneeId': typeof AuthenticatedBonDeSortieTourneeIdRoute
@@ -2039,6 +2049,7 @@ export interface FileRouteTypes {
     | '/admin/roles-v2'
     | '/admin/rpc-errors'
     | '/admin/sante-systeme'
+    | '/admin/securite'
     | '/admin/slo'
     | '/admin/web-vitals'
     | '/bon-de-sortie/$tourneeId'
@@ -2218,6 +2229,7 @@ export interface FileRouteTypes {
     | '/admin/roles-v2'
     | '/admin/rpc-errors'
     | '/admin/sante-systeme'
+    | '/admin/securite'
     | '/admin/slo'
     | '/admin/web-vitals'
     | '/bon-de-sortie/$tourneeId'
@@ -2418,6 +2430,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/roles-v2'
     | '/_authenticated/admin/rpc-errors'
     | '/_authenticated/admin/sante-systeme'
+    | '/_authenticated/admin/securite'
     | '/_authenticated/admin/slo'
     | '/_authenticated/admin/web-vitals'
     | '/_authenticated/bon-de-sortie/$tourneeId'
@@ -3725,6 +3738,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSloRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/securite': {
+      id: '/_authenticated/admin/securite'
+      path: '/admin/securite'
+      fullPath: '/admin/securite'
+      preLoaderRoute: typeof AuthenticatedAdminSecuriteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/sante-systeme': {
       id: '/_authenticated/admin/sante-systeme'
       path: '/admin/sante-systeme'
@@ -4544,6 +4564,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRolesV2Route: typeof AuthenticatedAdminRolesV2Route
   AuthenticatedAdminRpcErrorsRoute: typeof AuthenticatedAdminRpcErrorsRoute
   AuthenticatedAdminSanteSystemeRoute: typeof AuthenticatedAdminSanteSystemeRoute
+  AuthenticatedAdminSecuriteRoute: typeof AuthenticatedAdminSecuriteRoute
   AuthenticatedAdminSloRoute: typeof AuthenticatedAdminSloRoute
   AuthenticatedAdminWebVitalsRoute: typeof AuthenticatedAdminWebVitalsRoute
   AuthenticatedBonDeSortieTourneeIdRoute: typeof AuthenticatedBonDeSortieTourneeIdRoute
@@ -4662,6 +4683,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRolesV2Route: AuthenticatedAdminRolesV2Route,
   AuthenticatedAdminRpcErrorsRoute: AuthenticatedAdminRpcErrorsRoute,
   AuthenticatedAdminSanteSystemeRoute: AuthenticatedAdminSanteSystemeRoute,
+  AuthenticatedAdminSecuriteRoute: AuthenticatedAdminSecuriteRoute,
   AuthenticatedAdminSloRoute: AuthenticatedAdminSloRoute,
   AuthenticatedAdminWebVitalsRoute: AuthenticatedAdminWebVitalsRoute,
   AuthenticatedBonDeSortieTourneeIdRoute:
