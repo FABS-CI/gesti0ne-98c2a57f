@@ -7251,6 +7251,7 @@ export type Database = {
         Args: { _exercice_id: string; _periode_jours?: number }
         Returns: Json
       }
+      dashboard_widgets_all: { Args: never; Returns: Json }
       definir_depot_principal: {
         Args: { _depot_id: string }
         Returns: undefined
