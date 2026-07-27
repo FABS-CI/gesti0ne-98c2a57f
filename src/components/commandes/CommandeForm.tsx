@@ -7,7 +7,7 @@ import { invalidateCommande, invalidateFacture, invalidateColisage } from "@/lib
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Info, Percent, Save, User } from "lucide-react";
+import { Info, Loader2, Percent, Save, User } from "lucide-react";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useServerDraft } from "@/hooks/use-server-draft";
 import { DraftRestoreBanner } from "@/components/ui/draft-restore-banner";
@@ -564,7 +564,11 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                 disabled={mutation.isPending || hasOvershoot}
                 className="w-full"
               >
-                <Save className="h-4 w-4 mr-2" />
+                {mutation.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
                 {mutation.isPending
                   ? "Enregistrement…"
                   : mode === "edit"
@@ -597,8 +601,12 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
               <Link to="/commandes">Annuler</Link>
             </Button>
             <Button type="submit" size="sm" disabled={mutation.isPending || hasOvershoot}>
-              <Save className="h-4 w-4 mr-1" />
-              {mode === "edit" ? "MAJ" : "Enregistrer"}
+              {mutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-1" />
+              )}
+              {mutation.isPending ? "Envoi…" : mode === "edit" ? "MAJ" : "Enregistrer"}
             </Button>
           </div>
         </div>

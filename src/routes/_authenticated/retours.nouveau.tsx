@@ -3,7 +3,7 @@ import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft, RotateCcw, Save } from "lucide-react";
+import { ArrowLeft, Loader2, RotateCcw, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { type Client } from "@/lib/clients-api";
@@ -191,7 +191,11 @@ function RetourNouveauPage() {
             <Link to="/retours">Annuler</Link>
           </Button>
           <Button type="submit" disabled={mutation.isPending}>
-            <Save className="h-4 w-4 mr-2" />
+            {mutation.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4 mr-2" />
+            )}
             {mutation.isPending ? "Enregistrement…" : "Enregistrer"}
           </Button>
         </div>
