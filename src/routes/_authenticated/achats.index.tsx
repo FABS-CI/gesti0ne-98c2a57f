@@ -30,6 +30,7 @@ import {
 } from "@/lib/achats-api";
 import { listFournisseurs } from "@/lib/fournisseurs-api";
 import { formatFCFA } from "@/lib/format";
+import { CATEGORIES_PRODUIT, CATEGORIE_LABEL } from "@/lib/company";
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
@@ -77,17 +78,27 @@ function ApprovisionnementsPage() {
   const [search, setSearch] = useState("");
   const [statutFilter, setStatutFilter] = useState("all");
   const [fournisseurFilter, setFournisseurFilter] = useState("all");
+  const [articleSearch, setArticleSearch] = useState("");
+  const [refArticleSearch, setRefArticleSearch] = useState("");
+  const [categorieFilter, setCategorieFilter] = useState("all");
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 20;
   const q = useDebouncedValue(search, 300);
+  const article = useDebouncedValue(articleSearch, 300);
+  const refArticle = useDebouncedValue(refArticleSearch, 300);
   const exerciceId = useExerciceConsulteId();
 
   const { data: achats = [], isLoading } = useQuery({
-    queryKey: ["achats", exerciceId, q, statutFilter],
+    queryKey: ["achats", exerciceId, q, statutFilter, article, refArticle, categorieFilter],
     enabled: !!exerciceId,
-    queryFn: () => listAchats(q, statutFilter === "all" ? undefined : statutFilter, exerciceId),
+    queryFn: () =>
+      listAchats(q, statutFilter === "all" ? undefined : statutFilter, exerciceId, {
+        article: article || undefined,
+        refArticle: refArticle || undefined,
+        categorie: categorieFilter === "all" ? undefined : categorieFilter,
+      }),
   });
 
   const { data: fournisseurs = [] } = useQuery({
@@ -132,6 +143,9 @@ function ApprovisionnementsPage() {
     !!q ||
     statutFilter !== "all" ||
     fournisseurFilter !== "all" ||
+    !!article ||
+    !!refArticle ||
+    categorieFilter !== "all" ||
     !!dateDebut ||
     !!dateFin;
   const fournisseurLabel =
@@ -141,6 +155,9 @@ function ApprovisionnementsPage() {
     setSearch("");
     setStatutFilter("all");
     setFournisseurFilter("all");
+    setArticleSearch("");
+    setRefArticleSearch("");
+    setCategorieFilter("all");
     setDateDebut("");
     setDateFin("");
     setPage(1);
@@ -251,7 +268,7 @@ function ApprovisionnementsPage() {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="relative lg:col-span-2">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -301,6 +318,41 @@ function ApprovisionnementsPage() {
             title="Au"
           />
         </div>
+        <Input
+          placeholder="Article (désignation)…"
+          value={articleSearch}
+          onChange={(e) => {
+            setArticleSearch(e.target.value);
+            setPage(1);
+          }}
+        />
+        <Input
+          placeholder="Référence article…"
+          value={refArticleSearch}
+          onChange={(e) => {
+            setRefArticleSearch(e.target.value);
+            setPage(1);
+          }}
+        />
+        <Select
+          value={categorieFilter}
+          onValueChange={(v) => {
+            setCategorieFilter(v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Toutes catégories</SelectItem>
+            {CATEGORIES_PRODUIT.map((c) => (
+              <SelectItem key={c.value} value={c.value}>
+                {c.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <FilterBadges
@@ -312,12 +364,22 @@ function ApprovisionnementsPage() {
           ...(fournisseurFilter !== "all"
             ? [{ key: "fourn", label: `Fournisseur : ${fournisseurLabel}`, onClear: () => setFournisseurFilter("all") } as FilterBadge]
             : []),
+          ...(article
+            ? [{ key: "article", label: `Article : ${article}`, onClear: () => setArticleSearch("") } as FilterBadge]
+            : []),
+          ...(refArticle
+            ? [{ key: "refart", label: `Réf. article : ${refArticle}`, onClear: () => setRefArticleSearch("") } as FilterBadge]
+            : []),
+          ...(categorieFilter !== "all"
+            ? [{ key: "cat", label: `Catégorie : ${CATEGORIE_LABEL[categorieFilter] ?? categorieFilter}`, onClear: () => setCategorieFilter("all") } as FilterBadge]
+            : []),
           ...(dateDebut || dateFin
             ? [{ key: "periode", label: `Période : ${dateDebut || "…"} → ${dateFin || "…"}`, onClear: () => { setDateDebut(""); setDateFin(""); } } as FilterBadge]
             : []),
         ]}
         onResetAll={resetAllFilters}
       />
+
 
       <div className="rounded-lg border">
         <ResponsiveTable stickyFirstCol>
