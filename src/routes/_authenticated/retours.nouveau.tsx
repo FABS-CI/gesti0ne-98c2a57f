@@ -169,6 +169,18 @@ function RetourNouveauPage() {
       </div>
 
       <form onSubmit={onSubmit} className="space-y-6">
+        {draft.pendingDraft ? (
+          <DraftRestoreBanner
+            label="retour"
+            updatedAt={draft.pendingDraft.updatedAt}
+            onDiscard={() => void draft.discard()}
+            onRestore={() => {
+              const v = draft.restore();
+              if (!v) return;
+              form.reset({ ...form.getValues(), ...v } as RetourFormValues);
+            }}
+          />
+        ) : null}
         <ClientSection form={form} applyClient={applyClient} />
         <DocumentSection form={form} fa={fa} />
         <InfosSection form={form} depots={depots} />
