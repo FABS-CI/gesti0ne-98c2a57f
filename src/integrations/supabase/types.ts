@@ -4147,13 +4147,22 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           departement: string | null
+          departement_id: string | null
+          depot_principal_id: string | null
+          derniere_connexion: string | null
           email: string | null
           fonction: string | null
           id: string
+          locked_at: string | null
+          locked_reason: string | null
+          matricule: string | null
           mfa_enrolled_at: string | null
           mfa_required: boolean
+          nom: string | null
           nom_complet: string | null
           prenom: string | null
+          service_id: string | null
+          statut: string
           telephone: string | null
           updated_at: string
         }
@@ -4162,13 +4171,22 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           departement?: string | null
+          departement_id?: string | null
+          depot_principal_id?: string | null
+          derniere_connexion?: string | null
           email?: string | null
           fonction?: string | null
           id: string
+          locked_at?: string | null
+          locked_reason?: string | null
+          matricule?: string | null
           mfa_enrolled_at?: string | null
           mfa_required?: boolean
+          nom?: string | null
           nom_complet?: string | null
           prenom?: string | null
+          service_id?: string | null
+          statut?: string
           telephone?: string | null
           updated_at?: string
         }
@@ -4177,17 +4195,48 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           departement?: string | null
+          departement_id?: string | null
+          depot_principal_id?: string | null
+          derniere_connexion?: string | null
           email?: string | null
           fonction?: string | null
           id?: string
+          locked_at?: string | null
+          locked_reason?: string | null
+          matricule?: string | null
           mfa_enrolled_at?: string | null
           mfa_required?: boolean
+          nom?: string | null
           nom_complet?: string | null
           prenom?: string | null
+          service_id?: string | null
+          statut?: string
           telephone?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_departement_id_fkey"
+            columns: ["departement_id"]
+            isOneToOne: false
+            referencedRelation: "departements"
+            referencedColumns: ["departement_id"]
+          },
+          {
+            foreignKeyName: "profiles_depot_principal_id_fkey"
+            columns: ["depot_principal_id"]
+            isOneToOne: false
+            referencedRelation: "depots"
+            referencedColumns: ["depot_id"]
+          },
+          {
+            foreignKeyName: "profiles_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["service_id"]
+          },
+        ]
       }
       proforma_lignes: {
         Row: {
@@ -5105,6 +5154,47 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          actif: boolean
+          code: string
+          created_at: string
+          departement_id: string | null
+          libelle: string
+          responsable: string | null
+          service_id: string
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          created_at?: string
+          departement_id?: string | null
+          libelle: string
+          responsable?: string | null
+          service_id?: string
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          created_at?: string
+          departement_id?: string | null
+          libelle?: string
+          responsable?: string | null
+          service_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_departement_id_fkey"
+            columns: ["departement_id"]
+            isOneToOne: false
+            referencedRelation: "departements"
+            referencedColumns: ["departement_id"]
+          },
+        ]
+      }
       soldes_ouverture_clients: {
         Row: {
           client_id: string
@@ -5854,6 +5944,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_depots: {
+        Row: {
+          created_at: string
+          depot_id: string
+          principal: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          depot_id: string
+          principal?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          depot_id?: string
+          principal?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_depots_depot_id_fkey"
+            columns: ["depot_id"]
+            isOneToOne: false
+            referencedRelation: "depots"
+            referencedColumns: ["depot_id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -6729,6 +6848,14 @@ export type Database = {
           type: string
         }[]
       }
+      can_access_depot: {
+        Args: { _depot_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_access_service: {
+        Args: { _service_id: string; _user_id: string }
+        Returns: boolean
+      }
       client_historique: {
         Args: { _client_id: string }
         Returns: {
@@ -7291,6 +7418,7 @@ export type Database = {
       }
       is_admin: { Args: { _uid: string }; Returns: boolean }
       is_finance: { Args: { _uid: string }; Returns: boolean }
+      is_global_scope: { Args: { _user_id: string }; Returns: boolean }
       is_hr: { Args: { _uid: string }; Returns: boolean }
       is_sales: { Args: { _uid: string }; Returns: boolean }
       is_stock: { Args: { _uid: string }; Returns: boolean }
@@ -7816,6 +7944,9 @@ export type Database = {
         }
         Returns: undefined
       }
+      user_departement_id: { Args: { _user_id: string }; Returns: string }
+      user_depot_ids: { Args: { _user_id: string }; Returns: string[] }
+      user_service_id: { Args: { _user_id: string }; Returns: string }
       valider_commande: {
         Args: { _commande_id: string }
         Returns: {
