@@ -127,7 +127,7 @@ export async function listAchats(
     if (achatIds.length === 0) return [] as Achat[];
   }
 
-  let query = supabase.from("achats").select("*, fournisseurs(raison_sociale)");
+  let query = supabase.from("achats").select("*, fournisseurs(raison_sociale, reference, contact, email, telephone, adresse, ville)");
   if (exerciceId) query = query.eq("exercice_id", exerciceId);
   if (q) query = query.or(`libelle.ilike.%${q}%,reference.ilike.%${q}%`);
   if (statut) query = query.eq("statut", statut);
@@ -181,7 +181,7 @@ export async function payerAchat(id: string) {
 export async function getAchat(id: string) {
   const { data, error } = await supabase
     .from("achats")
-    .select("*, fournisseurs(raison_sociale)")
+    .select("*, fournisseurs(raison_sociale, reference, contact, email, telephone, adresse, ville)")
     .eq("achat_id", id)
     .single();
   if (error) throw error;
