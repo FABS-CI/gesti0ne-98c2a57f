@@ -386,7 +386,20 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
   return (
     <form onSubmit={onSubmit} className="space-y-6 pb-32 2xl:pb-6">
+      {mode === "create" && draft.pendingDraft ? (
+        <DraftRestoreBanner
+          label="commande"
+          updatedAt={draft.pendingDraft.updatedAt}
+          onDiscard={() => void draft.discard()}
+          onRestore={() => {
+            const v = draft.restore();
+            if (!v) return;
+            form.reset({ ...form.getValues(), ...v } as CommandeFormValues);
+          }}
+        />
+      ) : null}
       <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_320px]">
+
         <div className="space-y-6 min-w-0">
           {/* 1. Client */}
           <section className="relative overflow-hidden rounded-md border bg-card p-4 pl-5 sm:p-5 sm:pl-6 space-y-4">
