@@ -2295,7 +2295,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
     title: TITRES.RP,
     reference: data.reference,
     date: data.date,
-    signatureLabel: "Le Caissier",
+    signatureLabel: "La Comptabilité",
     showQr: false,
     docType: "recu",
   });
@@ -2316,14 +2316,14 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
   let y = drawHeader(ctx, TITRES.RP);
   y -= 14;
 
-  // Titre centré
-  textCenter(ctx, "REÇU DE PAIEMENT", PAGE.w / 2, y, {
-    size: 16,
-    bold: true,
-    color: ctx.theme.title,
+  // Bande orange (titre déjà porté par l'en-tête)
+  ctx.page.drawRectangle({
+    x: MARGIN.x,
+    y: y - 4,
+    width: CONTENT_W,
+    height: 3,
+    color: FABS_COLORS.orange ?? ctx.theme.title,
   });
-  y -= 6;
-  hline(ctx, y);
   y -= 20;
 
   // Deux colonnes : Client (gauche) / Paiement (droite)
@@ -2482,9 +2482,10 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
   }
   y -= 46;
 
-  // Signatures (3 colonnes)
+  // Signatures (2 colonnes)
   const sigY = Math.max(y, BODY_BOTTOM_Y + 10);
   const sigLabels = ["Le Client", "La Comptabilité"];
+  const sigW = CONTENT_W / sigLabels.length;
   const sigW = CONTENT_W / 3;
   sigLabels.forEach((lbl, i) => {
     const cx = MARGIN.x + sigW * i + sigW / 2;
