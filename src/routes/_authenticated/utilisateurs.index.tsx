@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { UsersTab } from "@/components/roles-permissions/UsersTab";
+import { UsersAdmin } from "@/components/security/UsersAdmin";
 
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
@@ -12,14 +12,14 @@ export const Route = createFileRoute("/_authenticated/utilisateurs/")({
 
 function UtilisateursPage() {
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-4">
+    <div className="container mx-auto space-y-4 p-4 md:p-6">
       <div>
         <h1 className="text-2xl font-bold">Utilisateurs</h1>
         <p className="text-sm text-muted-foreground">
-          Gestion des comptes, rôles et statuts d'activation
+          Comptes, périmètre (service, département, dépôts), rôles et statut d'activation
         </p>
       </div>
-      <UsersTab />
+      <UsersAdmin />
     </div>
   );
 }
