@@ -57,7 +57,16 @@ function RetourNouveauPage() {
 
   const fa = useFieldArray({ control: form.control, name: "lignes" });
 
+  // Brouillon serveur (reprise de saisie)
+  const draftWatch = useWatch({ control: form.control }) as Partial<RetourFormValues>;
+  const draft = useServerDraft<Partial<RetourFormValues>>({
+    docType: "retour",
+    value: draftWatch,
+    isEmpty: (v) => !v.client_id && !(v.lignes ?? []).some((l) => l?.produit_id || l?.designation),
+  });
+
   const { data: depots = [] } = useQuery({ queryKey: ["depots"], queryFn: listDepots });
+
 
   const applyClient = (c: Client | null) => {
     if (!c) return;
