@@ -141,16 +141,42 @@ export const WIDGETS: Record<WidgetId, WidgetDef> = {
 
 export const ALL_WIDGET_IDS = Object.keys(WIDGETS) as WidgetId[];
 
+const SUBS: Record<WidgetId, string> = {
+  clients_total: "total",
+  produits_total: "référencés",
+  factures_mois: "ce mois",
+  ca_mois: "paiements validés",
+  bl_en_cours: "non livrés",
+  stock_faible: "≤ 5 unités",
+  commandes_ouvertes: "à traiter",
+  paiements_recus_mois: "ce mois",
+};
+
+const MONEY: WidgetId[] = ["ca_mois", "paiements_recus_mois"];
+
 /**
- * Récupère toutes les valeurs de widgets en parallèle (1 seul batch réseau côté client).
- * Utilisé via un unique `useQuery` partagé pour éviter 8 requêtes indépendantes.
+ * Récupère toutes les valeurs de widgets via UNE seule RPC agrégée côté serveur.
+ * Remplace 8 requêtes (dont 2 ramenant toutes les lignes de paiements) par un
+ * unique aller-retour renvoyant des compteurs déjà calculés.
+ * Repli automatique sur les requêtes unitaires si la RPC n'est pas disponible.
  */
 export async function fetchAllWidgets(): Promise<Record<WidgetId, { value: string; sub?: string }>> {
+  const { data, error } = await supabase.rpc("dashboard_widgets_all" as never);
+  if (!error && data && typeof data === "object") {
+    const raw = data as Record<string, number | string>;
+    return Object.fromEntries(
+      ALL_WIDGET_IDS.map((id) => {
+        const n = Number(raw[id] ?? 0);
+        return [id, { value: MONEY.includes(id) ? formatFCFA(n) : String(n), sub: SUBS[id] }];
+      }),
+    ) as Record<WidgetId, { value: string; sub?: string }>;
+  }
   const entries = await Promise.all(
     ALL_WIDGET_IDS.map(async (id) => [id, await WIDGETS[id].fetch()] as const),
   );
   return Object.fromEntries(entries) as Record<WidgetId, { value: string; sub?: string }>;
 }
+
 
 const STORAGE_KEY = "dashboard.widgets.v1";
 
