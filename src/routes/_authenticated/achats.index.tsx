@@ -142,6 +142,9 @@ function ApprovisionnementsPage() {
     !!q ||
     statutFilter !== "all" ||
     fournisseurFilter !== "all" ||
+    !!article ||
+    !!refArticle ||
+    categorieFilter !== "all" ||
     !!dateDebut ||
     !!dateFin;
   const fournisseurLabel =
@@ -151,6 +154,9 @@ function ApprovisionnementsPage() {
     setSearch("");
     setStatutFilter("all");
     setFournisseurFilter("all");
+    setArticleSearch("");
+    setRefArticleSearch("");
+    setCategorieFilter("all");
     setDateDebut("");
     setDateFin("");
     setPage(1);
