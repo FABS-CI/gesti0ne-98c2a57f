@@ -26,7 +26,15 @@ export type Achat = {
   created_by_nom: string | null;
   created_at: string;
   updated_at: string;
-  fournisseurs?: { raison_sociale: string } | null;
+  fournisseurs?: {
+    raison_sociale: string;
+    reference?: string | null;
+    contact?: string | null;
+    email?: string | null;
+    telephone?: string | null;
+    adresse?: string | null;
+    ville?: string | null;
+  } | null;
 };
 
 export type AchatLigne = {
