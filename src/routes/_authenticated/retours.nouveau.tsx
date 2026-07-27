@@ -103,6 +103,7 @@ function RetourNouveauPage() {
         })),
       }),
     onSuccess: (_data, values) => {
+      void draft.markConverted();
       toast.success("Demande de retour créée — en attente magasin");
       invalidateRetour(qc, { clientId: values.client_id });
       navigate({ to: "/retours" });
