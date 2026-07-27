@@ -283,6 +283,7 @@ function ApprovalsList({
 }) {
   const { data = [], isLoading } = useApprovals(statut);
   const qc = useQueryClient();
+  const [escalading, setEscalading] = useState(false);
   const [dialog, setDialog] = useState<{ row: Approval; action: "approuve" | "rejete" } | null>(
     null,
   );
