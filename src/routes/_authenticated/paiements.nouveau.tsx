@@ -27,6 +27,7 @@ import { RecapCard } from "@/components/paiements/nouveau/RecapCard";
 import { formatFCFA } from "@/lib/format";
 import { computeRecap } from "@/lib/paiement-recap";
 
+import { newIdempotencyKey } from "@/lib/idempotency";
 import {
   enregistrerPaiement,
   listFacturesImpayeesClient,
@@ -110,8 +111,12 @@ function NouveauPaiementPage() {
     }
   }, [factures, factureId]);
 
+  // Clé d'idempotence stable pour toute la saisie (anti-doublon)
+  const idempotencyKey = useMemo(() => newIdempotencyKey("pai"), []);
+
   const mutation = useMutation({
-    mutationFn: (payload: EnregistrerPaiementInput) => enregistrerPaiement(payload),
+    mutationFn: (payload: EnregistrerPaiementInput) =>
+      enregistrerPaiement({ ...payload, idempotency_key: idempotencyKey }),
     onSuccess: () => {
       toast.success(
         canValider

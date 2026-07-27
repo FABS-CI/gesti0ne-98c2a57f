@@ -31,6 +31,7 @@ import { getClient, type Client } from "@/lib/clients-api";
 import { getProduit, type Produit } from "@/lib/produits-api";
 import { getStockProduitDepot } from "@/lib/depots-api";
 import { creerCommande, modifierCommande } from "@/lib/commandes-api";
+import { newIdempotencyKey } from "@/lib/idempotency";
 import { formatFCFA } from "@/lib/format";
 import { ClientSearchSelect } from "@/components/search/ClientSearchSelect";
 import { DepotSortieField } from "@/components/stock/DepotSortieField";
@@ -177,6 +178,9 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
 
 
+  // Clé d'idempotence stable pour toute la saisie (anti-doublon)
+  const idempotencyKey = useMemo(() => newIdempotencyKey("cmd"), []);
+
   const mutation = useMutation({
     mutationFn: (values: CommandeFormValues) => {
       const payload = {
@@ -201,7 +205,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
         })),
       };
       if (mode === "edit" && commandeId) return modifierCommande(commandeId, payload);
-      return creerCommande(payload);
+      return creerCommande({ ...payload, idempotency_key: idempotencyKey });
     },
     onSuccess: async (created) => {
       if (mode === "create") void draft.markConverted();
