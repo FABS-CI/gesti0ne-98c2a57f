@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -18,6 +18,8 @@ import { DocumentSection } from "@/components/retours/nouveau/DocumentSection";
 import { InfosSection } from "@/components/retours/nouveau/InfosSection";
 import { LignesSection } from "@/components/retours/nouveau/LignesSection";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { useServerDraft } from "@/hooks/use-server-draft";
+import { DraftRestoreBanner } from "@/components/ui/draft-restore-banner";
 import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/retours/nouveau")({
@@ -55,7 +57,16 @@ function RetourNouveauPage() {
 
   const fa = useFieldArray({ control: form.control, name: "lignes" });
 
+  // Brouillon serveur (reprise de saisie)
+  const draftWatch = useWatch({ control: form.control }) as Partial<RetourFormValues>;
+  const draft = useServerDraft<Partial<RetourFormValues>>({
+    docType: "retour",
+    value: draftWatch,
+    isEmpty: (v) => !v.client_id && !(v.lignes ?? []).some((l) => l?.produit_id || l?.designation),
+  });
+
   const { data: depots = [] } = useQuery({ queryKey: ["depots"], queryFn: listDepots });
+
 
   const applyClient = (c: Client | null) => {
     if (!c) return;
@@ -92,6 +103,7 @@ function RetourNouveauPage() {
         })),
       }),
     onSuccess: (_data, values) => {
+      void draft.markConverted();
       toast.success("Demande de retour créée — en attente magasin");
       invalidateRetour(qc, { clientId: values.client_id });
       navigate({ to: "/retours" });
@@ -157,6 +169,18 @@ function RetourNouveauPage() {
       </div>
 
       <form onSubmit={onSubmit} className="space-y-6">
+        {draft.pendingDraft ? (
+          <DraftRestoreBanner
+            label="retour"
+            updatedAt={draft.pendingDraft.updatedAt}
+            onDiscard={() => void draft.discard()}
+            onRestore={() => {
+              const v = draft.restore();
+              if (!v) return;
+              form.reset({ ...form.getValues(), ...v } as RetourFormValues);
+            }}
+          />
+        ) : null}
         <ClientSection form={form} applyClient={applyClient} />
         <DocumentSection form={form} fa={fa} />
         <InfosSection form={form} depots={depots} />
