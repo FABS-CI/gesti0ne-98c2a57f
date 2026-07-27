@@ -2486,7 +2486,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
   const sigY = Math.max(y, BODY_BOTTOM_Y + 10);
   const sigLabels = ["Le Client", "La Comptabilité"];
   const sigW = CONTENT_W / sigLabels.length;
-  const sigW = CONTENT_W / 3;
+  
   sigLabels.forEach((lbl, i) => {
     const cx = MARGIN.x + sigW * i + sigW / 2;
     textCenter(ctx, lbl, cx, sigY, { size: 9, bold: true });
