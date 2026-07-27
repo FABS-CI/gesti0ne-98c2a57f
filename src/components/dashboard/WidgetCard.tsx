@@ -27,7 +27,10 @@ export const WidgetCard = forwardRef<HTMLDivElement, Props>(function WidgetCard(
     queryFn: fetchAllWidgets,
     staleTime: 5 * 60_000,
     gcTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
+
   const data = all?.[id];
 
   const Icon = def.icon;
