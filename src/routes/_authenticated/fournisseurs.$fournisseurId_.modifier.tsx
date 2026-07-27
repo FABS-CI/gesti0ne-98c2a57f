@@ -5,7 +5,7 @@ import { getFournisseur } from "@/lib/fournisseurs-api";
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
-export const Route = createFileRoute("/_authenticated/fournisseurs/$fournisseurId/modifier")({
+export const Route = createFileRoute("/_authenticated/fournisseurs/$fournisseurId_/modifier")({
   head: () => authRouteHead("Modifier le fournisseur"),
   component: ModifierFournisseurPage,
   errorComponent: RouteError,

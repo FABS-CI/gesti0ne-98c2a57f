@@ -199,7 +199,7 @@ import { Route as AuthenticatedUtilisateursUserIdModifierRouteImport } from './r
 import { Route as AuthenticatedStockProduitIdMouvementsRouteImport } from './routes/_authenticated/stock_.$produitId.mouvements'
 import { Route as AuthenticatedLivraisonSuiviTourneesTourneeIdRouteImport } from './routes/_authenticated/livraison-suivi.tournees.$tourneeId'
 import { Route as AuthenticatedLivraisonSuiviCommandeRefRemiseRouteImport } from './routes/_authenticated/livraison-suivi.$commandeRef.remise'
-import { Route as AuthenticatedFournisseursFournisseurIdModifierRouteImport } from './routes/_authenticated/fournisseurs.$fournisseurId.modifier'
+import { Route as AuthenticatedFournisseursFournisseurIdModifierRouteImport } from './routes/_authenticated/fournisseurs.$fournisseurId_.modifier'
 import { Route as AuthenticatedEvaluationsEvaluationIdModifierRouteImport } from './routes/_authenticated/evaluations.$evaluationId.modifier'
 import { Route as AuthenticatedEmployesEmployeIdModifierRouteImport } from './routes/_authenticated/employes.$employeId.modifier'
 import { Route as AuthenticatedContratsContratIdModifierRouteImport } from './routes/_authenticated/contrats.$contratId.modifier'
@@ -1303,9 +1303,9 @@ const AuthenticatedLivraisonSuiviCommandeRefRemiseRoute =
   } as any)
 const AuthenticatedFournisseursFournisseurIdModifierRoute =
   AuthenticatedFournisseursFournisseurIdModifierRouteImport.update({
-    id: '/modifier',
-    path: '/modifier',
-    getParentRoute: () => AuthenticatedFournisseursFournisseurIdRoute,
+    id: '/$fournisseurId_/modifier',
+    path: '/$fournisseurId/modifier',
+    getParentRoute: () => AuthenticatedFournisseursRoute,
   } as any)
 const AuthenticatedEvaluationsEvaluationIdModifierRoute =
   AuthenticatedEvaluationsEvaluationIdModifierRouteImport.update({
@@ -1481,7 +1481,7 @@ export interface FileRoutesByFullPath {
   '/exercices/rapport': typeof AuthenticatedExercicesRapportRoute
   '/factures/$factureId': typeof AuthenticatedFacturesFactureIdRoute
   '/fne-detail/$factureId': typeof AuthenticatedFneDetailFactureIdRoute
-  '/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRouteWithChildren
+  '/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRoute
   '/fournisseurs/nouveau': typeof AuthenticatedFournisseursNouveauRoute
   '/incidents/$incidentId': typeof AuthenticatedIncidentsIncidentIdRoute
   '/incidents/nouveau': typeof AuthenticatedIncidentsNouveauRoute
@@ -1659,7 +1659,7 @@ export interface FileRoutesByTo {
   '/exercices/rapport': typeof AuthenticatedExercicesRapportRoute
   '/factures/$factureId': typeof AuthenticatedFacturesFactureIdRoute
   '/fne-detail/$factureId': typeof AuthenticatedFneDetailFactureIdRoute
-  '/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRouteWithChildren
+  '/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRoute
   '/fournisseurs/nouveau': typeof AuthenticatedFournisseursNouveauRoute
   '/incidents/$incidentId': typeof AuthenticatedIncidentsIncidentIdRoute
   '/incidents/nouveau': typeof AuthenticatedIncidentsNouveauRoute
@@ -1861,7 +1861,7 @@ export interface FileRoutesById {
   '/_authenticated/exercices/rapport': typeof AuthenticatedExercicesRapportRoute
   '/_authenticated/factures/$factureId': typeof AuthenticatedFacturesFactureIdRoute
   '/_authenticated/fne-detail/$factureId': typeof AuthenticatedFneDetailFactureIdRoute
-  '/_authenticated/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRouteWithChildren
+  '/_authenticated/fournisseurs/$fournisseurId': typeof AuthenticatedFournisseursFournisseurIdRoute
   '/_authenticated/fournisseurs/nouveau': typeof AuthenticatedFournisseursNouveauRoute
   '/_authenticated/incidents/$incidentId': typeof AuthenticatedIncidentsIncidentIdRoute
   '/_authenticated/incidents/nouveau': typeof AuthenticatedIncidentsNouveauRoute
@@ -1926,7 +1926,7 @@ export interface FileRoutesById {
   '/_authenticated/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
   '/_authenticated/employes/$employeId/modifier': typeof AuthenticatedEmployesEmployeIdModifierRoute
   '/_authenticated/evaluations/$evaluationId/modifier': typeof AuthenticatedEvaluationsEvaluationIdModifierRoute
-  '/_authenticated/fournisseurs/$fournisseurId/modifier': typeof AuthenticatedFournisseursFournisseurIdModifierRoute
+  '/_authenticated/fournisseurs/$fournisseurId_/modifier': typeof AuthenticatedFournisseursFournisseurIdModifierRoute
   '/_authenticated/livraison-suivi/$commandeRef/remise': typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRoute
   '/_authenticated/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
   '/_authenticated/stock_/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
@@ -2507,7 +2507,7 @@ export interface FileRouteTypes {
     | '/_authenticated/contrats/$contratId/modifier'
     | '/_authenticated/employes/$employeId/modifier'
     | '/_authenticated/evaluations/$evaluationId/modifier'
-    | '/_authenticated/fournisseurs/$fournisseurId/modifier'
+    | '/_authenticated/fournisseurs/$fournisseurId_/modifier'
     | '/_authenticated/livraison-suivi/$commandeRef/remise'
     | '/_authenticated/livraison-suivi/tournees/$tourneeId'
     | '/_authenticated/stock_/$produitId/mouvements'
@@ -3865,12 +3865,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLivraisonSuiviCommandeRefRemiseRouteImport
       parentRoute: typeof AuthenticatedLivraisonSuiviCommandeRefRoute
     }
-    '/_authenticated/fournisseurs/$fournisseurId/modifier': {
-      id: '/_authenticated/fournisseurs/$fournisseurId/modifier'
-      path: '/modifier'
+    '/_authenticated/fournisseurs/$fournisseurId_/modifier': {
+      id: '/_authenticated/fournisseurs/$fournisseurId_/modifier'
+      path: '/$fournisseurId/modifier'
       fullPath: '/fournisseurs/$fournisseurId/modifier'
       preLoaderRoute: typeof AuthenticatedFournisseursFournisseurIdModifierRouteImport
-      parentRoute: typeof AuthenticatedFournisseursFournisseurIdRoute
+      parentRoute: typeof AuthenticatedFournisseursRoute
     }
     '/_authenticated/evaluations/$evaluationId/modifier': {
       id: '/_authenticated/evaluations/$evaluationId/modifier'
@@ -4181,34 +4181,22 @@ const AuthenticatedFacturesRouteWithChildren =
     AuthenticatedFacturesRouteChildren,
   )
 
-interface AuthenticatedFournisseursFournisseurIdRouteChildren {
-  AuthenticatedFournisseursFournisseurIdModifierRoute: typeof AuthenticatedFournisseursFournisseurIdModifierRoute
-}
-
-const AuthenticatedFournisseursFournisseurIdRouteChildren: AuthenticatedFournisseursFournisseurIdRouteChildren =
-  {
-    AuthenticatedFournisseursFournisseurIdModifierRoute:
-      AuthenticatedFournisseursFournisseurIdModifierRoute,
-  }
-
-const AuthenticatedFournisseursFournisseurIdRouteWithChildren =
-  AuthenticatedFournisseursFournisseurIdRoute._addFileChildren(
-    AuthenticatedFournisseursFournisseurIdRouteChildren,
-  )
-
 interface AuthenticatedFournisseursRouteChildren {
-  AuthenticatedFournisseursFournisseurIdRoute: typeof AuthenticatedFournisseursFournisseurIdRouteWithChildren
+  AuthenticatedFournisseursFournisseurIdRoute: typeof AuthenticatedFournisseursFournisseurIdRoute
   AuthenticatedFournisseursNouveauRoute: typeof AuthenticatedFournisseursNouveauRoute
   AuthenticatedFournisseursIndexRoute: typeof AuthenticatedFournisseursIndexRoute
+  AuthenticatedFournisseursFournisseurIdModifierRoute: typeof AuthenticatedFournisseursFournisseurIdModifierRoute
 }
 
 const AuthenticatedFournisseursRouteChildren: AuthenticatedFournisseursRouteChildren =
   {
     AuthenticatedFournisseursFournisseurIdRoute:
-      AuthenticatedFournisseursFournisseurIdRouteWithChildren,
+      AuthenticatedFournisseursFournisseurIdRoute,
     AuthenticatedFournisseursNouveauRoute:
       AuthenticatedFournisseursNouveauRoute,
     AuthenticatedFournisseursIndexRoute: AuthenticatedFournisseursIndexRoute,
+    AuthenticatedFournisseursFournisseurIdModifierRoute:
+      AuthenticatedFournisseursFournisseurIdModifierRoute,
   }
 
 const AuthenticatedFournisseursRouteWithChildren =
