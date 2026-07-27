@@ -43,8 +43,8 @@ export const Route = createFileRoute("/_authenticated/clients/")({
 function ClientsPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { roles } = useUserRoles();
-  const readOnly = isReadOnly("clients", roles);
+  const { has: hasPermission } = usePermissions();
+  const readOnly = !hasPermission("clients.creer") && !hasPermission("clients.modifier");
   const { edit: editId } = Route.useSearch();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
