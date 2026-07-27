@@ -285,7 +285,8 @@ d("Retours — intégration RPC", () => {
       "SELECT statut, version_no FROM public.retours WHERE retour_id=$1",
       [retourId],
     );
-    expect(apresDemande.statut).toBe("demande_creee");
+    // le trigger d'approbation bascule immédiatement en attente de réception
+    expect(["demande_creee", "attente_reception"]).toContain(apresDemande.statut);
 
     // 2. Réception magasin → entrée de stock
     const [ligne] = await q<{ ligne_id: string }>(
