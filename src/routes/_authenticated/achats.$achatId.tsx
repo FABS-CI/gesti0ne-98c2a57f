@@ -6,6 +6,7 @@ import {
   Building2,
   Calendar,
   FileText,
+  Pencil,
   Printer,
   ScanEye,
   Tag,
