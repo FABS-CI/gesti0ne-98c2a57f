@@ -66,6 +66,7 @@ function AchatDetailPage() {
         reference: l.designation,
         qte: Number(l.quantite),
         prixUnitaire: Number(l.prix_unitaire),
+        remisePct: Number(l.remise_pct ?? 0),
         montant: Number(l.total_ligne),
       })),
       totalVente: Number(achat.montant),
