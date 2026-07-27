@@ -226,8 +226,17 @@ export const Route = createFileRoute("/api/public/hooks/run-schedules")({
           });
         }
 
+        // Escalade automatique des approbations dont le SLA est dépassé.
+        let escalades = 0;
+        try {
+          const { data: esc } = await supabaseAdmin.rpc("approbation_escalader_sla");
+          escalades = (esc as { escalades?: number } | null)?.escalades ?? 0;
+        } catch {
+          escalades = 0;
+        }
+
         return new Response(
-          JSON.stringify({ ok: true, processed_count: processed.length, processed }),
+          JSON.stringify({ ok: true, processed_count: processed.length, processed, escalades }),
           { headers: { "Content-Type": "application/json" } },
         );
       },
