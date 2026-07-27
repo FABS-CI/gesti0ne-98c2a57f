@@ -87,6 +87,7 @@ export type CreerCommandePayload = {
   remise_globale_pct?: number;
   taux_tva?: number;
   depot_id?: string | null;
+  idempotency_key?: string | null;
   lignes: CreerCommandeLignePayload[];
 };
 
