@@ -13,8 +13,7 @@ import {
 } from "@/lib/clients-api";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useActifsExerciceIds } from "@/hooks/use-actifs-exercice";
-import { useUserRoles } from "@/hooks/use-user-roles";
-import { isReadOnly } from "@/lib/permissions";
+import { usePermissions } from "@/hooks/use-permissions";
 import { CrmFiltersPanel } from "@/components/clients/CrmFilters";
 import { searchClientsCrm, type CrmFilters } from "@/lib/crm-api";
 import { describeSupabaseError } from "@/lib/rbac-api";
