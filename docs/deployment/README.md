@@ -13,6 +13,8 @@ Ce dossier contient tout ce qu'il faut pour héberger votre ERP en dehors de Lov
 - **[07-auth-oauth.md](./07-auth-oauth.md)** — Reconfigurer Google OAuth
 - **[08-domaine-dns.md](./08-domaine-dns.md)** — Repointer le domaine
 - **[09-post-migration.md](./09-post-migration.md)** — Tests et vérifications finales
+- **[10-restauration-complete.md](./10-restauration-complete.md)** — Reconstituer l'ERP à partir des sauvegardes
+- **[11-runbook-sauvegarde-restauration.md](./11-runbook-sauvegarde-restauration.md)** — Runbook hors ERP : sauvegarde, test de restauration, planning trimestriel
 - **[.env.example](./.env.example)** — Modèle de fichier `.env` à remplir
 
 ## 🎯 Vue d'ensemble rapide
