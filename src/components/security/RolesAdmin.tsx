@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -311,8 +311,8 @@ export default function RolesAdmin() {
                       {groupedPerms.map(([moduleCode, group]) => {
                         const codes = group.items.map((p) => p.code);
                         return (
-                          <>
-                            <tr key={moduleCode} className="bg-muted/60">
+                          <Fragment key={moduleCode}>
+                            <tr className="bg-muted/60">
                               <td className="sticky left-0 z-10 bg-muted/60 p-2 text-xs font-semibold uppercase tracking-wide">
                                 {group.label} ({group.items.length})
                               </td>
@@ -369,7 +369,7 @@ export default function RolesAdmin() {
                                 })}
                               </tr>
                             ))}
-                          </>
+                          </Fragment>
                         );
                       })}
                       {groupedPerms.length === 0 && (
