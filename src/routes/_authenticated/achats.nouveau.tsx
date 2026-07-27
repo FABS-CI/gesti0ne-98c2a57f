@@ -323,7 +323,11 @@ function NouvelApprovisionnementPage() {
           <Link to="/achats">Annuler</Link>
         </Button>
         <Button onClick={submit} disabled={saveMutation.isPending}>
-          <Save className="h-4 w-4 mr-2" />
+          {saveMutation.isPending ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4 mr-2" />
+          )}
           {saveMutation.isPending ? "Enregistrement…" : "Enregistrer"}
         </Button>
       </div>
