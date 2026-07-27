@@ -3093,7 +3093,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
       typeAffiche,
       l.reference || "—",
       isFact ? (l.reference || "—") : (l.factureReference || "—"),
-      l.libelle ?? "",
+      
       debit ? fmtMontant(debit) : "",
       credit ? fmtMontant(credit) : "",
       fmtMontant(solde),
