@@ -30,6 +30,7 @@ import {
 } from "@/lib/achats-api";
 import { listFournisseurs } from "@/lib/fournisseurs-api";
 import { formatFCFA } from "@/lib/format";
+import { CATEGORIES_PRODUIT, CATEGORIE_LABEL } from "@/lib/company";
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
@@ -370,7 +371,7 @@ function ApprovisionnementsPage() {
             ? [{ key: "refart", label: `Réf. article : ${refArticle}`, onClear: () => setRefArticleSearch("") } as FilterBadge]
             : []),
           ...(categorieFilter !== "all"
-            ? [{ key: "cat", label: `Catégorie : ${LABEL_CATEGORIE_PRODUIT[categorieFilter] ?? categorieFilter}`, onClear: () => setCategorieFilter("all") } as FilterBadge]
+            ? [{ key: "cat", label: `Catégorie : ${CATEGORIE_LABEL[categorieFilter] ?? categorieFilter}`, onClear: () => setCategorieFilter("all") } as FilterBadge]
             : []),
           ...(dateDebut || dateFin
             ? [{ key: "periode", label: `Période : ${dateDebut || "…"} → ${dateFin || "…"}`, onClear: () => { setDateDebut(""); setDateFin(""); } } as FilterBadge]
