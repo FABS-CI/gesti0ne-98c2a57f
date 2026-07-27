@@ -3110,6 +3110,65 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     },
   );
 
+  // ---------- Encadré récapitulatif ----------
+  if (sortedLignes.length > 0) {
+    const totalFactures = sortedLignes
+      .filter((l) => (l.type || "").toLowerCase().includes("facture"))
+      .reduce((a, l) => a + Number(l.debit ?? 0), 0);
+    const totalPaiements = sortedLignes
+      .filter((l) => {
+        const t = (l.type || "").toLowerCase();
+        return t.includes("paiement") || t.includes("règlement") || t.includes("reglement");
+      })
+      .reduce((a, l) => a + Number(l.credit ?? 0), 0);
+    const totalAvoirs = sortedLignes
+      .filter((l) => {
+        const t = (l.type || "").toLowerCase();
+        return t.includes("avoir") || t.includes("retour");
+      })
+      .reduce((a, l) => a + Number(l.credit ?? 0), 0);
+
+    const recapLines: Array<[string, string]> = [
+      ["Total factures (FCFA)", fmtMontant(totalFactures)],
+      ["Total paiements (FCFA)", fmtMontant(totalPaiements)],
+      ["Total avoirs / retours (FCFA)", fmtMontant(totalAvoirs)],
+      ["Solde dû (FCFA)", fmtMontant(soldeFinal)],
+      ["Édité le", fmtDate(new Date())],
+    ];
+    const boxH = recapLines.length * 14 + 18;
+    await ensureSpace(boxH + 20, "État de Compte (suite)");
+    y -= 18;
+    const boxW = 260;
+    const boxX = PAGE.w - MARGIN.x - boxW;
+    ctx.page.drawRectangle({
+      x: boxX,
+      y: y - boxH,
+      width: boxW,
+      height: boxH,
+      borderColor: FABS_COLORS.orange,
+      borderWidth: 0.8,
+    });
+    ctx.page.drawRectangle({
+      x: boxX,
+      y: y - 3,
+      width: boxW,
+      height: 3,
+      color: FABS_COLORS.orange,
+    });
+    let ry = y - 18;
+    recapLines.forEach(([label, val], i) => {
+      const last = i === recapLines.length - 2;
+      text(ctx, label, boxX + 8, ry, { size: 8.5, bold: last });
+      textRight(ctx, val, boxX + boxW - 8, ry, {
+        size: last ? 10 : 8.5,
+        bold: true,
+        color: last ? ctx.theme.title : undefined,
+      });
+      ry -= 14;
+    });
+    y = y - boxH - 6;
+  }
+
   // ---------- Note (cas vide / info) ----------
   if (sortedLignes.length === 0) {
     y -= 14;
