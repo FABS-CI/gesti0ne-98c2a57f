@@ -214,8 +214,9 @@ function AchatDetailPage() {
                   <TableHead>Désignation</TableHead>
                   <TableHead>Référence</TableHead>
                   <TableHead className="text-right">Qté</TableHead>
-                  <TableHead className="text-right">Prix unit.</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead className="text-right">Prix unit. (FCFA)</TableHead>
+                  <TableHead className="text-right">Remise (%)</TableHead>
+                  <TableHead className="text-right">Total (FCFA)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -229,6 +230,11 @@ function AchatDetailPage() {
                     <TableCell className="text-right">
                       {formatFCFA(Number(l.prix_unitaire))}
                     </TableCell>
+                    <TableCell className="text-right">
+                      {Number(l.remise_pct ?? 0) > 0
+                        ? `${Number(l.remise_pct).toFixed(2)} %`
+                        : "—"}
+                    </TableCell>
                     <TableCell className="text-right font-semibold">
                       {formatFCFA(Number(l.total_ligne))}
                     </TableCell>
@@ -239,6 +245,7 @@ function AchatDetailPage() {
                     Totaux
                   </TableCell>
                   <TableCell className="text-right font-semibold">{qteTotale}</TableCell>
+                  <TableCell />
                   <TableCell />
                   <TableCell className="text-right font-bold">
                     {formatFCFA(achat.montant)}
