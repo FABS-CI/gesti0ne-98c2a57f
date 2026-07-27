@@ -244,15 +244,17 @@ d("Retours — intégration RPC", () => {
     ).rejects.toMatchObject({ code: "P0005" });
   });
 
-  // ─── Solde client & impact tableau de bord ───────────────────────────────
-  it("recalcule le solde client après retour puis annulation", async () => {
-    // Vérifie que le super_admin chargé en beforeAll possède réellement la
-    // permission RBAC v2 nécessaire ; sans quoi on skippe proprement.
+  // ─── Workflow retours v2 : demande → réception → validation compta ───────
+  it("déroule le workflow retour et impacte stock + solde client", async () => {
+    // Vérifie que le super_admin chargé en beforeAll possède réellement les
+    // permissions RBAC v2 nécessaires ; sans quoi on skippe proprement.
     const [perm] = await q<{ ok: boolean }>(
-      "SELECT public.has_permission_v2((NULLIF(current_setting('request.jwt.claims', true),'')::jsonb->>'sub')::uuid, 'retours.creer') AS ok",
+      `SELECT public.has_permission_v2((NULLIF(current_setting('request.jwt.claims', true),'')::jsonb->>'sub')::uuid, 'retours.creer')
+          AND public.has_permission_v2((NULLIF(current_setting('request.jwt.claims', true),'')::jsonb->>'sub')::uuid, 'retours.receptionner')
+          AND public.has_permission_v2((NULLIF(current_setting('request.jwt.claims', true),'')::jsonb->>'sub')::uuid, 'retours.valider_compta') AS ok`,
     );
     if (!perm?.ok) {
-      console.warn("[retours-integration] super_admin sans permission v2 — test skippé");
+      console.warn("[retours-integration] super_admin sans permissions v2 — test skippé");
       return;
     }
 
@@ -261,44 +263,87 @@ d("Retours — intégration RPC", () => {
     const cmd = await seedCommandeAvecLigne(c, prod, 10, 2000);
     const fac = await seedFacture(c, cmd, 20000);
 
-    const soldeInitial = await solde(c);
-    expect(soldeInitial).toBe(20000);
+    // 1. Demande créée
+    const [{ retour_id: retourId }] = await q<{ retour_id: string }>(
+      "SELECT public.retour_creer_demande($1::jsonb) AS retour_id",
+      [
+        JSON.stringify({
+          client_id: c,
+          depot_id: depotId,
+          facture_id: fac,
+          commande_id: cmd,
+          type_retour: "physique",
+          lignes: [
+            { produit_id: prod, designation: "Prod test", quantite: 3, prix_unitaire: 2000 },
+          ],
+        }),
+      ],
+    );
+    createdRetourIds.push(retourId);
 
-    const retour = await creerRetourPayload({
-      client_id: c,
-      depot_id: depotId,
-      facture_id: fac,
-      lignes: [{ produit_id: prod, designation: "Prod test", quantite: 3 }],
-    });
-    createdRetourIds.push(retour.retour_id);
+    const [apresDemande] = await q<{ statut: string; version_no: number }>(
+      "SELECT statut, version_no FROM public.retours WHERE retour_id=$1",
+      [retourId],
+    );
+    expect(apresDemande.statut).toBe("demande_creee");
 
-    // Montant du retour = 3 × 2000 = 6000
-    expect(Number(retour.montant)).toBe(6000);
-    expect(retour.statut).toBe("accepte");
+    // 2. Réception magasin → entrée de stock
+    const [ligne] = await q<{ ligne_id: string }>(
+      "SELECT ligne_id FROM public.retour_lignes WHERE retour_id=$1",
+      [retourId],
+    );
+    await db.query("SELECT public.retour_receptionner($1,$2,$3::jsonb)", [
+      retourId,
+      apresDemande.version_no,
+      JSON.stringify([
+        {
+          ligne_id: ligne.ligne_id,
+          produit_id: prod,
+          quantite_recue: 3,
+          etat_reception: "conforme",
+        },
+      ]),
+    ]);
 
-    // Solde après retour : 20000 − 6000 = 14000
-    const soldeApres = await solde(c);
-    expect(soldeApres).toBe(14000);
+    const [apresReception] = await q<{ statut: string; version_no: number }>(
+      "SELECT statut, version_no FROM public.retours WHERE retour_id=$1",
+      [retourId],
+    );
+    expect(apresReception.statut).toBe("attente_validation_compta");
 
-    // Indicateur "somme des retours acceptés" utilisé par le dashboard client
-    const [{ total }] = await q<{ total: string }>(
-      "SELECT COALESCE(SUM(montant),0) AS total FROM public.retours WHERE client_id=$1 AND statut='accepte'",
+    const [{ entrees }] = await q<{ entrees: string }>(
+      "SELECT COALESCE(SUM(quantite),0) AS entrees FROM public.stock_mouvements WHERE produit_id=$1 AND depot_id=$2 AND type='entree' AND document_id=$3",
+      [prod, depotId, retourId],
+    );
+    expect(Number(entrees)).toBe(3);
+
+    // 3. Validation comptable → diminution du solde client (3 × 2000)
+    const [avant] = await q<{ solde: string | null }>(
+      "SELECT solde FROM public.clients WHERE client_id=$1",
       [c],
     );
-    expect(Number(total)).toBe(6000);
+    await db.query("SELECT public.retour_valider_compta($1,$2,$3,$4::jsonb,$5)", [
+      retourId,
+      apresReception.version_no,
+      "diminuer_solde",
+      JSON.stringify({ valeur_retour: 6000 }),
+      "Test intégration",
+    ]);
 
-    // Annulation → solde restauré
-    await db.query("SELECT public.annuler_retour($1)", [retour.retour_id]);
-    const soldeFinal = await solde(c);
-    expect(soldeFinal).toBe(20000);
-
-    const [after] = await q<{ statut: string }>(
+    const [apres] = await q<{ statut: string }>(
       "SELECT statut FROM public.retours WHERE retour_id=$1",
-      [retour.retour_id],
+      [retourId],
     );
-    expect(after.statut).toBe("annule");
+    expect(apres.statut).toBe("cloture");
+
+    const [apresSolde] = await q<{ solde: string | null }>(
+      "SELECT solde FROM public.clients WHERE client_id=$1",
+      [c],
+    );
+    expect(Number(apresSolde.solde ?? 0)).toBe(Number(avant.solde ?? 0) - 6000);
   });
 });
+
 
 // Harnais createLivraison — vérifie que la contrainte FK protège les inserts
 // avec des références inexistantes (transporteur/gare/livreur).
