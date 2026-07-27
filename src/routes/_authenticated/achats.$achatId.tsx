@@ -6,6 +6,7 @@ import {
   Building2,
   Calendar,
   FileText,
+  Pencil,
   Printer,
   ScanEye,
   Tag,
@@ -66,6 +67,7 @@ function AchatDetailPage() {
         reference: l.designation,
         qte: Number(l.quantite),
         prixUnitaire: Number(l.prix_unitaire),
+        remisePct: Number(l.remise_pct ?? 0),
         montant: Number(l.total_ligne),
       })),
       totalVente: Number(achat.montant),
@@ -143,6 +145,11 @@ function AchatDetailPage() {
           <Button variant="outline" size="sm" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" /> Imprimer
           </Button>
+          <Button asChild size="sm">
+            <Link to="/achats/nouveau" search={{ edit: achatId }}>
+              <Pencil className="h-4 w-4 mr-2" /> Modifier
+            </Link>
+          </Button>
         </div>
       </div>
 
@@ -207,8 +214,9 @@ function AchatDetailPage() {
                   <TableHead>Désignation</TableHead>
                   <TableHead>Référence</TableHead>
                   <TableHead className="text-right">Qté</TableHead>
-                  <TableHead className="text-right">Prix unit.</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead className="text-right">Prix unit. (FCFA)</TableHead>
+                  <TableHead className="text-right">Remise (%)</TableHead>
+                  <TableHead className="text-right">Total (FCFA)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -222,6 +230,11 @@ function AchatDetailPage() {
                     <TableCell className="text-right">
                       {formatFCFA(Number(l.prix_unitaire))}
                     </TableCell>
+                    <TableCell className="text-right">
+                      {Number(l.remise_pct ?? 0) > 0
+                        ? `${Number(l.remise_pct).toFixed(2)} %`
+                        : "—"}
+                    </TableCell>
                     <TableCell className="text-right font-semibold">
                       {formatFCFA(Number(l.total_ligne))}
                     </TableCell>
@@ -232,6 +245,7 @@ function AchatDetailPage() {
                     Totaux
                   </TableCell>
                   <TableCell className="text-right font-semibold">{qteTotale}</TableCell>
+                  <TableCell />
                   <TableCell />
                   <TableCell className="text-right font-bold">
                     {formatFCFA(achat.montant)}
