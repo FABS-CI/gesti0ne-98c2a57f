@@ -9,6 +9,8 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Info, Percent, Save, User } from "lucide-react";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useServerDraft } from "@/hooks/use-server-draft";
+import { DraftRestoreBanner } from "@/components/ui/draft-restore-banner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -164,6 +166,17 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     return { brut, remisesLignes, htNet, remiseGlobaleMontant, htApresRG, tva, ttc };
   }, [lignesWatch, remiseGlobalePct, tauxTva]);
 
+  // --- Brouillon serveur (reprise de saisie) — création uniquement ---
+  const draftWatch = useWatch({ control: form.control }) as Partial<CommandeFormValues>;
+  const draft = useServerDraft<Partial<CommandeFormValues>>({
+    docType: "commande",
+    value: draftWatch,
+    enabled: mode === "create",
+    isEmpty: (v) => !v.client_id && !(v.lignes ?? []).some((l) => l?.produit_id || l?.designation),
+  });
+
+
+
   const mutation = useMutation({
     mutationFn: (values: CommandeFormValues) => {
       const payload = {
@@ -191,6 +204,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       return creerCommande(payload);
     },
     onSuccess: async (created) => {
+      if (mode === "create") void draft.markConverted();
       const clientId = form.getValues("client_id") ?? undefined;
       invalidateCommande(qc, {
         commandeId: commandeId ?? (created as { commande_id?: string })?.commande_id,
@@ -372,7 +386,20 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
   return (
     <form onSubmit={onSubmit} className="space-y-6 pb-32 2xl:pb-6">
+      {mode === "create" && draft.pendingDraft ? (
+        <DraftRestoreBanner
+          label="commande"
+          updatedAt={draft.pendingDraft.updatedAt}
+          onDiscard={() => void draft.discard()}
+          onRestore={() => {
+            const v = draft.restore();
+            if (!v) return;
+            form.reset({ ...form.getValues(), ...v } as CommandeFormValues);
+          }}
+        />
+      ) : null}
       <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_320px]">
+
         <div className="space-y-6 min-w-0">
           {/* 1. Client */}
           <section className="relative overflow-hidden rounded-md border bg-card p-4 pl-5 sm:p-5 sm:pl-6 space-y-4">
