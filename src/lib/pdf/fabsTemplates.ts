@@ -2224,11 +2224,12 @@ export async function generateBonRemiseSpecimensPDF(data: DocBase): Promise<Blob
 }
 
 const COLS_BA: Colonne[] = [
-  { key: "codeArticle", label: "Code Article", width: 1.3, align: "center" },
-  { key: "reference", label: "Désignation", width: 3.0, align: "left", wrap: true },
-  { key: "qte", label: "Qté Reçue", width: 1.0, align: "center" },
-  { key: "prixUnitaire", label: "Prix Unit.", width: 1.3, align: "right", money: true },
-  { key: "montant", label: "Montant", width: 1.3, align: "right", money: true },
+  { key: "codeArticle", label: "Code Article", width: 1.2, align: "center" },
+  { key: "reference", label: "Désignation", width: 2.8, align: "left", wrap: true },
+  { key: "qte", label: "Qté Reçue", width: 0.9, align: "center" },
+  { key: "prixUnitaire", label: "Prix Unit. (FCFA)", width: 1.3, align: "right", money: true },
+  { key: "remisePct", label: "Remise (%)", width: 0.9, align: "center" },
+  { key: "montant", label: "Montant (FCFA)", width: 1.3, align: "right", money: true },
 ];
 
 /** Bon de réception d'un approvisionnement (fournisseur). */

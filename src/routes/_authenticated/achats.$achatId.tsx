@@ -61,7 +61,12 @@ function AchatDetailPage() {
       reference: achat.reference,
       date: achat.date_achat,
       clientNom: achat.fournisseurs?.raison_sociale ?? "—",
-      codeClient: achat.reference_fournisseur ?? undefined,
+      codeClient: achat.fournisseurs?.reference ?? achat.reference_fournisseur ?? undefined,
+      clientTel: achat.fournisseurs?.telephone ?? undefined,
+      emailClient: achat.fournisseurs?.email ?? undefined,
+      adresseClient: achat.fournisseurs?.adresse ?? undefined,
+      villeClient: achat.fournisseurs?.ville ?? undefined,
+      representant: achat.fournisseurs?.contact ?? undefined,
       lignes: lignes.map((l) => ({
         codeArticle: l.reference_produit ?? undefined,
         reference: l.designation,
