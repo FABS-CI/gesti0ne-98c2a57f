@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/proformas/$proformaId")({
@@ -47,6 +48,43 @@ async function getProformaLignes(id: string) {
   return data ?? [];
 }
 
+async function getCommandeLiee(commandeId: string | null) {
+  if (!commandeId) return null;
+  const { data, error } = await supabase
+    .from("commandes")
+    .select("commande_id, reference, numero, adresse, ville, representant_nom, telephone, client_id")
+    .eq("commande_id", commandeId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+async function getClientConditions(clientId: string | null) {
+  if (!clientId) return null;
+  const { data, error } = await supabase
+    .from("clients")
+    .select("client_id, nom, adresse, ville, commune, telephone, email, representant, mode_paiement, delai_paiement")
+    .eq("client_id", clientId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Ligne d'information reprise de la commande / du client, avec badge si vide. */
+function InfoLigne({ label, value }: { label: string; value?: string | null }) {
+  const vide = !value || String(value).trim() === "";
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 border-b py-2 last:border-0">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      {vide ? (
+        <Badge variant="destructive">Champ manquant</Badge>
+      ) : (
+        <span className="text-sm font-medium">{value}</span>
+      )}
+    </div>
+  );
+}
+
 function ProformaDetailPage() {
   const { proformaId } = Route.useParams();
   const { data: proforma, isLoading } = useQuery({
@@ -56,6 +94,17 @@ function ProformaDetailPage() {
   const { data: lignes = [] } = useQuery({
     queryKey: ["proforma-lignes", proformaId],
     queryFn: () => getProformaLignes(proformaId),
+  });
+
+  const { data: commande } = useQuery({
+    queryKey: ["proforma-commande", proforma?.commande_id],
+    queryFn: () => getCommandeLiee(proforma?.commande_id ?? null),
+    enabled: !!proforma?.commande_id,
+  });
+  const { data: client } = useQuery({
+    queryKey: ["proforma-client", proforma?.client_id],
+    queryFn: () => getClientConditions(proforma?.client_id ?? null),
+    enabled: !!proforma?.client_id,
   });
 
   if (isLoading) return <Skeleton className="h-64 w-full" />;
@@ -123,6 +172,43 @@ function ProformaDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Informations reprises {commande ? `de la commande ${commande.reference ?? commande.numero ?? ""}` : "du client"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-x-8 sm:grid-cols-2">
+          <InfoLigne
+            label="Adresse de livraison"
+            value={
+              [commande?.adresse ?? client?.adresse, commande?.ville ?? client?.ville]
+                .filter(Boolean)
+                .join(" — ") || null
+            }
+          />
+          <InfoLigne
+            label="Contact"
+            value={
+              [commande?.representant_nom ?? client?.representant, commande?.telephone ?? client?.telephone]
+                .filter(Boolean)
+                .join(" — ") || null
+            }
+          />
+          <InfoLigne label="Email" value={client?.email} />
+          <InfoLigne
+            label="Conditions de paiement"
+            value={
+              client?.mode_paiement
+                ? `${client.mode_paiement}${client.delai_paiement ? ` — ${client.delai_paiement} j` : ""}`
+                : null
+            }
+          />
+          <InfoLigne label="Commande liée" value={commande?.reference ?? commande?.numero ?? null} />
+          <InfoLigne label="Date de validité" value={proforma.date_validite ? frDate(proforma.date_validite) : null} />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

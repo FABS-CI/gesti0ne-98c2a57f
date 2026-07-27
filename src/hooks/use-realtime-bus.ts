@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   invalidateCommande,
@@ -37,14 +38,17 @@ export function useRealtimeBus() {
 
     const channel = supabase.channel("app-realtime-bus");
 
-    const on = (table: string, handler: (row: Row) => void) => {
+    const on = (
+      table: string,
+      handler: (row: Row, eventType: "INSERT" | "UPDATE" | "DELETE") => void,
+    ) => {
       channel.on(
         "postgres_changes",
         { event: "*", schema: "public", table },
         (payload) => {
           const row = (payload.new ?? payload.old ?? {}) as Row;
           try {
-            handler(row);
+            handler(row, payload.eventType as "INSERT" | "UPDATE" | "DELETE");
           } catch {
             /* ignore : monitoring ne doit jamais casser l'UI */
           }
@@ -65,7 +69,22 @@ export function useRealtimeBus() {
         clientId: r.client_id,
       }),
     );
-    on("retours", (r) => invalidateRetour(qc, { clientId: r.client_id }));
+    on("retours", (r, evt) => {
+      invalidateRetour(qc, { clientId: r.client_id });
+      // Un retour impacte l'avoir client : stock, compta et relevé sont déjà
+      // invalidés par invalidateRetour → on prévient discrètement l'utilisateur.
+      const ref = typeof r.reference === "string" ? r.reference : null;
+      if (evt === "INSERT") {
+        toast.message(ref ? `Nouveau retour ${ref}` : "Nouveau retour enregistré", {
+          description: "Stock et compte client mis à jour.",
+        });
+      } else if (evt === "UPDATE") {
+        const statut = typeof r.statut === "string" ? r.statut : null;
+        toast.message(ref ? `Retour ${ref} mis à jour` : "Retour mis à jour", {
+          description: statut ? `Statut : ${statut}` : undefined,
+        });
+      }
+    });
     on("stock_mouvements", () => invalidateStock(qc));
     on("stocks_depots", () => invalidateStock(qc));
     on("produits", () => invalidateStock(qc));
