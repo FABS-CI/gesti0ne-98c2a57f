@@ -73,11 +73,48 @@ export type AchatInput = {
   notes?: string | null;
 };
 
-export async function listAchats(q?: string, statut?: string, exerciceId?: string | null) {
+/** Filtres portant sur les articles contenus dans les lignes d'approvisionnement. */
+export type AchatArticleFilters = {
+  /** Recherche partielle sur la désignation de l'article. */
+  article?: string;
+  /** Recherche partielle sur la référence (code) de l'article. */
+  refArticle?: string;
+  /** Catégorie exacte du produit lié. */
+  categorie?: string;
+};
+
+/** Renvoie les ids d'approvisionnements contenant au moins une ligne correspondant aux filtres. */
+async function findAchatIdsByArticle(f: AchatArticleFilters): Promise<string[]> {
+  const needsProduit = !!f.categorie;
+  let query = supabase
+    .from("achat_lignes")
+    .select(needsProduit ? "achat_id, produits!inner(categorie)" : "achat_id");
+  if (f.article) query = query.ilike("designation", `%${f.article}%`);
+  if (f.refArticle) query = query.ilike("reference_produit", `%${f.refArticle}%`);
+  if (f.categorie) query = query.eq("produits.categorie", f.categorie);
+  const { data, error } = await query.limit(5000);
+  if (error) throw error;
+  return Array.from(new Set(((data ?? []) as { achat_id: string }[]).map((r) => r.achat_id)));
+}
+
+export async function listAchats(
+  q?: string,
+  statut?: string,
+  exerciceId?: string | null,
+  filters?: AchatArticleFilters,
+) {
+  const hasArticleFilter = !!(filters?.article || filters?.refArticle || filters?.categorie);
+  let achatIds: string[] | null = null;
+  if (hasArticleFilter) {
+    achatIds = await findAchatIdsByArticle(filters!);
+    if (achatIds.length === 0) return [] as Achat[];
+  }
+
   let query = supabase.from("achats").select("*, fournisseurs(raison_sociale)");
   if (exerciceId) query = query.eq("exercice_id", exerciceId);
   if (q) query = query.or(`libelle.ilike.%${q}%,reference.ilike.%${q}%`);
   if (statut) query = query.eq("statut", statut);
+  if (achatIds) query = query.in("achat_id", achatIds);
   query = query.order("date_achat", { ascending: false });
   const { data, error } = await query;
   if (error) throw error;
