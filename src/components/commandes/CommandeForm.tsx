@@ -204,6 +204,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       return creerCommande(payload);
     },
     onSuccess: async (created) => {
+      if (mode === "create") void draft.markConverted();
       const clientId = form.getValues("client_id") ?? undefined;
       invalidateCommande(qc, {
         commandeId: commandeId ?? (created as { commande_id?: string })?.commande_id,
