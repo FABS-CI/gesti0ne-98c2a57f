@@ -3066,14 +3066,13 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
   );
 
   const mvtCols: TCol[] = [
-    { label: "Date", w: 0.9, align: "left" },
-    { label: "Type d'opération", w: 1.15, align: "left" },
-    { label: "Référence", w: 1.2, align: "left" },
-    { label: "N° Facture", w: 1.2, align: "left" },
-    { label: "Libellé", w: 1.7, align: "left" },
-    { label: "Débit (+)", w: 1.0, align: "right" },
-    { label: "Crédit (-)", w: 1.0, align: "right" },
-    { label: "Solde après opération", w: 1.3, align: "right" },
+    { label: "Date", w: 1.0, align: "left" },
+    { label: "Type d'opération", w: 1.3, align: "left" },
+    { label: "Référence", w: 1.5, align: "left" },
+    { label: "N° Facture", w: 1.5, align: "left" },
+    { label: "Débit (+) FCFA", w: 1.2, align: "right" },
+    { label: "Crédit (-) FCFA", w: 1.2, align: "right" },
+    { label: "Solde après opération", w: 1.4, align: "right" },
   ];
 
   const mvtRows: string[][] = [];
