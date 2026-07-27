@@ -94,7 +94,7 @@ async function findAchatIdsByArticle(f: AchatArticleFilters): Promise<string[]> 
       .limit(5000);
     if (prodErr) throw prodErr;
     produitIds = (prods ?? []).map((p) => p.produit_id);
-    if (produitIds.length === 0) return [];
+    if (produitIds!.length === 0) return [];
   }
 
   let query = supabase.from("achat_lignes").select("achat_id");
