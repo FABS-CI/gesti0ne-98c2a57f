@@ -458,19 +458,59 @@ function ApprovalsList({
       )}
 
       {statut === "en_attente" && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <KpiCard label="À traiter" value={kpis.total.toString()} />
-          <KpiCard
-            label="Critiques"
-            value={kpis.critiques.toString()}
-            color={kpis.critiques > 0 ? "#DC2626" : undefined}
-          />
-          <KpiCard
-            label="SLA dépassé"
-            value={kpis.slaDepasse.toString()}
-            color={kpis.slaDepasse > 0 ? "#F97316" : undefined}
-          />
-          <KpiCard label="Montant cumulé" value={formatFCFA(kpis.montantTotal)} />
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <KpiCard label="À traiter" value={kpis.total.toString()} />
+            <KpiCard
+              label="Critiques"
+              value={kpis.critiques.toString()}
+              color={kpis.critiques > 0 ? "#DC2626" : undefined}
+            />
+            <KpiCard
+              label="SLA dépassé"
+              value={kpis.slaDepasse.toString()}
+              color={kpis.slaDepasse > 0 ? "#F97316" : undefined}
+            />
+            <KpiCard label="Montant cumulé" value={formatFCFA(kpis.montantTotal)} />
+          </div>
+          {kpis.slaDepasse > 0 && (
+            <div className="flex flex-wrap items-center gap-2 rounded-md border border-orange-300 bg-orange-50 p-2.5 text-sm dark:bg-orange-950/30">
+              <AlertTriangle className="h-4 w-4 text-orange-500" />
+              <span>
+                {kpis.slaDepasse} demande{kpis.slaDepasse > 1 ? "s" : ""} au-delà du délai
+                d&apos;approbation.
+              </span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="ml-auto"
+                disabled={escalading}
+                onClick={async () => {
+                  setEscalading(true);
+                  const { data, error } = await supabase.rpc("approbation_escalader_sla");
+                  setEscalading(false);
+                  if (error) {
+                    toast.error(friendlyError(error));
+                    return;
+                  }
+                  const n = (data as { escalades?: number } | null)?.escalades ?? 0;
+                  toast.success(
+                    n > 0
+                      ? `${n} demande(s) escaladée(s) vers la Direction.`
+                      : "Aucune nouvelle demande à escalader.",
+                  );
+                  qc.invalidateQueries({ queryKey: ["approbations"] });
+                }}
+              >
+                {escalading ? (
+                  <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                ) : (
+                  <Users className="h-4 w-4 mr-1.5" />
+                )}
+                Escalader vers la Direction
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
