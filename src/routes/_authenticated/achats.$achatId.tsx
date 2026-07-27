@@ -144,6 +144,11 @@ function AchatDetailPage() {
           <Button variant="outline" size="sm" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" /> Imprimer
           </Button>
+          <Button asChild size="sm">
+            <Link to="/achats/nouveau" search={{ edit: achatId }}>
+              <Pencil className="h-4 w-4 mr-2" /> Modifier
+            </Link>
+          </Button>
         </div>
       </div>
 
