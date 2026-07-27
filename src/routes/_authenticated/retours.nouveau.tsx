@@ -18,6 +18,8 @@ import { DocumentSection } from "@/components/retours/nouveau/DocumentSection";
 import { InfosSection } from "@/components/retours/nouveau/InfosSection";
 import { LignesSection } from "@/components/retours/nouveau/LignesSection";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { useServerDraft } from "@/hooks/use-server-draft";
+import { DraftRestoreBanner } from "@/components/ui/draft-restore-banner";
 import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/retours/nouveau")({
