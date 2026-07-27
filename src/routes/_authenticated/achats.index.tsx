@@ -317,6 +317,41 @@ function ApprovisionnementsPage() {
             title="Au"
           />
         </div>
+        <Input
+          placeholder="Article (désignation)…"
+          value={articleSearch}
+          onChange={(e) => {
+            setArticleSearch(e.target.value);
+            setPage(1);
+          }}
+        />
+        <Input
+          placeholder="Référence article…"
+          value={refArticleSearch}
+          onChange={(e) => {
+            setRefArticleSearch(e.target.value);
+            setPage(1);
+          }}
+        />
+        <Select
+          value={categorieFilter}
+          onValueChange={(v) => {
+            setCategorieFilter(v);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Toutes catégories</SelectItem>
+            {CATEGORIES_PRODUIT.map((c) => (
+              <SelectItem key={c.value} value={c.value}>
+                {c.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <FilterBadges
@@ -328,12 +363,22 @@ function ApprovisionnementsPage() {
           ...(fournisseurFilter !== "all"
             ? [{ key: "fourn", label: `Fournisseur : ${fournisseurLabel}`, onClear: () => setFournisseurFilter("all") } as FilterBadge]
             : []),
+          ...(article
+            ? [{ key: "article", label: `Article : ${article}`, onClear: () => setArticleSearch("") } as FilterBadge]
+            : []),
+          ...(refArticle
+            ? [{ key: "refart", label: `Réf. article : ${refArticle}`, onClear: () => setRefArticleSearch("") } as FilterBadge]
+            : []),
+          ...(categorieFilter !== "all"
+            ? [{ key: "cat", label: `Catégorie : ${LABEL_CATEGORIE_PRODUIT[categorieFilter] ?? categorieFilter}`, onClear: () => setCategorieFilter("all") } as FilterBadge]
+            : []),
           ...(dateDebut || dateFin
             ? [{ key: "periode", label: `Période : ${dateDebut || "…"} → ${dateFin || "…"}`, onClear: () => { setDateDebut(""); setDateFin(""); } } as FilterBadge]
             : []),
         ]}
         onResetAll={resetAllFilters}
       />
+
 
       <div className="rounded-lg border">
         <ResponsiveTable stickyFirstCol>
