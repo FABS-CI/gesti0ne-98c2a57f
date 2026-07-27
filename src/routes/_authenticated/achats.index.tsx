@@ -77,17 +77,27 @@ function ApprovisionnementsPage() {
   const [search, setSearch] = useState("");
   const [statutFilter, setStatutFilter] = useState("all");
   const [fournisseurFilter, setFournisseurFilter] = useState("all");
+  const [articleSearch, setArticleSearch] = useState("");
+  const [refArticleSearch, setRefArticleSearch] = useState("");
+  const [categorieFilter, setCategorieFilter] = useState("all");
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 20;
   const q = useDebouncedValue(search, 300);
+  const article = useDebouncedValue(articleSearch, 300);
+  const refArticle = useDebouncedValue(refArticleSearch, 300);
   const exerciceId = useExerciceConsulteId();
 
   const { data: achats = [], isLoading } = useQuery({
-    queryKey: ["achats", exerciceId, q, statutFilter],
+    queryKey: ["achats", exerciceId, q, statutFilter, article, refArticle, categorieFilter],
     enabled: !!exerciceId,
-    queryFn: () => listAchats(q, statutFilter === "all" ? undefined : statutFilter, exerciceId),
+    queryFn: () =>
+      listAchats(q, statutFilter === "all" ? undefined : statutFilter, exerciceId, {
+        article: article || undefined,
+        refArticle: refArticle || undefined,
+        categorie: categorieFilter === "all" ? undefined : categorieFilter,
+      }),
   });
 
   const { data: fournisseurs = [] } = useQuery({
