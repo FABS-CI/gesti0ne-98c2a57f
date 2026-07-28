@@ -6869,6 +6869,7 @@ export type Database = {
         Args: { _service_id: string; _user_id: string }
         Returns: boolean
       }
+      can_write_module: { Args: { _modules: string[] }; Returns: boolean }
       client_historique: {
         Args: { _client_id: string }
         Returns: {
