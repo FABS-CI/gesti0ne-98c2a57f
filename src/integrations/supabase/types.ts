@@ -7364,6 +7364,7 @@ export type Database = {
           nb_factures: number
         }[]
       }
+      export_config_snapshot: { Args: never; Returns: Json }
       factures_impayees_client: {
         Args: { _client_id: string }
         Returns: {

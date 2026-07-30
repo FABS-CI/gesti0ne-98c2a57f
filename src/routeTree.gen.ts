@@ -195,6 +195,7 @@ import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[
 import { Route as AuthenticatedEmployesEmployeIdIndexRouteImport } from './routes/_authenticated/employes.$employeId.index'
 import { Route as AuthenticatedCommandesCommandeIdIndexRouteImport } from './routes/_authenticated/commandes.$commandeId.index'
 import { Route as ApiPublicHooksRunSchedulesRouteImport } from './routes/api/public/hooks/run-schedules'
+import { Route as ApiPublicHooksGlobalBackupRouteImport } from './routes/api/public/hooks/global-backup'
 import { Route as ApiPublicHooksAlertRouteImport } from './routes/api/public/hooks/alert'
 import { Route as AuthenticatedUtilisateursUserIdModifierRouteImport } from './routes/_authenticated/utilisateurs.$userId.modifier'
 import { Route as AuthenticatedStockProduitIdMouvementsRouteImport } from './routes/_authenticated/stock_.$produitId.mouvements'
@@ -1279,6 +1280,12 @@ const ApiPublicHooksRunSchedulesRoute =
     path: '/api/public/hooks/run-schedules',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksGlobalBackupRoute =
+  ApiPublicHooksGlobalBackupRouteImport.update({
+    id: '/api/public/hooks/global-backup',
+    path: '/api/public/hooks/global-backup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksAlertRoute = ApiPublicHooksAlertRouteImport.update({
   id: '/api/public/hooks/alert',
   path: '/api/public/hooks/alert',
@@ -1560,6 +1567,7 @@ export interface FileRoutesByFullPath {
   '/stock/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
   '/utilisateurs/$userId/modifier': typeof AuthenticatedUtilisateursUserIdModifierRoute
   '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
+  '/api/public/hooks/global-backup': typeof ApiPublicHooksGlobalBackupRoute
   '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
   '/commandes/$commandeId/': typeof AuthenticatedCommandesCommandeIdIndexRoute
   '/employes/$employeId/': typeof AuthenticatedEmployesEmployeIdIndexRoute
@@ -1739,6 +1747,7 @@ export interface FileRoutesByTo {
   '/stock/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
   '/utilisateurs/$userId/modifier': typeof AuthenticatedUtilisateursUserIdModifierRoute
   '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
+  '/api/public/hooks/global-backup': typeof ApiPublicHooksGlobalBackupRoute
   '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
   '/commandes/$commandeId': typeof AuthenticatedCommandesCommandeIdIndexRoute
   '/employes/$employeId': typeof AuthenticatedEmployesEmployeIdIndexRoute
@@ -1942,6 +1951,7 @@ export interface FileRoutesById {
   '/_authenticated/stock_/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
   '/_authenticated/utilisateurs/$userId/modifier': typeof AuthenticatedUtilisateursUserIdModifierRoute
   '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
+  '/api/public/hooks/global-backup': typeof ApiPublicHooksGlobalBackupRoute
   '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
   '/_authenticated/commandes/$commandeId/': typeof AuthenticatedCommandesCommandeIdIndexRoute
   '/_authenticated/employes/$employeId/': typeof AuthenticatedEmployesEmployeIdIndexRoute
@@ -2145,6 +2155,7 @@ export interface FileRouteTypes {
     | '/stock/$produitId/mouvements'
     | '/utilisateurs/$userId/modifier'
     | '/api/public/hooks/alert'
+    | '/api/public/hooks/global-backup'
     | '/api/public/hooks/run-schedules'
     | '/commandes/$commandeId/'
     | '/employes/$employeId/'
@@ -2324,6 +2335,7 @@ export interface FileRouteTypes {
     | '/stock/$produitId/mouvements'
     | '/utilisateurs/$userId/modifier'
     | '/api/public/hooks/alert'
+    | '/api/public/hooks/global-backup'
     | '/api/public/hooks/run-schedules'
     | '/commandes/$commandeId'
     | '/employes/$employeId'
@@ -2526,6 +2538,7 @@ export interface FileRouteTypes {
     | '/_authenticated/stock_/$produitId/mouvements'
     | '/_authenticated/utilisateurs/$userId/modifier'
     | '/api/public/hooks/alert'
+    | '/api/public/hooks/global-backup'
     | '/api/public/hooks/run-schedules'
     | '/_authenticated/commandes/$commandeId/'
     | '/_authenticated/employes/$employeId/'
@@ -2543,6 +2556,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicSeedUsersRoute: typeof ApiPublicSeedUsersRoute
   ApiPublicHooksAlertRoute: typeof ApiPublicHooksAlertRoute
+  ApiPublicHooksGlobalBackupRoute: typeof ApiPublicHooksGlobalBackupRoute
   ApiPublicHooksRunSchedulesRoute: typeof ApiPublicHooksRunSchedulesRoute
 }
 
@@ -3850,6 +3864,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRunSchedulesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/global-backup': {
+      id: '/api/public/hooks/global-backup'
+      path: '/api/public/hooks/global-backup'
+      fullPath: '/api/public/hooks/global-backup'
+      preLoaderRoute: typeof ApiPublicHooksGlobalBackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/alert': {
       id: '/api/public/hooks/alert'
       path: '/api/public/hooks/alert'
@@ -4727,6 +4748,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicSeedUsersRoute: ApiPublicSeedUsersRoute,
   ApiPublicHooksAlertRoute: ApiPublicHooksAlertRoute,
+  ApiPublicHooksGlobalBackupRoute: ApiPublicHooksGlobalBackupRoute,
   ApiPublicHooksRunSchedulesRoute: ApiPublicHooksRunSchedulesRoute,
 }
 export const routeTree = rootRouteImport

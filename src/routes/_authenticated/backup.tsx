@@ -35,6 +35,8 @@ import { BackupRestoreCard } from "@/components/backup/BackupRestoreCard";
 import { useServerFn } from "@tanstack/react-start";
 import { uploadBackupToGoogleDrive } from "@/lib/gdrive-backup.functions";
 import { exportCriticalArtifacts } from "@/lib/gdrive-artifacts-backup.functions";
+import { runGlobalBackup } from "@/lib/global-backup.functions";
+
 import { exportStorageBinariesZip } from "@/lib/gdrive-covers-zip.functions";
 import { downloadDriveFile } from "@/lib/gdrive-download.functions";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -187,6 +189,21 @@ function BackupPage() {
   } | null>(null);
   const runDriveDownload = useServerFn(downloadDriveFile);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const runGlobalZip = useServerFn(runGlobalBackup);
+  const [globalRunning, setGlobalRunning] = useState(false);
+  const [globalResult, setGlobalResult] = useState<{
+    fileName: string;
+    size: number;
+    sha256: string;
+    tables_count: number;
+    rows_count: number;
+    users_count: number;
+    files_count: number;
+    files_embedded: number;
+    drive: { id: string; url: string | null };
+    purged: number;
+  } | null>(null);
+
 
   async function downloadFromDrive(fileId: string, fallbackName: string) {
     setDownloadingId(fileId);
@@ -241,6 +258,23 @@ function BackupPage() {
       setBinariesRunning(false);
     }
   }
+
+  async function backupGlobalZip() {
+    setGlobalRunning(true);
+    try {
+      const res = await runGlobalZip();
+      setGlobalResult(res);
+      toast.success(
+        `Archive globale OK — ${res.tables_count} tables, ${res.rows_count} enregistrements, ${res.users_count} comptes`,
+      );
+      loadHistory();
+    } catch (e) {
+      toast.error(friendlyError(e));
+    } finally {
+      setGlobalRunning(false);
+    }
+  }
+
 
   useEffect(() => {
     (async () => {
@@ -583,6 +617,60 @@ function BackupPage() {
           </Button>
         </CardContent>
       </Card>
+
+      <Card className="border-primary/40">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            Archive globale unique (ZIP)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Une seule archive contenant <b>tout</b> : données métier (toutes les tables),
+            comptes utilisateurs, fichiers stockés (avec les binaires) et configuration
+            technique (politiques d'accès, fonctions, triggers, extensions), plus un
+            manifeste et une empreinte SHA-256. Générée automatiquement toutes les 3 heures
+            et conservée sur Google Drive (30 dernières archives).
+          </p>
+          <Button onClick={backupGlobalZip} disabled={globalRunning}>
+            {globalRunning ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Cloud className="mr-2 h-4 w-4" />
+            )}
+            {globalRunning
+              ? "Archive en cours… (peut durer plusieurs minutes)"
+              : "Créer l'archive globale maintenant"}
+          </Button>
+          {globalResult && (
+            <div className="rounded-md border bg-muted/40 p-3 text-sm space-y-1">
+              <div>
+                ✅ <b>{globalResult.fileName}</b> —{" "}
+                {(globalResult.size / 1024 / 1024).toFixed(1)} Mo
+              </div>
+              <div>
+                {globalResult.tables_count} tables · {globalResult.rows_count} enregistrements ·{" "}
+                {globalResult.users_count} comptes · {globalResult.files_embedded}/
+                {globalResult.files_count} fichiers inclus
+              </div>
+              <div className="font-mono text-xs break-all">SHA-256 : {globalResult.sha256}</div>
+              {globalResult.drive?.url && (
+                <a
+                  href={globalResult.drive.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Ouvrir dans Google Drive →
+                </a>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+
 
       <Card className="border-amber-500/40">
         <CardHeader>
