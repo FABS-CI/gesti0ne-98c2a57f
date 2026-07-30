@@ -19,10 +19,10 @@ const APP_ROLES = [
 async function assertSuperAdmin(userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
-    .from("user_roles")
-    .select("role")
+    .from("rbac2_user_roles")
+    .select("role_code")
     .eq("user_id", userId)
-    .eq("role", "super_admin")
+    .eq("role_code", "super_admin")
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Accès réservé au super administrateur");
