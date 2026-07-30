@@ -107,8 +107,12 @@ export type RetourLigne = {
   designation: string;
   quantite: number;
   prix_unitaire: number;
+  remise_pct?: number | null;
+  montant_brut?: number | null;
+  remise_montant?: number | null;
   total_ligne: number;
   motif: string | null;
+  etat_produit?: string | null;
   created_at: string;
   quantite_demandee?: number | null;
   quantite_recue?: number | null;
@@ -123,6 +127,9 @@ export type RetourLigneInput = {
   reference_produit?: string | null;
   designation: string;
   quantite: number;
+  prix_unitaire?: number | null;
+  remise_pct?: number | null;
+  etat_produit?: string | null;
   motif?: string | null;
 };
 
@@ -148,6 +155,9 @@ export type ListRetoursParams = {
   statut?: string;
   client_id?: string;
   ville?: string;
+  representant?: string;
+  date_debut?: string;
+  date_fin?: string;
   exerciceId?: string | null;
 };
 
