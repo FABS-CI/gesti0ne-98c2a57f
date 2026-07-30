@@ -2,19 +2,54 @@ import { supabase } from "@/integrations/supabase/client";
 import { getDepotDefautId } from "@/lib/parametres-api";
 import { assertPermission } from "@/lib/rbac-api";
 
+/** Statuts officiels (valeurs stockées en base). */
 export const STATUTS_RETOUR = [
-  { value: "demande_creee", label: "Demande créée", color: "#6366F1" },
-  { value: "en_attente_magasin", label: "En attente magasin", color: "#F97316" },
+  { value: "demande_creee", label: "Brouillon", color: "#6366F1" },
+  { value: "attente_reception", label: "En attente magasin", color: "#F97316" },
   { value: "receptionne", label: "Réceptionné", color: "#0EA5E9" },
-  { value: "en_attente_compta", label: "En attente compta", color: "#F59E0B" },
-  { value: "valide", label: "Validé", color: "#10B981" },
-  { value: "refuse_magasin", label: "Refusé (magasin)", color: "#EF4444" },
-  { value: "refuse_compta", label: "Refusé (compta)", color: "#DC2626" },
-  { value: "cloture", label: "Clôturé", color: "#374151" },
-  // Legacy
-  { value: "accepte", label: "Accepté", color: "#10B981" },
+  { value: "attente_validation_compta", label: "En attente compta", color: "#F59E0B" },
+  { value: "valide_compta", label: "Validé", color: "#10B981" },
+  { value: "cloture", label: "Clôturé", color: "#047857" },
+  { value: "refus_magasin", label: "Refusé (magasin)", color: "#EF4444" },
+  { value: "refus_compta", label: "Refusé (compta)", color: "#DC2626" },
   { value: "annule", label: "Annulé", color: "#6B7280" },
 ] as const;
+
+/** Anciens libellés encore présents sur des enregistrements historiques. */
+const STATUTS_LEGACY: Array<{ value: string; label: string; color: string }> = [
+  { value: "en_cours", label: "En cours", color: "#F59E0B" },
+  { value: "accepte", label: "Accepté", color: "#10B981" },
+  { value: "valide", label: "Validé", color: "#10B981" },
+  { value: "en_attente_magasin", label: "En attente magasin", color: "#F97316" },
+  { value: "en_attente_compta", label: "En attente compta", color: "#F59E0B" },
+  { value: "refuse_magasin", label: "Refusé (magasin)", color: "#EF4444" },
+  { value: "refuse_compta", label: "Refusé (compta)", color: "#DC2626" },
+];
+
+/** Motifs de retour normalisés (liste contrôlée). */
+export const MOTIFS_RETOUR = [
+  { value: "defectueux", label: "Produit défectueux" },
+  { value: "erreur_commande", label: "Erreur de commande" },
+  { value: "surplus", label: "Surplus / invendu" },
+  { value: "non_conforme", label: "Article non conforme" },
+  { value: "retard", label: "Livraison hors délai" },
+  { value: "autre", label: "Autre motif" },
+] as const;
+
+export const MOTIF_RETOUR_LABEL: Record<string, string> = Object.fromEntries(
+  MOTIFS_RETOUR.map((m) => [m.value, m.label]),
+);
+
+/** État du produit retourné (impacte le stock à la réception). */
+export const ETATS_PRODUIT_RETOUR = [
+  { value: "revendable", label: "Revendable" },
+  { value: "endommage", label: "Endommagé" },
+  { value: "perdu", label: "Perdu" },
+] as const;
+
+export const ETAT_PRODUIT_LABEL: Record<string, string> = Object.fromEntries(
+  ETATS_PRODUIT_RETOUR.map((e) => [e.value, e.label]),
+);
 
 export const STATUT_RETOUR_LABEL: Record<string, { label: string; color: string }> =
   Object.fromEntries(STATUTS_RETOUR.map((s) => [s.value, { label: s.label, color: s.color }]));
