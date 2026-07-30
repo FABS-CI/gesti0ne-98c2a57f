@@ -4882,6 +4882,239 @@ export type Database = {
           },
         ]
       }
+      rbac3_actions: {
+        Row: {
+          code: string
+          created_at: string
+          label: string
+          ordre: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          label: string
+          ordre?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          label?: string
+          ordre?: number
+        }
+        Relationships: []
+      }
+      rbac3_audit: {
+        Row: {
+          acteur_email: string | null
+          acteur_id: string | null
+          action: string
+          ancienne_valeur: Json | null
+          cible_id: string | null
+          cible_type: string
+          created_at: string
+          id: string
+          nouvelle_valeur: Json | null
+          perm_code: string | null
+          role_code: string | null
+        }
+        Insert: {
+          acteur_email?: string | null
+          acteur_id?: string | null
+          action: string
+          ancienne_valeur?: Json | null
+          cible_id?: string | null
+          cible_type: string
+          created_at?: string
+          id?: string
+          nouvelle_valeur?: Json | null
+          perm_code?: string | null
+          role_code?: string | null
+        }
+        Update: {
+          acteur_email?: string | null
+          acteur_id?: string | null
+          action?: string
+          ancienne_valeur?: Json | null
+          cible_id?: string | null
+          cible_type?: string
+          created_at?: string
+          id?: string
+          nouvelle_valeur?: Json | null
+          perm_code?: string | null
+          role_code?: string | null
+        }
+        Relationships: []
+      }
+      rbac3_modules: {
+        Row: {
+          actif: boolean
+          code: string
+          created_at: string
+          groupe: string
+          label: string
+          ordre: number
+          updated_at: string
+        }
+        Insert: {
+          actif?: boolean
+          code: string
+          created_at?: string
+          groupe?: string
+          label: string
+          ordre?: number
+          updated_at?: string
+        }
+        Update: {
+          actif?: boolean
+          code?: string
+          created_at?: string
+          groupe?: string
+          label?: string
+          ordre?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rbac3_permissions: {
+        Row: {
+          action_code: string
+          code: string
+          created_at: string
+          label: string
+          module_code: string
+          sensible: boolean
+        }
+        Insert: {
+          action_code: string
+          code: string
+          created_at?: string
+          label: string
+          module_code: string
+          sensible?: boolean
+        }
+        Update: {
+          action_code?: string
+          code?: string
+          created_at?: string
+          label?: string
+          module_code?: string
+          sensible?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac3_permissions_action_code_fkey"
+            columns: ["action_code"]
+            isOneToOne: false
+            referencedRelation: "rbac3_actions"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "rbac3_permissions_module_code_fkey"
+            columns: ["module_code"]
+            isOneToOne: false
+            referencedRelation: "rbac3_modules"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      rbac3_role_permissions: {
+        Row: {
+          created_at: string
+          perm_code: string
+          role_code: string
+        }
+        Insert: {
+          created_at?: string
+          perm_code: string
+          role_code: string
+        }
+        Update: {
+          created_at?: string
+          perm_code?: string
+          role_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac3_role_permissions_perm_code_fkey"
+            columns: ["perm_code"]
+            isOneToOne: false
+            referencedRelation: "rbac3_permissions"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "rbac3_role_permissions_role_code_fkey"
+            columns: ["role_code"]
+            isOneToOne: false
+            referencedRelation: "rbac3_roles"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      rbac3_roles: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          label: string
+          ordre: number
+          portee_globale: boolean
+          statut: string
+          systeme: boolean
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          label: string
+          ordre?: number
+          portee_globale?: boolean
+          statut?: string
+          systeme?: boolean
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          label?: string
+          ordre?: number
+          portee_globale?: boolean
+          statut?: string
+          systeme?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      rbac3_user_roles: {
+        Row: {
+          assigned_by: string | null
+          created_at: string
+          role_code: string
+          user_id: string
+        }
+        Insert: {
+          assigned_by?: string | null
+          created_at?: string
+          role_code: string
+          user_id: string
+        }
+        Update: {
+          assigned_by?: string | null
+          created_at?: string
+          role_code?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac3_user_roles_role_code_fkey"
+            columns: ["role_code"]
+            isOneToOne: false
+            referencedRelation: "rbac3_roles"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       retour_lignes: {
         Row: {
           commentaire_reception: string | null
@@ -7794,6 +8027,36 @@ export type Database = {
       rbac2_sync_catalog: {
         Args: { _apply?: boolean; _inventory: Json }
         Returns: Json
+      }
+      rbac3_assert: { Args: { _perm: string }; Returns: undefined }
+      rbac3_can: {
+        Args: { _perm: string; _user_id?: string }
+        Returns: boolean
+      }
+      rbac3_depots_autorises: {
+        Args: { _user_id?: string }
+        Returns: {
+          depot_id: string
+        }[]
+      }
+      rbac3_is_global: { Args: { _user_id?: string }; Returns: boolean }
+      rbac3_permissions_of: {
+        Args: { _user_id?: string }
+        Returns: {
+          perm_code: string
+        }[]
+      }
+      rbac3_scope_departement: {
+        Args: { _departement_id: string; _user_id?: string }
+        Returns: boolean
+      }
+      rbac3_scope_depot: {
+        Args: { _depot_id: string; _user_id?: string }
+        Returns: boolean
+      }
+      rbac3_scope_service: {
+        Args: { _service_id: string; _user_id?: string }
+        Returns: boolean
       }
       recalculer_sla_approbations: {
         Args: never
