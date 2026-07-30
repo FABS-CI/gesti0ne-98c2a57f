@@ -52,7 +52,9 @@ export const ETAT_PRODUIT_LABEL: Record<string, string> = Object.fromEntries(
 );
 
 export const STATUT_RETOUR_LABEL: Record<string, { label: string; color: string }> =
-  Object.fromEntries(STATUTS_RETOUR.map((s) => [s.value, { label: s.label, color: s.color }]));
+  Object.fromEntries(
+    [...STATUTS_RETOUR, ...STATUTS_LEGACY].map((s) => [s.value, { label: s.label, color: s.color }]),
+  );
 
 export type RetourStatut = (typeof STATUTS_RETOUR)[number]["value"];
 
