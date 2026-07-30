@@ -41,14 +41,14 @@ export const listUsers = createServerFn({ method: "GET" })
     if (pErr) throw new Error(pErr.message);
 
     const { data: roles, error: rErr } = await supabaseAdmin
-      .from("user_roles")
-      .select("user_id, role");
+      .from("rbac2_user_roles")
+      .select("user_id, role_code");
     if (rErr) throw new Error(rErr.message);
 
     const rolesByUser = new Map<string, string[]>();
     for (const r of roles ?? []) {
       const arr = rolesByUser.get(r.user_id) ?? [];
-      arr.push(r.role);
+      arr.push(r.role_code);
       rolesByUser.set(r.user_id, arr);
     }
 
