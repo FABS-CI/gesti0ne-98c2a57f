@@ -217,7 +217,7 @@ function AuthPage() {
         if (uidForPerm) {
           const [{ data: rpcPerms }, { data: roleRow }] = await Promise.all([
             supabase.rpc("list_user_permissions", { _user_id: uidForPerm }),
-            supabase.from("user_roles").select("role").eq("user_id", uidForPerm).eq("role", "super_admin").maybeSingle(),
+            supabase.from("rbac2_user_roles").select("role_code").eq("user_id", uidForPerm).eq("role_code", "super_admin").maybeSingle(),
           ]);
           const codes = (rpcPerms ?? []).map((r: { permission_code: string }) => r.permission_code);
           const { pickLandingRoute } = await import("@/lib/dashboard-landing");

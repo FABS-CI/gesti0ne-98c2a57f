@@ -6,10 +6,10 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 async function assertSuperAdmin(userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
-    .from("user_roles")
-    .select("role")
+    .from("rbac2_user_roles")
+    .select("role_code")
     .eq("user_id", userId)
-    .eq("role", "super_admin")
+    .eq("role_code", "super_admin")
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Accès réservé au Super Administrateur");
@@ -192,10 +192,10 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
 
     // Empêche la suppression d'un autre super_admin
     const { data: isSuper } = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
+      .from("rbac2_user_roles")
+      .select("role_code")
       .eq("user_id", data.user_id)
-      .eq("role", "super_admin")
+      .eq("role_code", "super_admin")
       .maybeSingle();
     if (isSuper) throw new Error("Impossible de supprimer un Super Administrateur");
 
@@ -206,7 +206,7 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
       .maybeSingle();
 
     // Révoque les rôles avant suppression (best effort)
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
+    await supabaseAdmin.from("rbac2_user_roles").delete().eq("user_id", data.user_id);
     await supabaseAdmin.from("rbac_user_roles").delete().eq("user_id", data.user_id);
 
     // Suppression physique (cascade sur profiles via FK auth.users)
@@ -249,7 +249,7 @@ export const adminDeactivateUser = createServerFn({ method: "POST" })
       .from("profiles")
       .update({ actif: false, updated_at: new Date().toISOString() })
       .eq("id", data.user_id);
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
+    await supabaseAdmin.from("rbac2_user_roles").delete().eq("user_id", data.user_id);
     await supabaseAdmin.from("rbac_user_roles").delete().eq("user_id", data.user_id);
 
     await supabaseAdmin.from("rbac_audit_log").insert({

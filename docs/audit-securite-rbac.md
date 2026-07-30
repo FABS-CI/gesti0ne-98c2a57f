@@ -106,3 +106,13 @@ Migration préalable obligatoire : réécrire les **224 policies** qui référen
 Reste : suppression physique des socles v0/v1 (`user_roles`, `rbac_*`) et de
 la console RBAC legacy `src/components/roles-permissions/*`, qui impose de
 réécrire au préalable les policies RLS référençant `has_role(..., app_role)`.
+
+## Lot R4-bis — Retrait des socles RBAC legacy (exécuté)
+
+- **Étape 1** : `has_role_compat(uuid, text)` créée — lit uniquement `rbac2_user_roles` (rôles actifs).
+- **Étape 2** : 45 policies RLS réécrites automatiquement, `has_role(..., app_role)` → `has_role_compat(..., 'super_admin')`. Compteur `has_role(` dans `pg_policies` = **0**.
+- **Étape 3** : frontend/serveur basculés sur le registre v2 (`use-user-roles`, `auth.tsx`, `users.functions`, `users-admin.functions`, `employe-account.functions`, appels RPC `has_role` → `has_role_compat`). Backfill v0 → v2 : 3 super_admins alignés.
+- **Étape 4** : `EXECUTE` sur `has_role(uuid, app_role)` révoqué pour `authenticated`/`anon`/`PUBLIC` (conservé pour `service_role`). Tables `user_roles` / `rbac_*` conservées en filet de sécurité.
+- **Étape 5 (non exécutée)** : suppression physique des tables legacy et de l'enum `app_role`, après période d'observation.
+
+Tests : 145/145 unitaires OK.

@@ -9,10 +9,10 @@ type AdminRole = (typeof ADMIN_ROLES)[number];
 async function assertRhAdmin(userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
-    .from("user_roles")
-    .select("role")
+    .from("rbac2_user_roles")
+    .select("role_code")
     .eq("user_id", userId)
-    .in("role", ADMIN_ROLES as unknown as AdminRole[]);
+    .in("role_code", ADMIN_ROLES as unknown as AdminRole[]);
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) {
     throw new Error("Accès réservé à l'administration RH");
@@ -46,8 +46,8 @@ export const getEmployeAccountStatus = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     const u = userRes.user;
     const { data: roles } = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
+      .from("rbac2_user_roles")
+      .select("role_code")
       .eq("user_id", emp.user_id);
     return {
       hasAccount: true as const,
@@ -60,7 +60,7 @@ export const getEmployeAccountStatus = createServerFn({ method: "POST" })
         banned_until: (u as unknown as { banned_until?: string | null })?.banned_until ?? null,
         email_confirmed_at: u?.email_confirmed_at ?? null,
       },
-      roles: (roles ?? []).map((r) => r.role),
+      roles: (roles ?? []).map((r) => r.role_code),
     };
   });
 

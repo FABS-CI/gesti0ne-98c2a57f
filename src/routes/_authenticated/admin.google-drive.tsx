@@ -52,7 +52,7 @@ function GoogleDriveAdminPage() {
         setIsAdmin(false);
         return;
       }
-      const { data, error } = await supabase.rpc("has_role", {
+      const { data, error } = await supabase.rpc("has_role_compat", {
         _user_id: u.user.id,
         _role: "super_admin",
       });

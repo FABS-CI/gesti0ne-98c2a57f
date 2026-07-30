@@ -19,10 +19,10 @@ const APP_ROLES = [
 async function assertSuperAdmin(userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
-    .from("user_roles")
-    .select("role")
+    .from("rbac2_user_roles")
+    .select("role_code")
     .eq("user_id", userId)
-    .eq("role", "super_admin")
+    .eq("role_code", "super_admin")
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Accès réservé au super administrateur");
@@ -41,14 +41,14 @@ export const listUsers = createServerFn({ method: "GET" })
     if (pErr) throw new Error(pErr.message);
 
     const { data: roles, error: rErr } = await supabaseAdmin
-      .from("user_roles")
-      .select("user_id, role");
+      .from("rbac2_user_roles")
+      .select("user_id, role_code");
     if (rErr) throw new Error(rErr.message);
 
     const rolesByUser = new Map<string, string[]>();
     for (const r of roles ?? []) {
       const arr = rolesByUser.get(r.user_id) ?? [];
-      arr.push(r.role);
+      arr.push(r.role_code);
       rolesByUser.set(r.user_id, arr);
     }
 
@@ -74,11 +74,13 @@ export const listUsersForProduction = createServerFn({ method: "GET" })
       .order("nom_complet", { ascending: true });
     if (pErr) throw new Error(pErr.message);
 
-    const { data: roles } = await supabaseAdmin.from("user_roles").select("user_id, role");
+    const { data: roles } = await supabaseAdmin
+      .from("rbac2_user_roles")
+      .select("user_id, role_code");
     const rolesByUser = new Map<string, string[]>();
     for (const r of roles ?? []) {
       const arr = rolesByUser.get(r.user_id) ?? [];
-      arr.push(r.role);
+      arr.push(r.role_code);
       rolesByUser.set(r.user_id, arr);
     }
 
@@ -155,15 +157,15 @@ export const setUserRole = createServerFn({ method: "POST" })
 
     if (data.action === "add") {
       const { error } = await supabaseAdmin
-        .from("user_roles")
-        .insert({ user_id: data.userId, role: data.role });
+        .from("rbac2_user_roles")
+        .insert({ user_id: data.userId, role_code: data.role, granted_by: context.userId });
       if (error && !error.message.includes("duplicate")) throw new Error(error.message);
     } else {
       const { error } = await supabaseAdmin
-        .from("user_roles")
+        .from("rbac2_user_roles")
         .delete()
         .eq("user_id", data.userId)
-        .eq("role", data.role);
+        .eq("role_code", data.role);
       if (error) throw new Error(error.message);
     }
     return { ok: true };
@@ -205,8 +207,12 @@ export const createUser = createServerFn({ method: "POST" })
     if (pErr) throw new Error(pErr.message);
 
     if (data.roles.length > 0) {
-      const rows = data.roles.map((r) => ({ user_id: uid, role: r }));
-      const { error: rErr } = await supabaseAdmin.from("user_roles").insert(rows);
+      const rows = data.roles.map((r) => ({
+        user_id: uid,
+        role_code: r,
+        granted_by: context.userId,
+      }));
+      const { error: rErr } = await supabaseAdmin.from("rbac2_user_roles").insert(rows);
       if (rErr && !rErr.message.includes("duplicate")) throw new Error(rErr.message);
     }
     return { ok: true, userId: uid };

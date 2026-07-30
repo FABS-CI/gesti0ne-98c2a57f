@@ -106,18 +106,14 @@ export function useUserRoles() {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     queryFn: async (): Promise<AppRole[]> => {
-      // Source de vérité : RBAC v2 (`rbac2_user_roles`), complétée par le
-      // registre historique `user_roles` (encore lu par les policies RLS).
-      // Un trigger base propage désormais v1 -> v2 -> v0, les trois restent
-      // alignés quel que soit le chemin d'écriture.
-      const [legacy, v2] = await Promise.all([
-        supabase.from("user_roles").select("role").eq("user_id", userId!),
-        supabase
-          .from("rbac2_user_roles")
-          .select("role_code, rbac2_roles!inner(statut)")
-          .eq("user_id", userId!),
-      ]);
-      const legacyRoles = (legacy.data ?? []).map((r) => r.role as AppRole);
+      // Source de vérité unique : RBAC v2 (`rbac2_user_roles`).
+      // Le registre historique `user_roles` n'est plus lu (Lot R4-bis) :
+      // les policies RLS s'appuient désormais sur `has_role_compat`, qui
+      // interroge lui aussi le registre v2.
+      const v2 = await supabase
+        .from("rbac2_user_roles")
+        .select("role_code, rbac2_roles!inner(statut)")
+        .eq("user_id", userId!);
       const v2Roles = (v2.data ?? [])
         .filter(
           (r) =>
@@ -125,7 +121,7 @@ export function useUserRoles() {
             (r as { rbac2_roles?: { statut?: string } }).rbac2_roles?.statut !== "inactif",
         )
         .map((r) => (r as { role_code: string }).role_code as AppRole);
-      return Array.from(new Set([...legacyRoles, ...v2Roles]));
+      return Array.from(new Set(v2Roles));
     },
   });
 

@@ -7432,6 +7432,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_role_compat: {
+        Args: { _role: string; _user_id: string }
+        Returns: boolean
+      }
       is_admin: { Args: { _uid: string }; Returns: boolean }
       is_finance: { Args: { _uid: string }; Returns: boolean }
       is_global_scope: { Args: { _user_id: string }; Returns: boolean }
