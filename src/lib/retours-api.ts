@@ -318,7 +318,11 @@ export async function creerRetourDemande(input: CreerRetourDemandePayload): Prom
       produit_id: l.produit_id,
       reference_produit: l.reference_produit ?? null,
       designation: l.designation,
+      quantite: l.quantite,
       quantite_demandee: l.quantite,
+      prix_unitaire: l.prix_unitaire ?? null,
+      remise_pct: l.remise_pct ?? 0,
+      etat_produit: l.etat_produit ?? "revendable",
       motif: l.motif ?? null,
     })),
   };
