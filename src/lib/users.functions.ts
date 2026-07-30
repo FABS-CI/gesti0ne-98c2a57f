@@ -74,11 +74,13 @@ export const listUsersForProduction = createServerFn({ method: "GET" })
       .order("nom_complet", { ascending: true });
     if (pErr) throw new Error(pErr.message);
 
-    const { data: roles } = await supabaseAdmin.from("user_roles").select("user_id, role");
+    const { data: roles } = await supabaseAdmin
+      .from("rbac2_user_roles")
+      .select("user_id, role_code");
     const rolesByUser = new Map<string, string[]>();
     for (const r of roles ?? []) {
       const arr = rolesByUser.get(r.user_id) ?? [];
-      arr.push(r.role);
+      arr.push(r.role_code);
       rolesByUser.set(r.user_id, arr);
     }
 
