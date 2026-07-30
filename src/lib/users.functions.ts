@@ -157,15 +157,15 @@ export const setUserRole = createServerFn({ method: "POST" })
 
     if (data.action === "add") {
       const { error } = await supabaseAdmin
-        .from("user_roles")
-        .insert({ user_id: data.userId, role: data.role });
+        .from("rbac2_user_roles")
+        .insert({ user_id: data.userId, role_code: data.role, granted_by: context.userId });
       if (error && !error.message.includes("duplicate")) throw new Error(error.message);
     } else {
       const { error } = await supabaseAdmin
-        .from("user_roles")
+        .from("rbac2_user_roles")
         .delete()
         .eq("user_id", data.userId)
-        .eq("role", data.role);
+        .eq("role_code", data.role);
       if (error) throw new Error(error.message);
     }
     return { ok: true };
