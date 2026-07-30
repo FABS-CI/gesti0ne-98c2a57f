@@ -4887,8 +4887,10 @@ export type Database = {
           commentaire_reception: string | null
           created_at: string
           designation: string | null
+          etat_produit: string
           etat_reception: string | null
           ligne_id: string
+          montant_brut: number
           motif: string | null
           prix_unitaire: number | null
           produit_id: string | null
@@ -4896,6 +4898,8 @@ export type Database = {
           quantite_demandee: number | null
           quantite_recue: number | null
           reference_produit: string | null
+          remise_montant: number
+          remise_pct: number
           retour_id: string
           total_ligne: number | null
           updated_at: string
@@ -4904,8 +4908,10 @@ export type Database = {
           commentaire_reception?: string | null
           created_at?: string
           designation?: string | null
+          etat_produit?: string
           etat_reception?: string | null
           ligne_id?: string
+          montant_brut?: number
           motif?: string | null
           prix_unitaire?: number | null
           produit_id?: string | null
@@ -4913,6 +4919,8 @@ export type Database = {
           quantite_demandee?: number | null
           quantite_recue?: number | null
           reference_produit?: string | null
+          remise_montant?: number
+          remise_pct?: number
           retour_id: string
           total_ligne?: number | null
           updated_at?: string
@@ -4921,8 +4929,10 @@ export type Database = {
           commentaire_reception?: string | null
           created_at?: string
           designation?: string | null
+          etat_produit?: string
           etat_reception?: string | null
           ligne_id?: string
+          montant_brut?: number
           motif?: string | null
           prix_unitaire?: number | null
           produit_id?: string | null
@@ -4930,6 +4940,8 @@ export type Database = {
           quantite_demandee?: number | null
           quantite_recue?: number | null
           reference_produit?: string | null
+          remise_montant?: number
+          remise_pct?: number
           retour_id?: string
           total_ligne?: number | null
           updated_at?: string
