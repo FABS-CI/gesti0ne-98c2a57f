@@ -8,7 +8,7 @@ export const retourLigneSchema = z.object({
   prix_unitaire: z.number().min(0, "Prix invalide").optional(),
   remise_pct: z.number().min(0, "Remise ≥ 0").max(100, "Remise ≤ 100").optional(),
   etat_produit: z.enum(["revendable", "endommage", "perdu"]).optional(),
-  motif: z.string().min(1, "Motif requis"),
+  motif: z.string().optional(),
   qte_disponible: z.number().int().optional(),
 });
 
