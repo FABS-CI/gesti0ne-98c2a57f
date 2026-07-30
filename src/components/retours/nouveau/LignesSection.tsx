@@ -3,6 +3,13 @@ import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -12,7 +19,9 @@ import {
 } from "@/components/ui/table";
 import { ProductSearchSelect } from "@/components/search/ProductSearchSelect";
 import type { Produit } from "@/lib/produits-api";
-import type { RetourFormValues } from "@/lib/retours-form";
+import { calcLigneRetour, calcTotauxRetour, type RetourFormValues } from "@/lib/retours-form";
+import { MOTIFS_RETOUR, ETATS_PRODUIT_RETOUR } from "@/lib/retours-api";
+import { formatFCFA } from "@/lib/format";
 
 type Props = {
   form: UseFormReturn<RetourFormValues>;
@@ -22,14 +31,21 @@ type Props = {
 
 export function LignesSection({ form, fa, onProduitChange }: Props) {
   const { fields, append, remove } = fa;
+  const lignes = form.watch("lignes") ?? [];
+  const totaux = calcTotauxRetour(lignes);
+
   const addLigne = () =>
     append({
       produit_id: "",
       reference_produit: "",
       designation: "",
       quantite: 1,
+      prix_unitaire: 0,
+      remise_pct: 0,
+      etat_produit: "revendable",
       motif: "",
     });
+
   return (
     <section className="rounded-md border bg-card p-5 space-y-4">
       <div className="flex items-center justify-between">
@@ -45,58 +61,149 @@ export function LignesSection({ form, fa, onProduitChange }: Props) {
           Aucun produit. Cliquez sur « Ajouter une ligne ».
         </p>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[35%]">Produit</TableHead>
-              <TableHead>Référence</TableHead>
-              <TableHead className="text-right w-28">Quantité</TableHead>
-              <TableHead className="w-[30%]">Motif</TableHead>
-              <TableHead className="w-12" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {fields.map((f, i) => {
-              const err = form.formState.errors.lignes?.[i];
-              return (
-                <TableRow key={f.id}>
-                  <TableCell>
-                    <ProductSearchSelect
-                      value={form.watch(`lignes.${i}.produit_id`)}
-                      onChange={(_id, produit) => onProduitChange(i, produit)}
-                    />
-                    {err?.produit_id && (
-                      <p className="text-xs text-red-600 mt-1">{err.produit_id.message}</p>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-mono text-xs">
-                    {form.watch(`lignes.${i}.reference_produit`) || "—"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Input
-                      type="number"
-                      min={1}
-                      {...form.register(`lignes.${i}.quantite`, { valueAsNumber: true })}
-                      className="text-right"
-                    />
-                    {err?.quantite && (
-                      <p className="text-xs text-red-600 mt-1">{err.quantite.message}</p>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Input placeholder="Optionnel" {...form.register(`lignes.${i}.motif`)} />
-                  </TableCell>
-                  <TableCell>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(i)}>
-                      <Trash2 className="h-4 w-4 text-red-600" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-[220px]">Produit</TableHead>
+                <TableHead>Référence</TableHead>
+                <TableHead className="text-right w-24">Qté</TableHead>
+                <TableHead className="text-right w-32">Prix unitaire (FCFA)</TableHead>
+                <TableHead className="text-right w-24">Remise %</TableHead>
+                <TableHead className="text-right w-32">Total (FCFA)</TableHead>
+                <TableHead className="w-40">État</TableHead>
+                <TableHead className="w-44">Motif</TableHead>
+                <TableHead className="w-12" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {fields.map((f, i) => {
+                const err = form.formState.errors.lignes?.[i];
+                const calc = calcLigneRetour(lignes[i] ?? {});
+                return (
+                  <TableRow key={f.id}>
+                    <TableCell>
+                      <ProductSearchSelect
+                        value={form.watch(`lignes.${i}.produit_id`)}
+                        onChange={(_id, produit) => onProduitChange(i, produit)}
+                      />
+                      {err?.produit_id && (
+                        <p className="text-xs text-red-600 mt-1">{err.produit_id.message}</p>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {form.watch(`lignes.${i}.reference_produit`) || "—"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Input
+                        type="number"
+                        min={1}
+                        {...form.register(`lignes.${i}.quantite`, { valueAsNumber: true })}
+                        className="text-right"
+                      />
+                      {err?.quantite && (
+                        <p className="text-xs text-red-600 mt-1">{err.quantite.message}</p>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Input
+                        type="number"
+                        min={0}
+                        step={1}
+                        {...form.register(`lignes.${i}.prix_unitaire`, { valueAsNumber: true })}
+                        className="text-right"
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        step={0.01}
+                        {...form.register(`lignes.${i}.remise_pct`, { valueAsNumber: true })}
+                        className="text-right"
+                      />
+                      {err?.remise_pct && (
+                        <p className="text-xs text-red-600 mt-1">{err.remise_pct.message}</p>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right font-medium tabular-nums">
+                      {formatFCFA(calc.net, false)}
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={form.watch(`lignes.${i}.etat_produit`) ?? "revendable"}
+                        onValueChange={(v) =>
+                          form.setValue(
+                            `lignes.${i}.etat_produit`,
+                            v as "revendable" | "endommage" | "perdu",
+                            { shouldValidate: true },
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ETATS_PRODUIT_RETOUR.map((e) => (
+                            <SelectItem key={e.value} value={e.value}>
+                              {e.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={form.watch(`lignes.${i}.motif`) || ""}
+                        onValueChange={(v) =>
+                          form.setValue(`lignes.${i}.motif`, v, { shouldValidate: true })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Motif" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {MOTIFS_RETOUR.map((m) => (
+                            <SelectItem key={m.value} value={m.value}>
+                              {m.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Button type="button" variant="ghost" size="icon" onClick={() => remove(i)}>
+                        <Trash2 className="h-4 w-4 text-red-600" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       )}
+
+      {fields.length > 0 && (
+        <div className="flex justify-end">
+          <div className="w-full max-w-xs space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Total brut (FCFA)</span>
+              <span className="tabular-nums">{formatFCFA(totaux.brut, false)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Remises (FCFA)</span>
+              <span className="tabular-nums">- {formatFCFA(totaux.remise, false)}</span>
+            </div>
+            <div className="flex justify-between border-t pt-1 font-semibold">
+              <span>Total du retour (FCFA)</span>
+              <span className="tabular-nums">{formatFCFA(totaux.net, false)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {form.formState.errors.lignes && !Array.isArray(form.formState.errors.lignes) && (
         <p className="text-xs text-red-600">{form.formState.errors.lignes.message as string}</p>
       )}
