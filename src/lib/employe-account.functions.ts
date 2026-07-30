@@ -9,10 +9,10 @@ type AdminRole = (typeof ADMIN_ROLES)[number];
 async function assertRhAdmin(userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
-    .from("user_roles")
-    .select("role")
+    .from("rbac2_user_roles")
+    .select("role_code")
     .eq("user_id", userId)
-    .in("role", ADMIN_ROLES as unknown as AdminRole[]);
+    .in("role_code", ADMIN_ROLES as unknown as AdminRole[]);
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) {
     throw new Error("Accès réservé à l'administration RH");
