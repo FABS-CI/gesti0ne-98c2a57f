@@ -70,3 +70,34 @@ négligeable** — pas d'usage d'objets non qualifiés à risque.
 3. Ajouter `log_audit_event()` en fin de chaque RPC critique
    (`enregistrer_paiement`, `annuler_paiement`, `executer_cloture_exercice`).
 4. Re-lancer le scan Supabase après chaque migration touchant les policies.
+---
+
+## Lot RLS-3 — Lectures sensibles (2026-07-30)
+
+11 policies `SELECT USING (true)` remplacées par un contrôle de droit
+(`has_permission_v2(...)` ou `super_admin`) :
+
+| Tables | Droit requis |
+|---|---|
+| `approvisionnements`, `approvisionnement_lignes` | `achats.voir` |
+| `fournisseurs` | `fournisseurs.voir` ou `achats.voir` |
+| `couts_logistiques`, `couts_logistiques_audit` | `couts_logistiques.voir` |
+| `soldes_ouverture_clients`, `soldes_ouverture_fournisseurs`, `exercice_cloture_journal` | `comptabilite.voir` ou `exercices.voir` |
+| `fne_settings`, `fne_logs` | `fne.acceder_parametres` / `fne.voir` |
+| `parametres_systeme` | `parametres.voir` |
+
+Restent 49 lectures permissives sur des tables opérationnelles/référentielles
+non sensibles (produits, commandes, colis, livraisons, transporteurs, RBAC v2
+en lecture) — conservé volontairement pour ne pas casser les écrans partagés.
+
+## Lot RLS-4 — Révocation de l'EXECUTE anonyme (2026-07-30)
+
+`REVOKE EXECUTE ... FROM anon, PUBLIC` sur **69** fonctions `SECURITY DEFINER`
+du schéma `public` (approbations, comptabilité, stock, RBAC, suppressions,
+fonctions trigger). `GRANT` conservé pour `authenticated` et `service_role`.
+
+Exception publique volontaire : `get_carton_public(uuid)` (lien QR carton,
+projection non sensible) — `GRANT` explicite à `anon`.
+
+Vérification : 0 fonction `SECURITY DEFINER` exécutable par `anon` hors cette
+exception.
