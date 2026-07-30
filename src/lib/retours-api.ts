@@ -486,3 +486,27 @@ export async function rouvrirApprobation(args: {
   ).rpc("approbation_rouvrir", { _approval_id: args.approval_id, _motif: args.motif });
   if (error) throw error;
 }
+
+// ============================================================================
+// Journal d'audit d'un retour
+// ============================================================================
+
+export type RetourAuditEntry = {
+  id: string;
+  action: string;
+  created_at: string;
+  user_nom: string | null;
+  details: Record<string, unknown> | null;
+};
+
+export async function getRetourHistorique(retourId: string): Promise<RetourAuditEntry[]> {
+  const { data, error } = await supabase
+    .from("audit_logs")
+    .select("id, action, created_at, user_nom, details")
+    .eq("table_name", "retours")
+    .eq("record_id", retourId)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error) return [];
+  return (data ?? []) as RetourAuditEntry[];
+}
