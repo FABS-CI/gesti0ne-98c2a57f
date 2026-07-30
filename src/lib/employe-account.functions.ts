@@ -60,7 +60,7 @@ export const getEmployeAccountStatus = createServerFn({ method: "POST" })
         banned_until: (u as unknown as { banned_until?: string | null })?.banned_until ?? null,
         email_confirmed_at: u?.email_confirmed_at ?? null,
       },
-      roles: (roles ?? []).map((r) => r.role),
+      roles: (roles ?? []).map((r) => r.role_code),
     };
   });
 
