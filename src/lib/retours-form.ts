@@ -81,16 +81,13 @@ export function calcLigneRetour(l: {
 export function calcTotauxRetour(
   lignes: Array<{ quantite?: number; prix_unitaire?: number | null; remise_pct?: number | null }>,
 ) {
-  return lignes.reduce(
-    (acc, l) => {
-      const c = calcLigneRetour(l);
-      return {
-        brut: acc.brut + c.brut,
-        remise: acc.remise + c.remise,
-        net: acc.net + c.net,
-        quantite: acc.quantite + Math.max(0, Number(l.quantite ?? 0)),
-      };
-    },
-    { brut: 0, remise: 0, net: 0, quantite: 0 },
-  );
+  const acc = { brut: 0, remise: 0, net: 0, quantite: 0 };
+  for (const l of lignes) {
+    const c = calcLigneRetour(l);
+    acc.brut += c.brut;
+    acc.remise += c.remise;
+    acc.net += c.net;
+    acc.quantite += Math.max(0, Number(l.quantite ?? 0));
+  }
+  return acc;
 }
