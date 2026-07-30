@@ -192,10 +192,10 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
 
     // Empêche la suppression d'un autre super_admin
     const { data: isSuper } = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
+      .from("rbac2_user_roles")
+      .select("role_code")
       .eq("user_id", data.user_id)
-      .eq("role", "super_admin")
+      .eq("role_code", "super_admin")
       .maybeSingle();
     if (isSuper) throw new Error("Impossible de supprimer un Super Administrateur");
 
