@@ -7,7 +7,7 @@ const GATEWAY = "https://connector-gateway.lovable.dev/google_drive";
 // Contexte minimal utilisé : évite de dépendre du type SupabaseClient complet.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function assertSuperAdmin(context: { supabase: any; userId: string }) {
-  const { data, error } = await context.supabase.rpc("has_role", {
+  const { data, error } = await context.supabase.rpc("has_role_compat", {
     _user_id: context.userId,
     _role: "super_admin",
   });

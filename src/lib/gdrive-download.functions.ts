@@ -21,7 +21,7 @@ export const downloadDriveFile = createServerFn({ method: "POST" })
     return { fileId: input.fileId };
   })
   .handler(async ({ data, context }) => {
-    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+    const { data: isAdmin } = await context.supabase.rpc("has_role_compat", {
       _user_id: context.userId,
       _role: "super_admin",
     });

@@ -48,7 +48,7 @@ export const exportCriticalArtifacts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
-    const { data: isAdmin } = await supabase.rpc("has_role", {
+    const { data: isAdmin } = await supabase.rpc("has_role_compat", {
       _user_id: userId,
       _role: "super_admin",
     });

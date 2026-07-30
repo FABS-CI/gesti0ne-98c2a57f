@@ -222,7 +222,7 @@ export const mfaStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId, claims } = context;
-    const { data: superAdminFlag } = await supabase.rpc("has_role", {
+    const { data: superAdminFlag } = await supabase.rpc("has_role_compat", {
       _user_id: userId,
       _role: "super_admin",
     });
@@ -279,7 +279,7 @@ export const mfaRegenerateBackupCodes = createServerFn({ method: "POST" })
   });
 
 async function assertSuperAdmin(supabase: SB, userId: string) {
-  const sa = await supabase.rpc("has_role", { _user_id: userId, _role: "super_admin" });
+  const sa = await supabase.rpc("has_role_compat", { _user_id: userId, _role: "super_admin" });
   if (sa.data) return;
   // Accepte aussi le rôle RBAC v2 "administrateur" (non présent dans l'enum app_role).
   const { data: adm } = await supabase

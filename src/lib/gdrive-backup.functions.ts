@@ -17,7 +17,7 @@ export const uploadBackupToGoogleDrive = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
 
     // Vérif rôle super_admin
-    const { data: isAdmin, error: roleErr } = await supabase.rpc("has_role", {
+    const { data: isAdmin, error: roleErr } = await supabase.rpc("has_role_compat", {
       _user_id: userId,
       _role: "super_admin",
     });
