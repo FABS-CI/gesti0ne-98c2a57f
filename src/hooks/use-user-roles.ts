@@ -121,7 +121,7 @@ export function useUserRoles() {
             (r as { rbac2_roles?: { statut?: string } }).rbac2_roles?.statut !== "inactif",
         )
         .map((r) => (r as { role_code: string }).role_code as AppRole);
-      return Array.from(new Set([...legacyRoles, ...v2Roles]));
+      return Array.from(new Set(v2Roles));
     },
   });
 
