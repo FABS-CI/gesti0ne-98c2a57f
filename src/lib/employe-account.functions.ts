@@ -46,8 +46,8 @@ export const getEmployeAccountStatus = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     const u = userRes.user;
     const { data: roles } = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
+      .from("rbac2_user_roles")
+      .select("role_code")
       .eq("user_id", emp.user_id);
     return {
       hasAccount: true as const,
