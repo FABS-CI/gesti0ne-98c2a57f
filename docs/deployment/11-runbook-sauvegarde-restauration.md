@@ -11,12 +11,37 @@ Version : 1.0 — Responsable : Direction SI FABS-CI
 
 | Élément | Contenu | Emplacement | Fréquence |
 |---|---|---|---|
+| **Archive globale ZIP** | Données métier (toutes les tables) + comptes utilisateurs + fichiers stockés (binaires) + configuration technique (politiques d'accès, fonctions, triggers, extensions) + manifeste SHA-256 | Google Drive `/DONNEE GESTI-ONE/` | **Toutes les 3 heures** (30 archives conservées) |
 | Export JSON métier | Toutes les tables applicatives (clients, produits, commandes, factures, paiements, stocks, retours, RH…) | Google Drive (connecteur) + téléchargement local | Quotidienne (planifiée) |
 | Export ZIP complet | JSON métier + schéma SQL + fichiers de configuration | Google Drive `/FABS-CI/backups/` | Hebdomadaire |
 | Code source | Dépôt GitHub du projet | GitHub | À chaque modification |
 | Secrets / variables | `docs/deployment/06-variables-environnement.md` (liste), valeurs dans le gestionnaire de mots de passe | Coffre-fort | À chaque rotation |
 
 **Règle 3-2-1** : 3 copies, 2 supports différents (Drive + poste local), 1 hors ligne (disque chiffré trimestriel).
+
+### 1.1 Archive globale — déclenchement
+
+- **Manuel** : Paramètres → Sauvegarde → « Créer l'archive globale maintenant » (super_admin).
+- **Automatique** : appel planifié toutes les 3 heures
+  `POST https://project--<id>.lovable.app/api/public/hooks/global-backup`
+  avec l'en-tête `x-schedule-secret: <SCHEDULE_WEBHOOK_SECRET>`.
+  Un garde-fou empêche deux archives dans la même fenêtre de 3 h (`?force=1` pour forcer).
+- **Rotation** : les 30 archives les plus récentes sont conservées, les plus anciennes sont supprimées du Drive.
+- **Journalisation** : chaque exécution crée une ligne dans l'historique des sauvegardes (durée, taille, nombre de tables/enregistrements, SHA-256, lien Drive, statut).
+
+### 1.2 Contenu de l'archive
+
+```text
+fabsci_sauvegarde_globale_AAAA-MM-JJTHH-MM-SS.zip
+├── MANIFEST.json          inventaire, empreintes, contexte d'exécution
+├── LISEZ-MOI.txt          mode d'emploi de restauration
+├── data/<table>.json      toutes les tables métier
+├── auth/users.json        comptes (sans mots de passe — non exportables)
+├── storage/<bucket>/…     fichiers réels (≤ 15 Mo/fichier, 120 Mo au total)
+├── storage/_manifest.json inventaire complet + URLs signées 7 jours pour le reste
+└── config/config_snapshot.json  politiques RLS, fonctions, triggers, extensions
+```
+
 
 ---
 
