@@ -2,22 +2,59 @@ import { supabase } from "@/integrations/supabase/client";
 import { getDepotDefautId } from "@/lib/parametres-api";
 import { assertPermission } from "@/lib/rbac-api";
 
+/** Statuts officiels (valeurs stockées en base). */
 export const STATUTS_RETOUR = [
-  { value: "demande_creee", label: "Demande créée", color: "#6366F1" },
-  { value: "en_attente_magasin", label: "En attente magasin", color: "#F97316" },
+  { value: "demande_creee", label: "Brouillon", color: "#6366F1" },
+  { value: "attente_reception", label: "En attente magasin", color: "#F97316" },
   { value: "receptionne", label: "Réceptionné", color: "#0EA5E9" },
-  { value: "en_attente_compta", label: "En attente compta", color: "#F59E0B" },
-  { value: "valide", label: "Validé", color: "#10B981" },
-  { value: "refuse_magasin", label: "Refusé (magasin)", color: "#EF4444" },
-  { value: "refuse_compta", label: "Refusé (compta)", color: "#DC2626" },
-  { value: "cloture", label: "Clôturé", color: "#374151" },
-  // Legacy
-  { value: "accepte", label: "Accepté", color: "#10B981" },
+  { value: "attente_validation_compta", label: "En attente compta", color: "#F59E0B" },
+  { value: "valide_compta", label: "Validé", color: "#10B981" },
+  { value: "cloture", label: "Clôturé", color: "#047857" },
+  { value: "refus_magasin", label: "Refusé (magasin)", color: "#EF4444" },
+  { value: "refus_compta", label: "Refusé (compta)", color: "#DC2626" },
   { value: "annule", label: "Annulé", color: "#6B7280" },
 ] as const;
 
+/** Anciens libellés encore présents sur des enregistrements historiques. */
+const STATUTS_LEGACY: Array<{ value: string; label: string; color: string }> = [
+  { value: "en_cours", label: "En cours", color: "#F59E0B" },
+  { value: "accepte", label: "Accepté", color: "#10B981" },
+  { value: "valide", label: "Validé", color: "#10B981" },
+  { value: "en_attente_magasin", label: "En attente magasin", color: "#F97316" },
+  { value: "en_attente_compta", label: "En attente compta", color: "#F59E0B" },
+  { value: "refuse_magasin", label: "Refusé (magasin)", color: "#EF4444" },
+  { value: "refuse_compta", label: "Refusé (compta)", color: "#DC2626" },
+];
+
+/** Motifs de retour normalisés (liste contrôlée). */
+export const MOTIFS_RETOUR = [
+  { value: "defectueux", label: "Produit défectueux" },
+  { value: "erreur_commande", label: "Erreur de commande" },
+  { value: "surplus", label: "Surplus / invendu" },
+  { value: "non_conforme", label: "Article non conforme" },
+  { value: "retard", label: "Livraison hors délai" },
+  { value: "autre", label: "Autre motif" },
+] as const;
+
+export const MOTIF_RETOUR_LABEL: Record<string, string> = Object.fromEntries(
+  MOTIFS_RETOUR.map((m) => [m.value, m.label]),
+);
+
+/** État du produit retourné (impacte le stock à la réception). */
+export const ETATS_PRODUIT_RETOUR = [
+  { value: "revendable", label: "Revendable" },
+  { value: "endommage", label: "Endommagé" },
+  { value: "perdu", label: "Perdu" },
+] as const;
+
+export const ETAT_PRODUIT_LABEL: Record<string, string> = Object.fromEntries(
+  ETATS_PRODUIT_RETOUR.map((e) => [e.value, e.label]),
+);
+
 export const STATUT_RETOUR_LABEL: Record<string, { label: string; color: string }> =
-  Object.fromEntries(STATUTS_RETOUR.map((s) => [s.value, { label: s.label, color: s.color }]));
+  Object.fromEntries(
+    [...STATUTS_RETOUR, ...STATUTS_LEGACY].map((s) => [s.value, { label: s.label, color: s.color }]),
+  );
 
 export type RetourStatut = (typeof STATUTS_RETOUR)[number]["value"];
 
@@ -70,8 +107,12 @@ export type RetourLigne = {
   designation: string;
   quantite: number;
   prix_unitaire: number;
+  remise_pct?: number | null;
+  montant_brut?: number | null;
+  remise_montant?: number | null;
   total_ligne: number;
   motif: string | null;
+  etat_produit?: string | null;
   created_at: string;
   quantite_demandee?: number | null;
   quantite_recue?: number | null;
@@ -86,6 +127,9 @@ export type RetourLigneInput = {
   reference_produit?: string | null;
   designation: string;
   quantite: number;
+  prix_unitaire?: number | null;
+  remise_pct?: number | null;
+  etat_produit?: string | null;
   motif?: string | null;
 };
 
@@ -111,6 +155,9 @@ export type ListRetoursParams = {
   statut?: string;
   client_id?: string;
   ville?: string;
+  representant?: string;
+  date_debut?: string;
+  date_fin?: string;
   exerciceId?: string | null;
 };
 
@@ -125,6 +172,9 @@ export async function listRetours(params: ListRetoursParams = {}): Promise<Retou
   if (params.statut && params.statut !== "all") query = query.eq("statut", params.statut);
   if (params.client_id) query = query.eq("client_id", params.client_id);
   if (params.ville) query = query.ilike("ville", `%${params.ville}%`);
+  if (params.representant) query = query.ilike("representant_nom", `%${params.representant}%`);
+  if (params.date_debut) query = query.gte("date_retour", params.date_debut);
+  if (params.date_fin) query = query.lte("date_retour", params.date_fin);
   if (params.q && params.q.trim()) {
     const t = `%${params.q.trim()}%`;
     query = query.or(
@@ -268,7 +318,11 @@ export async function creerRetourDemande(input: CreerRetourDemandePayload): Prom
       produit_id: l.produit_id,
       reference_produit: l.reference_produit ?? null,
       designation: l.designation,
+      quantite: l.quantite,
       quantite_demandee: l.quantite,
+      prix_unitaire: l.prix_unitaire ?? null,
+      remise_pct: l.remise_pct ?? 0,
+      etat_produit: l.etat_produit ?? "revendable",
       motif: l.motif ?? null,
     })),
   };
@@ -431,4 +485,28 @@ export async function rouvrirApprobation(args: {
     }
   ).rpc("approbation_rouvrir", { _approval_id: args.approval_id, _motif: args.motif });
   if (error) throw error;
+}
+
+// ============================================================================
+// Journal d'audit d'un retour
+// ============================================================================
+
+export type RetourAuditEntry = {
+  id: string;
+  action: string;
+  created_at: string;
+  user_email: string | null;
+  details: Record<string, unknown> | null;
+};
+
+export async function getRetourHistorique(retourId: string): Promise<RetourAuditEntry[]> {
+  const { data, error } = await supabase
+    .from("audit_logs")
+    .select("id, action, created_at, user_email, details")
+    .eq("table_name", "retours")
+    .eq("record_id", retourId)
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error) return [];
+  return (data ?? []) as RetourAuditEntry[];
 }

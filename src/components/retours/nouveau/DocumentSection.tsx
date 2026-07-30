@@ -60,6 +60,8 @@ export function DocumentSection({ form, fa }: Props) {
           motif: "",
           qte_disponible: l.qte_disponible,
           prix_unitaire: l.prix_unitaire,
+          remise_pct: l.remise_pct ?? 0,
+          etat_produit: "revendable" as const,
         })),
       );
     } catch (e) {

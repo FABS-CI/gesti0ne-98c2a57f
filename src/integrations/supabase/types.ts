@@ -4887,8 +4887,10 @@ export type Database = {
           commentaire_reception: string | null
           created_at: string
           designation: string | null
+          etat_produit: string
           etat_reception: string | null
           ligne_id: string
+          montant_brut: number
           motif: string | null
           prix_unitaire: number | null
           produit_id: string | null
@@ -4896,6 +4898,8 @@ export type Database = {
           quantite_demandee: number | null
           quantite_recue: number | null
           reference_produit: string | null
+          remise_montant: number
+          remise_pct: number
           retour_id: string
           total_ligne: number | null
           updated_at: string
@@ -4904,8 +4908,10 @@ export type Database = {
           commentaire_reception?: string | null
           created_at?: string
           designation?: string | null
+          etat_produit?: string
           etat_reception?: string | null
           ligne_id?: string
+          montant_brut?: number
           motif?: string | null
           prix_unitaire?: number | null
           produit_id?: string | null
@@ -4913,6 +4919,8 @@ export type Database = {
           quantite_demandee?: number | null
           quantite_recue?: number | null
           reference_produit?: string | null
+          remise_montant?: number
+          remise_pct?: number
           retour_id: string
           total_ligne?: number | null
           updated_at?: string
@@ -4921,8 +4929,10 @@ export type Database = {
           commentaire_reception?: string | null
           created_at?: string
           designation?: string | null
+          etat_produit?: string
           etat_reception?: string | null
           ligne_id?: string
+          montant_brut?: number
           motif?: string | null
           prix_unitaire?: number | null
           produit_id?: string | null
@@ -4930,6 +4940,8 @@ export type Database = {
           quantite_demandee?: number | null
           quantite_recue?: number | null
           reference_produit?: string | null
+          remise_montant?: number
+          remise_pct?: number
           retour_id?: string
           total_ligne?: number | null
           updated_at?: string
@@ -6658,6 +6670,10 @@ export type Database = {
         Returns: number
       }
       _resolve_exercice_id: { Args: { _d: string }; Returns: string }
+      _retour_audit: {
+        Args: { _action: string; _details?: Json; _retour_id: string }
+        Returns: undefined
+      }
       affecter_colis_tournee: {
         Args: { _colis_ids: string[]; _tournee_id: string }
         Returns: Json
@@ -7388,6 +7404,10 @@ export type Database = {
       }
       generate_ecriture_paiement: {
         Args: { _paiement_id: string }
+        Returns: string
+      }
+      generate_ecriture_retour: {
+        Args: { _retour_id: string }
         Returns: string
       }
       generer_proforma_commande: {
