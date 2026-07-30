@@ -6670,6 +6670,10 @@ export type Database = {
         Returns: number
       }
       _resolve_exercice_id: { Args: { _d: string }; Returns: string }
+      _retour_audit: {
+        Args: { _action: string; _details?: Json; _retour_id: string }
+        Returns: undefined
+      }
       affecter_colis_tournee: {
         Args: { _colis_ids: string[]; _tournee_id: string }
         Returns: Json
@@ -7400,6 +7404,10 @@ export type Database = {
       }
       generate_ecriture_paiement: {
         Args: { _paiement_id: string }
+        Returns: string
+      }
+      generate_ecriture_retour: {
+        Args: { _retour_id: string }
         Returns: string
       }
       generer_proforma_commande: {
