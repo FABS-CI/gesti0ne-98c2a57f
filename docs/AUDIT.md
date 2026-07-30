@@ -101,3 +101,18 @@ projection non sensible) — `GRANT` explicite à `anon`.
 
 Vérification : 0 fonction `SECURITY DEFINER` exécutable par `anon` hors cette
 exception.
+
+## Lot RLS-5 — search_path & extensions (2026-07-30)
+
+- `search_path` fixé sur la dernière fonction concernée
+  (`_compte_mode_paiement(text)`). Vérification : **0** fonction applicative du
+  schéma `public` sans `search_path` figé ; les seules restantes appartiennent à
+  l'extension `pg_trgm`.
+- Warning « Extension in Public » (`pg_trgm`) : **conservé volontairement**.
+  Déplacer l'extension invaliderait les classes d'opérateurs `gin_trgm_ops`
+  utilisées par les index de recherche plein texte. Risque nul (fonctions
+  d'extension sans accès aux données).
+- Warnings « Signed-In Users Can Execute SECURITY DEFINER Function » (~180) :
+  intentionnels — ce sont les RPC métier appelées par l'app, chacune protégée
+  par `assert_permission()` / `has_permission_v2()` (cf. §2.1).
+

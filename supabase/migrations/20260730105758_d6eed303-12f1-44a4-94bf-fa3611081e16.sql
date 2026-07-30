@@ -1,0 +1,1 @@
+ALTER FUNCTION public._compte_mode_paiement(text) SET search_path = public;
