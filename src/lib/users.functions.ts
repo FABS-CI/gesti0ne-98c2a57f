@@ -207,8 +207,12 @@ export const createUser = createServerFn({ method: "POST" })
     if (pErr) throw new Error(pErr.message);
 
     if (data.roles.length > 0) {
-      const rows = data.roles.map((r) => ({ user_id: uid, role: r }));
-      const { error: rErr } = await supabaseAdmin.from("user_roles").insert(rows);
+      const rows = data.roles.map((r) => ({
+        user_id: uid,
+        role_code: r,
+        granted_by: context.userId,
+      }));
+      const { error: rErr } = await supabaseAdmin.from("rbac2_user_roles").insert(rows);
       if (rErr && !rErr.message.includes("duplicate")) throw new Error(rErr.message);
     }
     return { ok: true, userId: uid };
