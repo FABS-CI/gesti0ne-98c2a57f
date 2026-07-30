@@ -87,3 +87,22 @@ Migration préalable obligatoire : réécrire les **224 policies** qui référen
 - Trigger `trg_rbac_user_roles_propagate` sur `rbac_user_roles` : toute attribution/retrait est propagée automatiquement vers `rbac2_user_roles` (par `code`) et vers `user_roles` (enum `app_role`, encore utilisé par `has_role()` dans les policies RLS). Backfill effectué.
 - `use-user-roles.ts` lit désormais `rbac2_user_roles` (tous les rôles v2 actifs) + `user_roles`, au lieu de ne récupérer que `super_admin` depuis v1. Realtime déplacé sur `rbac2_user_roles`.
 - Effet : plus d'écart silencieux UI / RLS entre les trois registres, quel que soit le chemin d'écriture (console RBAC, `users-admin.functions.ts`, SQL direct).
+
+---
+
+## Étape R4-bis — Synchronisation bidirectionnelle des registres (2026-07-30)
+
+- Nouveau trigger `trg_rbac2_user_roles_propagate` sur `rbac2_user_roles` :
+  toute attribution/retrait effectué côté RBAC v2 (console `/admin/roles-v2`,
+  `security-users.functions.ts`, SQL direct) est répercuté sur `user_roles`
+  (v0), encore lu par `has_role()` dans les policies RLS.
+- Les codes v2 absents de l'enum `app_role` (`admin`, `commercial`, `rh`) sont
+  ignorés sans erreur.
+- Combiné au trigger existant `trg_rbac_user_roles_propagate` (v1 → v2 → v0),
+  la synchronisation est désormais **bidirectionnelle** : plus aucun écart
+  possible quel que soit le chemin d'écriture.
+- Backfill effectué. Vérification : **0** rôle v2 non propagé en v0.
+
+Reste : suppression physique des socles v0/v1 (`user_roles`, `rbac_*`) et de
+la console RBAC legacy `src/components/roles-permissions/*`, qui impose de
+réécrire au préalable les policies RLS référençant `has_role(..., app_role)`.
