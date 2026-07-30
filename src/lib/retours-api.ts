@@ -172,6 +172,9 @@ export async function listRetours(params: ListRetoursParams = {}): Promise<Retou
   if (params.statut && params.statut !== "all") query = query.eq("statut", params.statut);
   if (params.client_id) query = query.eq("client_id", params.client_id);
   if (params.ville) query = query.ilike("ville", `%${params.ville}%`);
+  if (params.representant) query = query.ilike("representant_nom", `%${params.representant}%`);
+  if (params.date_debut) query = query.gte("date_retour", params.date_debut);
+  if (params.date_fin) query = query.lte("date_retour", params.date_fin);
   if (params.q && params.q.trim()) {
     const t = `%${params.q.trim()}%`;
     query = query.or(
