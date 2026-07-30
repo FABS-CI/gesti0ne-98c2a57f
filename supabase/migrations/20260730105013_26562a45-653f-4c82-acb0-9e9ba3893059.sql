@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.get_carton_public(uuid) TO anon, authenticated;
