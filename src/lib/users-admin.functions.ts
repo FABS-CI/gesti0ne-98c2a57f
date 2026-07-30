@@ -206,7 +206,7 @@ export const adminDeleteUser = createServerFn({ method: "POST" })
       .maybeSingle();
 
     // Révoque les rôles avant suppression (best effort)
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
+    await supabaseAdmin.from("rbac2_user_roles").delete().eq("user_id", data.user_id);
     await supabaseAdmin.from("rbac_user_roles").delete().eq("user_id", data.user_id);
 
     // Suppression physique (cascade sur profiles via FK auth.users)
