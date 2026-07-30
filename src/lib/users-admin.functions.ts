@@ -249,7 +249,7 @@ export const adminDeactivateUser = createServerFn({ method: "POST" })
       .from("profiles")
       .update({ actif: false, updated_at: new Date().toISOString() })
       .eq("id", data.user_id);
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
+    await supabaseAdmin.from("rbac2_user_roles").delete().eq("user_id", data.user_id);
     await supabaseAdmin.from("rbac_user_roles").delete().eq("user_id", data.user_id);
 
     await supabaseAdmin.from("rbac_audit_log").insert({
