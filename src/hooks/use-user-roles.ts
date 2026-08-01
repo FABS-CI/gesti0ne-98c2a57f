@@ -68,7 +68,13 @@ function registerUserRolesRealtime(userId: string, queryClient: QueryClient) {
       { event: "*", schema: "public", table: "rbac2_user_roles", filter: `user_id=eq.${userId}` },
       invalidateRoles,
     )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "rbac3_user_roles", filter: `user_id=eq.${userId}` },
+      invalidateRoles,
+    )
     .subscribe();
+
 
   const subscription: UserRolesRealtimeSubscription = {
     userId,
@@ -106,10 +112,20 @@ export function useUserRoles() {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     queryFn: async (): Promise<AppRole[]> => {
-      // Source de vérité unique : RBAC v2 (`rbac2_user_roles`).
-      // Le registre historique `user_roles` n'est plus lu (Lot R4-bis) :
-      // les policies RLS s'appuient désormais sur `has_role_compat`, qui
-      // interroge lui aussi le registre v2.
+      // Source de vérité : RBAC v3 (`rbac3_user_roles`), alignée sur les
+      // policies RLS. Repli sur `rbac2_user_roles` pour les comptes non migrés.
+      const v3 = await supabase
+        .from("rbac3_user_roles")
+        .select("role_code, rbac3_roles!inner(statut)")
+        .eq("user_id", userId!);
+      const v3Roles = (v3.data ?? [])
+        .filter((r) => {
+          const statut = (r as { rbac3_roles?: { statut?: string } }).rbac3_roles?.statut;
+          return statut !== "archive" && statut !== "inactif";
+        })
+        .map((r) => (r as { role_code: string }).role_code as AppRole);
+      if (v3Roles.length > 0) return Array.from(new Set(v3Roles));
+
       const v2 = await supabase
         .from("rbac2_user_roles")
         .select("role_code, rbac2_roles!inner(statut)")
@@ -123,6 +139,7 @@ export function useUserRoles() {
         .map((r) => (r as { role_code: string }).role_code as AppRole);
       return Array.from(new Set(v2Roles));
     },
+
   });
 
   // Invalidation temps réel : si les rôles du user changent, on rafraîchit.

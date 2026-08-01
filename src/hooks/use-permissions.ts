@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserRoles } from "@/hooks/use-user-roles";
 import { expandRbacViewPermissions } from "@/lib/rbac-permission-normalize";
+import { expandRbac3Permissions } from "@/lib/rbac3-bridge";
+
 
 type RbacRealtimeSubscription = {
   userId: string;
@@ -73,7 +75,18 @@ function registerRbacRealtime(userId: string, queryClient: QueryClient) {
       { event: "*", schema: "public", table: "rbac2_user_roles", filter: `user_id=eq.${userId}` },
       invalidatePermissions,
     )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "rbac3_role_permissions" },
+      invalidatePermissions,
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "rbac3_user_roles", filter: `user_id=eq.${userId}` },
+      invalidatePermissions,
+    )
     .subscribe();
+
 
 
   const subscription: RbacRealtimeSubscription = {
@@ -122,8 +135,13 @@ export function usePermissions() {
 
     queryFn: async () => {
       if (!userId) return new Set<string>();
-      // Priorité RBAC v2 : héritage multiple + deny explicite.
-      // Fallback v1 quand l'utilisateur n'a pas encore de rôle rbac2.
+      // Priorité RBAC v3 : source de vérité alignée sur les policies RLS.
+      const v3 = await supabase.rpc("rbac3_permissions_of", { _user_id: userId });
+      if (v3.error) throw v3.error;
+      const v3Codes = (v3.data ?? []).map((r) => r.perm_code);
+      if (v3Codes.length > 0) return expandRbac3Permissions(v3Codes);
+
+      // Fallback historique v2 puis v1 (utilisateurs pas encore migrés).
       const v2 = await supabase.rpc("list_user_permissions_v2", { _user_id: userId });
       if (v2.error) throw v2.error;
       const v2Codes = (v2.data ?? []).map((r) => r.permission_code);
@@ -133,6 +151,7 @@ export function usePermissions() {
       if (v1.error) throw v1.error;
       return expandRbacViewPermissions((v1.data ?? []).map((r) => r.permission_code));
     },
+
 
   });
 
