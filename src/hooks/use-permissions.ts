@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserRoles } from "@/hooks/use-user-roles";
 import { expandRbacViewPermissions } from "@/lib/rbac-permission-normalize";
+import { expandRbac3Permissions } from "@/lib/rbac3-bridge";
+
 
 type RbacRealtimeSubscription = {
   userId: string;
