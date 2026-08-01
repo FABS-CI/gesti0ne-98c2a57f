@@ -75,7 +75,18 @@ function registerRbacRealtime(userId: string, queryClient: QueryClient) {
       { event: "*", schema: "public", table: "rbac2_user_roles", filter: `user_id=eq.${userId}` },
       invalidatePermissions,
     )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "rbac3_role_permissions" },
+      invalidatePermissions,
+    )
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "rbac3_user_roles", filter: `user_id=eq.${userId}` },
+      invalidatePermissions,
+    )
     .subscribe();
+
 
 
   const subscription: RbacRealtimeSubscription = {
