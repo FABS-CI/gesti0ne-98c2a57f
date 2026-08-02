@@ -8028,6 +8028,7 @@ export type Database = {
         Args: { _apply?: boolean; _inventory: Json }
         Returns: Json
       }
+      rbac3_admin_guard: { Args: never; Returns: undefined }
       rbac3_assert: { Args: { _perm: string }; Returns: undefined }
       rbac3_can: {
         Args: { _perm: string; _user_id?: string }
@@ -8040,11 +8041,46 @@ export type Database = {
         }[]
       }
       rbac3_is_global: { Args: { _user_id?: string }; Returns: boolean }
+      rbac3_log: {
+        Args: {
+          _action: string
+          _cible_id: string
+          _cible_type: string
+          _new?: Json
+          _old?: Json
+          _perm_code?: string
+          _role_code?: string
+        }
+        Returns: undefined
+      }
+      rbac3_perm_bulk_set: {
+        Args: { _granted: boolean; _perm_codes: string[]; _role_code: string }
+        Returns: number
+      }
+      rbac3_perm_set: {
+        Args: { _granted: boolean; _perm_code: string; _role_code: string }
+        Returns: undefined
+      }
       rbac3_permissions_of: {
         Args: { _user_id?: string }
         Returns: {
           perm_code: string
         }[]
+      }
+      rbac3_role_copy_perms: {
+        Args: { _source: string; _target: string }
+        Returns: number
+      }
+      rbac3_role_delete: { Args: { _code: string }; Returns: undefined }
+      rbac3_role_upsert: {
+        Args: {
+          _code: string
+          _description?: string
+          _label: string
+          _portee_globale?: boolean
+          _statut?: string
+        }
+        Returns: string
       }
       rbac3_scope_departement: {
         Args: { _departement_id: string; _user_id?: string }
@@ -8057,6 +8093,10 @@ export type Database = {
       rbac3_scope_service: {
         Args: { _service_id: string; _user_id?: string }
         Returns: boolean
+      }
+      rbac3_user_role_set: {
+        Args: { _granted: boolean; _role_code: string; _user_id: string }
+        Returns: undefined
       }
       recalculer_sla_approbations: {
         Args: never
