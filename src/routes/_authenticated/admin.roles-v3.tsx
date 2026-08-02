@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { friendlyError } from "@/lib/friendly-error";
@@ -298,8 +298,8 @@ function RolesV3Page() {
                   </thead>
                   <tbody>
                     {groupedModules.map(([groupe, mods]) => (
-                      <>
-                        <tr key={`g-${groupe}`}>
+                      <Fragment key={`g-${groupe}`}>
+                        <tr>
                           <td colSpan={actions.length + 2} className="pt-4 pb-1 text-xs font-semibold uppercase text-muted-foreground">
                             {groupe}
                           </td>
@@ -342,7 +342,7 @@ function RolesV3Page() {
                             </tr>
                           );
                         })}
-                      </>
+                      </Fragment>
                     ))}
                   </tbody>
                 </table>
