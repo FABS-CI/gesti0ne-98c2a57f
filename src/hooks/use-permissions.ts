@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserRoles } from "@/hooks/use-user-roles";
-import { expandRbacViewPermissions } from "@/lib/rbac-permission-normalize";
 import { expandRbac3Permissions } from "@/lib/rbac3-bridge";
 
 
@@ -52,31 +51,6 @@ function registerRbacRealtime(userId: string, queryClient: QueryClient) {
     .channel(makeRbacChannelName(userId))
     .on(
       "postgres_changes",
-      { event: "*", schema: "public", table: "rbac_role_permissions" },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "rbac_user_roles", filter: `user_id=eq.${userId}` },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "rbac2_role_perms" },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "rbac2_role_parents" },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "rbac2_user_roles", filter: `user_id=eq.${userId}` },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
       { event: "*", schema: "public", table: "rbac3_role_permissions" },
       invalidatePermissions,
     )
@@ -108,10 +82,10 @@ function registerRbacRealtime(userId: string, queryClient: QueryClient) {
 }
 
 /**
- * Hook central RBAC v2.
- * - Charge la liste plate `permission_code[]` via RPC `list_user_permissions`.
+ * Hook central RBAC v3.
+ * - Charge la liste plate `perm_code[]` via RPC `rbac3_permissions_of`.
  * - Cache TanStack Query court, invalidé automatiquement lorsque
- *   `rbac_role_permissions` ou `rbac_user_roles` changent (realtime).
+ *   `rbac3_role_permissions` ou `rbac3_user_roles` changent (realtime).
  * - Super admin (rôle historique `user_roles`) => bypass automatique.
  */
 export function usePermissions() {
