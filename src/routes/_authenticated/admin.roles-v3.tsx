@@ -18,6 +18,8 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Plus, RefreshCcw, Search, Shield, Trash2, Users, Copy } from "lucide-react";
+import { ScopesTabV3 } from "@/components/roles-permissions/ScopesTabV3";
+import { AuditTabV3 } from "@/components/roles-permissions/AuditTabV3";
 
 export const Route = createFileRoute("/_authenticated/admin/roles-v3")({
   component: RolesV3Page,
@@ -232,7 +234,18 @@ function RolesV3Page() {
           <TabsTrigger value="matrice">Matrice</TabsTrigger>
           <TabsTrigger value="roles">Rôles ({roles.length})</TabsTrigger>
           <TabsTrigger value="users">Utilisateurs ({profiles.length})</TabsTrigger>
+          <TabsTrigger value="scopes">Périmètres</TabsTrigger>
+          <TabsTrigger value="audit">Journal</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="scopes" className="mt-4">
+          <ScopesTabV3 profiles={profiles} />
+        </TabsContent>
+
+        <TabsContent value="audit" className="mt-4">
+          <AuditTabV3 />
+        </TabsContent>
+
 
         {/* ── Matrice ─────────────────────────────────────────── */}
         <TabsContent value="matrice" className="mt-4">
