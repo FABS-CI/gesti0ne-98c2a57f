@@ -19,9 +19,14 @@ const base = {
 };
 
 describe("retourFormSchema", () => {
-  it("accepte un retour libre valide", () => {
-    const r = retourFormSchema.safeParse(base);
+  it("accepte un retour rattaché à un document d'origine", () => {
+    const r = retourFormSchema.safeParse({ ...base, facture_id: uuid2 });
     expect(r.success).toBe(true);
+  });
+
+  it("refuse un retour sans document d'origine", () => {
+    const r = retourFormSchema.safeParse(base);
+    expect(r.success).toBe(false);
   });
 
   it("refuse un client_id vide", () => {
