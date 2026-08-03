@@ -8030,6 +8030,20 @@ export type Database = {
       }
       rbac3_admin_guard: { Args: never; Returns: undefined }
       rbac3_assert: { Args: { _perm: string }; Returns: undefined }
+      rbac3_audit_list: {
+        Args: { _limit?: number }
+        Returns: {
+          acteur_email: string
+          action: string
+          cible_id: string
+          cible_type: string
+          created_at: string
+          id: string
+          nouvelle_valeur: Json
+          perm_code: string
+          role_code: string
+        }[]
+      }
       rbac3_can: {
         Args: { _perm: string; _user_id?: string }
         Returns: boolean
@@ -8093,6 +8107,18 @@ export type Database = {
       rbac3_scope_service: {
         Args: { _service_id: string; _user_id?: string }
         Returns: boolean
+      }
+      rbac3_user_depot_set: {
+        Args: { _depot_id: string; _next: boolean; _user_id: string }
+        Returns: undefined
+      }
+      rbac3_user_depots_list: {
+        Args: never
+        Returns: {
+          depot_id: string
+          principal: boolean
+          user_id: string
+        }[]
       }
       rbac3_user_role_set: {
         Args: { _granted: boolean; _role_code: string; _user_id: string }
