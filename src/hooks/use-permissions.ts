@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserRoles } from "@/hooks/use-user-roles";
-import { expandRbacViewPermissions } from "@/lib/rbac-permission-normalize";
 import { expandRbac3Permissions } from "@/lib/rbac3-bridge";
 
 
@@ -52,31 +51,6 @@ function registerRbacRealtime(userId: string, queryClient: QueryClient) {
     .channel(makeRbacChannelName(userId))
     .on(
       "postgres_changes",
-      { event: "*", schema: "public", table: "rbac_role_permissions" },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "rbac_user_roles", filter: `user_id=eq.${userId}` },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "rbac2_role_perms" },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "rbac2_role_parents" },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "rbac2_user_roles", filter: `user_id=eq.${userId}` },
-      invalidatePermissions,
-    )
-    .on(
-      "postgres_changes",
       { event: "*", schema: "public", table: "rbac3_role_permissions" },
       invalidatePermissions,
     )
@@ -108,10 +82,10 @@ function registerRbacRealtime(userId: string, queryClient: QueryClient) {
 }
 
 /**
- * Hook central RBAC v2.
- * - Charge la liste plate `permission_code[]` via RPC `list_user_permissions`.
+ * Hook central RBAC v3.
+ * - Charge la liste plate `perm_code[]` via RPC `rbac3_permissions_of`.
  * - Cache TanStack Query court, invalidé automatiquement lorsque
- *   `rbac_role_permissions` ou `rbac_user_roles` changent (realtime).
+ *   `rbac3_role_permissions` ou `rbac3_user_roles` changent (realtime).
  * - Super admin (rôle historique `user_roles`) => bypass automatique.
  */
 export function usePermissions() {
@@ -123,10 +97,10 @@ export function usePermissions() {
   const query = useQuery({
     queryKey: ["rbac", "permissions", userId],
     enabled: !!userId && !authLoading,
-    // Realtime (rbac_role_permissions + rbac_user_roles) et le handler
+    // Realtime (rbac3_role_permissions + rbac3_user_roles) et le handler
     // visibilitychange ci-dessous invalident déjà cette clé lorsque les
     // droits changent réellement. Un staleTime long évite les 3000+ appels
-    // parasites à list_user_permissions constatés en production (chaque
+    // parasites à rbac3_permissions_of constatés en production (chaque
     // focus/reconnect refetchait la RPC alors qu'aucun droit n'a bougé).
     staleTime: 15 * 60_000,
     gcTime: 30 * 60_000,
@@ -135,21 +109,10 @@ export function usePermissions() {
 
     queryFn: async () => {
       if (!userId) return new Set<string>();
-      // Priorité RBAC v3 : source de vérité alignée sur les policies RLS.
+      // Source de vérité unique : RBAC v3, alignée sur les policies RLS.
       const v3 = await supabase.rpc("rbac3_permissions_of", { _user_id: userId });
       if (v3.error) throw v3.error;
-      const v3Codes = (v3.data ?? []).map((r) => r.perm_code);
-      if (v3Codes.length > 0) return expandRbac3Permissions(v3Codes);
-
-      // Fallback historique v2 puis v1 (utilisateurs pas encore migrés).
-      const v2 = await supabase.rpc("list_user_permissions_v2", { _user_id: userId });
-      if (v2.error) throw v2.error;
-      const v2Codes = (v2.data ?? []).map((r) => r.permission_code);
-      if (v2Codes.length > 0) return expandRbacViewPermissions(v2Codes);
-
-      const v1 = await supabase.rpc("list_user_permissions", { _user_id: userId });
-      if (v1.error) throw v1.error;
-      return expandRbacViewPermissions((v1.data ?? []).map((r) => r.permission_code));
+      return expandRbac3Permissions((v3.data ?? []).map((r) => r.perm_code));
     },
 
 

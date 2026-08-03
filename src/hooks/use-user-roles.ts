@@ -60,16 +60,6 @@ function registerUserRolesRealtime(userId: string, queryClient: QueryClient) {
     .channel(makeUserRolesChannelName(userId))
     .on(
       "postgres_changes",
-      { event: "*", schema: "public", table: "user_roles", filter: `user_id=eq.${userId}` },
-      invalidateRoles,
-    )
-    .on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "rbac2_user_roles", filter: `user_id=eq.${userId}` },
-      invalidateRoles,
-    )
-    .on(
-      "postgres_changes",
       { event: "*", schema: "public", table: "rbac3_user_roles", filter: `user_id=eq.${userId}` },
       invalidateRoles,
     )
@@ -96,8 +86,8 @@ function registerUserRolesRealtime(userId: string, queryClient: QueryClient) {
 
 /**
  * P0 perf : mise en cache via React Query (staleTime long) pour éviter les
- * ~23k lectures/semaine de `user_roles`. Invalidation via Realtime sur
- * `user_roles` et `rbac_user_roles` pour l'utilisateur courant.
+ * ~23k lectures/semaine de `rbac3_user_roles`. Invalidation via Realtime sur
+ * `rbac3_user_roles` pour l'utilisateur courant.
  */
 export function useUserRoles() {
   const { user, isLoading: authLoading } = useAuth();
@@ -112,32 +102,20 @@ export function useUserRoles() {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     queryFn: async (): Promise<AppRole[]> => {
-      // Source de vérité : RBAC v3 (`rbac3_user_roles`), alignée sur les
-      // policies RLS. Repli sur `rbac2_user_roles` pour les comptes non migrés.
+      // Source de vérité unique : RBAC v3 (`rbac3_user_roles`), alignée sur les
+      // policies RLS. Les socles v0/v1/v2 ne sont plus consultés.
       const v3 = await supabase
         .from("rbac3_user_roles")
         .select("role_code, rbac3_roles!inner(statut)")
         .eq("user_id", userId!);
+      if (v3.error) throw v3.error;
       const v3Roles = (v3.data ?? [])
         .filter((r) => {
           const statut = (r as { rbac3_roles?: { statut?: string } }).rbac3_roles?.statut;
           return statut !== "archive" && statut !== "inactif";
         })
         .map((r) => (r as { role_code: string }).role_code as AppRole);
-      if (v3Roles.length > 0) return Array.from(new Set(v3Roles));
-
-      const v2 = await supabase
-        .from("rbac2_user_roles")
-        .select("role_code, rbac2_roles!inner(statut)")
-        .eq("user_id", userId!);
-      const v2Roles = (v2.data ?? [])
-        .filter(
-          (r) =>
-            (r as { rbac2_roles?: { statut?: string } }).rbac2_roles?.statut !== "archive" &&
-            (r as { rbac2_roles?: { statut?: string } }).rbac2_roles?.statut !== "inactif",
-        )
-        .map((r) => (r as { role_code: string }).role_code as AppRole);
-      return Array.from(new Set(v2Roles));
+      return Array.from(new Set(v3Roles));
     },
 
   });

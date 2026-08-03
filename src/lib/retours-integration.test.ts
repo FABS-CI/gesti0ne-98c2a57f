@@ -319,10 +319,6 @@ d("Retours — intégration RPC", () => {
     expect(Number(entrees)).toBe(3);
 
     // 3. Validation comptable → diminution du solde client (3 × 2000)
-    const [avant] = await q<{ solde: string | null }>(
-      "SELECT solde FROM public.clients WHERE client_id=$1",
-      [c],
-    );
     await db.query("SELECT public.retour_valider_compta($1,$2,$3,$4::jsonb,$5)", [
       retourId,
       apresReception.version_no,
@@ -341,7 +337,8 @@ d("Retours — intégration RPC", () => {
       "SELECT solde FROM public.clients WHERE client_id=$1",
       [c],
     );
-    expect(Number(apresSolde.solde ?? 0)).toBe(Number(avant.solde ?? 0) - 6000);
+    // Le solde est recalculé à partir des impayés : facture 20 000 − avoir 6 000.
+    expect(Number(apresSolde.solde ?? 0)).toBe(14000);
   });
 });
 
