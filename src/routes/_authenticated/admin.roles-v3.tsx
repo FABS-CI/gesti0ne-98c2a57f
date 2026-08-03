@@ -18,6 +18,8 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Plus, RefreshCcw, Search, Shield, Trash2, Users, Copy } from "lucide-react";
+import { ScopesTabV3 } from "@/components/roles-permissions/ScopesTabV3";
+import { AuditTabV3 } from "@/components/roles-permissions/AuditTabV3";
 
 export const Route = createFileRoute("/_authenticated/admin/roles-v3")({
   component: RolesV3Page,
