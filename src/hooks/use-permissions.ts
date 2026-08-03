@@ -97,10 +97,10 @@ export function usePermissions() {
   const query = useQuery({
     queryKey: ["rbac", "permissions", userId],
     enabled: !!userId && !authLoading,
-    // Realtime (rbac_role_permissions + rbac_user_roles) et le handler
+    // Realtime (rbac3_role_permissions + rbac3_user_roles) et le handler
     // visibilitychange ci-dessous invalident déjà cette clé lorsque les
     // droits changent réellement. Un staleTime long évite les 3000+ appels
-    // parasites à list_user_permissions constatés en production (chaque
+    // parasites à rbac3_permissions_of constatés en production (chaque
     // focus/reconnect refetchait la RPC alors qu'aucun droit n'a bougé).
     staleTime: 15 * 60_000,
     gcTime: 30 * 60_000,
