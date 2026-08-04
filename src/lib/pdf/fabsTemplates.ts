@@ -2300,6 +2300,8 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
     showQr: false,
     docType: "recu",
   });
+  // Charte FABS-CI imposée sur le reçu de paiement (orange, pas de bleu).
+  ctx.theme = THEMES.fabs_ci;
 
   const devise = data.devise?.trim() || "FCFA";
   const montant = Number(data.montant ?? 0);
@@ -2969,7 +2971,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
         y: yTop - rowH,
         width: CONTENT_W,
         height: rowH,
-        color: FABS_COLORS.enteteTableau,
+        color: FABS_COLORS.orange,
       });
       cols.forEach((c, i) => {
         const x0 = colX[i];
@@ -3029,7 +3031,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
       await ensureSpace(rowH + 4, "État de Compte (suite)");
       y -= rowH;
       ctx.page.drawRectangle({
-        x: MARGIN.x, y, width: CONTENT_W, height: rowH, color: hex("#EEF2F7"),
+        x: MARGIN.x, y, width: CONTENT_W, height: rowH, color: hex("#FFF4E5"),
       });
       cols.forEach((c, k) => {
         const x0 = colX[k];
