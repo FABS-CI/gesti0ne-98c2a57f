@@ -279,15 +279,6 @@ export class BaseDocument {
         color: COLORS.rougeFabs,
       });
     }
-      const warnW = this.fonts.bold.widthOfTextAtSize(warning, 7);
-      this.page.drawText(warning, {
-        x: MARGINS.x + (CONTENT_W - warnW) / 2,
-        y: 25,
-        size: 7,
-        font: this.fonts.bold,
-        color: COLORS.rougeFabs,
-      });
-    }
 
     // Pagination
     const pageCount = this.doc.getPageCount();
