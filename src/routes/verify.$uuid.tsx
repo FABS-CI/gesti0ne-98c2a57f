@@ -16,7 +16,7 @@ function VerificationPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['verify-doc', uuid],
     queryFn: async () => {
-      // Rechercher dans factures, proformas, commandes ou bons_livraison
+      // Stratégie de recherche parallèle pour la rapidité
       const tables = [
         { name: 'factures', idCol: 'facture_id', type: 'Facture' },
         { name: 'proformas', idCol: 'proforma_id', type: 'Proforma' },
@@ -24,18 +24,23 @@ function VerificationPage() {
         { name: 'bons_livraison', idCol: 'bl_id', type: 'Bon de Livraison' }
       ];
 
-      for (const table of tables) {
-        const { data, error } = await supabase
-          .from(table.name as any)
-          .select('*')
-          .eq(table.idCol, uuid)
-          .maybeSingle();
-        
-        if (data) return { ...data, docType: table.type };
-      }
+      const results = await Promise.all(
+        tables.map(async (table) => {
+          const { data } = await supabase
+            .from(table.name as any)
+            .select('*')
+            .eq(table.idCol, uuid)
+            .maybeSingle();
+          return data ? { ...data, docType: table.type } : null;
+        })
+      );
+
+      const found = results.find(r => r !== null);
+      if (found) return found;
       
       throw new Error('Document non trouvé');
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Cache de 5 minutes
   });
 
   return (
