@@ -172,7 +172,7 @@ export class BaseDocument {
 
     // Titre (C)
     const displayType = this.data.type === "Commande" ? "BON DE COMMANDE" : this.data.type.toUpperCase();
-    const titleSize = 28;
+    const titleSize = 24;
     const titleW = this.fonts.bold.widthOfTextAtSize(displayType, titleSize);
     this.page.drawText(displayType, {
       x: (PAGE.w - titleW) / 2,
@@ -183,20 +183,20 @@ export class BaseDocument {
     });
 
     // Cartouche (D) - Déplacé un peu vers la droite pour éviter chevauchement si titre long
-    const cartX = PAGE.w - MARGINS.x - 130;
+    const cartX = PAGE.w - MARGINS.x - 110;
     const cartY = yTop;
     
     this.page.drawRectangle({
       x: cartX,
       y: cartY - 18,
-      width: 130,
+      width: 110,
       height: 18,
       color: COLORS.bleuFabs,
     });
     const refText = `N° ${this.data.reference}`;
     const refW = this.fonts.bold.widthOfTextAtSize(refText, 9);
     this.page.drawText(refText, {
-      x: cartX + (140 - refW) / 2,
+      x: cartX + (110 - refW) / 2,
       y: cartY - 12,
       size: 9,
       font: this.fonts.bold,
@@ -461,11 +461,13 @@ export class BaseDocument {
 
     row("TOTAL À PAYER", formatFCFA(this.totals.totalAPayer), true);
 
-    // Montant en lettres (à gauche)
-    const letY = y;
-    this.page.drawRectangle({ x: MARGINS.x, y: y - 20, width: boxW, height: 20, color: COLORS.bleuFabs });
-    this.page.drawText("ARRÊTÉE À LA SOMME DE :", { x: MARGINS.x + 5, y: y - 13, size: 8, font: this.fonts.bold, color: COLORS.blanc });
-    this.page.drawText(this.totals.montantLettres, { x: MARGINS.x + 130, y: y - 13, size: 8, font: this.fonts.italic, color: COLORS.blanc });
+    // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
+    const letY = curY + 20; // Revenir à la ligne du Total
+    const labelLetters = "Arrêtée à la somme de :";
+    const labelW = this.fonts.bold.widthOfTextAtSize(labelLetters, 8);
+    
+    this.page.drawText(labelLetters, { x: MARGINS.x, y: letY - 13, size: 8, font: this.fonts.bold, color: COLORS.noir });
+    this.page.drawText(this.totals.montantLettres, { x: MARGINS.x + labelW + 5, y: letY - 13, size: 8, font: this.fonts.italic, color: COLORS.noir });
 
     return curY - 20;
   }
