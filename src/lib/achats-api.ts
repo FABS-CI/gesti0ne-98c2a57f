@@ -195,22 +195,25 @@ export async function getAchat(id: string) {
 export async function getAchatLignes(achatId: string) {
   const { data, error } = await supabase
     .from("achat_lignes")
-    .select("*")
+    .select("*, produits(cover_path, cover_thumb_path)")
     .eq("achat_id", achatId)
     .order("created_at", { ascending: true });
   if (error) throw error;
-  return (data ?? []) as AchatLigne[];
+  return (data ?? []) as unknown as AchatLigne[];
 }
 
 export async function listAchatLignesByAchats(achatIds: string[]) {
   if (achatIds.length === 0) return {} as Record<string, AchatLigne[]>;
-  const { data, error } = await supabase.from("achat_lignes").select("*").in("achat_id", achatIds);
+  const { data, error } = await supabase
+    .from("achat_lignes")
+    .select("*, produits(cover_path, cover_thumb_path)")
+    .in("achat_id", achatIds);
   if (error) throw error;
   const map: Record<string, AchatLigne[]> = {};
   (data ?? []).forEach((l) => {
     const k = l.achat_id;
     if (!map[k]) map[k] = [];
-    map[k].push(l as AchatLigne);
+    map[k].push(l as unknown as AchatLigne);
   });
   return map;
 }
