@@ -31,7 +31,7 @@ function VerificationPage() {
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center space-y-6">
         <div className="flex justify-center">
-          <img src="/fabs-logo.png" alt="FABS-CI" className="h-20" />
+          <img src="/fabs-logo.png" alt="FABS-CI" className="h-24 w-auto object-contain mb-2" />
         </div>
 
         {isLoading ? (
@@ -64,7 +64,7 @@ function VerificationPage() {
             
             <div className="space-y-2">
               <h1 className="text-2xl font-bold text-slate-900">Authenticité Confirmée</h1>
-              <p className="text-green-600 font-semibold text-lg">{data.docType} Authentique</p>
+              <p className="text-green-600 font-bold text-xl tracking-tight">{data.docType} Authentique</p>
             </div>
 
             <div className="bg-slate-50 rounded-xl p-6 text-left space-y-4 border border-slate-100">
