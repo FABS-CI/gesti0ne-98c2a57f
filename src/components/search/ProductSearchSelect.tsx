@@ -14,7 +14,7 @@ export type ProductSearchSelectProps = {
 export function ProductSearchSelect({
   value,
   onChange,
-  placeholder = "Rechercher un produit (titre, réf, ISBN, niveau)…",
+  placeholder = "Rechercher un produit (titre, réf, ISBN, niveau)...",
   disabled,
   className,
   onlyActive = true,
