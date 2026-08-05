@@ -121,31 +121,38 @@ export class CommercialDocument extends BaseDocument {
     const boxH = 60;
     const curY = Math.max(y - 80, 150);
     
-    // Signature 1 : Service Commercial / Comptabilité
-    this.page.drawRectangle({
-      x: MARGINS.x,
-      y: curY - boxH,
-      width: boxW,
-      height: boxH,
-      borderColor: COLORS.grisLigne,
-      borderWidth: 0.5,
-    });
-    const label1 = this.data.type === 'Bon de Livraison' ? "LE LIVREUR" : "LA COMPTABILITÉ";
-    this.page.drawText(label1, { x: MARGINS.x + 5, y: curY - 15, size: 8, font: this.fonts.bold });
-    this.page.drawText("Nom : ....................................", { x: MARGINS.x + 5, y: curY - 30, size: 7, font: this.fonts.regular });
-    this.page.drawText("Signature :", { x: MARGINS.x + 5, y: curY - 50, size: 7, font: this.fonts.italic });
+    // Zone signatures conditionnelle
+    if (this.data.type === 'Bon de Livraison') {
+      // Signature 1 : Le Livreur
+      this.page.drawRectangle({
+        x: MARGINS.x,
+        y: curY - boxH,
+        width: boxW,
+        height: boxH,
+        borderColor: COLORS.grisLigne,
+        borderWidth: 0.5,
+      });
+      this.page.drawText("LE LIVREUR", { x: MARGINS.x + 5, y: curY - 15, size: 8, font: this.fonts.bold });
+      this.page.drawText("Nom : ....................................", { x: MARGINS.x + 5, y: curY - 30, size: 7, font: this.fonts.regular });
+      this.page.drawText("Signature :", { x: MARGINS.x + 5, y: curY - 50, size: 7, font: this.fonts.italic });
 
-    // Signature 2 : Le Client
-    this.page.drawRectangle({
-      x: PAGE.w - MARGINS.x - boxW,
-      y: curY - boxH,
-      width: boxW,
-      height: boxH,
-      borderColor: COLORS.grisLigne,
-      borderWidth: 0.5,
-    });
-    this.page.drawText("RÉCEPTION CLIENT", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 15, size: 8, font: this.fonts.bold });
-    this.page.drawText("Nom : ....................................", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 30, size: 7, font: this.fonts.regular });
-    this.page.drawText("Signature & Cachet :", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 50, size: 7, font: this.fonts.italic });
+      // Signature 2 : Le Client
+      this.page.drawRectangle({
+        x: PAGE.w - MARGINS.x - boxW,
+        y: curY - boxH,
+        width: boxW,
+        height: boxH,
+        borderColor: COLORS.grisLigne,
+        borderWidth: 0.5,
+      });
+      this.page.drawText("RÉCEPTION CLIENT", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 15, size: 8, font: this.fonts.bold });
+      this.page.drawText("Nom : ....................................", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 30, size: 7, font: this.fonts.regular });
+      this.page.drawText("Signature & Cachet :", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 50, size: 7, font: this.fonts.italic });
+    } else {
+      // Pour les autres documents (Facture, Proforma, Commande), on ne garde qu'un bloc simple "LA COMPTABILITÉ" ou rien ?
+      // L'utilisateur demande "pas de bloc de LA COMPTABILITÉ et RÉCEPTION CLIENT est seulemnt sur le doc bon de livraison"
+      // Donc pour les autres, on peut soit ne rien mettre, soit mettre uniquement "LA COMPTABILITÉ" à gauche sans le bloc client.
+      // Interprétation : retirer les blocs de signature pour les autres docs.
+    }
   }
 }
