@@ -462,12 +462,21 @@ export class BaseDocument {
     row("TOTAL À PAYER", formatFCFA(this.totals.totalAPayer), true);
 
     // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
-    const letY = curY - 10; // Décalé vers le bas pour éviter le chevauchement avec le bloc Total
+    const letY = curY - 15; // Décalage suffisant pour éviter le chevauchement avec "TOTAL À PAYER"
     const labelLetters = "Arrêtée à la présente facture à la somme de :";
     const labelW = this.fonts.bold.widthOfTextAtSize(labelLetters, 8);
     
     this.page.drawText(labelLetters, { x: MARGINS.x, y: letY - 13, size: 8, font: this.fonts.bold, color: COLORS.noir });
-    this.page.drawText(this.totals.montantLettres, { x: MARGINS.x + labelW + 5, y: letY - 13, size: 8, font: this.fonts.italic, color: COLORS.noir });
+    
+    // Découper le montant en lettres si trop long pour tenir sur une ligne ?
+    // Pour l'instant on garde une ligne simple avec le décalage Y.
+    this.page.drawText(this.totals.montantLettres, { 
+      x: MARGINS.x + labelW + 5, 
+      y: letY - 13, 
+      size: 8, 
+      font: this.fonts.italic, 
+      color: COLORS.noir 
+    });
 
     return curY - 20;
   }
