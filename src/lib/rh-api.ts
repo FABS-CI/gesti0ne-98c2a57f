@@ -50,7 +50,7 @@ export type Employe = {
   created_at: string;
   updated_at: string;
   // Identité
-  prenoms?: string | null;
+  prenom?: string | null;
   sexe?: "M" | "F" | "autre" | null;
   date_naissance?: string | null;
   lieu_naissance?: string | null;
