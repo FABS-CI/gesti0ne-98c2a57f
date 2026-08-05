@@ -22,6 +22,7 @@ import { DraftRestoreBanner } from "@/components/ui/draft-restore-banner";
 const emptyForm: FournisseurInput = {
   raison_sociale: "",
   representant: "",
+  contact: "",
   email: "",
   telephone: "",
   adresse: "",
@@ -40,6 +41,7 @@ export function FournisseurFormPage({ existing }: { existing?: Fournisseur | nul
     setForm({
       raison_sociale: existing.raison_sociale,
       representant: existing.representant ?? "",
+      contact: existing.contact ?? "",
       email: existing.email ?? "",
       telephone: existing.telephone ?? "",
       adresse: existing.adresse ?? "",
@@ -130,6 +132,13 @@ export function FournisseurFormPage({ existing }: { existing?: Fournisseur | nul
             <Input
               value={form.representant ?? ""}
               onChange={(e) => setForm((f) => ({ ...f, representant: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Contact</Label>
+            <Input
+              value={form.contact ?? ""}
+              onChange={(e) => setForm((f) => ({ ...f, contact: e.target.value }))}
             />
           </div>
           <div className="space-y-1.5">

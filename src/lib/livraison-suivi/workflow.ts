@@ -36,8 +36,8 @@ export const STATUT_COLOR: Record<LivStatut, string> = {
 
 export function workflowSteps(type: LivType): LivStatut[] {
   return type === "direct"
-    ? ["preparee", "remise_livreur", "depart_depot", "arrive_client", "livree"]
-    : ["preparee", "remise_transporteur", "expediee", "arrivee_gare", "retiree_client"];
+    ? ["preparee", "chargee", "remise_livreur", "depart_depot", "en_route", "arrive_client", "livree", "reception_confirmee"]
+    : ["preparee", "chargee", "remise_transporteur", "expediee", "arrivee_gare", "retiree_client", "reception_confirmee"];
 }
 
 export function nextEtape(type: LivType, statut: LivStatut): LivStatut | null {
