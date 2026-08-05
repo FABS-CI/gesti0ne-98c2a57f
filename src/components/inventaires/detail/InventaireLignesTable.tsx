@@ -32,6 +32,7 @@ export function InventaireLignesTable({ ecartsLive, editable, obs, onCompte, onO
             <TableHead className="text-right w-28">Compté</TableHead>
             <TableHead className="text-right w-24">Écart</TableHead>
             <TableHead className="text-right w-32">Val. unitaire</TableHead>
+            <TableHead className="text-right w-32">Valeur vente</TableHead>
             <TableHead className="w-48">Observation</TableHead>
           </TableRow>
         </TableHeader>
@@ -76,6 +77,9 @@ export function InventaireLignesTable({ ecartsLive, editable, obs, onCompte, onO
                 </TableCell>
                 <TableCell className="text-right">
                   {formatFCFA(Number(ligne.valeur_unitaire))}
+                </TableCell>
+                <TableCell className="text-right font-medium text-emerald-600">
+                  {formatFCFA(compte * Number(ligne.valeur_unitaire))}
                 </TableCell>
                 <TableCell>
                   {editable ? (
