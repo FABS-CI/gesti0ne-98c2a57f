@@ -13,10 +13,10 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
 
           // Stratégie de recherche parallèle pour la rapidité
           const tables = [
-            { name: 'factures', idCol: 'facture_id', type: 'Facture', dateCol: 'date_facture', montantCol: 'montant_total' },
-            { name: 'proformas', idCol: 'proforma_id', type: 'Proforma', dateCol: 'date_proforma', montantCol: 'montant_ttc' },
-            { name: 'commandes', idCol: 'commande_id', type: 'Commande', dateCol: 'date_commande', montantCol: 'montant_total' },
-            { name: 'bons_livraison', idCol: 'bl_id', type: 'Bon de Livraison', dateCol: 'date_bl', montantCol: 'montant_ttc' }
+            { name: 'factures', idCol: 'facture_id', type: 'Facture', dateCol: 'date_facture', montantCol: 'montant_total', refCol: 'reference' },
+            { name: 'proformas', idCol: 'proforma_id', type: 'Proforma', dateCol: 'date_proforma', montantCol: 'montant_ttc', refCol: 'reference' },
+            { name: 'commandes', idCol: 'commande_id', type: 'Commande', dateCol: 'date_commande', montantCol: 'montant_total', refCol: 'reference' },
+            { name: 'bons_livraison', idCol: 'bl_id', type: 'Bon de Livraison', dateCol: 'date_bl', montantCol: 'montant_ttc', refCol: 'reference' }
           ];
 
           const results = await Promise.all(
@@ -24,7 +24,7 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
               const { data, error } = await supabaseAdmin
                 .from(table.name as any)
                 .select('*')
-                .eq(table.idCol, uuid)
+                .or(`${table.idCol}.eq.${uuid},${table.refCol}.eq.${uuid}`)
                 .maybeSingle();
               
               if (error) {
