@@ -60,6 +60,9 @@ export class CommercialDocument extends BaseDocument {
 
     y = this.drawTable(y, colonnes, lignes);
     
+    // Si des remises globales existent, on les affiche en rouge dans le tableau de totaux
+    // (Déjà géré dans base-document.ts par la recherche du mot 'remise' dans le label)
+    
     // Vérifier si les totaux tiennent sur la page
     if (y < 200) {
       this.addNewPage();
