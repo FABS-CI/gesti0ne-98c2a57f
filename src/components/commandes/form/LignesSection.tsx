@@ -122,8 +122,8 @@ export function LignesSection({
                           <ProductCoverThumb 
                             produit={{ 
                               titre: l?.designation, 
-                              cover_path: (l as any)?.cover_path, 
-                              cover_thumb_path: (l as any)?.cover_thumb_path 
+                              cover_path: (l as any)?.cover_path || (l as any)?.produits?.cover_path, 
+                              cover_thumb_path: (l as any)?.cover_thumb_path || (l as any)?.produits?.cover_thumb_path
                             }} 
                             size="xs" 
                             className="mt-1"

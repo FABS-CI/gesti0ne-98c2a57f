@@ -117,8 +117,8 @@ function CommandeModifierPage() {
             quantite: l.quantite,
             prix_unitaire: Number(l.prix_unitaire),
             remise_pct: Number(l.remise_pct ?? remisePct),
-            cover_path: l.produits?.cover_path,
-            cover_thumb_path: l.produits?.cover_thumb_path,
+            cover_path: l.produits?.cover_path || l.cover_path,
+            cover_thumb_path: l.produits?.cover_thumb_path || l.cover_thumb_path,
           });
         }
       }
