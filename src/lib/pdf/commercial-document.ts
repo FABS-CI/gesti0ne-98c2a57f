@@ -44,7 +44,7 @@ export class CommercialDocument extends BaseDocument {
     if (!isBL) {
       colonnes.push({ label: "Prix Unitaire", key: "pu", width: 80 });
       if (this.discountMode === 'A') {
-        colonnes.push({ label: "Remise", key: "remisePct", width: 50 });
+        colonnes.push({ label: "Remise (%)", key: "remisePct", width: 50 });
       }
       colonnes.push({ label: "Montant", key: "total", width: 80 });
     }

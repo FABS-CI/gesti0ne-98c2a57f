@@ -297,6 +297,27 @@ export async function getFacturePaiements(factureId: string) {
 }
 
 // ============================================================================
+// Lignes d'une facture
+// ============================================================================
+export async function getFactureLignes(factureId: string) {
+  const { data: facture } = await supabase
+    .from("factures")
+    .select("commande_id")
+    .eq("facture_id", factureId)
+    .maybeSingle();
+
+  if (!facture?.commande_id) return [];
+
+  const { data, error } = await supabase
+    .from("commande_lignes")
+    .select("designation, quantite, prix_unitaire, total_ligne, remise_pct, montant_remise, total_ht_ligne, reference_produit, ligne_id")
+    .eq("commande_id", facture.commande_id);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+// ============================================================================
 // Retours liés à une facture — permet d'afficher "Retour partiel/total" partout
 // où une facture est présentée (liste, détail, état de compte).
 // ============================================================================

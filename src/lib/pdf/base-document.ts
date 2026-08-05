@@ -16,8 +16,8 @@ import { buildQrUrl } from "./qr-logic";
 
 export const COLORS = {
   bleuFabs: rgb(0.106, 0.165, 0.341), // #1B2A57
-  rougeFabs: rgb(0.827, 0.184, 0.184), // #D32F2F
-  orangeFabs: rgb(0.91, 0.467, 0.133), // #E87722
+  rougeFabs: rgb(0.827, 0.184, 0.184), // #D32F2F (Couleur pour Remises)
+  orangeFabs: rgb(0.96, 0.486, 0.0), // #F57C00 (Couleur pour ligne séparatrice et badge commande)
   grisClair: rgb(0.957, 0.965, 0.98), // #F4F6FA
   noir: rgb(0, 0, 0),
   blanc: rgb(1, 1, 1),
@@ -452,18 +452,18 @@ export class BaseDocument {
     
     if (this.totals.remiseLignes) {
       const pct = this.totals.remiseLignesPct ? ` (${this.totals.remiseLignesPct.toFixed(2)} %)` : "";
-      row(`Remise lignes${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
+      row(`Remise sur lignes (Remise A)${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
     }
     
     if (this.totals.remiseGlobale) {
-      row(`Remise globale (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
+      row(`Remise globale (Remise B) (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
     }
 
     row("TOTAL À PAYER", formatFCFA(this.totals.totalAPayer), true);
 
     // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
     const letY = curY + 20; // Revenir à la ligne du Total
-    const labelLetters = "Arrêtée à la somme de :";
+    const labelLetters = "Arrêtée à la présente facture à la somme de :";
     const labelW = this.fonts.bold.widthOfTextAtSize(labelLetters, 8);
     
     this.page.drawText(labelLetters, { x: MARGINS.x, y: letY - 13, size: 8, font: this.fonts.bold, color: COLORS.noir });

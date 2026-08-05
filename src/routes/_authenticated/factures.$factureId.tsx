@@ -19,6 +19,7 @@ import { invalidateFne } from "@/lib/cache-invalidation";
 import {
   getFacture,
   getFacturePaiements,
+  getFactureLignes,
   getFactureRetours,
   computeRetourResume,
   RETOUR_STATUS_META,
@@ -80,6 +81,10 @@ function FactureDetailPage() {
   const { data: paiements = [] } = useQuery({
     queryKey: ["facture-paiements", factureId],
     queryFn: () => getFacturePaiements(factureId),
+  });
+  const { data: lignes = [] } = useQuery({
+    queryKey: ["facture-lignes", factureId],
+    queryFn: () => getFactureLignes(factureId),
   });
   const { data: fne } = useQuery({
     queryKey: ["fne-facture", factureId],
@@ -324,6 +329,48 @@ function FactureDetailPage() {
           <p className="text-sm text-muted-foreground">
             {formatFCFA(facture.montant_paye)} payé sur {formatFCFA(facture.montant_total)}
           </p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Détail des articles</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Désignation</TableHead>
+                <TableHead className="text-right">Remise (%)</TableHead>
+                <TableHead className="text-right">Qté</TableHead>
+                <TableHead className="text-right">P.U.</TableHead>
+                <TableHead className="text-right">Total</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {lignes.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                    Chargement des lignes...
+                  </TableCell>
+                </TableRow>
+              ) : (
+                lignes.map((l: any) => (
+                  <TableRow key={l.ligne_id}>
+                    <TableCell>{l.designation}</TableCell>
+                    <TableCell className="text-right text-destructive">
+                      {l.remise_pct ? `${l.remise_pct} %` : "—"}
+                    </TableCell>
+                    <TableCell className="text-right">{l.quantite}</TableCell>
+                    <TableCell className="text-right">{formatFCFA(l.prix_unitaire)}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {formatFCFA(l.total_ligne)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
