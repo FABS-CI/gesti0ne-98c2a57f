@@ -8,7 +8,9 @@ import { z } from "zod";
  */
 export const runFullBackup = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(z.object({ trigger: z.enum(["manuel", "planifie"]).default("manuel") }))
+  .inputValidator((data: unknown) => 
+    z.object({ trigger: z.enum(["manuel", "planifie"]).default("manuel") }).parse(data)
+  )
   .handler(async ({ data, context }) => {
     const { supabase, userId, claims } = context;
     
@@ -34,11 +36,13 @@ export const runFullBackup = createServerFn({ method: "POST" })
  */
 export const runFullRestore = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(z.object({ 
-    backupId: z.string().optional(), // Si on restaure depuis l'historique
-    base64: z.string().optional(),   // Si on upload un fichier
-    fileName: z.string().optional()
-  }))
+  .inputValidator((data: unknown) => 
+    z.object({ 
+      backupId: z.string().optional(), // Si on restaure depuis l'historique
+      base64: z.string().optional(),   // Si on upload un fichier
+      fileName: z.string().optional()
+    }).parse(data)
+  )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     
