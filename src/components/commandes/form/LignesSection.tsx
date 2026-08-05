@@ -231,6 +231,7 @@ export function LignesSection({
                       </Label>
                       <ProductSearchSelect
                         value={l?.produit_id}
+                        loadingLabel={l?.designation}
                         onChange={(_id, produit) => onProduitChange(i, produit)}
                       />
                       {err?.produit_id && (
