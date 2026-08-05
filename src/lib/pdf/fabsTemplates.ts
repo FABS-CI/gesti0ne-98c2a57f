@@ -202,13 +202,12 @@ export type DocLigne = {
   total?: number;
   pu?: number;
   classe?: string;
+  /** Cycle scolaire pour regroupement V10 (PRIMAIRE / PREMIER CYCLE / SECOND CYCLE / LITTÉRATURE / LIVRES COMMUNS). */
   cycle?: string;
   niveau?: string;
   matiere?: string;
   codeArticle?: string;
   reference?: string;
-  /** Désignation complète du produit (utilisée par certains templates non commerciaux). */
-  designation?: string;
   /** Unité de mesure (pièce, carton, kg…). */
   unite?: string;
   qte?: number;
