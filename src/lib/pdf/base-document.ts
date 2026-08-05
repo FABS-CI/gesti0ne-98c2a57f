@@ -328,7 +328,7 @@ export class BaseDocument {
 
       try {
         const { default: QRCode } = await import("qrcode");
-        const url = buildQrUrl(this.data.id);
+        const url = buildQrUrl(this.data.reference);
         const qrDataUrl = await QRCode.toDataURL(url, { margin: 0, width: 120 });
         const qrImage = await this.doc.embedPng(qrDataUrl);
         this.page.drawImage(qrImage, { x: qrX + 10, y: y - boxH + 15, width: 60, height: 60 });
