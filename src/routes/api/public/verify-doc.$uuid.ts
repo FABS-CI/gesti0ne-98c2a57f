@@ -21,12 +21,17 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
 
           const results = await Promise.all(
             tables.map(async (table) => {
-              // On essaie d'abord par UUID si c'est un UUID valide, sinon seulement par référence
               const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
               
+              let selectStr = '*';
+              if (table.name === 'factures' || table.name === 'proformas' || table.name === 'bons_livraison') {
+                // Pour ces tables, on a besoin d'aller chercher le représentant dans la commande liée
+                selectStr = '*, commandes(representant_nom)';
+              }
+
               let query = supabaseAdmin
                 .from(table.name as any)
-                .select('*');
+                .select(selectStr);
                 
               if (isUuid) {
                 query = query.or(`${table.idCol}.eq.${uuid},${table.refCol}.ilike.${uuid}`);
@@ -61,6 +66,7 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
             reference: typedFound.reference,
             date: typedFound[typedFound.dateCol],
             client_nom: typedFound.client_nom,
+            representant_nom: typedFound.representant_nom || typedFound.commandes?.representant_nom || null,
             montant: typedFound[typedFound.montantCol] || typedFound.montant_ttc || typedFound.montant_total || typedFound.montant
           };
 
