@@ -2882,17 +2882,6 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     representant: data.representant ?? null,
   };
 
-  const ctx = await newCtx({
-    title: "État de Compte Client",
-    reference: data.reference,
-    date: new Date(),
-    signatureLabel: "La Comptabilité",
-    showQr: false,
-    docType: "etat_compte",
-  });
-import { generateUnifiedStatementPDF } from "./unified-generator";
-
-export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
   return generateUnifiedStatementPDF(data);
 }
 
@@ -2903,7 +2892,9 @@ async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise
     dateStr: fmtDate(new Date()),
     docType: "etat_compte",
   });
-  y -= 24; // Augmentation de l'espace après l'en-tête pour éviter le chevauchement (V10)
+  let y = drawHeader(ctx, "RELEVÉ DE COMPTE CLIENT");
+  y -= 24; 
+
 
   // ---------- Bloc infos client + période ----------
   const colR = MARGIN.x + CONTENT_W / 2;
