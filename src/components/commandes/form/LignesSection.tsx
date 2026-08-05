@@ -135,7 +135,7 @@ export function LignesSection({
                           <p className="text-xs text-destructive mt-1">{err.produit_id.message}</p>
                         )}
                       </TableCell>
-                      <TableCell className="font-mono text-xs">
+                      <TableCell className="font-mono text-xs select-all" title="Référence produit">
                         {form.watch(`lignes.${i}.reference_produit`) || "—"}
                       </TableCell>
                       <TableCell className="text-right text-xs">
