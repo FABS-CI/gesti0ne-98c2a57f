@@ -18,11 +18,12 @@ export function exportInventaireCsv(
   const headers = [
     "Référence",
     "Désignation",
-    "Stock théorique",
-    "Quantité comptée",
+    "Théorique",
+    "Compté",
     "Écart",
-    "Valeur unitaire",
-    "Valeur écart",
+    "Val. Achat",
+    "Val. Vente",
+    "Val. Écart",
     "Observation",
   ];
   const rows = ecartsLive.map(({ ligne, compte, ecart }) => [
@@ -31,7 +32,8 @@ export function exportInventaireCsv(
     ligne.stock_theorique,
     compte,
     ecart,
-    Number(ligne.valeur_unitaire),
+    Number(ligne.produits?.prix_achat ?? ligne.valeur_unitaire ?? 0),
+    Number(ligne.produits?.prix_vente ?? 0),
     ecart * Number(ligne.valeur_unitaire),
     obs[ligne.ligne_id] ?? "",
   ]);
