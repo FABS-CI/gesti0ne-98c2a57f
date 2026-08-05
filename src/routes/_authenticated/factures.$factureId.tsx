@@ -175,7 +175,7 @@ function FactureDetailPage() {
                       return generateUnifiedCommercialPDF("Facture", { ...docData, ...clientInfo, ...totals, lignes });
                     },
                     fileNameFor(facture.reference, facture.client_nom),
-                    { type: "FC", data: docData },
+                    { type: "FC", data: { ...docData, date: docData.date } },
                   )
                 }
               >

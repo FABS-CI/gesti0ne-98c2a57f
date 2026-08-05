@@ -152,7 +152,7 @@ function CommandeDetailPage() {
                       });
                     },
                     fileNameFor(commande.reference, commande.client_nom),
-                    { type: "BC", data: commande }
+                    { type: "BC", data: { ...commande, date: commande.date_commande } }
                   )
                 }
               >
