@@ -66,13 +66,17 @@ function TopbarImpl() {
   }
 
   return (
-    <div className="flex flex-1 items-center gap-3">
-      <Suspense fallback={<div className="h-9 w-full max-w-md" />}>
-        <GlobalSearch />
-      </Suspense>
+    <div className="flex flex-1 items-center gap-2 sm:gap-3">
+      <div className="flex-1 max-w-xl">
+        <Suspense fallback={<div className="h-9 w-full" />}>
+          <GlobalSearch />
+        </Suspense>
+      </div>
 
-      <div className="ml-auto flex items-center gap-2">
-        <ExerciceSelector />
+      <div className="ml-auto flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="hidden md:block">
+          <ExerciceSelector />
+        </div>
         <ThemeToggle />
         <Suspense fallback={<div className="h-9 w-9" />}>
           <NotificationsBell />
@@ -80,23 +84,32 @@ function TopbarImpl() {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex h-10 items-center gap-2 px-1.5 sm:px-2">
+            <Button variant="ghost" className="flex h-10 items-center gap-2 px-1 rounded-full sm:rounded-md sm:px-2">
               <Avatar className="h-8 w-8">
                 {avatarUrl ? <AvatarImage src={avatarUrl} alt={label} /> : null}
                 <AvatarFallback className="bg-primary text-xs text-primary-foreground">
                   {initials(label)}
                 </AvatarFallback>
               </Avatar>
-              <div className="hidden text-left leading-tight sm:block">
-                <p className="max-w-[140px] truncate text-sm font-semibold">{label}</p>
-                <p className="max-w-[140px] truncate text-[11px] text-muted-foreground">
+              <div className="hidden lg:block text-left leading-tight">
+                <p className="max-w-[120px] truncate text-sm font-semibold">{label}</p>
+                <p className="max-w-[120px] truncate text-[11px] text-muted-foreground">
                   {user?.email}
                 </p>
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="truncate">{user?.email}</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-64">
+            <div className="px-2 py-1.5 lg:hidden">
+              <p className="text-sm font-semibold truncate">{label}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            </div>
+            <div className="md:hidden">
+              <DropdownMenuSeparator />
+              <div className="px-1 py-1.5">
+                <ExerciceSelector />
+              </div>
+            </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/profil">
@@ -108,7 +121,8 @@ function TopbarImpl() {
               <RefreshCw className="mr-2 h-4 w-4" />
               Recharger mes permissions
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSignOut}>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
               Déconnexion
             </DropdownMenuItem>
