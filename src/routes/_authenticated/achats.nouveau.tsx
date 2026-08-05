@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2, Save, ShoppingBag } from "lucide-react";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 
 import { Button } from "@/components/ui/button";
 import {
