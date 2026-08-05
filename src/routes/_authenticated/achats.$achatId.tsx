@@ -66,7 +66,7 @@ function AchatDetailPage() {
       emailClient: achat.fournisseurs?.email ?? undefined,
       adresseClient: achat.fournisseurs?.adresse ?? undefined,
       villeClient: achat.fournisseurs?.ville ?? undefined,
-      representant: achat.fournisseurs?.contact ?? undefined,
+      representant: achat.fournisseurs?.representant ?? undefined,
       lignes: lignes.map((l) => ({
         codeArticle: l.reference_produit ?? undefined,
         reference: l.designation,
