@@ -116,6 +116,14 @@ export const DOC_SECTIONS: DocSection[] = [
       "Un exercice est une période comptable (souvent un an). Seul l'exercice ouvert accepte de nouvelles écritures. Clôturer bloque toute modification : préparer d'abord le lettrage, les rapprochements, les provisions. Report à nouveau : les soldes clients et fournisseurs basculent sur l'exercice suivant. Comparatif multi-exercices : /exercices/comparatif.",
   },
   {
+    id: "fournisseurs",
+    module: "Stock",
+    title: "Gérer les fournisseurs",
+    route: "/fournisseurs",
+    content:
+      "Les fiches fournisseurs centralisent raison sociale, représentant, téléphone et email. Utile pour les approvisionnements et le suivi des dettes. Un fournisseur inactif ne peut plus être sélectionné pour un nouvel achat.",
+  },
+  {
     id: "produits",
     module: "Stock",
     title: "Produits et fiches article",
