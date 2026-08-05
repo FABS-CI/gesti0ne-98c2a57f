@@ -2877,19 +2877,25 @@ const STATUT_COMMANDE_LABEL: Record<string, string> = {
 
 export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
   const client = data.client ?? {
-    nom: data.clientNom ?? "",
-    telephone: data.clientTel ?? null,
-    representant: data.representant ?? null,
-  };
-
+export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
   return generateUnifiedStatementPDF(data);
 }
 
 async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
-  const ctx = await initCtx({
-    title: "Relevé de compte client",
+  const client = {
+    nom: data.clientNom ?? "",
+    code: data.codeClient ?? null,
+    adresse: data.adresseClient ?? null,
+    telephone: data.clientTel ?? null,
+    email: data.emailClient ?? null,
+    representant: data.representant ?? null,
+  };
+  const ctx = await newCtx({
+    title: "État de Compte Client",
     reference: data.reference,
-    dateStr: fmtDate(new Date()),
+    date: new Date(),
+    signatureLabel: "La Comptabilité",
+    showQr: false,
     docType: "etat_compte",
   });
   let y = drawHeader(ctx, "RELEVÉ DE COMPTE CLIENT");
