@@ -48,7 +48,7 @@ export function ProduitsTable({
         <TableHeader>
           <TableRow>
             <TableHead className="w-14"></TableHead>
-            <TableHead>Code Article</TableHead>
+            <TableHead>Réf.</TableHead>
             <TableHead>Titre</TableHead>
             <TableHead>Catégorie</TableHead>
             <TableHead>Niveau</TableHead>
