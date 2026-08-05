@@ -17,7 +17,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 type Hit = {
   id: string;
-  group: "Clients" | "Représentants" | "Produits" | "Factures" | "Bons de livraison";
+  group: "Clients" | "Représentants" | "Produits" | "Factures" | "Bons de livraison" | "Bons de commande" | "Proformas";
   label: string;
   sub?: string;
   to: string;
@@ -31,12 +31,12 @@ async function search(q: string): Promise<Hit[]> {
   const like = `%${term}%`;
 
   // Coalesce clients + représentants in a single query
-  const [clientsAll, produits, factures, bls] = await Promise.all([
+  const [clientsAll, produits, factures, bls, commandes, proformas] = await Promise.all([
     supabase
       .from("clients")
-      .select("client_id, nom, ville, representant")
-      .or(`nom.ilike.${like},representant.ilike.${like}`)
-      .limit(12),
+      .select("client_id, nom, ville, representant, telephone")
+      .or(`nom.ilike.${like},representant.ilike.${like},ville.ilike.${like},telephone.ilike.${like}`)
+      .limit(10),
     supabase
       .from("produits")
       .select("produit_id, titre, reference")
@@ -51,9 +51,19 @@ async function search(q: string): Promise<Hit[]> {
       .limit(8),
     supabase
       .from("bons_livraison")
-      .select("bl_id, reference, signataire, transporteur")
-      .or(`reference.ilike.${like},signataire.ilike.${like},transporteur.ilike.${like}`)
+      .select("bl_id, reference, signataire, transporteur, client_nom")
+      .or(`reference.ilike.${like},signataire.ilike.${like},transporteur.ilike.${like},client_nom.ilike.${like}`)
       .limit(8),
+    supabase
+      .from("commandes")
+      .select("commande_id, reference, client_nom, montant_total")
+      .or(`reference.ilike.${like},client_nom.ilike.${like}`)
+      .limit(5),
+    supabase
+      .from("proformas")
+      .select("proforma_id, reference, client_nom, montant_total")
+      .or(`reference.ilike.${like},client_nom.ilike.${like}`)
+      .limit(5),
   ]);
 
   const hits: Hit[] = [];
@@ -66,7 +76,7 @@ async function search(q: string): Promise<Hit[]> {
         id: `c-${c.client_id}`,
         group: "Clients",
         label: c.nom,
-        sub: [c.ville, c.representant].filter(Boolean).join(" · "),
+        sub: [c.ville, c.representant, c.telephone].filter(Boolean).join(" · "),
         to: "/clients/$clientId",
         params: { clientId: c.client_id },
         icon: Users,
@@ -118,6 +128,32 @@ async function search(q: string): Promise<Hit[]> {
       sub: [b.signataire, b.transporteur].filter(Boolean).join(" · "),
       to: "/bons-livraison",
       icon: Truck,
+    });
+
+  for (const cmd of commandes.data ?? [])
+    hits.push({
+      id: `cmd-${cmd.commande_id}`,
+      group: "Bons de commande",
+      label: cmd.reference,
+      sub: [cmd.client_nom, cmd.montant_total ? `${cmd.montant_total} F` : null]
+        .filter(Boolean)
+        .join(" · "),
+      to: "/commandes/$commandeId",
+      params: { commandeId: cmd.commande_id },
+      icon: FileText,
+    });
+
+  for (const pro of proformas.data ?? [])
+    hits.push({
+      id: `pro-${pro.proforma_id}`,
+      group: "Proformas",
+      label: pro.reference,
+      sub: [pro.client_nom, pro.montant_total ? `${pro.montant_total} F` : null]
+        .filter(Boolean)
+        .join(" · "),
+      to: "/proformas/$proformaId",
+      params: { proformaId: pro.proforma_id },
+      icon: FileText,
     });
 
   return hits;
