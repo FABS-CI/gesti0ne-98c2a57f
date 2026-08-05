@@ -208,7 +208,7 @@ export async function getCommandeLignes(commandeId: string) {
     .from("produits")
     .select("produit_id, cover_path, cover_thumb_path")
     .in("produit_id", ids);
-  const map = new Map((prods ?? []).map((p: any) => [p.produit_id, p]));
+  const map = new Map<string, any>((prods ?? []).map((p: any) => [p.produit_id, p]));
   return lignes.map((l) => {
     const p = l.produit_id ? map.get(l.produit_id) : null;
     return {
