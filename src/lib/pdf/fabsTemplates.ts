@@ -2882,10 +2882,10 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
 async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
   const client = {
     nom: data.clientNom ?? "",
-    code: data.codeClient ?? null,
-    adresse: data.adresseClient ?? null,
+    code: (data as any).codeClient ?? null,
+    adresse: (data as any).adresseClient ?? null,
     telephone: data.clientTel ?? null,
-    email: data.emailClient ?? null,
+    email: (data as any).emailClient ?? null,
     representant: data.representant ?? null,
   };
   const ctx = await newCtx({
