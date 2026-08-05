@@ -47,7 +47,8 @@ export async function exportPdf(
   await ensurePdfLogo();
 
   const t = getActiveTemplate();
-  const orientation = headers.length > 6 ? "landscape" : "portrait";
+  const isProduitList = options?.pageTitle?.includes("LISTE DES PRODUITS");
+  const orientation = isProduitList ? "portrait" : (headers.length > 6 ? "landscape" : "portrait");
   const doc = new jsPDF({ orientation, unit: "mm", format: "a4" });
   // Le titre du document est rendu par `pageTitle` (bandeau centré) ;
   // on ne réutilise plus le nom de fichier pour éviter un doublon type
@@ -93,19 +94,25 @@ export async function exportPdf(
     startY: tableStartY,
     head: [headers],
     body,
-    headStyles: options?.headStyles ?? defaultHead,
     styles: {
-      fontSize: 11,
-      cellPadding: 3.6,
-      overflow: "linebreak",
+      fontSize: 9,
+      cellPadding: 3,
+      overflow: "visible", // Empêche les coupures de texte
       valign: "middle",
       font: t.font,
       lineColor: [220, 220, 220],
       lineWidth: 0.15,
       fontStyle: "normal",
+      minCellHeight: 8,
     },
     bodyStyles: { fontStyle: "normal", textColor: [20, 20, 20] },
-    alternateRowStyles: { fillColor: [255, 243, 230] },
+    alternateRowStyles: { fillColor: [247, 247, 247] }, // Gris clair #F7F7F7
+    headStyles: {
+      ...(options?.headStyles ?? defaultHead),
+      cellPadding: 4,
+      overflow: "visible", // Crucial pour ne pas couper les en-têtes
+      minCellHeight: 10,
+    },
     margin: { top: getPdfChromeBodyTop(), bottom: 52, left: 10, right: 10 },
     showHead: "everyPage",
     columnStyles: options?.columnStyles,
