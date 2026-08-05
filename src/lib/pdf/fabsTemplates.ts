@@ -73,7 +73,7 @@ type Theme = {
   id: string;
   primary: RGB; // ligne pied orange / accent
   accent: RGB;
-  title: RGB; // couleur titre document droite + Solde dû
+  title: RGB; // couleur titre document droite + Total impayé (FCFA)
   tableHdrBg: RGB;
   tableHdrTxt: RGB;
 };
@@ -1311,7 +1311,7 @@ function drawV2Title(ctx: Ctx, titre: string, yStart: number): number {
 
 // ----------------------------------------------------------------------------
 // V10 : encadré 6 lignes (Total Vente / % Remise / Remise / Montant HT /
-// Payé / Solde dû). Solde dû coloré au thème, gras.
+// Payé / Total impayé (FCFA)). Total impayé (FCFA) coloré au thème, gras.
 // ----------------------------------------------------------------------------
 function drawTotauxV10(ctx: Ctx, data: DocBase, yStart: number): number {
   const totalVente = Number(data.totalVente ?? data.montantHT ?? 0);
@@ -2004,7 +2004,7 @@ function drawIncidentSignatures(ctx: Ctx, yTop: number): number {
   const labels = [
     "Gestionnaire de Stock",
     "Responsable Logistique",
-    "Directeur Commercial",
+    "Directeur Représentant",
     "Direction Générale",
   ];
   const colW = CONTENT_W / labels.length;

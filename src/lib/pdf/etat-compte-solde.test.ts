@@ -50,7 +50,7 @@ describe("computeSoldeClient — parité tableau ↔ PDF", () => {
     expect(r.soldeOuverture).toBe(70_000);
   });
 
-  it("Solde dû = Ouverture + Débits − Crédits (identique tableau et PDF)", () => {
+  it("Total impayé (FCFA) = Ouverture + Débits − Crédits (identique tableau et PDF)", () => {
     const r = computeSoldeClient(base);
     // Débits : 120 000 + 80 000 = 200 000
     // Crédits : 40 000 (P-001) + 5 000 (A-001) + 2 000 (RET-001) = 47 000
@@ -94,6 +94,6 @@ describe("computeSoldeClient — parité tableau ↔ PDF", () => {
     expect(r.isEmpty).toBe(true);
     expect(r.solde).toBe(15_000);
     expect(r.emptyExplanation).toMatch(/Aucun mouvement valide/);
-    expect(r.emptyExplanation).toMatch(/Solde dû/);
+    expect(r.emptyExplanation).toMatch(/Total impayé (FCFA)/);
   });
 });
