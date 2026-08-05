@@ -1,5 +1,6 @@
 import React from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 import { Badge } from "@/components/ui/badge";
 import { STATUT_LABEL, type Commande } from "@/lib/commandes-api";
 import { formatFCFA } from "@/lib/format";
@@ -29,7 +30,13 @@ function CommandeRowInner({
   const st = STATUT_LABEL[c.statut];
   return (
     <TableRow className="group transition-colors odd:bg-muted/20 hover:bg-primary/5">
-      <TableCell className="font-semibold">{c.reference}</TableCell>
+      <TableCell className="font-semibold">
+        <div className="flex items-center gap-2">
+          {/* Commande n'a pas de cover_path direct, mais on pourrait enrichir si besoin */}
+          <ProductCoverThumb produit={null} size="xs" />
+          <span>{c.reference}</span>
+        </div>
+      </TableCell>
       <TableCell>{c.client_nom || "—"}</TableCell>
       <TableCell className="text-muted-foreground">{c.date_commande}</TableCell>
       <TableCell>

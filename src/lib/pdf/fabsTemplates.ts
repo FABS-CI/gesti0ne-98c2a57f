@@ -261,6 +261,10 @@ export type DocBase = {
   totalTTC?: number;
   paye?: number;
   soldeDu?: number;
+  /** Informations de livraison pour le BL */
+  livreurNom?: string | null;
+  dateReceptionClient?: string | null;
+  nomReceptionnaireClient?: string | null;
   /** Statut du document (Payée, Impayée, Annulée, Brouillon…). */
   statut?: DocStatut | null;
 };
@@ -345,7 +349,7 @@ type Ctx = {
   showBarcode: boolean;
 };
 
-type TextOpts = { size?: number; bold?: boolean; color?: RGB; font?: PDFFont };
+type TextOpts = { size?: number; bold?: boolean; color?: RGB; font?: PDFFont; italic?: boolean };
 
 /**
  * pdf-lib's Standard fonts (Helvetica…) use the WinAnsi encoding and throw on
@@ -372,13 +376,13 @@ function text(ctx: Ctx, s: string, x: number, y: number, opts: TextOpts = {}) {
     x,
     y,
     size: opts.size ?? 9,
-    font: opts.font ?? (opts.bold ? ctx.bold : ctx.font),
+    font: opts.font ?? (opts.italic ? ctx.italic : opts.bold ? ctx.bold : ctx.font),
     color: opts.color ?? FABS_COLORS.noir,
   });
 }
 
 function textRight(ctx: Ctx, s: string, xRight: number, y: number, opts: TextOpts = {}) {
-  const f = opts.font ?? (opts.bold ? ctx.bold : ctx.font);
+  const f = opts.font ?? (opts.italic ? ctx.italic : opts.bold ? ctx.bold : ctx.font);
   const safe = sanitizeForWinAnsi(s ?? "");
   const w = f.widthOfTextAtSize(safe, opts.size ?? 9);
   text(ctx, safe, xRight - w, y, opts);
@@ -389,9 +393,9 @@ function textCenter(
   s: string,
   cx: number,
   y: number,
-  opts: { size?: number; bold?: boolean; color?: RGB } = {},
+  opts: TextOpts = {},
 ) {
-  const f = opts.bold ? ctx.bold : ctx.font;
+  const f = opts.bold ? ctx.bold : opts.italic ? ctx.italic : ctx.font;
   const w = f.widthOfTextAtSize(s ?? "", opts.size ?? 9);
   text(ctx, s, cx - w / 2, y, opts);
 }
@@ -401,9 +405,9 @@ function fitText(
   ctx: Ctx,
   s: string,
   maxW: number,
-  opts: { size?: number; bold?: boolean } = {},
+  opts: TextOpts = {},
 ): string {
-  const f = opts.bold ? ctx.bold : ctx.font;
+  const f = opts.bold ? ctx.bold : opts.italic ? ctx.italic : ctx.font;
   const size = opts.size ?? 9;
   if (!s) return "";
   if (f.widthOfTextAtSize(s, size) <= maxW) return s;
@@ -519,6 +523,45 @@ async function drawFooter(ctx: Ctx) {
     ctx.page.drawImage(png, { x: MARGIN.x, y: lineTop + 7, width: qrSize, height: qrSize });
   }
   // Code-barres retiré des documents de vente (demande produit).
+
+  // ----------------------------------------------------------------------------
+  // 12. Bon de Livraison (BL) — avec zones de signature
+  // ----------------------------------------------------------------------------
+  if (ctx.title === "Bon de Livraison" || ctx.title.toUpperCase() === "BON DE LIVRAISON") {
+    const ySign = lineTop + 9;
+    const boxW = (CONTENT_W - 20) / 2;
+    const boxH = 50;
+
+    // Bloc 1 : Réception Client
+    ctx.page.drawRectangle({
+      x: MARGIN.x,
+      y: ySign,
+      width: boxW,
+      height: boxH,
+      borderWidth: 0.5,
+      borderColor: FABS_COLORS.grisLigne,
+    });
+    text(ctx, "RÉCEPTION CLIENT", MARGIN.x + 5, ySign + boxH - 12, { size: 8, bold: true });
+    text(ctx, "Nom : ....................................", MARGIN.x + 5, ySign + boxH - 25, { size: 8 });
+    text(ctx, "Date : .... / .... / 2026", MARGIN.x + 5, ySign + boxH - 38, { size: 8 });
+    text(ctx, "Signature & Cachet :", MARGIN.x + 5, ySign + boxH - 48, { size: 7, italic: true, font: ctx.italic });
+
+    // Bloc 2 : Livraison effectuée par
+    ctx.page.drawRectangle({
+      x: PAGE.w - MARGIN.x - boxW,
+      y: ySign,
+      width: boxW,
+      height: boxH,
+      borderWidth: 0.5,
+      borderColor: FABS_COLORS.grisLigne,
+    });
+    text(ctx, "LIVRAISON EFFECTUÉE PAR", PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 12, { size: 8, bold: true });
+    text(ctx, "Nom : ....................................", PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 25, { size: 8 });
+    text(ctx, `Date : ${ctx.dateStr}`, PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 38, { size: 8 });
+    text(ctx, "Signature Livreur :", PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 48, { size: 7, italic: true, font: ctx.italic });
+
+    return;
+  }
 
   // Signature droite italique gras couleur accent
   textRight(ctx, ctx.signatureLabel, PAGE.w - MARGIN.x, lineTop + 9, {

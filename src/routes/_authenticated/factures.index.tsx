@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Download, FileDown, FileText, Search, RotateCcw, X } from "lucide-react";
+import { Download, FileDown, FileText, Search, RotateCcw, X, Package } from "lucide-react";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 import { usePdfDownload } from "@/hooks/use-pdf-download";
 import {
   AdvancedSearchBar,
@@ -383,7 +384,12 @@ function FacturesPage() {
                   const fneInfo = fneMap[f.facture_id];
                   return (
                     <TableRow key={f.facture_id}>
-                      <TableCell className="font-mono text-xs">{f.reference}</TableCell>
+                      <TableCell className="font-mono text-xs">
+                        <div className="flex items-center gap-2">
+                          <ProductCoverThumb produit={null} size="xs" />
+                          {f.reference}
+                        </div>
+                      </TableCell>
                       <TableCell className="whitespace-nowrap">{f.date_facture}</TableCell>
                       <TableCell className="font-medium">{f.client_nom}</TableCell>
                       <TableCell className="text-right">

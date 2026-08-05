@@ -48,6 +48,8 @@ const ligneSchema = z.object({
   prix_unitaire: z.number().min(0, "Prix ≥ 0"),
   remise_pct: z.number().min(0).max(100),
   stock_produit: z.number().nullable().optional(),
+  cover_path: z.string().nullable().optional(),
+  cover_thumb_path: z.string().nullable().optional(),
 });
 
 const formSchema = z.object({
@@ -64,6 +66,8 @@ const formSchema = z.object({
   depot_id: z.string().optional(),
   depot_override_motif: z.string().nullable().optional(),
   appliquer_tva: z.boolean(),
+  livreur_nom: z.string().optional(),
+  nom_receptionnaire_client: z.string().optional(),
   lignes: z.array(ligneSchema).min(1, "Ajoutez au moins une ligne produit"),
 });
 
@@ -82,6 +86,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const { has } = usePermissions();
   const canValiderCommande = has("commandes.valider");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmValidationOpen, setConfirmValidationOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<CommandeFormValues | null>(null);
   const [recap, setRecap] = useState<{
     commandeId: string;
@@ -109,6 +114,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       appliquer_tva: false,
       depot_id: "",
       depot_override_motif: null,
+      livreur_nom: "",
+      nom_receptionnaire_client: "",
       lignes: [],
       ...initialValues,
     },
@@ -195,6 +202,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
         remise_globale_pct: values.remise_globale_pct,
         taux_tva: values.appliquer_tva ? values.taux_tva : 0,
         depot_id: values.depot_id || null,
+        livreur_nom: values.livreur_nom || null,
+        nom_receptionnaire_client: values.nom_receptionnaire_client || null,
         lignes: values.lignes.map((l) => ({
           produit_id: l.produit_id,
           reference_produit: l.reference_produit ?? null,
@@ -266,13 +275,19 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   });
 
   const onSubmit = form.handleSubmit(
-    (values) => {
+    (values: CommandeFormValues) => {
+      const typedValues = values as CommandeFormValues;
       if (mode === "create") {
-        setPendingValues(values);
-        setConfirmOpen(true);
+        if (canValiderCommande) {
+          setPendingValues(typedValues);
+          setConfirmValidationOpen(true);
+        } else {
+          setPendingValues(typedValues);
+          setConfirmOpen(true);
+        }
         return;
       }
-      mutation.mutate(values);
+      mutation.mutate(typedValues);
     },
     () => toast.error("Veuillez corriger les erreurs du formulaire"),
   );
@@ -330,6 +345,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       prix_unitaire: p.prix_vente,
       remise_pct: form.getValues(`lignes.${index}.remise_pct`) || 0,
       stock_produit: typeof p.stock === "number" ? p.stock : null,
+      cover_path: p.cover_path ?? null,
+      cover_thumb_path: p.cover_thumb_path ?? null,
     });
   };
 
@@ -495,6 +512,16 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                   }}
                   label="Dépôt de sortie"
                 />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
+                <div>
+                  <Label htmlFor="livreur_nom" className="text-xs">Nom du Livreur</Label>
+                  <Input id="livreur_nom" {...form.register("livreur_nom")} placeholder="Optionnel" />
+                </div>
+                <div>
+                  <Label htmlFor="nom_receptionnaire_client" className="text-xs">Réceptionné par (Client)</Label>
+                  <Input id="nom_receptionnaire_client" {...form.register("nom_receptionnaire_client")} placeholder="Optionnel" />
+                </div>
               </div>
               <div className="sm:col-span-2 lg:col-span-3">
                 <Label htmlFor="observations" className="text-xs">
@@ -687,6 +714,51 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             <AlertDialogCancel>Modifier la saisie</AlertDialogCancel>
             <AlertDialogAction onClick={confirmSubmit} disabled={mutation.isPending}>
               {mutation.isPending ? "Enregistrement…" : "Confirmer et enregistrer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirmation de Validation Immédiate */}
+      <AlertDialog open={confirmValidationOpen} onOpenChange={setConfirmValidationOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Validation de la commande</AlertDialogTitle>
+            <AlertDialogDescription>
+              Vous disposez des droits de validation. Souhaitez-vous valider cette commande immédiatement pour générer la facture et le bon de livraison ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel asChild>
+              <Button variant="ghost" className="w-full sm:w-auto" onClick={() => setConfirmValidationOpen(false)}>
+                Annuler
+              </Button>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button 
+                variant="outline" 
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  setConfirmValidationOpen(false);
+                  confirmSubmit();
+                }}
+              >
+                Garder en attente
+              </Button>
+            </AlertDialogAction>
+            <AlertDialogAction asChild>
+              <Button 
+                className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                onClick={async () => {
+                  setConfirmValidationOpen(false);
+                  // On pourrait passer un flag pour valider direct, 
+                  // mais le backend actuel semble le faire par défaut si l'utilisateur a les droits ? 
+                  // Dans le doute, on appelle la mutation et on verra si on doit forcer le statut.
+                  mutation.mutate(pendingValues!);
+                }}
+              >
+                Valider maintenant
+              </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -2,7 +2,8 @@ import { COMMANDE_REF_SEARCH_DEFAULTS } from "@/lib/route-schemas";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash2, Truck } from "lucide-react";
+import { Trash2, Truck, Package } from "lucide-react";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 import { EmptyState } from "@/components/common/EmptyState";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -100,19 +101,28 @@ export function LivraisonsTable({ rows, isLoading, onAdvance }: Props) {
                 return (
                   <TableRow key={r.id}>
                     <TableCell>
-                      <Link
-                        to="/livraison-suivi/$commandeRef"
-                        search={COMMANDE_REF_SEARCH_DEFAULTS}
-                        params={{ commandeRef: r.commande?.reference ?? "" }}
-                        className="font-mono text-xs font-medium hover:underline"
-                      >
-                        {r.commande?.reference ?? "—"}
-                      </Link>
-                      {r.commande?.montant_total != null && (
-                        <div className="text-[11px] text-muted-foreground">
-                          {formatFCFA(r.commande.montant_total)}
+                      <div className="flex items-center gap-2">
+                        {/* On tente de récupérer le 1er produit pour l'image (si dispo dans l'objet enrichi) */}
+                        <ProductCoverThumb 
+                          produit={null} 
+                          size="xs" 
+                        />
+                        <div className="min-w-0">
+                          <Link
+                            to="/livraison-suivi/$commandeRef"
+                            search={COMMANDE_REF_SEARCH_DEFAULTS}
+                            params={{ commandeRef: r.commande?.reference ?? "" }}
+                            className="font-mono text-xs font-medium hover:underline"
+                          >
+                            {r.commande?.reference ?? "—"}
+                          </Link>
+                          {r.commande?.montant_total != null && (
+                            <div className="text-[11px] text-muted-foreground">
+                              {formatFCFA(r.commande.montant_total)}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">{r.commande?.client_nom ?? "—"}</div>
