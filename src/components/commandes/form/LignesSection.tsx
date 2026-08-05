@@ -85,8 +85,10 @@ export function LignesSection({
             <Table className="w-full table-fixed [&_th]:px-1 [&_td]:px-1 [&_th]:py-1 [&_td]:py-1 text-xs">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[30%]">Produit</TableHead>
-                  <TableHead className="w-[10%]">Réf.</TableHead>
+                  <TableHead className="w-[6%]">Cover</TableHead>
+                  <TableHead className="w-[26%]">Produit</TableHead>
+                  <TableHead className="w-[8%]">Réf.</TableHead>
+
                   <TableHead className="text-right w-[7%]">Stock</TableHead>
                   <TableHead className="text-right w-[8%]">Qté</TableHead>
                   <TableHead className="text-right w-[10%]">P.U.</TableHead>
