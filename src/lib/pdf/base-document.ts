@@ -244,7 +244,7 @@ export class BaseDocument {
 
     // Col 2 : Contact
     this.page.drawText("CONTACT", { x: MARGINS.x + colW, y: yBot, size: 8, font: this.fonts.bold });
-    this.page.drawText("Tél: +225 01 50 48 51 88", { x: MARGINS.x + colW, y: yBot - 10, size: 7, font: this.fonts.regular });
+    this.page.drawText("Tél: +225 07 59 73 71 23 / 01 50 48 51 88", { x: MARGINS.x + colW, y: yBot - 10, size: 7, font: this.fonts.regular });
     this.page.drawText("Email: edition693fabs@gmail.com", { x: MARGINS.x + colW, y: yBot - 18, size: 7, font: this.fonts.regular });
 
     // Col 3 : Banques
@@ -254,7 +254,7 @@ export class BaseDocument {
 
     // Bandeau (conditionnel : seulement sur les Factures)
     if (this.data.type === "Facture") {
-      const warningText = "Paiements Mobile Money : Orange 07 59 73 71 23 / Moov 01 50 48 51 88";
+      const warningText = "Paiements Mobile Money : (voir numéros au bloc CONTACT)";
       const warningSub = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués au bloc CONTACT sont valables.";
       
       const warnY = 85; // Juste au-dessus de la ligne orange
