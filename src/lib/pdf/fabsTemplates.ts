@@ -3064,7 +3064,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     { label: "Date", w: 1.0, align: "left" },
     { label: "Type d'opération", w: 1.3, align: "left" },
     { label: "Référence", w: 1.5, align: "left" },
-    { label: "N° Facture", w: 1.5, align: "left" },
+    { label: "N° de commande", w: 1.5, align: "left" },
     { label: "Débit (+) FCFA", w: 1.2, align: "right" },
     { label: "Crédit (-) FCFA", w: 1.2, align: "right" },
     { label: "Solde après opération", w: 1.4, align: "right" },
