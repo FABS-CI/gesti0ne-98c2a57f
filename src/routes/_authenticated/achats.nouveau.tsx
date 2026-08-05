@@ -31,6 +31,7 @@ import {
   emptyLigne,
   montantLigne,
   type LigneUI,
+  montantLigne,
 } from "@/components/achats/nouveau/LignesProduitsSection";
 import { QuickCreateProduitDialog } from "@/components/achats/nouveau/QuickCreateProduitDialog";
 import { useServerDraft } from "@/hooks/use-server-draft";
@@ -94,6 +95,8 @@ function NouvelApprovisionnementPage() {
             quantite: Number(l.quantite),
             prix_unitaire: Number(l.prix_unitaire),
             remise_pct: Number(l.remise_pct ?? 0),
+            cover_path: (l as any).cover_path,
+            cover_thumb_path: (l as any).cover_thumb_path,
           }))
         : [emptyLigne()],
     );
@@ -209,6 +212,8 @@ function NouvelApprovisionnementPage() {
       reference_produit: p.reference,
       designation: p.titre,
       prix_unitaire: p.prix_achat || 0,
+      cover_path: p.cover_path,
+      cover_thumb_path: p.cover_thumb_path,
     });
   }
 
