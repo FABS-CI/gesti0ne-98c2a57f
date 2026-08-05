@@ -15,6 +15,9 @@ import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persist
 import { RouteError, RouteNotFound } from "../components/route-boundaries";
 
 
+const PWAInstallPrompt = lazy(() =>
+  import("@/components/pwa-install-prompt").then((m) => ({ default: m.PWAInstallPrompt })),
+);
 const AppActionTracker = lazy(() =>
   import("@/components/AppActionTracker").then((m) => ({ default: m.AppActionTracker })),
 );
@@ -22,6 +25,7 @@ const PdfPreviewHost = lazy(() =>
   import("@/components/pdf/PdfPreviewHost").then((m) => ({ default: m.PdfPreviewHost })),
 );
 const Toaster = lazy(() => import("@/components/ui/sonner").then((m) => ({ default: m.Toaster })));
+
 
 // Overlay de diagnostic perf, monté au niveau root pour être disponible
 // sur toutes les routes (auth incluse). Chunk chargé uniquement si activé.
@@ -85,26 +89,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "EDITIONS FABS-CI — Gestion centralisée de l'entreprise" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: "GESTI-ONE ERP — Editions FABS-CI" },
       {
         name: "description",
         content:
-          "EDITIONS FABS-CI",
+          "GESTI-ONE ERP : Gestion intégrée des Editions FABS-CI",
       },
       { name: "author", content: "EDITIONS FABS-CI" },
-      { property: "og:title", content: "EDITIONS FABS-CI — Gestion centralisée de l'entreprise" },
+      { property: "og:title", content: "GESTI-ONE ERP — Editions FABS-CI" },
       {
         property: "og:description",
         content:
-          "EDITIONS FABS-CI",
+          "GESTI-ONE ERP : Gestion intégrée des Editions FABS-CI",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "theme-color", content: "#0a2540" },
+      { name: "theme-color", content: "#ea580c" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "FABS-CI" },
-      { name: "twitter:title", content: "EDITIONS FABS-CI — Gestion centralisée de l'entreprise" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "GESTI-ONE" },
+      { name: "twitter:title", content: "GESTI-ONE ERP — Editions FABS-CI" },
+
       {
         name: "description",
         content:
@@ -172,7 +178,19 @@ function RootComponent() {
     installClientErrorTracing();
     // Lot 5 — Web Vitals (best-effort, ne bloque jamais le rendu)
     import("../lib/web-vitals-reporter").then((m) => m.installWebVitals()).catch(() => {});
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+          console.log('SW registered: ', registration);
+        }).catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
+      });
+    }
   }, []);
+
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -207,9 +225,11 @@ function RootComponent() {
       <Outlet />
       <ClientOnly fallback={null}>
         <Suspense fallback={null}>
+          <PWAInstallPrompt />
           <AppActionTracker />
           <PdfPreviewHost />
           <Toaster />
+
         </Suspense>
       </ClientOnly>
       {perfOverlayEnabled && (
