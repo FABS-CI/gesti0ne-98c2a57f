@@ -72,10 +72,10 @@ export class CommercialDocument extends BaseDocument {
     // Totaux
     y = this.drawTotals(y);
     
-    // Montant impayé si facture
-    if (this.data.type === 'Facture' && (this.data as any).soldeDu > 0) {
-      y = this.drawImpaye(y, (this.data as any).soldeDu);
-    }
+    // Montant impayé retiré à la demande de l'utilisateur
+    // if (this.data.type === 'Facture' && (this.data as any).soldeDu > 0) {
+    //   y = this.drawImpaye(y, (this.data as any).soldeDu);
+    // }
     
     // Signatures
     this.drawSignatures(y);
@@ -152,16 +152,16 @@ export class CommercialDocument extends BaseDocument {
       this.page.drawText("Nom : ....................................", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 30, size: 7, font: this.fonts.regular });
       this.page.drawText("Signature & Cachet :", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 50, size: 7, font: this.fonts.italic });
     } else if (this.data.type === 'Facture' || this.data.type === 'Proforma' || this.data.type === 'Commande') {
-      // Pour les documents de vente, on peut garder un bloc simple de signature interne sans mention client
+      // Bloc signature déplacé en bas à droite et renommé en LA COMPTABILITÉ
       this.page.drawRectangle({
-        x: MARGINS.x,
+        x: PAGE.w - MARGINS.x - boxW,
         y: curY - boxH,
         width: boxW,
         height: boxH,
         borderColor: COLORS.grisLigne,
         borderWidth: 0.5,
       });
-      this.page.drawText("LA DIRECTION", { x: MARGINS.x + 5, y: curY - 15, size: 8, font: this.fonts.bold });
+      this.page.drawText("LA COMPTABILITÉ", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 15, size: 8, font: this.fonts.bold });
     }
   }
 }

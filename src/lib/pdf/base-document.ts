@@ -244,7 +244,7 @@ export class BaseDocument {
 
     // Col 2 : Contact
     this.page.drawText("CONTACT", { x: MARGINS.x + colW, y: yBot, size: 8, font: this.fonts.bold });
-    this.page.drawText("Tél: +225 07 59 73 71 23 / 01 50 48 51 88", { x: MARGINS.x + colW, y: yBot - 10, size: 7, font: this.fonts.regular });
+    this.page.drawText("Tél: +225 01 50 48 51 88", { x: MARGINS.x + colW, y: yBot - 10, size: 7, font: this.fonts.regular });
     this.page.drawText("Email: edition693fabs@gmail.com", { x: MARGINS.x + colW, y: yBot - 18, size: 7, font: this.fonts.regular });
 
     // Col 3 : Banques
@@ -254,8 +254,8 @@ export class BaseDocument {
 
     // Bandeau (conditionnel : seulement sur les Factures)
     if (this.data.type === "Facture") {
-      const warningText = "Paiements Mobile Money : Orange 07 59 73 71 23 / MTN 01 50 48 51 88";
-      const warningSub = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués sont valables.";
+      const warningText = "Paiements Mobile Money : Orange 07 59 73 71 23 / Moov 01 50 48 51 88";
+      const warningSub = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués au bloc CONTACT sont valables.";
       
       const warnY = 85; // Juste au-dessus de la ligne orange
 
@@ -473,10 +473,9 @@ export class BaseDocument {
 
     // Montant en lettres (à gauche)
     const letY = y;
-    this.page.drawRectangle({ x: MARGINS.x, y: letY - 40, width: boxW, height: 40, color: COLORS.grisClair, opacity: 0.5 });
-    this.page.drawText("ARRÊTÉE À LA SOMME DE :", { x: MARGINS.x + 5, y: letY - 12, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
-    // TODO: wrap long text
-    this.page.drawText(this.totals.montantLettres, { x: MARGINS.x + 5, y: letY - 25, size: 8, font: this.fonts.italic });
+    this.page.drawRectangle({ x: MARGINS.x, y: y - 20, width: boxW, height: 20, color: COLORS.bleuFabs });
+    this.page.drawText("ARRÊTÉE À LA SOMME DE :", { x: MARGINS.x + 5, y: y - 13, size: 8, font: this.fonts.bold, color: COLORS.blanc });
+    this.page.drawText(this.totals.montantLettres, { x: MARGINS.x + 130, y: y - 13, size: 8, font: this.fonts.italic, color: COLORS.blanc });
 
     return curY - 20;
   }
