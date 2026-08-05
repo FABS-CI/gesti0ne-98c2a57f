@@ -217,6 +217,8 @@ export type DocLigne = {
   remisePct?: number;
   /** Remise appliquée à la ligne — montant FCFA. */
   remiseMontant?: number;
+  /** Taux de TVA appliqué à la ligne (pourcentage). */
+  tvaPct?: number;
 };
 
 export type DocBase = {
