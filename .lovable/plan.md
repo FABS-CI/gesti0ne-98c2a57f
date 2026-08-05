@@ -46,7 +46,7 @@ Filtres combinables Article (recherche partielle), Référence article, Catégor
 - Proforma : reprise des infos de la commande liée + badges « Champ manquant » sur adresse de livraison, contact, conditions de paiement.
 - Realtime : abonnement retours/avoirs propagé aux dashboards stock & compta, liste commandes, relevé client + toast discret.
 
-## Lot 7 — Runbook & test de restauration (§14)
+## Lot 7 — Runbook & test de restauration (§14) (Fait)
 
 Rédaction du runbook pas-à-pas (hors ERP), test de restauration réel documenté, planification trimestrielle.
 
