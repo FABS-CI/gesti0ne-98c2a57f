@@ -96,10 +96,12 @@ export type ProduitAchat = {
   achat_id: string;
   reference: string;
   libelle: string;
-  montant: number;
+  montant: number; // total achat
   statut: string;
   date_achat: string;
   fournisseur: string | null;
+  quantite: number; // qty for this product
+  prix_unitaire: number; // price for this product
 };
 
 export type ProduitInventaire = {
@@ -159,32 +161,27 @@ export async function getStockHistory(
     .map(([date, stock]) => ({ date, stock }));
 }
 
-export async function getProduitAchats(produit: { titre: string; reference: string }, limit = 50) {
-  const terms = [produit.titre, produit.reference].map((v) => v.trim()).filter(Boolean);
-  let query = supabase
-    .from("achats")
+export async function getProduitAchats(produitId: string, limit = 50) {
+  const { data, error } = await supabase
+    .from("achat_lignes")
     .select(
-      "achat_id, reference, libelle, montant, statut, date_achat, fournisseurs(raison_sociale)",
+      "quantite, prix_unitaire, achat_id, achats!inner(reference, libelle, montant, statut, date_achat, fournisseurs(raison_sociale))",
     )
-    .order("date_achat", { ascending: false })
+    .eq("produit_id", produitId)
+    .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (terms.length > 0) {
-    query = query.or(
-      terms.flatMap((term) => [`libelle.ilike.%${term}%`, `notes.ilike.%${term}%`]).join(","),
-    );
-  }
-
-  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []).map((row) => ({
     achat_id: row.achat_id,
-    reference: row.reference,
-    libelle: row.libelle,
-    montant: Number(row.montant ?? 0),
-    statut: row.statut,
-    date_achat: row.date_achat,
-    fournisseur: row.fournisseurs?.raison_sociale ?? null,
+    reference: row.achats?.reference ?? "—",
+    libelle: row.achats?.libelle ?? "—",
+    montant: Number(row.achats?.montant ?? 0),
+    statut: row.achats?.statut ?? "—",
+    date_achat: row.achats?.date_achat ?? "",
+    fournisseur: row.achats?.fournisseurs?.raison_sociale ?? null,
+    quantite: Number(row.quantite ?? 0),
+    prix_unitaire: Number(row.prix_unitaire ?? 0),
   })) as ProduitAchat[];
 }
 

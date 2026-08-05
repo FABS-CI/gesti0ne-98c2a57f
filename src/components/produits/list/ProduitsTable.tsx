@@ -41,7 +41,7 @@ export function ProduitsTable({
   onCreate,
 }: Props) {
   const navigate = useNavigate();
-  const colSpan = canSeeSensitive ? 12 : 6;
+  const colSpan = canSeeSensitive ? 13 : 6;
   const totalValeurVente = items.reduce((sum, p) => sum + (p.stock * p.prix_vente), 0);
   return (
     <div className="rounded-lg border bg-card">
@@ -54,6 +54,7 @@ export function ProduitsTable({
             <TableHead>Catégorie</TableHead>
             <TableHead>Niveau</TableHead>
             <TableHead>Matière</TableHead>
+            {canSeeSensitive && <TableHead className="text-right">Dernier Achat</TableHead>}
             {canSeeSensitive && <TableHead className="text-right">Prix vente</TableHead>}
             {canSeeSensitive && <TableHead className="text-right">Valeur vente</TableHead>}
             {canSeeSensitive && <TableHead className="text-right">Stock</TableHead>}
@@ -142,6 +143,22 @@ export function ProduitsTable({
                   <TableCell>{p.niveau || "—"}</TableCell>
                   <TableCell>{p.matiere || "—"}</TableCell>
                   {canSeeSensitive && (
+                    <TableCell className="text-right">
+                      {p.dernier_prix_achat && p.dernier_prix_achat.length > 0 ? (
+                        <div className="flex flex-col items-end">
+                          <span className="font-medium text-blue-600">
+                            {formatFCFA(p.dernier_prix_achat.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0].prix_unitaire)}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {p.dernier_prix_achat.length} achat(s)
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                  )}
+                  {canSeeSensitive && (
                     <TableCell className="text-right">{formatFCFA(p.prix_vente)}</TableCell>
                   )}
                   {canSeeSensitive && (
@@ -200,7 +217,7 @@ export function ProduitsTable({
         {canSeeSensitive && items.length > 0 && (
           <tfoot className="border-t bg-muted/30">
             <TableRow>
-              <TableCell colSpan={7} />
+              <TableCell colSpan={8} />
               <TableCell className="text-right font-black text-blue-900 text-base">
                 {formatFCFA(totalValeurVente)}
               </TableCell>

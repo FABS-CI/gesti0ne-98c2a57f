@@ -58,6 +58,7 @@ import {
 import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import { generateApprovisionnementPDF } from "@/lib/pdf/fabsTemplates";
 import { viewBlobAsync } from "@/lib/pdf/actions";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 
 import { authRouteHead } from "@/lib/route-head";
 import { FilterBadges, type FilterBadge } from "@/components/common/FilterBadges";
@@ -392,6 +393,7 @@ function ApprovisionnementsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12"></TableHead>
                 <TableHead>Numéro</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Fournisseur</TableHead>
@@ -406,13 +408,13 @@ function ApprovisionnementsPage() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="py-8 text-center text-muted-foreground">
+                  <TableCell colSpan={10} className="py-8 text-center text-muted-foreground">
                     Chargement...
                   </TableCell>
                 </TableRow>
               ) : pageItems.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="py-6">
+                  <TableCell colSpan={10} className="py-6">
                     <EmptyState
                       variant={hasActiveFilters ? "compact" : "rich"}
                       icon={ShoppingBag}
@@ -447,6 +449,23 @@ function ApprovisionnementsPage() {
                   const qte = ls.reduce((s, l) => s + l.quantite, 0);
                   return (
                     <TableRow key={a.achat_id}>
+                      <TableCell className="py-1">
+                        <div className="flex -space-x-2 overflow-hidden px-1">
+                          {ls.slice(0, 3).map((l, idx) => (
+                            <ProductCoverThumb
+                              key={l.ligne_id}
+                              produit={l.produits ? { ...l, ...l.produits, titre: l.designation } : { ...l, titre: l.designation }}
+                              size="xs"
+                              className="h-8 w-8 border-2 border-background shadow-sm"
+                            />
+                          ))}
+                          {ls.length > 3 && (
+                            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-[10px] font-bold ring-2 ring-background">
+                              +{ls.length - 3}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell className="font-mono text-xs">{a.reference}</TableCell>
                       <TableCell className="whitespace-nowrap">{a.date_achat}</TableCell>
                       <TableCell>{a.fournisseurs?.raison_sociale ?? "—"}</TableCell>

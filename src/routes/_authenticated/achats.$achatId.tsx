@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/table";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 import { friendlyError } from "@/lib/friendly-error";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 
 export const Route = createFileRoute("/_authenticated/achats/$achatId")({
   component: AchatDetailPage,
@@ -216,6 +217,7 @@ function AchatDetailPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-14"></TableHead>
                   <TableHead>Désignation</TableHead>
                   <TableHead>Référence</TableHead>
                   <TableHead className="text-right">Qté</TableHead>
@@ -227,6 +229,13 @@ function AchatDetailPage() {
               <TableBody>
                 {lignes.map((l) => (
                   <TableRow key={l.ligne_id}>
+                    <TableCell className="py-1">
+                      <ProductCoverThumb
+                        produit={l.produits ? { ...l, ...l.produits, titre: l.designation } : { ...l, titre: l.designation }}
+                        size="xs"
+                        className="shadow-sm"
+                      />
+                    </TableCell>
                     <TableCell className="font-medium">{l.designation}</TableCell>
                     <TableCell className="font-mono text-xs">
                       {l.reference_produit ?? "—"}
@@ -246,7 +255,7 @@ function AchatDetailPage() {
                   </TableRow>
                 ))}
                 <TableRow>
-                  <TableCell colSpan={2} className="text-right font-semibold">
+                  <TableCell colSpan={3} className="text-right font-semibold">
                     Totaux
                   </TableCell>
                   <TableCell className="text-right font-semibold">{qteTotale}</TableCell>
