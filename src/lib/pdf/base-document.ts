@@ -467,7 +467,7 @@ export class BaseDocument {
     const labelW = this.fonts.bold.widthOfTextAtSize(labelLetters, 8);
     
     this.page.drawText(labelLetters, { x: MARGINS.x, y: letY - 13, size: 8, font: this.fonts.bold, color: COLORS.noir });
-    this.page.drawText(this.totals.montantLettres, { x: MARGINS.x + labelW + 5, y: letY - 13, size: 8, font: this.fonts.italic, color: COLORS.noir });
+    this.page.drawText(this.totals.montantLettres || "zéro francs CFA", { x: MARGINS.x + labelW + 5, y: letY - 13, size: 8, font: this.fonts.italic, color: COLORS.noir });
 
     return curY - 20;
   }
