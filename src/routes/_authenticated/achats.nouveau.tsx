@@ -376,13 +376,23 @@ function NouvelApprovisionnementPage() {
                 <tbody>
                   {lignes.map((l, i) => (
                     <tr key={i} className="border-t">
-                      <td className="p-2">
-                        {l.designation}
-                        {l.reference_produit ? (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            ({l.reference_produit})
-                          </span>
-                        ) : null}
+                      <td className="p-2 flex items-center gap-2">
+                        <ProductCoverThumb
+                          produit={{
+                            titre: l.designation,
+                            cover_path: l.cover_path,
+                            cover_thumb_path: l.cover_thumb_path,
+                          }}
+                          size="xs"
+                        />
+                        <div className="flex flex-col">
+                          <span>{l.designation}</span>
+                          {l.reference_produit ? (
+                            <span className="text-xs text-muted-foreground">
+                              ({l.reference_produit})
+                            </span>
+                          ) : null}
+                        </div>
                       </td>
                       <td className="p-2 text-right">{l.quantite}</td>
                       <td className="p-2 text-right">{formatFCFA(l.prix_unitaire)}</td>
