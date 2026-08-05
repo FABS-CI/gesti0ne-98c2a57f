@@ -192,17 +192,32 @@ export async function listCommandes(params: ListCommandesParams = {}) {
 export async function getCommandeLignes(commandeId: string) {
   const { data, error } = await supabase
     .from("commande_lignes")
-    .select(`
-      *,
-      produits (
-        cover_path,
-        cover_thumb_path
-      )
-    `)
+    .select("*")
     .eq("commande_id", commandeId)
     .order("created_at", { ascending: true });
   if (error) throw error;
-  return (data ?? []) as any[];
+  const lignes = (data ?? []) as any[];
+
+  // Enrichissement des couvertures (pas de FK exploitable pour une jointure PostgREST)
+  const ids = Array.from(
+    new Set(lignes.map((l) => l.produit_id).filter(Boolean)),
+  ) as string[];
+  if (ids.length === 0) return lignes;
+
+  const { data: prods } = await supabase
+    .from("produits")
+    .select("produit_id, cover_path, cover_thumb_path")
+    .in("produit_id", ids);
+  const map = new Map((prods ?? []).map((p: any) => [p.produit_id, p]));
+  return lignes.map((l) => {
+    const p = l.produit_id ? map.get(l.produit_id) : null;
+    return {
+      ...l,
+      cover_path: p?.cover_path ?? null,
+      cover_thumb_path: p?.cover_thumb_path ?? null,
+      produits: p ?? null,
+    };
+  });
 }
 
 export async function deleteCommande(id: string, motif?: string | null, force?: boolean) {
