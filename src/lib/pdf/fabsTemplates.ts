@@ -217,6 +217,8 @@ export type DocLigne = {
   remisePct?: number;
   /** Remise appliquée à la ligne — montant FCFA. */
   remiseMontant?: number;
+  /** Taux de TVA appliqué à la ligne (pourcentage). */
+  tvaPct?: number;
 };
 
 export type DocBase = {
@@ -1694,7 +1696,7 @@ function androidFallback(blob: Blob, filename: string) {
 const COLS_FACTURE: Colonne[] = [
   { key: "niveau", label: "Classe", width: 1.0, align: "center" },
   { key: "codeArticle", label: "Code Article", width: 1.3, align: "center" },
-  { key: "reference", label: "Référence", width: 2.8, align: "left", wrap: true },
+  { key: "reference", label: "Désignation", width: 2.8, align: "left", wrap: true },
   { key: "qte", label: "Qté", width: 0.6, align: "center" },
   { key: "prixUnitaire", label: "Prix Unitaire (FCFA)", width: 1.3, align: "right", money: true },
   { key: "montant", label: "Montant (FCFA)", width: 1.3, align: "right", money: true },
@@ -1831,7 +1833,7 @@ async function buildTableDoc(
   y = await drawTableau(ctx, TITRES[type], cols, data.lignes ?? [], y, opts.groupByCycle ?? false);
 
   // V10 : encadré 6 lignes pour les documents de vente, totaux génériques sinon
-  const useV10 = type === "FC" || type === "PF" || type === "AV" || type === "BC";
+  const useV10 = type === "FC" || type === "PF" || type === "AV" || type === "BC" || type === "BL";
   const neededAfterTable =
     (useV10 ? 112 : 64) + (opts.mentionRouge ? 20 : 0) + (opts.signatures === "bl" ? 45 : 0);
   if (y - neededAfterTable < BODY_BOTTOM_Y) {

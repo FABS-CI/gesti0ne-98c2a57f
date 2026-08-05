@@ -77,7 +77,7 @@ function InfoLigne({ label, value }: { label: string; value?: string | null }) {
     <div className="flex flex-wrap items-center justify-between gap-2 border-b py-2 last:border-0">
       <span className="text-sm text-muted-foreground">{label}</span>
       {vide ? (
-        <Badge variant="destructive">Champ manquant</Badge>
+        <Badge variant="destructive" className="animate-pulse">Champ manquant</Badge>
       ) : (
         <span className="text-sm font-medium">{value}</span>
       )}

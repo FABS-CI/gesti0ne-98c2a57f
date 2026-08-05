@@ -41,7 +41,7 @@ Routes dédiées `fournisseurs/nouveau`, `fournisseurs/$id/modifier`, bon de ré
 
 Filtres combinables Article (recherche partielle), Référence article, Catégorie — en plus du fournisseur, côté requête SQL.
 
-## Lot 6 — Proforma (§6) + Temps réel (§7)
+## Lot 6 — Proforma (§6) + Temps réel (§7) (Fait)
 
 - Proforma : reprise des infos de la commande liée + badges « Champ manquant » sur adresse de livraison, contact, conditions de paiement.
 - Realtime : abonnement retours/avoirs propagé aux dashboards stock & compta, liste commandes, relevé client + toast discret.
