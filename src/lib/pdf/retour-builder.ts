@@ -115,16 +115,18 @@ export async function buildRetourDocBaseFrom(retour: RetourWithLignes): Promise<
   let totalHT = 0;
   const lignes: DocLigne[] = retour.lignes.map((l) => {
     const info = l.produit_id ? prices.get(l.produit_id) : undefined;
-    const pu = info?.prix ?? 0;
-    const prixNetStocke = Number(l.prix_unitaire ?? 0);
-    const remisePct =
-      pu > 0 && prixNetStocke > 0
-        ? Math.max(0, Math.min(100, 100 - (prixNetStocke / pu) * 100))
-        : (info?.remisePct ?? 0);
+    
+    // Le prix unitaire est celui stocké en base s'il existe, sinon celui du catalogue/facture
+    const pu = Number(l.prix_unitaire) || info?.prix || 0;
+    
+    // La remise est celle stockée sur la ligne
+    const remisePct = Number(l.remise_pct ?? 0);
+    
     const qte = Number(l.quantite ?? 0);
     const brut = pu * qte;
     const remiseMontant = Math.round((brut * remisePct) / 100);
-    const montant = Number(l.total_ligne ?? 0) || brut - remiseMontant;
+    const montant = brut - remiseMontant;
+    
     totalBrut += brut;
     remiseLigneTotal += remiseMontant;
     totalHT += montant;
