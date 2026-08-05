@@ -2904,7 +2904,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     yL -= 12;
   }
   if (client.representant) {
-    text(ctx, "Commercial :", colR, yR, { size: 10, bold: true });
+    text(ctx, "Représentant :", colR, yR, { size: 10, bold: true });
     text(ctx, client.representant, colR + 80, yR, { size: 10, bold: true });
     yR -= 14;
   }
