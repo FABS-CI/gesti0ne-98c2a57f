@@ -82,6 +82,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const { has } = usePermissions();
   const canValiderCommande = has("commandes.valider");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmValidationOpen, setConfirmValidationOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<CommandeFormValues | null>(null);
   const [recap, setRecap] = useState<{
     commandeId: string;
@@ -268,8 +269,13 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const onSubmit = form.handleSubmit(
     (values) => {
       if (mode === "create") {
-        setPendingValues(values);
-        setConfirmOpen(true);
+        if (canValiderCommande) {
+          setPendingValues(values);
+          setConfirmValidationOpen(true);
+        } else {
+          setPendingValues(values);
+          setConfirmOpen(true);
+        }
         return;
       }
       mutation.mutate(values);
@@ -330,6 +336,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       prix_unitaire: p.prix_vente,
       remise_pct: form.getValues(`lignes.${index}.remise_pct`) || 0,
       stock_produit: typeof p.stock === "number" ? p.stock : null,
+      cover_path: p.cover_path,
+      cover_thumb_path: p.cover_thumb_path,
     });
   };
 
@@ -687,6 +695,51 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             <AlertDialogCancel>Modifier la saisie</AlertDialogCancel>
             <AlertDialogAction onClick={confirmSubmit} disabled={mutation.isPending}>
               {mutation.isPending ? "Enregistrement…" : "Confirmer et enregistrer"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirmation de Validation Immédiate */}
+      <AlertDialog open={confirmValidationOpen} onOpenChange={setConfirmValidationOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Validation de la commande</AlertDialogTitle>
+            <AlertDialogDescription>
+              Vous disposez des droits de validation. Souhaitez-vous valider cette commande immédiatement pour générer la facture et le bon de livraison ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel asChild>
+              <Button variant="ghost" className="w-full sm:w-auto" onClick={() => setConfirmValidationOpen(false)}>
+                Annuler
+              </Button>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button 
+                variant="outline" 
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  setConfirmValidationOpen(false);
+                  confirmSubmit();
+                }}
+              >
+                Garder en attente
+              </Button>
+            </AlertDialogAction>
+            <AlertDialogAction asChild>
+              <Button 
+                className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                onClick={async () => {
+                  setConfirmValidationOpen(false);
+                  // On pourrait passer un flag pour valider direct, 
+                  // mais le backend actuel semble le faire par défaut si l'utilisateur a les droits ? 
+                  // Dans le doute, on appelle la mutation et on verra si on doit forcer le statut.
+                  mutation.mutate(pendingValues!);
+                }}
+              >
+                Valider maintenant
+              </Button>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

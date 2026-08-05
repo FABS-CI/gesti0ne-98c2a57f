@@ -261,6 +261,10 @@ export type DocBase = {
   totalTTC?: number;
   paye?: number;
   soldeDu?: number;
+  /** Informations de livraison pour le BL */
+  livreurNom?: string | null;
+  dateReceptionClient?: string | null;
+  nomReceptionnaireClient?: string | null;
   /** Statut du document (Payée, Impayée, Annulée, Brouillon…). */
   statut?: DocStatut | null;
 };

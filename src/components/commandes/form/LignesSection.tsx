@@ -116,6 +116,16 @@ export function LignesSection({
                       className={over ? "bg-destructive/5 align-top" : "align-top"}
                     >
                       <TableCell>
+                        <ProductCoverThumb 
+                          produit={{ 
+                            titre: field.designation, 
+                            cover_path: (field as any).cover_path, 
+                            cover_thumb_path: (field as any).cover_thumb_path 
+                          }} 
+                          size="xs" 
+                        />
+                      </TableCell>
+                      <TableCell>
                         <ProductSearchSelect
                           value={form.watch(`lignes.${i}.produit_id`)}
                           onChange={(_id, produit) => onProduitChange(i, produit)}
