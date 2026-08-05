@@ -51,12 +51,9 @@ export type ListProduitsParams = {
 
 export async function listProduits(params: ListProduitsParams = {}) {
   const { q, categorie, niveau, actif, page = 1, pageSize = 20 } = params;
-  // Lecture via v_produits pour exposer `stock` calculé depuis stocks_depots.
-  // On récupère aussi le dernier prix d'achat via une sous-requête sur achat_lignes.
-  let query = supabase.from("v_produits").select(`
-    *,
-    dernier_prix_achat:achat_lignes(prix_unitaire, created_at)
-  `, { count: "exact" });
+  
+  // 1. Fetch products from v_produits
+  let query = supabase.from("v_produits").select("*", { count: "exact" });
 
   if (q)
     query = query.or(
@@ -67,8 +64,6 @@ export async function listProduits(params: ListProduitsParams = {}) {
   if (actif != null) query = query.eq("actif", actif);
 
   const from = (page - 1) * pageSize;
-  // Classement pédagogique global : Préscolaire → Primaire → Collège → Lycée → Autres,
-  // puis ordre alphabétique sur le titre à l'intérieur de chaque niveau.
   query = query
     .order("pin_order", { ascending: true })
     .order("niveau_ordre", { ascending: true })
@@ -77,7 +72,27 @@ export async function listProduits(params: ListProduitsParams = {}) {
 
   const { data, error, count } = await query;
   if (error) throw error;
-  return { items: (data ?? []) as unknown as Produit[], total: count ?? 0, page, pageSize };
+
+  // 2. Hydrate with last purchase price manually since there's no FK between view and table
+  const items = data ?? [];
+  if (items.length > 0) {
+    const productIds = items.map(p => p.id);
+    const { data: purchaseData } = await supabase
+      .from("achat_lignes")
+      .select("produit_id, prix_unitaire, created_at")
+      .in("produit_id", productIds)
+      .order("created_at", { ascending: false });
+
+    if (purchaseData) {
+      items.forEach((p: any) => {
+        // Take the most recent one for each product
+        const lastPurchase = purchaseData.find(pd => pd.produit_id === p.id);
+        p.dernier_prix_achat = lastPurchase ? [lastPurchase] : [];
+      });
+    }
+  }
+
+  return { items: items as unknown as Produit[], total: count ?? 0, page, pageSize };
 }
 
 export async function createProduit(payload: ProduitInput) {
