@@ -255,7 +255,7 @@ export class BaseDocument {
       borderColor: COLORS.rougeFabs,
       borderWidth: 0.5,
     });
-    const warning = "⚠️ IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués sont valables.";
+    const warning = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués sont valables.";
     const warnW = this.fonts.bold.widthOfTextAtSize(warning, 7);
     this.page.drawText(warning, {
       x: MARGINS.x + (CONTENT_W - warnW) / 2,
