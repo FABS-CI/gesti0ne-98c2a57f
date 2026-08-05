@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/table";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 import { friendlyError } from "@/lib/friendly-error";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 
 export const Route = createFileRoute("/_authenticated/achats/$achatId")({
   component: AchatDetailPage,
