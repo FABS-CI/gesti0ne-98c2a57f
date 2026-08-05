@@ -171,10 +171,10 @@ export class BaseDocument {
     }
 
     // Titre (C)
-    const title = this.data.type.toUpperCase();
-    const titleSize = 32;
-    const titleW = this.fonts.bold.widthOfTextAtSize(title, titleSize);
-    this.page.drawText(title, {
+    const displayType = this.data.type === "Commande" ? "BON DE COMMANDE" : this.data.type.toUpperCase();
+    const titleSize = 28;
+    const titleW = this.fonts.bold.widthOfTextAtSize(displayType, titleSize);
+    this.page.drawText(displayType, {
       x: (PAGE.w - titleW) / 2,
       y: yTop - 25,
       size: titleSize,
@@ -182,14 +182,14 @@ export class BaseDocument {
       color: COLORS.bleuFabs,
     });
 
-    // Cartouche (D)
-    const cartX = PAGE.w - MARGINS.x - 140;
+    // Cartouche (D) - Déplacé un peu vers la droite pour éviter chevauchement si titre long
+    const cartX = PAGE.w - MARGINS.x - 130;
     const cartY = yTop;
     
     this.page.drawRectangle({
       x: cartX,
       y: cartY - 18,
-      width: 140,
+      width: 130,
       height: 18,
       color: COLORS.bleuFabs,
     });
@@ -224,58 +224,48 @@ export class BaseDocument {
   }
 
   drawFooter() {
-    const yBot = 55;
+    const yBot = 50;
 
     // Ligne orange au-dessus du pied de page
     this.page.drawLine({
-      start: { x: MARGINS.x, y: 75 },
-      end: { x: PAGE.w - MARGINS.x, y: 75 },
+      start: { x: MARGINS.x, y: 70 },
+      end: { x: PAGE.w - MARGINS.x, y: 70 },
       thickness: 1,
       color: COLORS.orangeFabs,
     });
     
     // Colonnes Pied de page
     const colW = CONTENT_W / 3;
+    const footerTextSize = 8;
     
     // Col 1 : Société
-    this.page.drawText("EDITIONS FABS-CI", { x: MARGINS.x, y: yBot, size: 8, font: this.fonts.bold });
-    this.page.drawText("BP 673 Bingerville - Côte d'Ivoire", { x: MARGINS.x, y: yBot - 10, size: 7, font: this.fonts.regular });
-    this.page.drawText("RCCM : CI-ABJ-2020-B-12345", { x: MARGINS.x, y: yBot - 18, size: 7, font: this.fonts.regular });
+    this.page.drawText("EDITIONS FABS-CI", { x: MARGINS.x, y: yBot, size: footerTextSize + 1, font: this.fonts.bold });
+    this.page.drawText("BP 673 Bingerville - Côte d'Ivoire", { x: MARGINS.x, y: yBot - 10, size: footerTextSize, font: this.fonts.regular });
+    this.page.drawText("RCCM : CI-ABJ-2020-B-12345", { x: MARGINS.x, y: yBot - 19, size: footerTextSize, font: this.fonts.regular });
 
     // Col 2 : Contact
-    this.page.drawText("CONTACT", { x: MARGINS.x + colW, y: yBot, size: 8, font: this.fonts.bold });
-    this.page.drawText("Tél: +225 07 59 73 71 23 / 01 50 48 51 88", { x: MARGINS.x + colW, y: yBot - 10, size: 7, font: this.fonts.regular });
-    this.page.drawText("Email: edition693fabs@gmail.com", { x: MARGINS.x + colW, y: yBot - 18, size: 7, font: this.fonts.regular });
+    this.page.drawText("CONTACT", { x: MARGINS.x + colW, y: yBot, size: footerTextSize + 1, font: this.fonts.bold });
+    this.page.drawText("Tél: +225 07 59 73 71 23 / 01 50 48 51 88", { x: MARGINS.x + colW, y: yBot - 10, size: footerTextSize, font: this.fonts.regular });
+    this.page.drawText("Email: edition693fabs@gmail.com", { x: MARGINS.x + colW, y: yBot - 19, size: footerTextSize, font: this.fonts.regular });
 
     // Col 3 : Banques
-    this.page.drawText("BANQUES", { x: MARGINS.x + colW * 2, y: yBot, size: 8, font: this.fonts.bold });
-    this.page.drawText("CORIS BANK: 01011 007630824101 34", { x: MARGINS.x + colW * 2, y: yBot - 10, size: 7, font: this.fonts.regular });
-    this.page.drawText("SGBCI: 01123012343259990 95", { x: MARGINS.x + colW * 2, y: yBot - 18, size: 7, font: this.fonts.regular });
+    this.page.drawText("BANQUES", { x: MARGINS.x + colW * 2, y: yBot, size: footerTextSize + 1, font: this.fonts.bold });
+    this.page.drawText("CORIS BANK: 01011 007630824101 34", { x: MARGINS.x + colW * 2, y: yBot - 10, size: footerTextSize, font: this.fonts.regular });
+    this.page.drawText("SGBCI: 01123012343259990 95", { x: MARGINS.x + colW * 2, y: yBot - 19, size: footerTextSize, font: this.fonts.regular });
 
     // Bandeau (conditionnel : seulement sur les Factures)
     if (this.data.type === "Facture") {
-      const warningText = "Paiements Mobile Money : (voir numéros au bloc CONTACT)";
-      const warningSub = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués au bloc CONTACT sont valables.";
+      const warningText = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués au bloc CONTACT sont valables.";
       
-      const warnY = 85; // Juste au-dessus de la ligne orange
+      const warnY = 75; // Aligné sur la ligne orange
 
-      // Texte 1 : Mobile Money
+      // Texte unique optimisé
       const warnW1 = this.fonts.bold.widthOfTextAtSize(warningText, 8);
       this.page.drawText(warningText, {
         x: MARGINS.x + (CONTENT_W - warnW1) / 2,
-        y: warnY + 12,
+        y: warnY + 5,
         size: 8,
         font: this.fonts.bold,
-        color: COLORS.bleuFabs,
-      });
-
-      // Texte 2 : Legal notice
-      const warnW2 = this.fonts.italic.widthOfTextAtSize(warningSub, 7);
-      this.page.drawText(warningSub, {
-        x: MARGINS.x + (CONTENT_W - warnW2) / 2,
-        y: warnY + 2,
-        size: 7,
-        font: this.fonts.italic,
         color: COLORS.rougeFabs,
       });
     }
