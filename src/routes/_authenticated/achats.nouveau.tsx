@@ -31,7 +31,6 @@ import {
   emptyLigne,
   montantLigne,
   type LigneUI,
-  montantLigne,
 } from "@/components/achats/nouveau/LignesProduitsSection";
 import { QuickCreateProduitDialog } from "@/components/achats/nouveau/QuickCreateProduitDialog";
 import { useServerDraft } from "@/hooks/use-server-draft";
