@@ -81,7 +81,7 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
   const columnStyles: Record<number, any> = {
     0: { cellWidth: 10, halign: "center", fontStyle: "bold" },
     1: { cellWidth: 22, fontStyle: "bold" },
-    2: { cellWidth: "auto" },
+    2: { cellWidth: "auto", overflow: "linebreak" },
   };
 
   if (canSeeSensitive) {

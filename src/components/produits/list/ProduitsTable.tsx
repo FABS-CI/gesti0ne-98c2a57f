@@ -117,22 +117,24 @@ export function ProduitsTable({
                     <ProductCoverThumb produit={p} size="sm" className="shadow-sm" />
                   </TableCell>
                   <TableCell className="font-mono text-xs select-all" title="Cliquer pour sélectionner la référence">{p.reference}</TableCell>
-                  <TableCell className="font-medium">
-                    {canMutate ? (
-                      <Link
-                        to="/produits/$produitId"
-                        params={{ produitId: p.produit_id }}
-                        className="hover:underline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {p.titre}
-                      </Link>
-                    ) : (
-                      <span>{p.titre}</span>
-                    )}
-                    {p.auteur && (
-                      <span className="block text-xs text-muted-foreground">{p.auteur}</span>
-                    )}
+                  <TableCell className="font-medium min-w-[300px]">
+                    <div className="flex flex-col gap-0.5">
+                      {canMutate ? (
+                        <Link
+                          to="/produits/$produitId"
+                          params={{ produitId: p.produit_id }}
+                          className="hover:underline leading-tight"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {p.titre}
+                        </Link>
+                      ) : (
+                        <span className="leading-tight">{p.titre}</span>
+                      )}
+                      {p.auteur && (
+                        <span className="text-xs text-muted-foreground italic">par {p.auteur}</span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">{CATEGORIE_LABEL[p.categorie] ?? p.categorie}</Badge>
