@@ -54,7 +54,7 @@ export async function orchestrateBackup(opts: {
     }
 
     // 4. Sauvegarde DRIVE
-    let driveInfo = null;
+    let driveInfo: { id: string; url: string | null } | null = null;
     try {
       driveInfo = await uploadArchiveToDrive(
         stats.fileName,
