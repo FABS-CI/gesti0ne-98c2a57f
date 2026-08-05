@@ -46,12 +46,13 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
           }
 
           // Nettoyer l'objet de retour pour n'inclure que le strict nécessaire (public)
+          const typedFound = found as any;
           const publicData = {
-            docType: found.docType,
-            reference: found.reference,
-            date: found[found.dateCol],
-            client_nom: found.client_nom,
-            montant: found[found.montantCol] || found.montant_ttc || found.montant_total || found.montant
+            docType: typedFound.docType,
+            reference: typedFound.reference,
+            date: typedFound[typedFound.dateCol],
+            client_nom: typedFound.client_nom,
+            montant: typedFound[typedFound.montantCol] || typedFound.montant_ttc || typedFound.montant_total || typedFound.montant
           };
 
           return new Response(JSON.stringify(publicData), {
