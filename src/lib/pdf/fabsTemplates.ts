@@ -349,7 +349,7 @@ type Ctx = {
   showBarcode: boolean;
 };
 
-type TextOpts = { size?: number; bold?: boolean; color?: RGB; font?: PDFFont };
+type TextOpts = { size?: number; bold?: boolean; color?: RGB; font?: PDFFont; italic?: boolean };
 
 /**
  * pdf-lib's Standard fonts (Helvetica…) use the WinAnsi encoding and throw on
@@ -376,13 +376,13 @@ function text(ctx: Ctx, s: string, x: number, y: number, opts: TextOpts = {}) {
     x,
     y,
     size: opts.size ?? 9,
-    font: opts.font ?? (opts.bold ? ctx.bold : ctx.font),
+    font: opts.font ?? (opts.italic ? ctx.italic : opts.bold ? ctx.bold : ctx.font),
     color: opts.color ?? FABS_COLORS.noir,
   });
 }
 
 function textRight(ctx: Ctx, s: string, xRight: number, y: number, opts: TextOpts = {}) {
-  const f = opts.font ?? (opts.bold ? ctx.bold : ctx.font);
+  const f = opts.font ?? (opts.italic ? ctx.italic : opts.bold ? ctx.bold : ctx.font);
   const safe = sanitizeForWinAnsi(s ?? "");
   const w = f.widthOfTextAtSize(safe, opts.size ?? 9);
   text(ctx, safe, xRight - w, y, opts);
@@ -395,7 +395,7 @@ function textCenter(
   y: number,
   opts: { size?: number; bold?: boolean; color?: RGB } = {},
 ) {
-  const f = opts.bold ? ctx.bold : ctx.font;
+  const f = opts.bold ? ctx.bold : opts.italic ? ctx.italic : ctx.font;
   const w = f.widthOfTextAtSize(s ?? "", opts.size ?? 9);
   text(ctx, s, cx - w / 2, y, opts);
 }
@@ -407,7 +407,7 @@ function fitText(
   maxW: number,
   opts: { size?: number; bold?: boolean } = {},
 ): string {
-  const f = opts.bold ? ctx.bold : ctx.font;
+  const f = opts.bold ? ctx.bold : opts.italic ? ctx.italic : ctx.font;
   const size = opts.size ?? 9;
   if (!s) return "";
   if (f.widthOfTextAtSize(s, size) <= maxW) return s;
