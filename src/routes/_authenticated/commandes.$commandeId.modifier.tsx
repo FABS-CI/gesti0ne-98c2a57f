@@ -87,6 +87,8 @@ function CommandeModifierPage() {
           quantite: number;
           prix_unitaire: number;
           remise_pct: number;
+          cover_path?: string | null;
+          cover_thumb_path?: string | null;
         }
       >();
       for (const l of lignes ?? []) {
