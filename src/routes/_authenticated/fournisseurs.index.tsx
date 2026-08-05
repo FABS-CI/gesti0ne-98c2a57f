@@ -88,11 +88,10 @@ function FournisseursPage() {
   function handleExport() {
     exportCsv(
       "fournisseurs.csv",
-      ["Référence", "Raison sociale", "Contact", "Représentant", "Email", "Téléphone", "Ville", "Statut"],
+      ["Référence", "Raison sociale", "Représentant", "Email", "Téléphone", "Ville", "Statut"],
       fournisseurs.map((f) => [
         f.reference ?? "",
         f.raison_sociale,
-        f.contact ?? "",
         f.representant ?? "",
         f.email ?? "",
         f.telephone ?? "",
@@ -181,7 +180,6 @@ function FournisseursPage() {
               <TableRow>
                 <TableHead>Référence</TableHead>
                 <TableHead>Raison sociale</TableHead>
-                <TableHead>Contact</TableHead>
                 <TableHead>Représentant</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Téléphone</TableHead>
@@ -230,7 +228,6 @@ function FournisseursPage() {
                   <TableRow key={f.fournisseur_id}>
                     <TableCell className="font-mono text-xs">{f.reference ?? "—"}</TableCell>
                     <TableCell className="font-medium">{f.raison_sociale}</TableCell>
-                    <TableCell>{f.contact ?? "—"}</TableCell>
                     <TableCell>{f.representant ?? "—"}</TableCell>
                     <TableCell>{f.email ?? "—"}</TableCell>
                     <TableCell>{f.telephone ?? "—"}</TableCell>

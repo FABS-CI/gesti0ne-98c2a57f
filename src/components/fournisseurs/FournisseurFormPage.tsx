@@ -21,7 +21,6 @@ import { DraftRestoreBanner } from "@/components/ui/draft-restore-banner";
 
 const emptyForm: FournisseurInput = {
   raison_sociale: "",
-  contact: "",
   representant: "",
   email: "",
   telephone: "",
@@ -40,7 +39,6 @@ export function FournisseurFormPage({ existing }: { existing?: Fournisseur | nul
     if (!existing) return;
     setForm({
       raison_sociale: existing.raison_sociale,
-      contact: existing.contact ?? "",
       representant: existing.representant ?? "",
       email: existing.email ?? "",
       telephone: existing.telephone ?? "",
@@ -54,7 +52,7 @@ export function FournisseurFormPage({ existing }: { existing?: Fournisseur | nul
     docType: "fournisseur",
     value: form,
     enabled: !isEdit,
-    isEmpty: (v) => !v.raison_sociale && !v.contact && !v.representant && !v.telephone && !v.email,
+    isEmpty: (v) => !v.raison_sociale && !v.representant && !v.telephone && !v.email,
   });
 
   const saveMutation = useMutation({
@@ -125,13 +123,6 @@ export function FournisseurFormPage({ existing }: { existing?: Fournisseur | nul
             <Input
               value={form.raison_sociale}
               onChange={(e) => setForm((f) => ({ ...f, raison_sociale: e.target.value }))}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Contact</Label>
-            <Input
-              value={form.contact ?? ""}
-              onChange={(e) => setForm((f) => ({ ...f, contact: e.target.value }))}
             />
           </div>
           <div className="space-y-1.5">
