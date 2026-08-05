@@ -14,6 +14,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VerifyUuidRouteImport } from './routes/verify.$uuid'
 import { Route as CartonColisIdRouteImport } from './routes/carton.$colisId'
 import { Route as AuthenticatedWorkflowsDefinitionsRouteImport } from './routes/_authenticated/workflows-definitions'
 import { Route as AuthenticatedWorkflowApprovalsRouteImport } from './routes/_authenticated/workflow-approvals'
@@ -233,6 +234,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyUuidRoute = VerifyUuidRouteImport.update({
+  id: '/verify/$uuid',
+  path: '/verify/$uuid',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartonColisIdRoute = CartonColisIdRouteImport.update({
@@ -1459,6 +1465,7 @@ export interface FileRoutesByFullPath {
   '/workflow-approvals': typeof AuthenticatedWorkflowApprovalsRoute
   '/workflows-definitions': typeof AuthenticatedWorkflowsDefinitionsRoute
   '/carton/$colisId': typeof CartonColisIdRoute
+  '/verify/$uuid': typeof VerifyUuidRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/absences/nouveau': typeof AuthenticatedAbsencesNouveauRoute
   '/achats/$achatId': typeof AuthenticatedAchatsAchatIdRoute
@@ -1640,6 +1647,7 @@ export interface FileRoutesByTo {
   '/workflow-approvals': typeof AuthenticatedWorkflowApprovalsRoute
   '/workflows-definitions': typeof AuthenticatedWorkflowsDefinitionsRoute
   '/carton/$colisId': typeof CartonColisIdRoute
+  '/verify/$uuid': typeof VerifyUuidRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/absences/nouveau': typeof AuthenticatedAbsencesNouveauRoute
   '/achats/$achatId': typeof AuthenticatedAchatsAchatIdRoute
@@ -1843,6 +1851,7 @@ export interface FileRoutesById {
   '/_authenticated/workflow-approvals': typeof AuthenticatedWorkflowApprovalsRoute
   '/_authenticated/workflows-definitions': typeof AuthenticatedWorkflowsDefinitionsRoute
   '/carton/$colisId': typeof CartonColisIdRoute
+  '/verify/$uuid': typeof VerifyUuidRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/absences/nouveau': typeof AuthenticatedAbsencesNouveauRoute
   '/_authenticated/achats/$achatId': typeof AuthenticatedAchatsAchatIdRoute
@@ -2047,6 +2056,7 @@ export interface FileRouteTypes {
     | '/workflow-approvals'
     | '/workflows-definitions'
     | '/carton/$colisId'
+    | '/verify/$uuid'
     | '/.mcp/invoke-tool/$tool'
     | '/absences/nouveau'
     | '/achats/$achatId'
@@ -2228,6 +2238,7 @@ export interface FileRouteTypes {
     | '/workflow-approvals'
     | '/workflows-definitions'
     | '/carton/$colisId'
+    | '/verify/$uuid'
     | '/.mcp/invoke-tool/$tool'
     | '/absences/nouveau'
     | '/achats/$achatId'
@@ -2430,6 +2441,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workflow-approvals'
     | '/_authenticated/workflows-definitions'
     | '/carton/$colisId'
+    | '/verify/$uuid'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/absences/nouveau'
     | '/_authenticated/achats/$achatId'
@@ -2553,6 +2565,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   CartonColisIdRoute: typeof CartonColisIdRoute
+  VerifyUuidRoute: typeof VerifyUuidRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicSeedUsersRoute: typeof ApiPublicSeedUsersRoute
   ApiPublicHooksAlertRoute: typeof ApiPublicHooksAlertRoute
@@ -2595,6 +2608,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify/$uuid': {
+      id: '/verify/$uuid'
+      path: '/verify/$uuid'
+      fullPath: '/verify/$uuid'
+      preLoaderRoute: typeof VerifyUuidRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/carton/$colisId': {
@@ -4745,6 +4765,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   CartonColisIdRoute: CartonColisIdRoute,
+  VerifyUuidRoute: VerifyUuidRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicSeedUsersRoute: ApiPublicSeedUsersRoute,
   ApiPublicHooksAlertRoute: ApiPublicHooksAlertRoute,

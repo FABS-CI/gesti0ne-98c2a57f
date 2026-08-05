@@ -26,6 +26,7 @@ import {
   type DocType as SettingsDocType,
 } from "@/lib/document-settings-api";
 import { shouldShowQr } from "@/lib/pdf/docTypeConfig";
+import { generateUnifiedCommercialPDF, generateUnifiedStatementPDF } from "./unified-generator";
 
 // Raccourcit une référence longue (ex. "BL-2026-0703-160245-7188" -> "BL-7188",
 // "CLI-70c43f16-..." -> "CLI-70C43F16") pour une meilleure lisibilité dans les
@@ -2235,37 +2236,27 @@ export async function generateRapportIncidentsPDF(data: RapportIncidentsData): P
 }
 
 export async function generateFacturePDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("FC", COLS_FACTURE, data, {
-    qr: shouldShowQr("FC"),
-    modePaiementGauche: data.modePaiement ?? "Paiement à la livraison",
-  });
+  return generateUnifiedCommercialPDF("Facture", data);
 }
 
 export async function generateProformaPDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("PF", COLS_FACTURE, data, {
-    qr: shouldShowQr("PF"),
-    modePaiementGauche: data.modePaiement ?? "Paiement à la livraison",
-  });
+  return generateUnifiedCommercialPDF("Proforma", data);
 }
 
 export async function generateBonCommandePDF(data: DocBase): Promise<Blob> {
-  // Bon de Commande : nouveau template unifié (blue-ref → orange FABS-CI).
-  return buildTableDoc("BC", COLS_BC, data, { qr: true, barcode: false });
+  return generateUnifiedCommercialPDF("Commande", data);
 }
 
 export async function generateBonLivraisonPDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("BL", COLS_BL, data, { qr: shouldShowQr("BL"), signatures: "bl" });
+  return generateUnifiedCommercialPDF("Bon de Livraison", data);
 }
 
 export async function generateBonRetourPDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("BR", COLS_BR, data, { qr: shouldShowQr("BR") });
+  return generateUnifiedCommercialPDF("Bon de Retour" as any, data);
 }
 
 export async function generateBonRemiseSpecimensPDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("SP", COLS_SP, data, {
-    signatures: "bl",
-    mentionRouge: "Document non commercial — Distribution gratuite (aucune facturation).",
-  });
+  return generateUnifiedCommercialPDF("Spécimens", data);
 }
 
 const COLS_BA: Colonne[] = [
@@ -2306,11 +2297,7 @@ export async function generateBonTransfertPDF(data: DocBase): Promise<Blob> {
 export async function generateAvoirPDF(
   data: DocBase & { factureReference?: string },
 ): Promise<Blob> {
-  return buildTableDoc("AV", COLS_AV, data, {
-    qr: shouldShowQr("AV"),
-    mentionRouge:
-      `Ce document annule partiellement ou totalement la facture ${data.factureReference ?? ""}`.trim(),
-  });
+  return generateUnifiedCommercialPDF("Avoir", data);
 }
 
 // ----------------------------------------------------------------------------
@@ -2889,12 +2876,18 @@ const STATUT_COMMANDE_LABEL: Record<string, string> = {
 };
 
 export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
-  const client = data.client ?? {
+  return generateUnifiedStatementPDF(data);
+}
+
+async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
+  const client = {
     nom: data.clientNom ?? "",
+    code: (data as any).codeClient ?? null,
+    adresse: (data as any).adresseClient ?? null,
     telephone: data.clientTel ?? null,
+    email: (data as any).emailClient ?? null,
     representant: data.representant ?? null,
   };
-
   const ctx = await newCtx({
     title: "État de Compte Client",
     reference: data.reference,
@@ -2904,7 +2897,9 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     docType: "etat_compte",
   });
   let y = drawHeader(ctx, "RELEVÉ DE COMPTE CLIENT");
-  y -= 24; // Augmentation de l'espace après l'en-tête pour éviter le chevauchement (V10)
+  y -= 24; 
+
+
 
   // ---------- Bloc infos client + période ----------
   const colR = MARGIN.x + CONTENT_W / 2;
