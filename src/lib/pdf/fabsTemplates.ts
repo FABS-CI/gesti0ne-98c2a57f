@@ -2319,17 +2319,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
         : null;
 
   let y = drawHeader(ctx, TITRES.RP);
-  y -= 14;
-
-  // Bande orange (titre déjà porté par l'en-tête)
-  ctx.page.drawRectangle({
-    x: MARGIN.x,
-    y: y - 4,
-    width: CONTENT_W,
-    height: 3,
-    color: FABS_COLORS.orange ?? ctx.theme.title,
-  });
-  y -= 20;
+  y -= 24; // Augmentation de l'espace après l'en-tête (V10)
 
   // Deux colonnes : Client (gauche) / Paiement (droite)
   const colLx = MARGIN.x;
