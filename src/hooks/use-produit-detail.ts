@@ -40,8 +40,8 @@ export function useProduitDetail(produitId: string) {
     queryFn: () => getStocksParDepot(produitId),
   });
   const achatsQ = useQuery({
-    queryKey: ["produit-achats", produitId, produit?.titre, produit?.reference],
-    queryFn: () => getProduitAchats({ titre: produit!.titre, reference: produit!.reference }),
+    queryKey: ["produit-achats", produitId],
+    queryFn: () => getProduitAchats(produitId),
     enabled: !!produit,
   });
   const inventairesQ = useQuery({
