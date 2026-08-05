@@ -6,6 +6,7 @@ export type Fournisseur = {
   reference: string | null;
   raison_sociale: string;
   representant: string | null;
+  contact: string | null;
   email: string | null;
   telephone: string | null;
   adresse: string | null;
@@ -18,6 +19,7 @@ export type Fournisseur = {
 export type FournisseurInput = {
   raison_sociale: string;
   representant?: string | null;
+  contact?: string | null;
   email?: string | null;
   telephone?: string | null;
   adresse?: string | null;
