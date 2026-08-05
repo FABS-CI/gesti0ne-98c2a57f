@@ -41,7 +41,8 @@ export function ProduitsTable({
   onCreate,
 }: Props) {
   const navigate = useNavigate();
-  const colSpan = canSeeSensitive ? 11 : 6;
+  const colSpan = canSeeSensitive ? 12 : 6;
+  const totalValeurVente = items.reduce((sum, p) => sum + (p.stock * p.prix_vente), 0);
   return (
     <div className="rounded-lg border bg-card">
       <Table>
@@ -194,6 +195,22 @@ export function ProduitsTable({
             })
           )}
         </TableBody>
+        {canSeeSensitive && items.length > 0 && (
+          <tfoot className="border-t bg-muted/30">
+            <TableRow>
+              <TableCell colSpan={7} />
+              <TableCell className="text-right font-black text-blue-900 text-base">
+                {formatFCFA(totalValeurVente)}
+              </TableCell>
+              <TableCell colSpan={4} />
+            </TableRow>
+            <TableRow className="hover:bg-transparent">
+              <TableCell colSpan={colSpan} className="text-center py-2 text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
+                Valeur totale du stock au prix de vente
+              </TableCell>
+            </TableRow>
+          </tfoot>
+        )}
       </Table>
     </div>
   );
