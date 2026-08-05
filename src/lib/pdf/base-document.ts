@@ -313,7 +313,6 @@ export class BaseDocument {
     });
 
     // Bloc QR - Affiché uniquement si autorisé pour ce type de document
-    // On extrait le préfixe de la référence (ex: FAC de FAC-2026-00001)
     const { shouldShowQr } = await import("./docTypeConfig");
     const prefix = this.data.reference.split('-')[0];
     
