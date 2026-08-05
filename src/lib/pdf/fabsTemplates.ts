@@ -2236,37 +2236,27 @@ export async function generateRapportIncidentsPDF(data: RapportIncidentsData): P
 }
 
 export async function generateFacturePDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("FC", COLS_FACTURE, data, {
-    qr: shouldShowQr("FC"),
-    modePaiementGauche: data.modePaiement ?? "Paiement à la livraison",
-  });
+  return generateUnifiedCommercialPDF("Facture", data);
 }
 
 export async function generateProformaPDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("PF", COLS_FACTURE, data, {
-    qr: shouldShowQr("PF"),
-    modePaiementGauche: data.modePaiement ?? "Paiement à la livraison",
-  });
+  return generateUnifiedCommercialPDF("Proforma", data);
 }
 
 export async function generateBonCommandePDF(data: DocBase): Promise<Blob> {
-  // Bon de Commande : nouveau template unifié (blue-ref → orange FABS-CI).
-  return buildTableDoc("BC", COLS_BC, data, { qr: true, barcode: false });
+  return generateUnifiedCommercialPDF("Commande", data);
 }
 
 export async function generateBonLivraisonPDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("BL", COLS_BL, data, { qr: shouldShowQr("BL"), signatures: "bl" });
+  return generateUnifiedCommercialPDF("Bon de Livraison", data);
 }
 
 export async function generateBonRetourPDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("BR", COLS_BR, data, { qr: shouldShowQr("BR") });
+  return generateUnifiedCommercialPDF("Bon de Retour" as any, data);
 }
 
 export async function generateBonRemiseSpecimensPDF(data: DocBase): Promise<Blob> {
-  return buildTableDoc("SP", COLS_SP, data, {
-    signatures: "bl",
-    mentionRouge: "Document non commercial — Distribution gratuite (aucune facturation).",
-  });
+  return generateUnifiedCommercialPDF("Spécimens", data);
 }
 
 const COLS_BA: Colonne[] = [
