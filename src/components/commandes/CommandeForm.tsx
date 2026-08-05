@@ -202,6 +202,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
         remise_globale_pct: values.remise_globale_pct,
         taux_tva: values.appliquer_tva ? values.taux_tva : 0,
         depot_id: values.depot_id || null,
+        livreur_nom: values.livreur_nom || null,
+        nom_receptionnaire_client: values.nom_receptionnaire_client || null,
         lignes: values.lignes.map((l) => ({
           produit_id: l.produit_id,
           reference_produit: l.reference_produit ?? null,
@@ -510,6 +512,15 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                   }}
                   label="Dépôt de sortie"
                 />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="livreur_nom" className="text-xs">Nom du Livreur</Label>
+                  <Input id="livreur_nom" {...form.register("livreur_nom")} placeholder="Optionnel" />
+                </div>
+                <div>
+                  <Label htmlFor="nom_receptionnaire_client" className="text-xs">Réceptionné par (Client)</Label>
+                  <Input id="nom_receptionnaire_client" {...form.register("nom_receptionnaire_client")} placeholder="Optionnel" />
+                </div>
               </div>
               <div className="sm:col-span-2 lg:col-span-3">
                 <Label htmlFor="observations" className="text-xs">
