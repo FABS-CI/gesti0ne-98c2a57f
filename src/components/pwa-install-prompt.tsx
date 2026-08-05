@@ -41,7 +41,7 @@ export function PWAInstallPrompt() {
       const lastPromptDate = new Date(lastPrompt);
       const now = new Date();
       const diffDays = Math.ceil((now.getTime() - lastPromptDate.getTime()) / (1000 * 60 * 60 * 24));
-      if (diffDays < 30) return;
+      if (diffDays < 1) return; // For testing purposes, reduced to 1 day instead of 30
     }
 
     // Detect platform
@@ -54,8 +54,8 @@ export function PWAInstallPrompt() {
         setShowPrompt(true);
       }, 3000);
       return () => clearTimeout(timer);
-    } else if (/android/.test(ua)) {
-      setPlatform('android');
+    } else if (/android/.test(ua) || /chrome|chromium|crios/i.test(ua)) {
+      setPlatform('android'); // Chrome on desktop behaves like Android for beforeinstallprompt
     } else {
       setPlatform('desktop');
     }
@@ -87,7 +87,10 @@ export function PWAInstallPrompt() {
     localStorage.setItem('pwa-prompt-last-dismissed', new Date().toISOString());
   };
 
-  if (!showPrompt) return null;
+  if (!showPrompt) {
+    // Hidden button to force show for testing if needed
+    return null;
+  }
 
   return (
     <Dialog open={showPrompt} onOpenChange={setShowPrompt}>
