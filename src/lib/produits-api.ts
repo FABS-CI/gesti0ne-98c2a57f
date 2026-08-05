@@ -56,7 +56,7 @@ export async function listProduits(params: ListProduitsParams = {}) {
   let query = supabase.from("v_produits").select(`
     *,
     dernier_prix_achat:achat_lignes(prix_unitaire, created_at)
-  `, { count: "estimated" });
+  `, { count: "exact" });
 
   if (q)
     query = query.or(

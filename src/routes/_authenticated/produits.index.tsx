@@ -34,6 +34,7 @@ import { describeSupabaseError } from "@/lib/rbac-api";
 
 import { authRouteHead } from "@/lib/route-head";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+// Route principale du catalogue produits
 export const Route = createFileRoute("/_authenticated/produits/")({
   head: () => authRouteHead("Produits"),
   component: ProduitsPage,
