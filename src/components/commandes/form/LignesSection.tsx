@@ -119,29 +119,29 @@ export function LignesSection({
                       key={f.id}
                       className={over ? "bg-destructive/5 align-top" : "align-top"}
                     >
+                      <TableCell className="py-2">
+                        <ProductCoverThumb
+                          produit={{
+                            titre: l?.designation,
+                            cover_path: (l as any)?.cover_path || (l as any)?.produits?.cover_path,
+                            cover_thumb_path: (l as any)?.cover_thumb_path || (l as any)?.produits?.cover_thumb_path,
+                          }}
+                          size="xs"
+                        />
+                      </TableCell>
                       <TableCell>
-                        <div className="flex items-start gap-2">
-                          <ProductCoverThumb 
-                            produit={{ 
-                              titre: l?.designation, 
-                              cover_path: (l as any)?.cover_path || (l as any)?.produits?.cover_path, 
-                              cover_thumb_path: (l as any)?.cover_thumb_path || (l as any)?.produits?.cover_thumb_path
-                            }} 
-                            size="xs" 
-                            className="mt-1"
+                        <div className="min-w-0">
+                          <ProductSearchSelect
+                            value={l?.produit_id}
+                            loadingLabel={l?.designation}
+                            onChange={(_id, produit) => onProduitChange(i, produit)}
                           />
-                          <div className="flex-1 min-w-0">
-                            <ProductSearchSelect
-                              value={l?.produit_id}
-                              loadingLabel={l?.designation}
-                              onChange={(_id, produit) => onProduitChange(i, produit)}
-                            />
-                            {err?.produit_id && (
-                              <p className="text-[10px] text-destructive mt-0.5">{err.produit_id.message}</p>
-                            )}
-                          </div>
+                          {err?.produit_id && (
+                            <p className="text-[10px] text-destructive mt-0.5">{err.produit_id.message}</p>
+                          )}
                         </div>
                       </TableCell>
+
                       <TableCell className="font-mono text-[11px] select-all py-3" title="Référence produit">
                         {form.watch(`lignes.${i}.reference_produit`) || "—"}
                       </TableCell>
