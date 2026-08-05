@@ -59,9 +59,14 @@ export function useRealtimeBus() {
     on("commandes", (r) =>
       invalidateCommande(qc, { commandeId: r.id, clientId: r.client_id }),
     );
-    on("factures", (r) =>
-      invalidateFacture(qc, { factureId: r.id, clientId: r.client_id }),
-    );
+    on("factures", (r, evt) => {
+      invalidateFacture(qc, { factureId: r.id, clientId: r.client_id });
+      if (r.statut === "avoir" && evt === "INSERT") {
+        toast.message(`Nouvel avoir ${r.reference || ""}`, {
+          description: "Le compte client et le stock ont été impactés.",
+        });
+      }
+    });
     on("paiements", (r) =>
       invalidatePaiement(qc, {
         paiementId: r.id,
