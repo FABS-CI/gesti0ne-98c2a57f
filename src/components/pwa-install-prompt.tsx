@@ -35,14 +35,16 @@ export function PWAInstallPrompt() {
       return;
     }
 
-    // Check last dismissal
+    // Check last dismissal (removed for testing Android installability)
+    /*
     const lastPrompt = localStorage.getItem('pwa-prompt-last-dismissed');
     if (lastPrompt) {
       const lastPromptDate = new Date(lastPrompt);
       const now = new Date();
       const diffDays = Math.ceil((now.getTime() - lastPromptDate.getTime()) / (1000 * 60 * 60 * 24));
-      if (diffDays < 1) return; // For testing purposes, reduced to 1 day instead of 30
+      if (diffDays < 1) return; 
     }
+    */
 
     // Detect platform
     const ua = window.navigator.userAgent.toLowerCase();
