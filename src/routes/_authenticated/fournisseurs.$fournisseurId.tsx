@@ -87,6 +87,14 @@ function FournisseurDetailPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
+              <User className="h-4 w-4" /> Représentant
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="font-medium">{fournisseur.representant ?? "—"}</CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm text-muted-foreground">
               <Phone className="h-4 w-4" /> Téléphone
             </CardTitle>
           </CardHeader>

@@ -6,6 +6,7 @@ export type Fournisseur = {
   reference: string | null;
   raison_sociale: string;
   contact: string | null;
+  representant: string | null;
   email: string | null;
   telephone: string | null;
   adresse: string | null;
@@ -18,6 +19,7 @@ export type Fournisseur = {
 export type FournisseurInput = {
   raison_sociale: string;
   contact?: string | null;
+  representant?: string | null;
   email?: string | null;
   telephone?: string | null;
   adresse?: string | null;
@@ -29,7 +31,7 @@ export async function listFournisseurs(q?: string) {
   let query = supabase.from("fournisseurs").select("*");
   if (q)
     query = query.or(
-      `raison_sociale.ilike.%${q}%,contact.ilike.%${q}%,ville.ilike.%${q}%,reference.ilike.%${q}%`,
+      `raison_sociale.ilike.%${q}%,contact.ilike.%${q}%,representant.ilike.%${q}%,ville.ilike.%${q}%,reference.ilike.%${q}%`,
     );
   query = query.order("raison_sociale", { ascending: true });
   const { data, error } = await query;
