@@ -13,20 +13,20 @@ export type FabsDocCode = "FAC" | "PRO" | "CMD" | "BL" | "RET" | "AVO" | "RP" | 
 const QR_BY_TYPE: Record<string, boolean> = {
   FAC: true,  // Facture
   FC: true,   // Alias Facture
-  PRO: false, // Proforma
-  PF: false,  // Alias Proforma
-  CMD: false, // Bon de commande
-  BC: false,  // Alias Bon de commande
-  BL: false,  // Bon de livraison
-  RET: false, // Bon de retour
-  BR: false,  // Alias Bon de retour
-  AVO: false, // Avoir
-  AV: false,  // Alias Avoir
-  RP: false,  // Reçu de paiement
-  BS: false,  // Bon spécimens
-  SP: false,  // Alias Spécimens
-  BP: false,  // Bulletin de paie (interne)
-  IN: false,  // Déclaration d'incident (interne)
+  PRO: true,  // Proforma
+  PF: true,   // Alias Proforma
+  CMD: true,  // Bon de commande
+  BC: true,   // Alias Bon de commande
+  BL: true,   // Bon de livraison
+  RET: true,  // Bon de retour
+  BR: true,   // Alias Bon de retour
+  AVO: true,  // Avoir
+  AV: true,   // Alias Avoir
+  RP: true,   // Reçu de paiement
+  BS: true,   // Bon spécimens
+  SP: true,   // Alias Spécimens
+  BP: true,   // Bulletin de paie (interne)
+  IN: true,   // Déclaration d'incident (interne)
 };
 
 export function shouldShowQr(prefix: string): boolean {
