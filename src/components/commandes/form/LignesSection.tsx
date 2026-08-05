@@ -128,7 +128,7 @@ export function LignesSection({
                       </TableCell>
                       <TableCell>
                         <ProductSearchSelect
-                          value={form.watch(`lignes.${i}.produit_id`)}
+                          value={l?.produit_id}
                           onChange={(_id, produit) => onProduitChange(i, produit)}
                         />
                         {err?.produit_id && (
@@ -222,7 +222,7 @@ export function LignesSection({
                         Article #{i + 1}
                       </Label>
                       <ProductSearchSelect
-                        value={form.watch(`lignes.${i}.produit_id`)}
+                        value={l?.produit_id}
                         onChange={(_id, produit) => onProduitChange(i, produit)}
                       />
                       {err?.produit_id && (
