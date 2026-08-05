@@ -92,7 +92,7 @@ export function LignesSection({
                   <TableHead className="text-right w-[11%]">P.U.</TableHead>
                   <TableHead className="text-right w-[7%]">Rem. %</TableHead>
                   <TableHead className="text-right w-[11%]">Mt remise</TableHead>
-                  <TableHead className="text-right w-[11%]">Val. vente</TableHead>
+                  <TableHead className="text-right w-[11%]">Vente HT</TableHead>
                   <TableHead className="text-right w-[13%]">Total HT</TableHead>
                   <TableHead className="w-[7%]" />
                 </TableRow>

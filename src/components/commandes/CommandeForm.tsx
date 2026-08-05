@@ -433,7 +433,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             </h2>
             <div>
               <Label className="mb-1 block text-xs sm:text-sm">
-                Rechercher par établissement, représentant, ville ou téléphone
+                Rechercher (Client, CMD, FAC, PRO, BL, Tél...)
               </Label>
               <ClientSearchSelect
                 value={clientId}
@@ -494,7 +494,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-white shadow-sm" style={{ backgroundColor: "#8B5CF6" }}>
                 <Info className="h-4 w-4" />
               </span>
-              2. Informations
+              2. Informations Générales
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div>
@@ -525,7 +525,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
               </div>
               <div className="sm:col-span-2 lg:col-span-3">
                 <Label htmlFor="observations" className="text-xs">
-                  Observations
+                  Observations / Notes internes
                 </Label>
                 <Textarea id="observations" rows={2} {...form.register("observations")} />
               </div>
