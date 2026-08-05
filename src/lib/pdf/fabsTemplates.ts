@@ -2297,11 +2297,7 @@ export async function generateBonTransfertPDF(data: DocBase): Promise<Blob> {
 export async function generateAvoirPDF(
   data: DocBase & { factureReference?: string },
 ): Promise<Blob> {
-  return buildTableDoc("AV", COLS_AV, data, {
-    qr: shouldShowQr("AV"),
-    mentionRouge:
-      `Ce document annule partiellement ou totalement la facture ${data.factureReference ?? ""}`.trim(),
-  });
+  return generateUnifiedCommercialPDF("Avoir", data);
 }
 
 // ----------------------------------------------------------------------------
