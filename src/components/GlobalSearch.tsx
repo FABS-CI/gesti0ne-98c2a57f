@@ -206,11 +206,11 @@ export function GlobalSearch() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden h-10 w-full max-w-md items-center gap-2 rounded-lg border border-input bg-muted/40 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted sm:flex"
+        className="hidden h-11 w-full max-w-xl items-center gap-3 rounded-xl border border-input bg-muted/60 px-4 text-sm text-muted-foreground shadow-sm transition-all hover:bg-muted hover:ring-2 hover:ring-primary/20 sm:flex"
       >
-        <Search className="h-4 w-4" />
-        <span className="flex-1 text-left">Rechercher (clients, produits, factures…)</span>
-        <kbd className="rounded border bg-background px-1.5 py-0.5 text-[10px] font-mono">
+        <Search className="h-5 w-5 text-primary" />
+        <span className="flex-1 text-left font-medium">Rechercher (client, tél, ville, commande, facture...)</span>
+        <kbd className="hidden rounded border bg-background px-2 py-1 text-[10px] font-mono font-bold shadow-xs sm:inline-block">
           Ctrl + K
         </kbd>
       </button>
@@ -219,7 +219,7 @@ export function GlobalSearch() {
         <CommandInput
           value={value}
           onValueChange={setValue}
-          placeholder="Rechercher un client, représentant, produit, facture, BL…"
+          placeholder="Rechercher client, représentant, téléphone, ville, réf doc..."
         />
         <CommandList>
           {debounced.trim().length < 3 ? (
