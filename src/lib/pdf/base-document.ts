@@ -16,8 +16,8 @@ import { buildQrUrl } from "./qr-logic";
 
 export const COLORS = {
   bleuFabs: rgb(0.106, 0.165, 0.341), // #1B2A57
-  rougeFabs: rgb(0.827, 0.184, 0.184), // #D32F2F
-  orangeFabs: rgb(0.91, 0.467, 0.133), // #E87722
+  rougeFabs: rgb(0.827, 0.184, 0.184), // #D32F2F (Couleur pour Remises)
+  orangeFabs: rgb(0.96, 0.486, 0.0), // #F57C00 (Couleur pour ligne séparatrice et badge commande)
   grisClair: rgb(0.957, 0.965, 0.98), // #F4F6FA
   noir: rgb(0, 0, 0),
   blanc: rgb(1, 1, 1),
