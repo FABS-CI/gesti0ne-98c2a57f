@@ -24,17 +24,17 @@ export function SidebarBrandHeader({ accentGrad }: { accentGrad: string | null }
         <img
           src={fabsLogo}
           alt="Logo Éditions FABS-CI"
-          width={52}
-          height={52}
-          className="h-13 w-13 shrink-0 rounded-xl bg-white object-contain p-1"
-          style={{ width: 52, height: 52 }}
+          width={72}
+          height={72}
+          className="h-18 w-18 shrink-0 rounded-xl bg-white object-contain p-1.5"
+          style={{ width: 72, height: 72 }}
           decoding="async"
         />
         <span
           style={{
-            fontSize: "13px",
-            fontWeight: 700,
-            color: "#94A3B8",
+            fontSize: "15px",
+            fontWeight: 800,
+            color: "#F8FAFC",
             letterSpacing: "0.08em",
           }}
         >
