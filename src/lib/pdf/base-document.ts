@@ -18,7 +18,7 @@ export const COLORS = {
   bleuFabs: rgb(0.106, 0.165, 0.341), // #1B2A57
   rougeFabs: rgb(0.827, 0.184, 0.184), // #D32F2F (Couleur pour Remises)
   orangeFabs: rgb(0.96, 0.486, 0.0), // #F57C00 (Couleur pour ligne séparatrice et badge commande)
-  grisClair: rgb(0.957, 0.965, 0.98), // #F4F6FA
+  grisClair: rgb(0.968, 0.968, 0.968), // #F7F7F7
   noir: rgb(0, 0, 0),
   blanc: rgb(1, 1, 1),
   grisTexte: rgb(0.3, 0.3, 0.3),
@@ -375,9 +375,15 @@ export class BaseDocument {
         curY = PAGE.h - 120; // Reprendre sous le header suite
       }
       
-      const rowH = 18;
+      const rowH = 22; // Hauteur augmentée pour la lisibilité
       if (i % 2 === 1) {
-        this.page.drawRectangle({ x: MARGINS.x, y: curY - rowH, width: CONTENT_W, height: rowH, color: COLORS.grisClair, opacity: 0.3 });
+        this.page.drawRectangle({ 
+          x: MARGINS.x, 
+          y: curY - rowH, 
+          width: CONTENT_W, 
+          height: rowH, 
+          color: COLORS.grisClair 
+        });
       }
 
       let curX = MARGINS.x;
@@ -390,13 +396,14 @@ export class BaseDocument {
         }
         val = String(val ?? "");
         
-        const txtW = this.fonts.regular.widthOfTextAtSize(val, 8);
+        const fontSize = 10; // Police augmentée de ~25% (était 8)
+        const txtW = this.fonts.regular.widthOfTextAtSize(val, fontSize);
         const alignX = col.key === 'designation' ? curX + 5 : curX + (col.width - txtW) / 2;
         
         this.page.drawText(val, {
           x: alignX,
-          y: curY - 12,
-          size: 8,
+          y: curY - 15, // Centrage vertical ajusté pour rowH 22
+          size: fontSize,
           font: this.fonts.regular,
           color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
         });
@@ -407,9 +414,10 @@ export class BaseDocument {
         start: { x: MARGINS.x, y: curY - rowH },
         end: { x: PAGE.w - MARGINS.x, y: curY - rowH },
         color: COLORS.grisLigne,
-        thickness: 0.3,
+        thickness: 0.5, // Bordure plus visible
       });
       curY -= rowH;
+
     });
 
     return curY - 20;
