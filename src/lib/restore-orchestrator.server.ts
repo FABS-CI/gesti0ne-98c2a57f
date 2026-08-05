@@ -29,15 +29,15 @@ export async function orchestrateRestore(opts: {
     
     if (!backup) throw new Error("Sauvegarde introuvable dans l'historique");
     
-    const localPath = path.join(LOCAL_BACKUP_DIR, backup.fichier_nom);
-    if (fs.existsSync(localPath)) {
+    const localPath = path.join(LOCAL_BACKUP_DIR, backup.fichier_nom || "");
+    if (backup.fichier_nom && fs.existsSync(localPath)) {
       bytes = fs.readFileSync(localPath);
       fileName = backup.fichier_nom;
     } else if (backup.destination_ref && backup.destination_ref !== "local_only") {
       // Téléchargement depuis Drive
       const { downloadDriveFileRaw } = await import("./gdrive-download.server");
       bytes = await downloadDriveFileRaw(backup.destination_ref);
-      fileName = backup.fichier_nom;
+      fileName = backup.fichier_nom || "restoration.zip";
     } else {
       throw new Error("Fichier de sauvegarde inaccessible localement et pas sur Drive");
     }
@@ -75,7 +75,7 @@ export async function orchestrateRestore(opts: {
         if (rows.length > 0) {
           // Détection de la PK pour l'upsert
           const pk = await getTablePK(tableName);
-          const { error } = await supabaseAdmin.from(tableName).upsert(rows, { onConflict: pk });
+          const { error } = await (supabaseAdmin.from(tableName as any) as any).upsert(rows, { onConflict: pk });
           if (error) throw error;
           results.tables.push(tableName);
         }
