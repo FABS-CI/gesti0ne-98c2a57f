@@ -437,9 +437,22 @@ export class BaseDocument {
         const valW = this.fonts.bold.widthOfTextAtSize(value, 10);
         this.page.drawText(value, { x: PAGE.w - MARGINS.x - valW - 5, y: curY - 13, size: 10, font: this.fonts.bold, color: COLORS.blanc });
       } else {
-        this.page.drawText(label, { x: x + 5, y: curY - 13, size: 8, font: this.fonts.regular });
+        const isRemise = label.toLowerCase().includes('remise');
+        this.page.drawText(label, { 
+          x: x + 5, 
+          y: curY - 13, 
+          size: 8, 
+          font: this.fonts.regular,
+          color: isRemise ? COLORS.rougeFabs : COLORS.noir 
+        });
         const valW = this.fonts.bold.widthOfTextAtSize(value, 9);
-        this.page.drawText(value, { x: PAGE.w - MARGINS.x - valW - 5, y: curY - 13, size: 9, font: this.fonts.bold });
+        this.page.drawText(value, { 
+          x: PAGE.w - MARGINS.x - valW - 5, 
+          y: curY - 13, 
+          size: 9, 
+          font: this.fonts.bold,
+          color: isRemise ? COLORS.rougeFabs : COLORS.noir
+        });
         this.page.drawLine({ start: { x, y: curY - 20 }, end: { x: PAGE.w - MARGINS.x, y: curY - 20 }, color: COLORS.grisLigne, thickness: 0.5 });
       }
       curY -= 20;
