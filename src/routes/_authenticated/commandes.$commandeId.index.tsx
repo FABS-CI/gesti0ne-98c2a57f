@@ -298,8 +298,23 @@ function CommandeDetailPage() {
                 </TableRow>
               ) : (
                 lignes.map((l) => (
-                  <TableRow key={l.ligne_id}>
-                    <TableCell>{l.designation}</TableCell>
+                  <TableRow key={l.ligne_id} className="align-middle">
+                    <TableCell className="w-[60px] pr-0">
+                      <ProductCoverThumb
+                        produit={{
+                          titre: l.designation,
+                          cover_path: (l as any).produits?.cover_path,
+                          cover_thumb_path: (l as any).produits?.cover_thumb_path,
+                        }}
+                        size="xs"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium">{l.designation}</div>
+                      <div className="text-[10px] text-muted-foreground font-mono">
+                        {l.reference_produit || "—"}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-right text-destructive">
                       {l.remise_pct ? `${l.remise_pct} %` : "—"}
                     </TableCell>
