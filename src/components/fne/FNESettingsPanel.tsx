@@ -119,7 +119,7 @@ export function FNESettingsPanel() {
     }
     const days = Math.floor((d.getTime() - Date.now()) / 86400000);
     if (days < 0) setCertResult(`✗ Certificat expiré depuis ${Math.abs(days)} j`);
-    else if (days <= 30) setCertResult(`⚠ Certificat expire dans ${days} j`);
+    else if (days <= 30) setCertResult(`! Certificat expire dans ${days} j`);
     else setCertResult(`✓ Certificat valide (${days} j restants)`);
   };
 
@@ -251,7 +251,7 @@ export function FNESettingsPanel() {
               <div className="rounded border border-blue-300 bg-blue-50 p-3 text-sm text-blue-900 dark:bg-blue-950 dark:text-blue-100">
                 Environnement : {settings.use_production === "true" ? "PRODUCTION" : "SANDBOX"}.{" "}
                 {!settings.dgi_api_key &&
-                  "⚠ Bearer Token non configuré — les tests s'exécutent en mode simulé."}
+                  "! Bearer Token non configuré — les tests s'exécutent en mode simulé."}
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {(["B2C", "B2B", "B2G"] as const).map((t) => (

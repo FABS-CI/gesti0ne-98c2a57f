@@ -121,7 +121,7 @@ function RpcErrorsPage() {
     if (rows.length >= seuil && Date.now() - alertedAtRef.current > 5 * 60_000) {
       alertedAtRef.current = Date.now();
       toast.error(
-        `⚠ ${rows.length} échecs RPC sur ${periode} (seuil ${seuil}) — notification super_admin & directeur_général`,
+        `! ${rows.length} échecs RPC sur ${periode} (seuil ${seuil}) — notification super_admin & directeur_général`,
         { duration: 10_000 },
       );
     }

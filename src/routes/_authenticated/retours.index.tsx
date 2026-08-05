@@ -445,7 +445,7 @@ function RetoursListPage() {
             <AlertDialogDescription asChild>
               <div className="space-y-3 text-sm">
                 <p className="font-medium text-red-600">
-                  ⚠ Action irréversible réservée aux Super Administrateurs.
+                  ! Action irréversible réservée aux Super Administrateurs.
                 </p>
                 <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
                   <li>Si le retour est actif, ses effets seront d'abord inversés (stock ressorti, facture / solde client rétablis).</li>

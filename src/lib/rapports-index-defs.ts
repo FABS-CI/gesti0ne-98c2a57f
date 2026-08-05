@@ -522,7 +522,7 @@ export const REPORTS: ReportDef[] = [
           quantite: q,
           seuil_alerte: s,
           valorisation: q * (p?.prix ?? 0),
-          alerte: q <= s ? "⚠ Sous seuil" : "",
+          alerte: q <= s ? "! Sous seuil" : "",
         } as Record<string, unknown>;
       });
       rows.sort((a, b) =>
