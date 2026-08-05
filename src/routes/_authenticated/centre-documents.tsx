@@ -149,10 +149,10 @@ function buildDoc(row: Row): DocBase {
 }
 
 const KIND_TO_TYPE: Record<DocKind, FabsDocCode> = {
-  factures: "FC",
-  proformas: "PF",
+  factures: "FAC",
+  proformas: "PRO",
   bons_livraison: "BL",
-  bons_retour: "BR",
+  bons_retour: "RET",
 };
 
 function makeGenerator(kind: DocKind, row: Row): () => Promise<Blob> {
