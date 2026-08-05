@@ -93,7 +93,7 @@ function VerificationPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="flex items-start gap-3">
                   <Calendar className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
@@ -103,10 +103,17 @@ function VerificationPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <User className="h-5 w-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Client</p>
-                    <p className="text-slate-900 font-bold truncate max-w-[120px]">{data.client_nom}</p>
+                  <User className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Client & Représentant</p>
+                    <p className="text-slate-900 font-bold break-words leading-tight">
+                      {data.client_nom}
+                      {data.representant_nom && (
+                        <span className="block text-[11px] text-slate-500 font-medium mt-0.5 italic">
+                          Rep : {data.representant_nom}
+                        </span>
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
