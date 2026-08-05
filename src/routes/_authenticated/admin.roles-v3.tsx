@@ -46,7 +46,7 @@ type Role = {
 };
 type RolePerm = { role_code: string; perm_code: string };
 type UserRole = { user_id: string; role_code: string };
-type Profile = { id: string; email: string | null; nom: string | null; prenoms: string | null };
+type Profile = { id: string; email: string | null; nom: string | null; prenom: string | null };
 
 const emptyForm = { code: "", label: "", description: "", portee_globale: false, statut: "actif" };
 
@@ -77,7 +77,7 @@ function RolesV3Page() {
         supabase.from("rbac3_roles").select("*").order("ordre"),
         supabase.from("rbac3_role_permissions").select("*"),
         supabase.from("rbac3_user_roles").select("*"),
-        supabase.from("profiles").select("id, email, nom, prenoms"),
+        supabase.from("profiles").select("id, email, nom, prenom"),
       ]);
       const err = [m, a, p, r, rp, ur, pr].find((x) => x.error)?.error;
       if (err) throw err;
@@ -210,7 +210,7 @@ function RolesV3Page() {
     const s = userSearch.trim().toLowerCase();
     if (!s) return profiles;
     return profiles.filter((p) =>
-      `${p.prenoms ?? ""} ${p.nom ?? ""} ${p.email ?? ""}`.toLowerCase().includes(s));
+      `${p.prenom ?? ""} ${p.nom ?? ""} ${p.email ?? ""}`.toLowerCase().includes(s));
   }, [profiles, userSearch]);
 
   return (
@@ -442,7 +442,7 @@ function RolesV3Page() {
                   {filteredProfiles.map((p) => (
                     <tr key={p.id} className="border-t">
                       <td className="py-2">
-                        <div>{[p.prenoms, p.nom].filter(Boolean).join(" ") || "—"}</div>
+                        <div>{[p.prenom, p.nom].filter(Boolean).join(" ") || "—"}</div>
                         <div className="text-xs text-muted-foreground">{p.email}</div>
                       </td>
                       {roles.map((r) => {
