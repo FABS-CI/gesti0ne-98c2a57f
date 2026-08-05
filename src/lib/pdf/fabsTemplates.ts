@@ -197,6 +197,10 @@ const BODY_BOTTOM_Y = MARGIN.bottom + 85;
 // ----------------------------------------------------------------------------
 export type DocLigne = {
   num?: number;
+  code?: string;
+  designation?: string;
+  total?: number;
+  pu?: number;
   classe?: string;
   cycle?: string;
   niveau?: string;
