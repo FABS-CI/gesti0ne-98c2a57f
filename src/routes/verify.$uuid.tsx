@@ -1,7 +1,5 @@
-
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-// Supabase client removed from client-side verification for security and speed
 // import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle2, XCircle, Loader2, FileText, Calendar, User } from 'lucide-react';
 import { formatFCFA } from '@/lib/format';
