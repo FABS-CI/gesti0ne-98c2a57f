@@ -12,7 +12,7 @@ export type SupplierSearchSelectProps = {
 export function SupplierSearchSelect({
   value,
   onChange,
-  placeholder = "Rechercher un fournisseur (nom, ville, contact)…",
+  placeholder = "Rechercher un fournisseur (nom, ville, représentant)…",
   disabled,
   className,
 }: SupplierSearchSelectProps) {
@@ -37,7 +37,7 @@ export function SupplierSearchSelect({
         <div>
           <div className="font-medium truncate">{f.raison_sociale}</div>
           <div className="text-xs text-muted-foreground truncate">
-            {[f.contact, f.ville, f.telephone].filter(Boolean).join(" • ") || "—"}
+            {[f.representant, f.ville, f.telephone].filter(Boolean).join(" • ") || "—"}
           </div>
         </div>
       )}
