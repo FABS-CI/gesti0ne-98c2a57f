@@ -456,7 +456,7 @@ export class BaseDocument {
     }
     
     if (this.totals.remiseGlobale) {
-      row(`Remise globale (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
+      row(`Remise (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
     }
 
     row("TOTAL À PAYER", formatFCFA(this.totals.totalAPayer), true);
