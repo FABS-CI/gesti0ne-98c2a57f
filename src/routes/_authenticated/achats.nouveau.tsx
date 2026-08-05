@@ -94,8 +94,8 @@ function NouvelApprovisionnementPage() {
             quantite: Number(l.quantite),
             prix_unitaire: Number(l.prix_unitaire),
             remise_pct: Number(l.remise_pct ?? 0),
-            cover_path: (l as any).cover_path,
-            cover_thumb_path: (l as any).cover_thumb_path,
+            cover_path: l.produits?.cover_path,
+            cover_thumb_path: l.produits?.cover_thumb_path,
           }))
         : [emptyLigne()],
     );
