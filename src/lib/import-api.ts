@@ -89,7 +89,7 @@ const clientSchema = z.object({
 
 const fournisseurSchema = z.object({
   raison_sociale: z.string().trim().min(1, "raison sociale requise"),
-  contact: z.string().trim().optional(),
+  representant: z.string().trim().optional(),
   email: z.union([z.literal(""), z.string().email("email invalide")]).optional(),
   telephone: z.string().trim().optional(),
   adresse: z.string().trim().optional(),
@@ -181,7 +181,7 @@ export const ENTITIES: Record<EntityKey, EntityConfig> = {
         required: true,
         aliases: ["nom", "fournisseur"],
       },
-      { key: "contact", label: "Contact" },
+      { key: "representant", label: "Représentant" },
       { key: "email", label: "Email", aliases: ["mail"] },
       { key: "telephone", label: "Téléphone", aliases: ["tel"] },
       { key: "adresse", label: "Adresse" },

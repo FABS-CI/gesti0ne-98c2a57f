@@ -401,7 +401,7 @@ export const REPORTS: ReportDef[] = [
     color: "#0EA5E9",
     columns: [
       { key: "raison_sociale", label: "Raison sociale" },
-      { key: "contact", label: "Contact" },
+      { key: "representant", label: "Représentant" },
       { key: "telephone", label: "Téléphone" },
       { key: "email", label: "Email" },
       { key: "ville", label: "Ville" },
@@ -411,7 +411,7 @@ export const REPORTS: ReportDef[] = [
     fetcher: async () => {
       const { data, error } = await supabase
         .from("fournisseurs")
-        .select("raison_sociale, contact, telephone, email, ville, adresse, actif")
+        .select("raison_sociale, representant, telephone, email, ville, adresse, actif")
         .order("raison_sociale", { ascending: true });
       if (error) throw error;
       return (data ?? []) as Record<string, unknown>[];
