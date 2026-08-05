@@ -4,8 +4,13 @@ export const Route = createFileRoute('/api/public/backup/cron')({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        // Sécurité : On peut vérifier un header secret si configuré, 
-        // ou se fier à l'URL stable du projet.
+        // Sécurité : Vérification d'un secret partagé pour éviter les appels malveillants
+        const secret = request.headers.get('X-Backup-Secret');
+        const expectedSecret = process.env.BACKUP_CRON_SECRET || 'fabs-ci-system-backup-secret-2026';
+        
+        if (secret !== expectedSecret) {
+          return new Response('Unauthorized', { status: 401 });
+        }
         
         const { orchestrateBackup } = await import('@/lib/backup-orchestrator.server');
         
