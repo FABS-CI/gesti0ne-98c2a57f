@@ -15,10 +15,10 @@ import { cn } from "@/lib/utils";
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto rounded-lg border border-border/60 bg-card">
+    <div className="relative w-full overflow-x-auto overflow-y-hidden rounded-lg border border-border/60 bg-card custom-scrollbar">
       <table
         ref={ref}
-        className={cn("w-full caption-bottom text-sm border-collapse", className)}
+        className={cn("w-full caption-bottom text-sm border-collapse min-w-[600px] md:min-w-0", className)}
         {...props}
       />
     </div>
