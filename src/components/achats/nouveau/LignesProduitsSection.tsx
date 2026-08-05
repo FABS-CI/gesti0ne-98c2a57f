@@ -22,6 +22,8 @@ export type LigneUI = {
   prix_unitaire: number;
   /** Remise en pourcentage (0-100). */
   remise_pct: number;
+  cover_path?: string | null;
+  cover_thumb_path?: string | null;
 };
 
 export const emptyLigne = (): LigneUI => ({

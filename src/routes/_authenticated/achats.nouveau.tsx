@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2, Save, ShoppingBag } from "lucide-react";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -94,6 +95,8 @@ function NouvelApprovisionnementPage() {
             quantite: Number(l.quantite),
             prix_unitaire: Number(l.prix_unitaire),
             remise_pct: Number(l.remise_pct ?? 0),
+            cover_path: l.produits?.cover_path,
+            cover_thumb_path: l.produits?.cover_thumb_path,
           }))
         : [emptyLigne()],
     );
@@ -209,6 +212,8 @@ function NouvelApprovisionnementPage() {
       reference_produit: p.reference,
       designation: p.titre,
       prix_unitaire: p.prix_achat || 0,
+      cover_path: p.cover_path,
+      cover_thumb_path: p.cover_thumb_path,
     });
   }
 
@@ -372,13 +377,23 @@ function NouvelApprovisionnementPage() {
                 <tbody>
                   {lignes.map((l, i) => (
                     <tr key={i} className="border-t">
-                      <td className="p-2">
-                        {l.designation}
-                        {l.reference_produit ? (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            ({l.reference_produit})
-                          </span>
-                        ) : null}
+                      <td className="p-2 flex items-center gap-2">
+                        <ProductCoverThumb
+                          produit={{
+                            titre: l.designation,
+                            cover_path: l.cover_path,
+                            cover_thumb_path: l.cover_thumb_path,
+                          }}
+                          size="xs"
+                        />
+                        <div className="flex flex-col">
+                          <span>{l.designation}</span>
+                          {l.reference_produit ? (
+                            <span className="text-xs text-muted-foreground">
+                              ({l.reference_produit})
+                            </span>
+                          ) : null}
+                        </div>
                       </td>
                       <td className="p-2 text-right">{l.quantite}</td>
                       <td className="p-2 text-right">{formatFCFA(l.prix_unitaire)}</td>
