@@ -345,8 +345,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       prix_unitaire: p.prix_vente,
       remise_pct: form.getValues(`lignes.${index}.remise_pct`) || 0,
       stock_produit: typeof p.stock === "number" ? p.stock : null,
-      cover_path: p.cover_path ?? null,
-      cover_thumb_path: p.cover_thumb_path ?? null,
+      cover_path: p.cover_path || null,
+      cover_thumb_path: p.cover_thumb_path || null,
     });
   };
 

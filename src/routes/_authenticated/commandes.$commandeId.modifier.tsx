@@ -110,6 +110,7 @@ function CommandeModifierPage() {
         if (existing) {
           existing.quantite += l.quantite;
         } else {
+          const prod = Array.isArray(l.produits) ? l.produits[0] : l.produits;
           map.set(key, {
             produit_id: l.produit_id ?? "",
             reference_produit: l.reference_produit ?? "",
@@ -117,8 +118,8 @@ function CommandeModifierPage() {
             quantite: l.quantite,
             prix_unitaire: Number(l.prix_unitaire),
             remise_pct: Number(l.remise_pct ?? remisePct),
-            cover_path: l.produits?.cover_path,
-            cover_thumb_path: l.produits?.cover_thumb_path,
+            cover_path: prod?.cover_path || l.cover_path,
+            cover_thumb_path: prod?.cover_thumb_path || l.cover_thumb_path,
           });
         }
       }

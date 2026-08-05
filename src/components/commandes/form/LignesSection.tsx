@@ -122,8 +122,8 @@ export function LignesSection({
                           <ProductCoverThumb 
                             produit={{ 
                               titre: l?.designation, 
-                              cover_path: (l as any)?.cover_path, 
-                              cover_thumb_path: (l as any)?.cover_thumb_path 
+                              cover_path: (l as any)?.cover_path || (l as any)?.produits?.cover_path, 
+                              cover_thumb_path: (l as any)?.cover_thumb_path || (l as any)?.produits?.cover_thumb_path
                             }} 
                             size="xs" 
                             className="mt-1"
@@ -131,6 +131,7 @@ export function LignesSection({
                           <div className="flex-1 min-w-0">
                             <ProductSearchSelect
                               value={l?.produit_id}
+                              loadingLabel={l?.designation}
                               onChange={(_id, produit) => onProduitChange(i, produit)}
                             />
                             {err?.produit_id && (
@@ -230,6 +231,7 @@ export function LignesSection({
                       </Label>
                       <ProductSearchSelect
                         value={l?.produit_id}
+                        loadingLabel={l?.designation}
                         onChange={(_id, produit) => onProduitChange(i, produit)}
                       />
                       {err?.produit_id && (
