@@ -212,6 +212,7 @@ function StockPage() {
                 <TableHead>Niveau</TableHead>
                 <TableHead>Catégorie</TableHead>
                 <TableHead className="text-right">Stock</TableHead>
+                <TableHead className="text-right">Valeur vente</TableHead>
                 <TableHead className="text-right">Seuil</TableHead>
                 <TableHead>État</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -240,6 +241,9 @@ function StockPage() {
                       <TableCell className="text-muted-foreground">{p.niveau ?? "—"}</TableCell>
                       <TableCell className="text-muted-foreground">{p.categorie ?? "—"}</TableCell>
                       <TableCell className="text-right font-bold">{p.stock}</TableCell>
+                      <TableCell className="text-right font-medium text-emerald-600">
+                        {formatFCFA((p.stock ?? 0) * (p.prix_vente ?? 0))}
+                      </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {p.seuil_alerte}
                       </TableCell>

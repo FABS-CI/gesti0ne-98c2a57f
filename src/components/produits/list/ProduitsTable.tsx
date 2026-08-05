@@ -41,7 +41,7 @@ export function ProduitsTable({
   onCreate,
 }: Props) {
   const navigate = useNavigate();
-  const colSpan = canSeeSensitive ? 10 : 6;
+  const colSpan = canSeeSensitive ? 11 : 6;
   return (
     <div className="rounded-lg border bg-card">
       <Table>
@@ -54,6 +54,7 @@ export function ProduitsTable({
             <TableHead>Niveau</TableHead>
             <TableHead>Matière</TableHead>
             {canSeeSensitive && <TableHead className="text-right">Prix vente</TableHead>}
+            {canSeeSensitive && <TableHead className="text-right">Valeur vente</TableHead>}
             {canSeeSensitive && <TableHead className="text-right">Stock</TableHead>}
             {canSeeSensitive && <TableHead>Statut</TableHead>}
             {canMutate && <TableHead className="text-right">Actions</TableHead>}
@@ -139,6 +140,11 @@ export function ProduitsTable({
                   <TableCell>{p.matiere || "—"}</TableCell>
                   {canSeeSensitive && (
                     <TableCell className="text-right">{formatFCFA(p.prix_vente)}</TableCell>
+                  )}
+                  {canSeeSensitive && (
+                    <TableCell className="text-right font-medium text-emerald-600">
+                      {formatFCFA(p.stock * p.prix_vente)}
+                    </TableCell>
                   )}
                   {canSeeSensitive && (
                     <TableCell className="text-right">
