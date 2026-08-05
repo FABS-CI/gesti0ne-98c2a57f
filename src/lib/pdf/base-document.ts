@@ -179,7 +179,7 @@ export class BaseDocument {
       y: yTop - 28,
       size: titleSize,
       font: this.fonts.bold,
-      color: COLORS.bleuFabs,
+      color: COLORS.orangeFabs,
     });
 
     // Cartouche (D) - Déplacé un peu vers la droite pour éviter chevauchement si titre long
