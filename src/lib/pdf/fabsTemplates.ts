@@ -2890,7 +2890,19 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     showQr: false,
     docType: "etat_compte",
   });
-  let y = drawHeader(ctx, "RELEVÉ DE COMPTE CLIENT");
+import { generateUnifiedStatementPDF } from "./unified-generator";
+
+export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
+  return generateUnifiedStatementPDF(data);
+}
+
+async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
+  const ctx = await initCtx({
+    title: "Relevé de compte client",
+    reference: data.reference,
+    dateStr: fmtDate(new Date()),
+    docType: "etat_compte",
+  });
   y -= 24; // Augmentation de l'espace après l'en-tête pour éviter le chevauchement (V10)
 
   // ---------- Bloc infos client + période ----------
