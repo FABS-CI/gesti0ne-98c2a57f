@@ -2861,7 +2861,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     docType: "etat_compte",
   });
   let y = drawHeader(ctx, "RELEVÉ DE COMPTE CLIENT");
-  y -= 8;
+  y -= 24; // Augmentation de l'espace après l'en-tête pour éviter le chevauchement (V10)
 
   // ---------- Bloc infos client + période ----------
   const colR = MARGIN.x + CONTENT_W / 2;
