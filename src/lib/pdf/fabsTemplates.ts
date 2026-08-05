@@ -1696,8 +1696,8 @@ const COLS_FACTURE: Colonne[] = [
   { key: "codeArticle", label: "Code Article", width: 1.3, align: "center" },
   { key: "reference", label: "Référence", width: 2.8, align: "left", wrap: true },
   { key: "qte", label: "Qté", width: 0.6, align: "center" },
-  { key: "prixUnitaire", label: "Prix Unitaire", width: 1.2, align: "right", money: true },
-  { key: "montant", label: "Montant", width: 1.2, align: "right", money: true },
+  { key: "prixUnitaire", label: "Prix Unitaire (FCFA)", width: 1.3, align: "right", money: true },
+  { key: "montant", label: "Montant (FCFA)", width: 1.3, align: "right", money: true },
 ];
 
 const COLS_BC: Colonne[] = [
@@ -1705,9 +1705,9 @@ const COLS_BC: Colonne[] = [
   { key: "codeArticle", label: "Code Article", width: 1.3, align: "center" },
   { key: "reference", label: "Désignation", width: 2.5, align: "left", wrap: true },
   { key: "qteCommandee", label: "Qté Cmd", width: 0.8, align: "center" },
-  { key: "prixUnitaire", label: "Prix Unit.", width: 1.1, align: "right", money: true },
+  { key: "prixUnitaire", label: "Prix Unit. (FCFA)", width: 1.1, align: "right", money: true },
   { key: "remisePct", label: "Remise", width: 0.8, align: "right", percent: true },
-  { key: "montant", label: "Montant", width: 1.2, align: "right", money: true },
+  { key: "montant", label: "Montant (FCFA)", width: 1.2, align: "right", money: true },
 ];
 
 const COLS_BL: Colonne[] = [
@@ -3135,7 +3135,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
       ["Total factures (FCFA)", fmtMontant(totalFactures)],
       ["Total paiements (FCFA)", fmtMontant(totalPaiements)],
       ["Total avoirs / retours (FCFA)", fmtMontant(totalAvoirs)],
-      ["Solde dû (FCFA)", fmtMontant(soldeFinal)],
+      ["Total impayé (FCFA)", fmtMontant(soldeFinal)],
       ["Édité le", fmtDate(new Date())],
     ];
     const boxH = recapLines.length * 14 + 18;
