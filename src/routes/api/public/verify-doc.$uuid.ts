@@ -32,7 +32,7 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
                 return null;
               }
               
-              return data ? { ...data, docType: table.type, dateCol: table.dateCol, montantCol: table.montantCol } : null;
+              return data ? { ...Object(data), docType: table.type, dateCol: table.dateCol, montantCol: table.montantCol } : null;
             })
           );
 
