@@ -172,11 +172,11 @@ export class BaseDocument {
 
     // Titre (C)
     const displayType = this.data.type === "Commande" ? "BON DE COMMANDE" : this.data.type.toUpperCase();
-    const titleSize = 24;
+    const titleSize = 28; // Agrandi de 24 à 28
     const titleW = this.fonts.bold.widthOfTextAtSize(displayType, titleSize);
     this.page.drawText(displayType, {
       x: (PAGE.w - titleW) / 2,
-      y: yTop - 25,
+      y: yTop - 28,
       size: titleSize,
       font: this.fonts.bold,
       color: COLORS.bleuFabs,
