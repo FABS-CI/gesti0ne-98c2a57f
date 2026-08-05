@@ -297,7 +297,9 @@ export class BaseDocument {
       color: COLORS.grisClair,
       opacity: 0.5,
     });
-    this.page.drawText("FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
+    const clientLabel = this.data.type === "Facture" || this.data.type === "Proforma" ? "FACTURÉ À" : 
+                       this.data.type === "Bon de Livraison" ? "DESTINATAIRE" : "CLIENT";
+    this.page.drawText(clientLabel, { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
     this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 12, font: this.fonts.bold, color: COLORS.bleuFabs });
     
     const kv = [
@@ -310,8 +312,7 @@ export class BaseDocument {
       this.page.drawText(item.v, { x: MARGINS.x + 80, y: y - 48 - i * 11, size: 8, font: this.fonts.bold });
     });
 
-    // Bloc QR - Affiché uniquement si autorisé pour ce type de document (Facture seulement)
-    // On extrait le préfixe de la référence (ex: FAC de FAC-2026-00001)
+    // Bloc QR - Affiché uniquement si autorisé pour ce type de document
     const { shouldShowQr } = await import("./docTypeConfig");
     const prefix = this.data.reference.split('-')[0];
     
