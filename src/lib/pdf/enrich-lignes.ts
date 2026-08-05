@@ -39,9 +39,7 @@ function toDocLignes(rows: RawLigne[]): DocLigne[] {
 
 /**
  * Hydrate les lignes avec les infos produits (categorie, niveau, matiere,
- * reference) via une requête séparée. La relation FK n'étant pas déclarée
- * dans PostgREST, un `select("produits(...)")` renvoie une 400 et vidait
- * toutes les lignes des PDF (Bon de commande, Facture, BL…).
+ * reference) via une requête séparée.
  */
 async function hydrateProduits(rows: RawLigne[]): Promise<RawLigne[]> {
   const ids = Array.from(
@@ -73,10 +71,8 @@ async function hydrateProduits(rows: RawLigne[]): Promise<RawLigne[]> {
   }));
 }
 
-/** Lignes enrichies d'une proforma (via proforma_lignes + produits). */
+/** Lignes enrichies d'une proforma. */
 export async function loadProformaDocLignes(proformaId: string): Promise<DocLigne[]> {
-  // Priorité aux lignes de la commande liée pour bénéficier des remises et
-  // du code article. Fallback sur proforma_lignes si aucune commande liée.
   const { data: pf } = await supabase
     .from("proformas")
     .select("commande_id")
@@ -94,7 +90,7 @@ export async function loadProformaDocLignes(proformaId: string): Promise<DocLign
   return toDocLignes(hydrated);
 }
 
-/** Lignes enrichies d'une commande (via commande_lignes + produits). */
+/** Lignes enrichies d'une commande. */
 export async function loadCommandeDocLignes(commandeId: string): Promise<DocLigne[]> {
   const { data, error } = await supabase
     .from("commande_lignes")
@@ -107,11 +103,7 @@ export async function loadCommandeDocLignes(commandeId: string): Promise<DocLign
   return toDocLignes(hydrated);
 }
 
-/**
- * Lignes enrichies d'une facture.
- * Les factures n'ont pas de table de lignes propre : on remonte
- * via commande_id → commande_lignes → produits.
- */
+/** Lignes enrichies d'une facture. */
 export async function loadFactureDocLignes(factureId: string): Promise<DocLigne[]> {
   const { data: f } = await supabase
     .from("factures")
@@ -122,11 +114,19 @@ export async function loadFactureDocLignes(factureId: string): Promise<DocLigne[
   return loadCommandeDocLignes(f.commande_id);
 }
 
-/**
- * Informations complètes du client à afficher dans le bloc CLIENT des
- * documents commerciaux (BC, PF, FC, BL, BR, AV, RP…).
- * Retourne une partie de DocBase à fusionner (`{ ...clientInfo, ... }`).
- */
+/** Lignes enrichies d'un bon de livraison. */
+export async function loadBLDocLignes(blId: string): Promise<DocLigne[]> {
+  const { data, error } = await supabase
+    .from("bons_livraison_lignes")
+    .select("produit_id, designation, quantite, reference_produit")
+    .eq("bl_id", blId);
+  if (error) return [];
+  // Simulation de colonnes prix pour toDocLignes
+  const rows = (data ?? []).map(r => ({ ...r, prix_unitaire: 0, total_ligne: 0 }));
+  const hydrated = await hydrateProduits(rows as unknown as RawLigne[]);
+  return toDocLignes(hydrated);
+}
+
 export type DocClientInfo = Pick<
   DocBase,
   | "clientNom"
@@ -169,8 +169,6 @@ export async function loadClientDocInfo(
   };
 }
 
-
-/** Récupère les infos client à partir d'une commande. */
 export async function loadClientInfoForCommande(commandeId: string): Promise<DocClientInfo> {
   const { data } = await supabase
     .from("commandes")
@@ -180,7 +178,6 @@ export async function loadClientInfoForCommande(commandeId: string): Promise<Doc
   return loadClientDocInfo(data?.client_id);
 }
 
-/** Récupère les infos client à partir d'une proforma. */
 export async function loadClientInfoForProforma(proformaId: string): Promise<DocClientInfo> {
   const { data } = await supabase
     .from("proformas")
@@ -190,7 +187,6 @@ export async function loadClientInfoForProforma(proformaId: string): Promise<Doc
   return loadClientDocInfo(data?.client_id);
 }
 
-/** Récupère les infos client à partir d'une facture. */
 export async function loadClientInfoForFacture(factureId: string): Promise<DocClientInfo> {
   const { data } = await supabase
     .from("factures")
@@ -202,7 +198,6 @@ export async function loadClientInfoForFacture(factureId: string): Promise<DocCl
   return {};
 }
 
-/** Récupère les infos client à partir d'un bon de livraison (via commande). */
 export async function loadClientInfoForBL(blId: string): Promise<DocClientInfo> {
   const { data } = await supabase
     .from("bons_livraison")
@@ -213,7 +208,6 @@ export async function loadClientInfoForBL(blId: string): Promise<DocClientInfo> 
   return loadClientInfoForCommande(data.commande_id);
 }
 
-/** Récupère les infos client à partir d'un bon de retour (via facture). */
 export async function loadClientInfoForBR(brId: string): Promise<DocClientInfo> {
   const { data } = await supabase
     .from("bons_retour")
@@ -224,11 +218,6 @@ export async function loadClientInfoForBR(brId: string): Promise<DocClientInfo> 
   return loadClientInfoForFacture(data.facture_id);
 }
 
-/**
- * Totaux financiers d'une commande à propager dans les PDF
- * (Commande, Proforma, Facture, BL). Toutes les valeurs proviennent
- * de `commandes` et reflètent fidèlement ce qui a été saisi.
- */
 export type DocTotals = Pick<
   DocBase,
   | "totalVente"
@@ -254,10 +243,6 @@ export async function loadCommandeTotals(commandeId: string): Promise<DocTotals>
   const remiseLigne = Number(data.total_remises_lignes ?? 0);
   const remiseGlobale = Number(data.remise_globale_montant ?? 0);
   const ht = Number(data.total_ht_net ?? brut - remiseLigne - remiseGlobale);
-  // TVA supprimée de l'ERP : on force les montants à 0 même si l'historique
-  // en base contient encore un taux/montant (ancienne saisie à 18 %).
-  // TVA supprimée : le total doit rester strictement égal au HT, même si
-  // l'historique en base stocke encore un net_a_payer/montant_total TTC.
   const tvaPct = 0;
   const tva = 0;
   const ttc = ht;
@@ -299,4 +284,35 @@ export function resolveDiscountMode(totals: DocTotals): DiscountMode {
   if (totals.remiseGlobale && totals.remiseGlobale > 0) return 'B';
   if (totals.remiseLigneTotal && totals.remiseLigneTotal > 0) return 'A';
   return 'NONE';
+}
+
+export async function loadClientInfoForAchat(achatId: string): Promise<DocClientInfo> {
+  const { data } = await supabase
+    .from("achats")
+    .select("fournisseur_id")
+    .eq("achat_id", achatId)
+    .maybeSingle();
+  if (!data?.fournisseur_id) return {};
+  const { data: fournisseur } = await supabase
+    .from("fournisseurs")
+    .select("nom, telephone, email, adresse, ville")
+    .eq("fournisseur_id", data.fournisseur_id)
+    .maybeSingle();
+  if (!fournisseur) return {};
+  return {
+    clientNom: fournisseur.nom || "",
+    clientTel: fournisseur.telephone,
+    emailClient: fournisseur.email,
+    adresseClient: fournisseur.adresse,
+    villeClient: fournisseur.ville,
+  };
+}
+
+export async function loadClientInfoForSpecimen(specimenId: string): Promise<DocClientInfo> {
+  const { data } = await supabase
+    .from("specimens")
+    .select("client_id")
+    .eq("specimen_id", specimenId)
+    .maybeSingle();
+  return loadClientDocInfo(data?.client_id);
 }

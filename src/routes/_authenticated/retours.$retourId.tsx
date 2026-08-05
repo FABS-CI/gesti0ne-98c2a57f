@@ -187,7 +187,37 @@ function RetourDetailPage() {
               {st.label}
             </Badge>
           )}
-          <Button variant="outline" onClick={() => window.print()}>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              const { generateUnifiedCommercialPDF } = await import("@/lib/pdf/unified-generator");
+              const { fileNameFor } = await import("@/lib/pdf/fabsTemplates");
+              
+              const blob = await generateUnifiedCommercialPDF("Bon de Retour", {
+                id: retour.retour_id,
+                br_id: retour.retour_id,
+                reference: retour.numero || retour.reference,
+                date: retour.date_retour,
+                clientNom: retour.client_nom,
+                totalVente: 0, // Les montants sont souvent gérés en compta pour les retours
+                lignes: retour.lignes.map((l, i) => ({
+                  num: i + 1,
+                  code: l.reference_produit || "",
+                  designation: l.designation,
+                  qte: l.quantite_recue || l.quantite_demandee || l.quantite,
+                  pu: 0,
+                  total: 0,
+                })),
+              });
+
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = fileNameFor(retour.numero || retour.reference, retour.client_nom || "Client");
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+          >
             <Printer className="h-4 w-4 mr-2" />
             Imprimer
           </Button>

@@ -150,6 +150,8 @@ function FactureDetailPage() {
             const st = pdf.getState(facture.facture_id);
             const docData = {
               reference: facture.reference,
+              id: facture.facture_id,
+              facture_id: facture.facture_id,
               date: facture.date_facture,
               clientNom: facture.client_nom,
               totalVente: Number(facture.montant_total),

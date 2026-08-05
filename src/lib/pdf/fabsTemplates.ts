@@ -196,6 +196,11 @@ const BODY_BOTTOM_Y = MARGIN.bottom + 85;
 // Types
 // ----------------------------------------------------------------------------
 export type DocLigne = {
+  num?: number;
+  code?: string;
+  designation?: string;
+  total?: number;
+  pu?: number;
   classe?: string;
   /** Cycle scolaire pour regroupement V10 (PRIMAIRE / PREMIER CYCLE / SECOND CYCLE / LITTÉRATURE / LIVRES COMMUNS). */
   cycle?: string;
@@ -203,8 +208,6 @@ export type DocLigne = {
   matiere?: string;
   codeArticle?: string;
   reference?: string;
-  /** Désignation complète du produit (utilisée par certains templates non commerciaux). */
-  designation?: string;
   /** Unité de mesure (pièce, carton, kg…). */
   unite?: string;
   qte?: number;
@@ -223,6 +226,12 @@ export type DocLigne = {
 };
 
 export type DocBase = {
+  id?: string;
+  facture_id?: string;
+  commande_id?: string;
+  proforma_id?: string;
+  bl_id?: string;
+  br_id?: string;
   reference: string;
   date: string;
   clientNom?: string | null;

@@ -12,13 +12,19 @@ export type FabsDocCode = "FAC" | "PRO" | "CMD" | "BL" | "RET" | "AVO" | "RP" | 
  */
 const QR_BY_TYPE: Record<string, boolean> = {
   FAC: true,  // Facture
+  FC: true,   // Alias Facture
   PRO: false, // Proforma
+  PF: false,  // Alias Proforma
   CMD: false, // Bon de commande
+  BC: false,  // Alias Bon de commande
   BL: false,  // Bon de livraison
   RET: false, // Bon de retour
+  BR: false,  // Alias Bon de retour
   AVO: false, // Avoir
+  AV: false,  // Alias Avoir
   RP: false,  // Reçu de paiement
   BS: false,  // Bon spécimens
+  SP: false,  // Alias Spécimens
   BP: false,  // Bulletin de paie (interne)
   IN: false,  // Déclaration d'incident (interne)
 };

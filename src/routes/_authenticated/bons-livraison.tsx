@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Truck, Search, Package, Ban, Trash2, RotateCcw, X } from "lucide-react";
+import { Truck, Search, Package, Ban, Trash2, RotateCcw, X, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -231,7 +231,7 @@ function BonsLivraisonListPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          <RowActions row={r} />
+                          <RowActions row={r} blId={r.bl_id} />
                         </TableCell>
                       </TableRow>
                     );
@@ -246,7 +246,7 @@ function BonsLivraisonListPage() {
   );
 }
 
-function RowActions({ row }: { row: BLAColiser }) {
+function RowActions({ row, blId }: { row: BLAColiser; blId: string }) {
   const qc = useQueryClient();
   const { isSuperAdmin } = usePermissions();
   const [openAnnul, setOpenAnnul] = useState(false);
@@ -301,6 +301,39 @@ function RowActions({ row }: { row: BLAColiser }) {
 
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={async () => {
+          const { generateUnifiedCommercialPDF } = await import("@/lib/pdf/unified-generator");
+          const { loadBLDocLignes, loadClientInfoForBL } = await import("@/lib/pdf/enrich-lignes");
+          const { fileNameFor } = await import("@/lib/pdf/fabsTemplates");
+
+          const [lignes, clientInfo] = await Promise.all([
+            loadBLDocLignes(blId),
+            loadClientInfoForBL(blId),
+          ]);
+
+          const blob = await generateUnifiedCommercialPDF("Bon de Livraison", {
+            id: blId,
+            bl_id: blId,
+            reference: row.reference,
+            date: row.date_emission || new Date().toISOString(),
+            clientNom: row.client_nom,
+            lignes,
+            ...clientInfo,
+          });
+
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileNameFor(row.reference, row.client_nom || "Client");
+          a.click();
+          URL.revokeObjectURL(url);
+        }}
+      >
+        <Printer className="mr-1 h-4 w-4" /> PDF
+      </Button>
       {annulable && (
         <Can permission="colisage.annuler">
           <AlertDialog open={openAnnul} onOpenChange={setOpenAnnul}>
