@@ -16,7 +16,10 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
             { name: 'factures', idCol: 'facture_id', type: 'Facture', dateCol: 'date_facture', montantCol: 'montant_total', refCol: 'reference' },
             { name: 'proformas', idCol: 'proforma_id', type: 'Proforma', dateCol: 'date_proforma', montantCol: 'montant_ttc', refCol: 'reference' },
             { name: 'commandes', idCol: 'commande_id', type: 'Commande', dateCol: 'date_commande', montantCol: 'montant_total', refCol: 'reference' },
-            { name: 'bons_livraison', idCol: 'bl_id', type: 'Bon de Livraison', dateCol: 'date_bl', montantCol: 'montant_ttc', refCol: 'reference' }
+            { name: 'bons_livraison', idCol: 'bl_id', type: 'Bon de Livraison', dateCol: 'date_bl', montantCol: 'montant_ttc', refCol: 'reference' },
+            { name: 'retours', idCol: 'retour_id', type: 'Bon de Retour', dateCol: 'date_retour', montantCol: 'montant_total', refCol: 'reference' },
+            { name: 'paiements', idCol: 'paiement_id', type: 'Reçu de Paiement', dateCol: 'date_paiement', montantCol: 'montant', refCol: 'reference' },
+            { name: 'specimens', idCol: 'specimen_id', type: 'Bon Spécimens', dateCol: 'date_specimen', montantCol: 'valeur_totale', refCol: 'reference' }
           ];
 
           const results = await Promise.all(
