@@ -14,49 +14,35 @@ export async function orchestrateBackup(opts: {
   const t0 = Date.now();
   
   // 1. Initialisation du log
-    const { data: row } = await supabaseAdmin
-      .from("backups")
-      .insert({
-        user_id: opts.userId,
-        user_email: opts.author,
-        type: "globale_zip",
-        destination: "google_drive", // Utilisation d'une valeur valide de l'enum
-        statut: "en_cours",
-        message: `Sauvegarde ${opts.trigger} démarrée...`,
-      })
-      .select("backup_id")
-      .single();
-    
-    const backupId = row?.backup_id;
-
-  } catch (error) {
-    console.error("Échec de l'orchestration de sauvegarde:", error);
-    if (backupId) {
-      await supabaseAdmin
-        .from("backups")
-        .update({
-          statut: "echec",
-          finished_at: new Date().toISOString(),
-          duree_ms: Date.now() - t0,
-          message: (error as Error).message
-        })
-        .eq("backup_id", backupId);
-    }
-    throw error;
-  }
+  const { data: row } = await (supabaseAdmin.from("backups") as any)
+    .insert({
+      user_id: opts.userId,
+      user_email: opts.author,
+      type: "globale_zip",
+      destination: "google_drive", // Valeur valide de l'enum
+      statut: "en_cours",
+      message: `Sauvegarde ${opts.trigger} démarrée...`,
+    })
+    .select("backup_id")
+    .single();
+  
+  const backupId = row?.backup_id;
 
   try {
+    // 2. Génération de l'archive (Données + Auth + Storage)
     const { bytes, stats } = await buildGlobalArchive(supabaseAdmin, {
       trigger: opts.trigger,
       author: opts.author,
     });
 
+    // 3. Sauvegarde LOCALE (Sandboxed filesystem)
     if (!fs.existsSync(LOCAL_BACKUP_DIR)) {
       fs.mkdirSync(LOCAL_BACKUP_DIR, { recursive: true });
     }
     const localPath = path.join(LOCAL_BACKUP_DIR, stats.fileName);
     fs.writeFileSync(localPath, bytes);
     
+    // Rotation locale
     const localFiles = fs.readdirSync(LOCAL_BACKUP_DIR)
       .filter(f => f.startsWith("fabsci_sauvegarde_globale_"))
       .sort((a, b) => fs.statSync(path.join(LOCAL_BACKUP_DIR, b)).mtimeMs - fs.statSync(path.join(LOCAL_BACKUP_DIR, a)).mtimeMs);
@@ -67,6 +53,7 @@ export async function orchestrateBackup(opts: {
       });
     }
 
+    // 4. Sauvegarde DRIVE
     let driveInfo = null;
     try {
       driveInfo = await uploadArchiveToDrive(
@@ -79,9 +66,9 @@ export async function orchestrateBackup(opts: {
       console.error("Erreur Drive (sauvegarde locale maintenue):", driveErr);
     }
 
+    // 5. Mise à jour finale du log
     if (backupId) {
-      await supabaseAdmin
-        .from("backups")
+      await (supabaseAdmin.from("backups") as any)
         .update({
           statut: "succes",
           finished_at: new Date().toISOString(),
