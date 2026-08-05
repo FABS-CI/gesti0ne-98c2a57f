@@ -85,8 +85,10 @@ export function LignesSection({
             <Table className="w-full table-fixed [&_th]:px-1 [&_td]:px-1 [&_th]:py-1 [&_td]:py-1 text-xs">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[30%]">Produit</TableHead>
-                  <TableHead className="w-[10%]">Réf.</TableHead>
+                  <TableHead className="w-[6%]">Cover</TableHead>
+                  <TableHead className="w-[26%]">Produit</TableHead>
+                  <TableHead className="w-[8%]">Réf.</TableHead>
+
                   <TableHead className="text-right w-[7%]">Stock</TableHead>
                   <TableHead className="text-right w-[8%]">Qté</TableHead>
                   <TableHead className="text-right w-[10%]">P.U.</TableHead>
@@ -117,29 +119,29 @@ export function LignesSection({
                       key={f.id}
                       className={over ? "bg-destructive/5 align-top" : "align-top"}
                     >
+                      <TableCell className="py-2">
+                        <ProductCoverThumb
+                          produit={{
+                            titre: l?.designation,
+                            cover_path: (l as any)?.cover_path || (l as any)?.produits?.cover_path,
+                            cover_thumb_path: (l as any)?.cover_thumb_path || (l as any)?.produits?.cover_thumb_path,
+                          }}
+                          size="xs"
+                        />
+                      </TableCell>
                       <TableCell>
-                        <div className="flex items-start gap-2">
-                          <ProductCoverThumb 
-                            produit={{ 
-                              titre: l?.designation, 
-                              cover_path: (l as any)?.cover_path || (l as any)?.produits?.cover_path, 
-                              cover_thumb_path: (l as any)?.cover_thumb_path || (l as any)?.produits?.cover_thumb_path
-                            }} 
-                            size="xs" 
-                            className="mt-1"
+                        <div className="min-w-0">
+                          <ProductSearchSelect
+                            value={l?.produit_id}
+                            loadingLabel={l?.designation}
+                            onChange={(_id, produit) => onProduitChange(i, produit)}
                           />
-                          <div className="flex-1 min-w-0">
-                            <ProductSearchSelect
-                              value={l?.produit_id}
-                              loadingLabel={l?.designation}
-                              onChange={(_id, produit) => onProduitChange(i, produit)}
-                            />
-                            {err?.produit_id && (
-                              <p className="text-[10px] text-destructive mt-0.5">{err.produit_id.message}</p>
-                            )}
-                          </div>
+                          {err?.produit_id && (
+                            <p className="text-[10px] text-destructive mt-0.5">{err.produit_id.message}</p>
+                          )}
                         </div>
                       </TableCell>
+
                       <TableCell className="font-mono text-[11px] select-all py-3" title="Référence produit">
                         {form.watch(`lignes.${i}.reference_produit`) || "—"}
                       </TableCell>
@@ -224,7 +226,16 @@ export function LignesSection({
                     over ? "border-destructive/50 bg-destructive/5" : "bg-background"
                   }`}
                 >
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2">
+                    <ProductCoverThumb
+                      produit={{
+                        titre: l?.designation,
+                        cover_path: (l as any)?.cover_path || (l as any)?.produits?.cover_path,
+                        cover_thumb_path: (l as any)?.cover_thumb_path || (l as any)?.produits?.cover_thumb_path,
+                      }}
+                      size="sm"
+                      className="mt-5"
+                    />
                     <div className="min-w-0 space-y-1">
                       <Label className="text-[11px] uppercase text-muted-foreground">
                         Article #{i + 1}
@@ -238,6 +249,7 @@ export function LignesSection({
                         <p className="text-xs text-destructive">{err.produit_id.message}</p>
                       )}
                     </div>
+
                     <Button
                       type="button"
                       variant="ghost"
