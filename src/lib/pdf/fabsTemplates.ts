@@ -393,7 +393,7 @@ function textCenter(
   s: string,
   cx: number,
   y: number,
-  opts: { size?: number; bold?: boolean; color?: RGB } = {},
+  opts: TextOpts = {},
 ) {
   const f = opts.bold ? ctx.bold : opts.italic ? ctx.italic : ctx.font;
   const w = f.widthOfTextAtSize(s ?? "", opts.size ?? 9);
@@ -405,7 +405,7 @@ function fitText(
   ctx: Ctx,
   s: string,
   maxW: number,
-  opts: { size?: number; bold?: boolean } = {},
+  opts: TextOpts = {},
 ): string {
   const f = opts.bold ? ctx.bold : opts.italic ? ctx.italic : ctx.font;
   const size = opts.size ?? 9;
