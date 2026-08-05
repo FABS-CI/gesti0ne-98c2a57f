@@ -176,7 +176,10 @@ function ProformaDetailPage() {
                       });
                     },
                     fileNameFor(proforma.reference, proforma.client_nom),
-                    { type: "PF", data: { ...proforma, date: proforma.date_proforma } }
+                    {
+                      type: "PF",
+                      data: { ...proforma, date: proforma.date_proforma } as any,
+                    }
                   )
                 }
               >

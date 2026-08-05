@@ -152,7 +152,19 @@ function CommandeDetailPage() {
                       });
                     },
                     fileNameFor(commande.reference, commande.client_nom),
-                    { type: "BC", data: { ...commande, date: commande.date_commande } }
+                    {
+                      type: "BC",
+                      data: {
+                        ...commande,
+                        date: commande.date_commande,
+                        statut: STATUT_LABEL[commande.statut]
+                          ? {
+                              label: STATUT_LABEL[commande.statut].label,
+                              color: STATUT_LABEL[commande.statut].color,
+                            }
+                          : null,
+                      } as any,
+                    }
                   )
                 }
               >
