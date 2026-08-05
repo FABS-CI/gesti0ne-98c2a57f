@@ -12,7 +12,7 @@ export type FabsDocCode = "FC" | "PF" | "BC" | "BL" | "BR" | "AV" | "RP" | "BP" 
  */
 const QR_BY_TYPE: Record<FabsDocCode, boolean> = {
   FC: true, // Facture
-  PF: false, // Proforma
+  PF: true, // Proforma
   BC: false, // Bon de commande
   BL: false, // Bon de livraison
   BR: false, // Bon de retour
