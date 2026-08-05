@@ -92,6 +92,7 @@ export function LignesSection({
                   <TableHead className="text-right w-[11%]">P.U.</TableHead>
                   <TableHead className="text-right w-[7%]">Rem. %</TableHead>
                   <TableHead className="text-right w-[11%]">Mt remise</TableHead>
+                  <TableHead className="text-right w-[11%]">Vente HT</TableHead>
                   <TableHead className="text-right w-[13%]">Total HT</TableHead>
                   <TableHead className="w-[7%]" />
                 </TableRow>
@@ -177,6 +178,9 @@ export function LignesSection({
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground">
                         {formatFCFA(calc.montantRem)}
+                      </TableCell>
+                      <TableCell className="text-right text-emerald-600 font-medium">
+                        {formatFCFA(calc.brut)}
                       </TableCell>
                       <TableCell className="text-right font-medium">
                         {formatFCFA(calc.totalLigne)}
@@ -288,7 +292,7 @@ export function LignesSection({
 
                   <div className="border-t pt-2 flex justify-between text-xs">
                     <span className="text-muted-foreground">
-                      Brut {formatFCFA(calc.brut)} · Remise −{formatFCFA(calc.montantRem)}
+                      Vente {formatFCFA(calc.brut)} · Remise −{formatFCFA(calc.montantRem)}
                     </span>
                     <span className="font-semibold">{formatFCFA(calc.totalLigne)}</span>
                   </div>

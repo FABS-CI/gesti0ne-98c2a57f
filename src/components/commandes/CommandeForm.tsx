@@ -433,7 +433,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             </h2>
             <div>
               <Label className="mb-1 block text-xs sm:text-sm">
-                Rechercher par établissement, représentant, ville ou téléphone
+                Rechercher (Client, CMD, FAC, PRO, BL, Tél...)
               </Label>
               <ClientSearchSelect
                 value={clientId}
@@ -465,8 +465,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <Label className="text-xs">Établissement</Label>
-                <Input readOnly {...form.register("etablissement")} />
+                <Label className="text-xs">Client (Établissement)</Label>
+                <Input readOnly className="bg-muted font-semibold" {...form.register("etablissement")} />
               </div>
               <div>
                 <Label className="text-xs">Représentant</Label>
@@ -494,7 +494,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-white shadow-sm" style={{ backgroundColor: "#8B5CF6" }}>
                 <Info className="h-4 w-4" />
               </span>
-              2. Informations
+              2. Informations Générales
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div>
@@ -510,22 +510,22 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                     form.setValue("depot_id", id, { shouldValidate: true });
                     form.setValue("depot_override_motif", motif ?? null);
                   }}
-                  label="Dépôt de sortie"
+                  label="Dépôt de sortie *"
                 />
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
                 <div>
-                  <Label htmlFor="livreur_nom" className="text-xs">Nom du Livreur</Label>
+                  <Label htmlFor="livreur_nom" className="text-xs">Nom du Livreur (Expédition)</Label>
                   <Input id="livreur_nom" {...form.register("livreur_nom")} placeholder="Optionnel" />
                 </div>
                 <div>
-                  <Label htmlFor="nom_receptionnaire_client" className="text-xs">Réceptionné par (Client)</Label>
+                  <Label htmlFor="nom_receptionnaire_client" className="text-xs">Réceptionné par (Nom du client)</Label>
                   <Input id="nom_receptionnaire_client" {...form.register("nom_receptionnaire_client")} placeholder="Optionnel" />
                 </div>
               </div>
               <div className="sm:col-span-2 lg:col-span-3">
                 <Label htmlFor="observations" className="text-xs">
-                  Observations
+                  Observations / Notes internes
                 </Label>
                 <Textarea id="observations" rows={2} {...form.register("observations")} />
               </div>

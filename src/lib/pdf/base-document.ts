@@ -448,7 +448,7 @@ export class BaseDocument {
       curY -= 20;
     };
 
-    row("Sous-total", formatFCFA(this.totals.sousTotal));
+    row("Montant brut HT", formatFCFA(this.totals.sousTotal));
     
     if (this.totals.remiseLignes) {
       const pct = this.totals.remiseLignesPct ? ` (${this.totals.remiseLignesPct.toFixed(2)} %)` : "";
@@ -459,7 +459,7 @@ export class BaseDocument {
       row(`Remise (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
     }
 
-    row("TOTAL À PAYER", formatFCFA(this.totals.totalAPayer), true);
+    row("NET À PAYER", formatFCFA(this.totals.totalAPayer), true);
 
     // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
     const letY = curY - 15; // Décalage suffisant pour éviter le chevauchement avec "TOTAL À PAYER"

@@ -65,7 +65,7 @@ export function SummaryCard({
       />
       <Row label="Total remises" value={`- ${formatFCFA(totalRemises)}`} />
       <div className="border-t my-2" />
-      <Row label="Sous-total HT" value={formatFCFA(totaux.htApresRG)} />
+      <Row label="Total Net HT" value={formatFCFA(totaux.htApresRG)} />
       <div className="flex justify-between border-t pt-2 text-base font-bold">
         <span>Net à payer</span>
         <span>{formatFCFA(totaux.ttc)}</span>
