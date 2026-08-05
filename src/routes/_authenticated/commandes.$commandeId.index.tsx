@@ -141,6 +141,8 @@ function CommandeDetailPage() {
                         loadCommandeTotals(commandeId),
                       ]);
                       return generateUnifiedCommercialPDF("Commande", {
+                        id: commandeId,
+                        commande_id: commandeId,
                         reference: commande.reference,
                         date: commande.date_commande,
                         clientNom: commande.client_nom,

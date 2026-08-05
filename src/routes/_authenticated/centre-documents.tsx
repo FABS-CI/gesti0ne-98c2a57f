@@ -140,6 +140,7 @@ async function fetchRows(kind: DocKind): Promise<Row[]> {
 
 function buildDoc(row: Row): DocBase {
   return {
+    id: row.id,
     reference: row.reference,
     date: row.date ?? new Date().toISOString().slice(0, 10),
     clientNom: row.client,

@@ -165,6 +165,8 @@ function ProformaDetailPage() {
                         loadProformaTotals(proformaId),
                       ]);
                       return generateUnifiedCommercialPDF("Proforma", {
+                        id: proformaId,
+                        proforma_id: proformaId,
                         reference: proforma.reference,
                         date: proforma.date_proforma,
                         clientNom: proforma.client_nom,

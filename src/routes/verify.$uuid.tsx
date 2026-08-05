@@ -29,7 +29,7 @@ function VerificationPage() {
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center space-y-6">
         <div className="flex justify-center">
-          <img src="/fabs-logo.png" alt="FABS-CI" className="h-24 w-auto object-contain mb-2" />
+          <img src="/fabs-logo.png" alt="FABS-CI" className="h-28 w-auto object-contain mb-4" />
         </div>
 
         {isLoading ? (
@@ -44,9 +44,9 @@ function VerificationPage() {
                 <XCircle className="h-12 w-12 text-red-600" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">Document Invalide</h1>
-            <p className="text-slate-600">
-              Nous n'avons trouvé aucun document correspondant à ce code de vérification.
+            <h1 className="text-3xl font-black text-red-600 uppercase tracking-tighter">Document Invalide</h1>
+            <p className="text-slate-600 text-lg">
+              Nous n'avons trouvé aucun document authentique correspondant à ce code.
             </p>
             <Button variant="outline" onClick={() => window.location.href = 'https://editionsfabs.ci'}>
               Retour au site
@@ -61,8 +61,8 @@ function VerificationPage() {
             </div>
             
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-slate-900">Authenticité Confirmée</h1>
-              <p className="text-green-600 font-bold text-xl tracking-tight">{data.docType} Authentique</p>
+              <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Authenticité Confirmée</h1>
+              <p className="text-green-600 font-black text-2xl tracking-tight uppercase">{data.docType} Authentique</p>
             </div>
 
             <div className="bg-slate-50 rounded-xl p-6 text-left space-y-4 border border-slate-100">

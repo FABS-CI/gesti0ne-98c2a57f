@@ -223,6 +223,12 @@ export type DocLigne = {
 };
 
 export type DocBase = {
+  id?: string;
+  facture_id?: string;
+  commande_id?: string;
+  proforma_id?: string;
+  bl_id?: string;
+  br_id?: string;
   reference: string;
   date: string;
   clientNom?: string | null;

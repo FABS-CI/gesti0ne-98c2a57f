@@ -27,6 +27,8 @@ async function buildProformaBlob(row: Record<string, unknown>): Promise<Blob> {
   return generateUnifiedCommercialPDF("Proforma", {
     ...clientInfo,
     ...totals,
+    id: proformaId,
+    proforma_id: proformaId,
     reference: row.reference as string,
     date: row.date_proforma as string,
     clientNom: clientInfo.clientNom ?? (row.client_nom as string) ?? null,

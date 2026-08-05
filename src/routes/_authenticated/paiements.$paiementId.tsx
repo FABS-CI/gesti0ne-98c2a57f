@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Ban, Calendar, CreditCard, FileText, Trash2, User } from "lucide-react";
+import { ArrowLeft, Ban, Calendar, CreditCard, FileText, Trash2, User, Printer } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -122,117 +122,142 @@ function PaiementDetailPage() {
             </p>
           </div>
         </div>
-        {statut && (
-          <Badge style={{ backgroundColor: statut.color }} className="text-white">
-            {statut.label}
-          </Badge>
-        )}
-        {paiement.statut !== "annule" && (
-          <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm">
-                <Ban className="mr-2 h-4 w-4" /> Annuler ce paiement
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Annuler ce paiement ?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Le montant de {formatFCFA(paiement.montant)} sera retiré de la facture liée. Le
-                  statut de la facture, l'encours et le solde du client seront recalculés
-                  automatiquement. Cette action est irréversible.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <div className="space-y-3 py-2">
-                <div className="space-y-1">
-                  <Label htmlFor="raison">
-                    Raison <span className="text-destructive">*</span>
-                  </Label>
+        
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              const { generateUnifiedCommercialPDF } = await import("@/lib/pdf/unified-generator");
+              const { fileNameFor } = await import("@/lib/pdf/fabsTemplates");
+              
+              const blob = await generateUnifiedCommercialPDF("Facture", {
+                id: paiement.paiement_id,
+                reference: paiement.reference,
+                date: paiement.date_paiement,
+                clientNom: paiement.client_nom,
+                totalTTC: Number(paiement.montant),
+                lignes: [
+                  {
+                    num: 1,
+                    code: "PAY",
+                    designation: `Règlement ${paiement.mode_paiement} - Réf: ${paiement.reference}`,
+                    qte: 1,
+                    pu: Number(paiement.montant),
+                    total: Number(paiement.montant),
+                  }
+                ],
+              });
+
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = fileNameFor(paiement.reference, paiement.client_nom || "Client");
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+          >
+            <Printer className="mr-2 h-4 w-4" /> Imprimer Reçu
+          </Button>
+
+          {statut && (
+            <Badge style={{ backgroundColor: statut.color }} className="text-white">
+              {statut.label}
+            </Badge>
+          )}
+
+          {paiement.statut !== "annule" && (
+            <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  <Ban className="mr-2 h-4 w-4" /> Annuler
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Annuler ce paiement ?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Le montant de {formatFCFA(paiement.montant)} sera retiré de la facture liée. Le
+                    statut de la facture, l'encours et le solde du client seront recalculés
+                    automatiquement.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="space-y-3 py-2">
+                  <div className="space-y-1">
+                    <Label htmlFor="raison">Raison *</Label>
+                    <Textarea
+                      id="raison"
+                      value={raison}
+                      onChange={(e) => setRaison(e.target.value)}
+                      placeholder="Motif (obligatoire)"
+                      rows={2}
+                    />
+                  </div>
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Retour</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!raison.trim()) {
+                        toast.error("Raison obligatoire");
+                        return;
+                      }
+                      cancelMutation.mutate();
+                    }}
+                    disabled={cancelMutation.isPending || !raison.trim()}
+                  >
+                    Confirmer
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+
+          {canHardDelete && (
+            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Supprimer définitivement ?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Action irréversible réservée aux super-admins.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="space-y-1 py-2">
+                  <Label htmlFor="motif-del">Motif *</Label>
                   <Textarea
-                    id="raison"
-                    value={raison}
-                    onChange={(e) => setRaison(e.target.value)}
-                    placeholder="Motif de l'annulation (obligatoire)"
+                    id="motif-del"
+                    value={deleteMotif}
+                    onChange={(e) => setDeleteMotif(e.target.value)}
+                    placeholder="Justification"
                     rows={2}
                   />
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="notes-annul">Notes (optionnel)</Label>
-                  <Textarea
-                    id="notes-annul"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Informations complémentaires"
-                    rows={2}
-                  />
-                </div>
-              </div>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Retour</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!raison.trim()) {
-                      toast.error("Raison obligatoire");
-                      return;
-                    }
-                    cancelMutation.mutate();
-                  }}
-                  disabled={cancelMutation.isPending || !raison.trim()}
-                >
-                  Confirmer l'annulation
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
-        {canHardDelete && (
-          <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm">
-                <Trash2 className="mr-2 h-4 w-4" /> Supprimer définitivement
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Supprimer définitivement ce paiement ?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Action irréversible réservée aux super-admins. Le paiement de{" "}
-                  {formatFCFA(paiement.montant)} sera effacé de la base. Préférez « Annuler ce
-                  paiement » pour conserver la traçabilité.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <div className="space-y-1 py-2">
-                <Label htmlFor="motif-del">
-                  Motif <span className="text-destructive">*</span>
-                </Label>
-                <Textarea
-                  id="motif-del"
-                  value={deleteMotif}
-                  onChange={(e) => setDeleteMotif(e.target.value)}
-                  placeholder="Justification (doublon, saisie test, etc.)"
-                  rows={2}
-                />
-              </div>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Retour</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!deleteMotif.trim()) {
-                      toast.error("Motif obligatoire");
-                      return;
-                    }
-                    deleteMutation.mutate();
-                  }}
-                  disabled={deleteMutation.isPending || !deleteMotif.trim()}
-                >
-                  Supprimer définitivement
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Retour</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!deleteMotif.trim()) {
+                        toast.error("Motif obligatoire");
+                        return;
+                      }
+                      deleteMutation.mutate();
+                    }}
+                    disabled={deleteMutation.isPending || !deleteMotif.trim()}
+                  >
+                    Supprimer
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
