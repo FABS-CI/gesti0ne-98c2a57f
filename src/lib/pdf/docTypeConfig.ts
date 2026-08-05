@@ -7,19 +7,19 @@
 export type FabsDocCode = "FC" | "PF" | "BC" | "BL" | "BR" | "AV" | "RP" | "BP" | "SP" | "IN";
 
 /** 
- * Le QR code est désormais activé pour tous les documents commerciaux 
- * pour permettre la vérification d'authenticité via UUID.
+ * Le QR code et l'UUID de vérification sont désormais activés 
+ * UNIQUEMENT sur les factures (FC).
  */
 const QR_BY_TYPE: Record<FabsDocCode, boolean> = {
   FC: true, // Facture
-  PF: true, // Proforma
-  BC: true, // Bon de commande
-  BL: true, // Bon de livraison
-  BR: true, // Bon de retour
-  AV: true, // Avoir
-  RP: true, // Reçu de paiement
+  PF: false, // Proforma
+  BC: false, // Bon de commande
+  BL: false, // Bon de livraison
+  BR: false, // Bon de retour
+  AV: false, // Avoir
+  RP: false, // Reçu de paiement
   BP: false, // Bulletin de paie (interne)
-  SP: true, // Bon spécimens
+  SP: false, // Bon spécimens
   IN: false, // Déclaration d'incident (interne)
 };
 
