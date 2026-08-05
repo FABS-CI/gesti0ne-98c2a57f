@@ -2876,8 +2876,6 @@ const STATUT_COMMANDE_LABEL: Record<string, string> = {
 };
 
 export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
-  const client = data.client ?? {
-export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise<Blob> {
   return generateUnifiedStatementPDF(data);
 }
 
@@ -2900,6 +2898,7 @@ async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise
   });
   let y = drawHeader(ctx, "RELEVÉ DE COMPTE CLIENT");
   y -= 24; 
+
 
 
   // ---------- Bloc infos client + période ----------
