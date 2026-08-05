@@ -226,7 +226,16 @@ export function LignesSection({
                     over ? "border-destructive/50 bg-destructive/5" : "bg-background"
                   }`}
                 >
-                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
+                  <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2">
+                    <ProductCoverThumb
+                      produit={{
+                        titre: l?.designation,
+                        cover_path: (l as any)?.cover_path || (l as any)?.produits?.cover_path,
+                        cover_thumb_path: (l as any)?.cover_thumb_path || (l as any)?.produits?.cover_thumb_path,
+                      }}
+                      size="sm"
+                      className="mt-5"
+                    />
                     <div className="min-w-0 space-y-1">
                       <Label className="text-[11px] uppercase text-muted-foreground">
                         Article #{i + 1}
@@ -240,6 +249,7 @@ export function LignesSection({
                         <p className="text-xs text-destructive">{err.produit_id.message}</p>
                       )}
                     </div>
+
                     <Button
                       type="button"
                       variant="ghost"
