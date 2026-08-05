@@ -2659,6 +2659,7 @@ export type Database = {
         Row: {
           actif: boolean
           adresse: string | null
+          contact: string | null
           created_at: string
           email: string | null
           fournisseur_id: string
@@ -2672,6 +2673,7 @@ export type Database = {
         Insert: {
           actif?: boolean
           adresse?: string | null
+          contact?: string | null
           created_at?: string
           email?: string | null
           fournisseur_id?: string
@@ -2685,6 +2687,7 @@ export type Database = {
         Update: {
           actif?: boolean
           adresse?: string | null
+          contact?: string | null
           created_at?: string
           email?: string | null
           fournisseur_id?: string
