@@ -80,17 +80,17 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
   const qte = all.reduce((s, x) => s + (Number(x.stock) || 0), 0);
   const columnStyles: Record<number, any> = {
     0: { cellWidth: 10, halign: "center", fontStyle: "bold" },
-    1: { cellWidth: 25, fontStyle: "bold" },
+    1: { cellWidth: 22, fontStyle: "bold" },
     2: { cellWidth: "auto" },
   };
 
   if (canSeeSensitive) {
-    columnStyles[3] = { cellWidth: 22, halign: "right" }; // Achat
-    columnStyles[4] = { cellWidth: 22, halign: "right" }; // Vente
-    columnStyles[5] = { cellWidth: 25, halign: "right", fontStyle: "bold" }; // Valeur Vente
-    columnStyles[6] = { cellWidth: 15, halign: "center", fontStyle: "bold" }; // Stock
+    columnStyles[3] = { cellWidth: 26, halign: "right" }; // Prix achat
+    columnStyles[4] = { cellWidth: 26, halign: "right" }; // Prix vente
+    columnStyles[5] = { cellWidth: 28, halign: "right", fontStyle: "bold" }; // Valeur vente
+    columnStyles[6] = { cellWidth: 14, halign: "center", fontStyle: "bold" }; // Stock
   } else {
-    columnStyles[3] = { cellWidth: 18, halign: "center", fontStyle: "bold" }; // Stock
+    columnStyles[3] = { cellWidth: 16, halign: "center", fontStyle: "bold" }; // Stock
   }
 
   await exportCsv(`liste_produits_fabs_${new Date().toISOString().slice(0, 10)}`, headers, rows, {
