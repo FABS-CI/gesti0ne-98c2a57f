@@ -454,7 +454,7 @@ function ApprovisionnementsPage() {
                           {ls.slice(0, 3).map((l, idx) => (
                             <ProductCoverThumb
                               key={l.ligne_id}
-                              produit={l.produits ? { ...l, ...l.produits } : l}
+                              produit={l.produits ? { ...l, ...l.produits, titre: l.designation } : { ...l, titre: l.designation }}
                               size="xs"
                               className="h-8 w-8 border-2 border-background shadow-sm"
                             />
