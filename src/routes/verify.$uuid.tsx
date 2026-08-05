@@ -93,7 +93,7 @@ function VerificationPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="flex items-start gap-3">
                   <Calendar className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
@@ -102,7 +102,7 @@ function VerificationPage() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 col-span-2">
+                <div className="flex items-start gap-3">
                   <User className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Client & Représentant</p>
