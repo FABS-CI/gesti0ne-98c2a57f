@@ -206,7 +206,6 @@ export class BaseDocument {
     const details = [
       { l: "Date", v: this.data.date },
       { l: "Heure", v: this.data.heure ?? new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }) },
-      { l: "Commercial", v: this.data.commercial ?? "—" },
     ];
 
     details.forEach((d, i) => {
@@ -226,6 +225,14 @@ export class BaseDocument {
 
   drawFooter() {
     const yBot = 55;
+
+    // Ligne orange au-dessus du pied de page
+    this.page.drawLine({
+      start: { x: MARGINS.x, y: 75 },
+      end: { x: PAGE.w - MARGINS.x, y: 75 },
+      thickness: 1,
+      color: COLORS.orangeFabs,
+    });
     
     // Colonnes Pied de page
     const colW = CONTENT_W / 3;
@@ -237,7 +244,7 @@ export class BaseDocument {
 
     // Col 2 : Contact
     this.page.drawText("CONTACT", { x: MARGINS.x + colW, y: yBot, size: 8, font: this.fonts.bold });
-    this.page.drawText("Tél: +225 07 59 73 71 23", { x: MARGINS.x + colW, y: yBot - 10, size: 7, font: this.fonts.regular });
+    this.page.drawText("Tél: +225 07 59 73 71 23 / 01 50 48 51 88", { x: MARGINS.x + colW, y: yBot - 10, size: 7, font: this.fonts.regular });
     this.page.drawText("Email: edition693fabs@gmail.com", { x: MARGINS.x + colW, y: yBot - 18, size: 7, font: this.fonts.regular });
 
     // Col 3 : Banques
@@ -245,18 +252,33 @@ export class BaseDocument {
     this.page.drawText("CORIS BANK: 01011 007630824101 34", { x: MARGINS.x + colW * 2, y: yBot - 10, size: 7, font: this.fonts.regular });
     this.page.drawText("SGBCI: 01123012343259990 95", { x: MARGINS.x + colW * 2, y: yBot - 18, size: 7, font: this.fonts.regular });
 
-    // Bandeau rouge (conditionnel : seulement sur les Factures)
+    // Bandeau (conditionnel : seulement sur les Factures)
     if (this.data.type === "Facture") {
-      this.page.drawRectangle({
-        x: MARGINS.x,
-        y: 20,
-        width: CONTENT_W,
-        height: 15,
-        color: rgb(1, 0.95, 0.95),
-        borderColor: COLORS.rougeFabs,
-        borderWidth: 0.5,
+      const warningText = "Paiements Mobile Money : Orange 07 59 73 71 23 / MTN 01 50 48 51 88";
+      const warningSub = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués sont valables.";
+      
+      const warnY = 85; // Juste au-dessus de la ligne orange
+
+      // Texte 1 : Mobile Money
+      const warnW1 = this.fonts.bold.widthOfTextAtSize(warningText, 8);
+      this.page.drawText(warningText, {
+        x: MARGINS.x + (CONTENT_W - warnW1) / 2,
+        y: warnY + 12,
+        size: 8,
+        font: this.fonts.bold,
+        color: COLORS.bleuFabs,
       });
-      const warning = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués sont valables.";
+
+      // Texte 2 : Legal notice
+      const warnW2 = this.fonts.italic.widthOfTextAtSize(warningSub, 7);
+      this.page.drawText(warningSub, {
+        x: MARGINS.x + (CONTENT_W - warnW2) / 2,
+        y: warnY + 2,
+        size: 7,
+        font: this.fonts.italic,
+        color: COLORS.rougeFabs,
+      });
+    }
       const warnW = this.fonts.bold.widthOfTextAtSize(warning, 7);
       this.page.drawText(warning, {
         x: MARGINS.x + (CONTENT_W - warnW) / 2,
