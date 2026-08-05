@@ -2375,7 +2375,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
 
   // Représentant commercial
   const rep = data.representant?.trim();
-  text(ctx, "Représentant commercial :", MARGIN.x, y, { size: 9, bold: true });
+  text(ctx, "Représentant :", MARGIN.x, y, { size: 9, bold: true });
   text(ctx, rep && rep.length ? rep : "Non renseigné", MARGIN.x + 150, y, {
     size: 9,
     color: rep ? FABS_COLORS.noir : FABS_COLORS.gris,
