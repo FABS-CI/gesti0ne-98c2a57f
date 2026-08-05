@@ -17,7 +17,9 @@ type Achat = {
   libelle: string;
   fournisseur: string | null;
   statut: string;
-  montant: number;
+  montant: number; // total achat
+  quantite: number; // qty for this product
+  prix_unitaire: number; // unit price for this product
 };
 
 export function AchatsTab({ achats }: { achats: Achat[] }) {
