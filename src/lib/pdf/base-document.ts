@@ -463,7 +463,7 @@ export class BaseDocument {
 
     // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
     const letY = curY + 20; // Revenir à la ligne du Total
-    const labelLetters = "Arrêtée à la somme de :";
+    const labelLetters = "Arrêtée à la présente facture à la somme de :";
     const labelW = this.fonts.bold.widthOfTextAtSize(labelLetters, 8);
     
     this.page.drawText(labelLetters, { x: MARGINS.x, y: letY - 13, size: 8, font: this.fonts.bold, color: COLORS.noir });
