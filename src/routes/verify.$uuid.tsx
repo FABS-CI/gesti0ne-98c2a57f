@@ -31,7 +31,7 @@ function VerificationPage() {
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center space-y-6">
         <div className="flex justify-center">
-          <img src="/fabs-logo.png" alt="FABS-CI" className="h-24 w-auto object-contain mb-2" />
+          <img src="https://id-preview--a02a1c3e-8d53-45c8-a47f-0d8cbb0e64fa.lovable.app/fabs-logo.png" alt="FABS-CI" className="h-24 w-auto object-contain mb-2" />
         </div>
 
         {isLoading ? (
