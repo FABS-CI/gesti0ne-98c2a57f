@@ -21,11 +21,20 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
 
           const results = await Promise.all(
             tables.map(async (table) => {
-              const { data, error } = await supabaseAdmin
+              // On essaie d'abord par UUID si c'est un UUID valide, sinon seulement par référence
+              const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
+              
+              let query = supabaseAdmin
                 .from(table.name as any)
-                .select('*')
-                .or(`${table.idCol}.eq.${uuid},${table.refCol}.eq.${uuid}`)
-                .maybeSingle();
+                .select('*');
+                
+              if (isUuid) {
+                query = query.or(`${table.idCol}.eq.${uuid},${table.refCol}.eq.${uuid}`);
+              } else {
+                query = query.eq(table.refCol, uuid);
+              }
+
+              const { data, error } = await query.maybeSingle();
               
               if (error) {
                 console.error(`Error querying ${table.name}:`, error);
