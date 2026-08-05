@@ -195,6 +195,7 @@ import { Route as AuthenticatedAbsencesNouveauRouteImport } from './routes/_auth
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as AuthenticatedEmployesEmployeIdIndexRouteImport } from './routes/_authenticated/employes.$employeId.index'
 import { Route as AuthenticatedCommandesCommandeIdIndexRouteImport } from './routes/_authenticated/commandes.$commandeId.index'
+import { Route as ApiPublicVerifyDocUuidRouteImport } from './routes/api/public/verify-doc.$uuid'
 import { Route as ApiPublicHooksRunSchedulesRouteImport } from './routes/api/public/hooks/run-schedules'
 import { Route as ApiPublicHooksGlobalBackupRouteImport } from './routes/api/public/hooks/global-backup'
 import { Route as ApiPublicHooksAlertRouteImport } from './routes/api/public/hooks/alert'
@@ -1280,6 +1281,11 @@ const AuthenticatedCommandesCommandeIdIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedCommandesCommandeIdRoute,
   } as any)
+const ApiPublicVerifyDocUuidRoute = ApiPublicVerifyDocUuidRouteImport.update({
+  id: '/api/public/verify-doc/$uuid',
+  path: '/api/public/verify-doc/$uuid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksRunSchedulesRoute =
   ApiPublicHooksRunSchedulesRouteImport.update({
     id: '/api/public/hooks/run-schedules',
@@ -1576,6 +1582,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
   '/api/public/hooks/global-backup': typeof ApiPublicHooksGlobalBackupRoute
   '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
+  '/api/public/verify-doc/$uuid': typeof ApiPublicVerifyDocUuidRoute
   '/commandes/$commandeId/': typeof AuthenticatedCommandesCommandeIdIndexRoute
   '/employes/$employeId/': typeof AuthenticatedEmployesEmployeIdIndexRoute
 }
@@ -1757,6 +1764,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
   '/api/public/hooks/global-backup': typeof ApiPublicHooksGlobalBackupRoute
   '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
+  '/api/public/verify-doc/$uuid': typeof ApiPublicVerifyDocUuidRoute
   '/commandes/$commandeId': typeof AuthenticatedCommandesCommandeIdIndexRoute
   '/employes/$employeId': typeof AuthenticatedEmployesEmployeIdIndexRoute
 }
@@ -1962,6 +1970,7 @@ export interface FileRoutesById {
   '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
   '/api/public/hooks/global-backup': typeof ApiPublicHooksGlobalBackupRoute
   '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
+  '/api/public/verify-doc/$uuid': typeof ApiPublicVerifyDocUuidRoute
   '/_authenticated/commandes/$commandeId/': typeof AuthenticatedCommandesCommandeIdIndexRoute
   '/_authenticated/employes/$employeId/': typeof AuthenticatedEmployesEmployeIdIndexRoute
 }
@@ -2167,6 +2176,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/alert'
     | '/api/public/hooks/global-backup'
     | '/api/public/hooks/run-schedules'
+    | '/api/public/verify-doc/$uuid'
     | '/commandes/$commandeId/'
     | '/employes/$employeId/'
   fileRoutesByTo: FileRoutesByTo
@@ -2348,6 +2358,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/alert'
     | '/api/public/hooks/global-backup'
     | '/api/public/hooks/run-schedules'
+    | '/api/public/verify-doc/$uuid'
     | '/commandes/$commandeId'
     | '/employes/$employeId'
   id:
@@ -2552,6 +2563,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/alert'
     | '/api/public/hooks/global-backup'
     | '/api/public/hooks/run-schedules'
+    | '/api/public/verify-doc/$uuid'
     | '/_authenticated/commandes/$commandeId/'
     | '/_authenticated/employes/$employeId/'
   fileRoutesById: FileRoutesById
@@ -2571,6 +2583,7 @@ export interface RootRouteChildren {
   ApiPublicHooksAlertRoute: typeof ApiPublicHooksAlertRoute
   ApiPublicHooksGlobalBackupRoute: typeof ApiPublicHooksGlobalBackupRoute
   ApiPublicHooksRunSchedulesRoute: typeof ApiPublicHooksRunSchedulesRoute
+  ApiPublicVerifyDocUuidRoute: typeof ApiPublicVerifyDocUuidRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -3877,6 +3890,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCommandesCommandeIdIndexRouteImport
       parentRoute: typeof AuthenticatedCommandesCommandeIdRoute
     }
+    '/api/public/verify-doc/$uuid': {
+      id: '/api/public/verify-doc/$uuid'
+      path: '/api/public/verify-doc/$uuid'
+      fullPath: '/api/public/verify-doc/$uuid'
+      preLoaderRoute: typeof ApiPublicVerifyDocUuidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/run-schedules': {
       id: '/api/public/hooks/run-schedules'
       path: '/api/public/hooks/run-schedules'
@@ -4771,6 +4791,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksAlertRoute: ApiPublicHooksAlertRoute,
   ApiPublicHooksGlobalBackupRoute: ApiPublicHooksGlobalBackupRoute,
   ApiPublicHooksRunSchedulesRoute: ApiPublicHooksRunSchedulesRoute,
+  ApiPublicVerifyDocUuidRoute: ApiPublicVerifyDocUuidRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

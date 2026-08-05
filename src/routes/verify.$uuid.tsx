@@ -1,7 +1,8 @@
 
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+// Supabase client removed from client-side verification for security and speed
+// import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle2, XCircle, Loader2, FileText, Calendar, User } from 'lucide-react';
 import { formatFCFA } from '@/lib/format';
 import { Button } from '@/components/ui/button';
@@ -16,31 +17,14 @@ function VerificationPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['verify-doc', uuid],
     queryFn: async () => {
-      // Stratégie de recherche parallèle pour la rapidité
-      const tables = [
-        { name: 'factures', idCol: 'facture_id', type: 'Facture' },
-        { name: 'proformas', idCol: 'proforma_id', type: 'Proforma' },
-        { name: 'commandes', idCol: 'commande_id', type: 'Commande' },
-        { name: 'bons_livraison', idCol: 'bl_id', type: 'Bon de Livraison' }
-      ];
-
-      const results = await Promise.all(
-        tables.map(async (table) => {
-          const { data } = await supabase
-            .from(table.name as any)
-            .select('*')
-            .eq(table.idCol, uuid)
-            .maybeSingle();
-          return data ? { ...data, docType: table.type } : null;
-        })
-      );
-
-      const found = results.find(r => r !== null);
-      if (found) return found;
-      
-      throw new Error('Document non trouvé');
+      const response = await fetch(`/api/public/verify-doc/${uuid}`);
+      if (!response.ok) {
+        if (response.status === 404) throw new Error('Document non trouvé');
+        throw new Error('Erreur de vérification');
+      }
+      return response.json();
     },
-    staleTime: 1000 * 60 * 5, // Cache de 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 
   return (
@@ -96,7 +80,7 @@ function VerificationPage() {
                 <Calendar className="h-5 w-5 text-slate-400" />
                 <div>
                   <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">Date d'émission</p>
-                  <p className="text-slate-900 font-semibold">{new Date(data.date_facture || data.date_commande || data.date_bon).toLocaleDateString('fr-FR')}</p>
+                  <p className="text-slate-900 font-semibold">{data.date ? new Date(data.date).toLocaleDateString('fr-FR') : '—'}</p>
                 </div>
               </div>
 
@@ -111,7 +95,7 @@ function VerificationPage() {
               <div className="pt-4 border-t border-slate-200">
                 <div className="flex justify-between items-center">
                   <p className="text-slate-500 font-medium">Montant Total</p>
-                  <p className="text-xl font-bold text-blue-900">{formatFCFA(data.montant_total || data.montant_ttc || data.montant)}</p>
+                  <p className="text-xl font-bold text-blue-900">{formatFCFA(data.montant)}</p>
                 </div>
               </div>
             </div>
