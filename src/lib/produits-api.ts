@@ -23,6 +23,8 @@ export type Produit = {
   cover_thumb_path?: string | null;
   /** Utilisé pour le cache-busting des URLs signées de couverture. */
   cover_updated_at?: string | null;
+  /** Dernier prix d'achat constaté (injecté par jointure). */
+  dernier_prix_achat?: { prix_unitaire: number; created_at: string }[] | null;
 };
 
 export type ProduitInput = {
@@ -50,7 +52,11 @@ export type ListProduitsParams = {
 export async function listProduits(params: ListProduitsParams = {}) {
   const { q, categorie, niveau, actif, page = 1, pageSize = 20 } = params;
   // Lecture via v_produits pour exposer `stock` calculé depuis stocks_depots.
-  let query = supabase.from("v_produits").select("*", { count: "estimated" });
+  // On récupère aussi le dernier prix d'achat via une sous-requête sur achat_lignes.
+  let query = supabase.from("v_produits").select(`
+    *,
+    dernier_prix_achat:achat_lignes(prix_unitaire, created_at)
+  `, { count: "estimated" });
 
   if (q)
     query = query.or(

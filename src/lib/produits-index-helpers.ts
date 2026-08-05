@@ -48,7 +48,7 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
     "N°",
     "Réf.",
     "Désignation",
-    ...(canSeeSensitive ? ["Prix achat", "Prix vente", "Valeur vente"] : []),
+    ...(canSeeSensitive ? ["Dernier Achat", "Prix vente", "Valeur vente"] : []),
     "Stock",
   ];
 
@@ -61,7 +61,10 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
     ];
 
     if (canSeeSensitive) {
-      row.push(formatFCFA(prod.prix_achat, false));
+      const dernierAchat = prod.dernier_prix_achat && prod.dernier_prix_achat.length > 0 
+        ? prod.dernier_prix_achat.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0].prix_unitaire 
+        : prod.prix_achat;
+      row.push(formatFCFA(dernierAchat, false));
       row.push(formatFCFA(prod.prix_vente, false));
       row.push(formatFCFA(prod.stock * prod.prix_vente, false));
     }
@@ -85,7 +88,7 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
   };
 
   if (canSeeSensitive) {
-    columnStyles[3] = { cellWidth: 26, halign: "right" }; // Prix achat
+    columnStyles[3] = { cellWidth: 26, halign: "right" }; // Dernier Achat
     columnStyles[4] = { cellWidth: 26, halign: "right" }; // Prix vente
     columnStyles[5] = { cellWidth: 28, halign: "right", fontStyle: "bold" }; // Valeur vente
     columnStyles[6] = { cellWidth: 14, halign: "center", fontStyle: "bold" }; // Stock
