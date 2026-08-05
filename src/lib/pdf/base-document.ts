@@ -305,30 +305,34 @@ export class BaseDocument {
       this.page.drawText(item.v, { x: MARGINS.x + 80, y: y - 48 - i * 11, size: 8, font: this.fonts.bold });
     });
 
-    // Bloc QR
-    const qrX = MARGINS.x + boxW + 15;
-    this.page.drawRectangle({
-      x: qrX,
-      y: y - boxH,
-      width: boxW,
-      height: boxH,
-      color: COLORS.grisClair,
-      opacity: 0.5,
-    });
+    // Bloc QR - Affiché uniquement si autorisé pour ce type de document (Facture seulement)
+    // On importe dynamiquement pour éviter de polluer docTypeConfig avec des types PDF
+    const { shouldShowQr } = await import("./docTypeConfig");
+    const docCode = this.data.reference.split('-')[0] as any;
+    
+    if (shouldShowQr(docCode)) {
+      const qrX = MARGINS.x + boxW + 15;
+      this.page.drawRectangle({
+        x: qrX,
+        y: y - boxH,
+        width: boxW,
+        height: boxH,
+        color: COLORS.grisClair,
+        opacity: 0.5,
+      });
 
-    try {
-      const { default: QRCode } = await import("qrcode");
-      const url = buildQrUrl(this.data.id);
-      const qrDataUrl = await QRCode.toDataURL(url, { margin: 0, width: 120 });
-      const qrImage = await this.doc.embedPng(qrDataUrl);
-      this.page.drawImage(qrImage, { x: qrX + 10, y: y - boxH + 15, width: 60, height: 60 });
-      
-      const qrText = "Scanner pour vérifier l'authenticité de ce document.";
-      // Wrap text manually or use a helper
-      this.page.drawText("Scanner pour vérifier", { x: qrX + 80, y: y - 40, size: 7, font: this.fonts.regular });
-      this.page.drawText("l'authenticité", { x: qrX + 80, y: y - 50, size: 7, font: this.fonts.regular });
-    } catch (e) {
-      console.error("QR Error", e);
+      try {
+        const { default: QRCode } = await import("qrcode");
+        const url = buildQrUrl(this.data.id);
+        const qrDataUrl = await QRCode.toDataURL(url, { margin: 0, width: 120 });
+        const qrImage = await this.doc.embedPng(qrDataUrl);
+        this.page.drawImage(qrImage, { x: qrX + 10, y: y - boxH + 15, width: 60, height: 60 });
+        
+        this.page.drawText("Scanner pour vérifier", { x: qrX + 80, y: y - 40, size: 7, font: this.fonts.regular });
+        this.page.drawText("l'authenticité", { x: qrX + 80, y: y - 50, size: 7, font: this.fonts.regular });
+      } catch (e) {
+        console.error("QR Error", e);
+      }
     }
 
     return y - boxH - 20;
