@@ -280,6 +280,7 @@ function ProformaDetailPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Désignation</TableHead>
+                <TableHead className="text-right">Remise (%)</TableHead>
                 <TableHead className="text-right">Qté</TableHead>
                 <TableHead className="text-right">P.U.</TableHead>
                 <TableHead className="text-right">Total</TableHead>
@@ -296,6 +297,9 @@ function ProformaDetailPage() {
                 lignes.map((l) => (
                   <TableRow key={l.ligne_id}>
                     <TableCell>{l.designation}</TableCell>
+                    <TableCell className="text-right text-destructive">
+                      {l.remise_pct ? `${l.remise_pct} %` : "—"}
+                    </TableCell>
                     <TableCell className="text-right">{l.quantite}</TableCell>
                     <TableCell className="text-right">{formatFCFA(l.prix_unitaire)}</TableCell>
                     <TableCell className="text-right font-medium">
