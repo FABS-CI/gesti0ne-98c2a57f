@@ -6,11 +6,14 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(clients.claim());
 });
 
-self.addEventListener('fetch', (event: FetchEvent) => {
-  // Simple network-first strategy for dynamic resources
-  // and stale-while-revalidate for static ones could be added here
-  // For now, we focus on installability which requires a fetch handler
+self.addEventListener('fetch', (event) => {
+  // Le mode 'navigate' doit être géré pour l'installabilité PWA
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request));
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        // En cas d'échec réseau, on laisse le navigateur gérer ou on pourrait servir une page offline
+        return caches.match('/');
+      })
+    );
   }
 });

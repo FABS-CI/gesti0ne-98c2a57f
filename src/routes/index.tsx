@@ -21,8 +21,9 @@ function IndexRedirect() {
   }, [user, isLoading, navigate]);
 
   return (
-    <div className="flex h-screen items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    <div className="flex h-screen flex-col items-center justify-center gap-4">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+      <p className="text-orange-600 font-medium animate-pulse">Chargement de GESTI-ONE...</p>
     </div>
   );
 }
