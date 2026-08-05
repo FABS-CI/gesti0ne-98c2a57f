@@ -452,17 +452,17 @@ export class BaseDocument {
     
     if (this.totals.remiseLignes) {
       const pct = this.totals.remiseLignesPct ? ` (${this.totals.remiseLignesPct.toFixed(2)} %)` : "";
-      row(`Remise sur lignes (Remise A)${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
+      row(`Remise sur lignes${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
     }
     
     if (this.totals.remiseGlobale) {
-      row(`Remise globale (Remise B) (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
+      row(`Remise globale (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
     }
 
     row("TOTAL À PAYER", formatFCFA(this.totals.totalAPayer), true);
 
     // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
-    const letY = curY + 20; // Revenir à la ligne du Total
+    const letY = curY - 10; // Décalé vers le bas pour éviter le chevauchement avec le bloc Total
     const labelLetters = "Arrêtée à la présente facture à la somme de :";
     const labelW = this.fonts.bold.widthOfTextAtSize(labelLetters, 8);
     
