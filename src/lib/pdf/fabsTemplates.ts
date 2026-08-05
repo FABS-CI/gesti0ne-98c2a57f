@@ -3047,13 +3047,20 @@ async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise
         const x0 = colX[k];
         const x1 = (colX[k + 1] ?? MARGIN.x + CONTENT_W) - 4;
         const ty = y + 4;
-        const val = fitText(ctx, rows[i][k] ?? "", Math.max(4, x1 - x0 - 4), {
+        const valRaw = rows[i][k] ?? "";
+        const val = fitText(ctx, valRaw, Math.max(4, x1 - x0 - 4), {
           size: 7,
           bold: opts?.highlightLast && isLast,
         });
         const bold = opts?.highlightLast && isLast;
-        if (c.align === "right") textRight(ctx, val, x1, ty, { size: 7, bold });
-        else text(ctx, val, x0 + 3, ty, { size: 7, bold });
+        
+        // Coloration en rouge pour les lignes de type retour/avoir dans l'historique
+        const isMvtTable = cols.length === 7;
+        const isRetourRow = isMvtTable && rows[i][1] === "Retour / Avoir";
+        const color = isRetourRow ? FABS_COLORS.rouge : undefined;
+
+        if (c.align === "right") textRight(ctx, val, x1, ty, { size: 7, bold, color });
+        else text(ctx, val, x0 + 3, ty, { size: 7, bold, color });
       });
     }
 
@@ -3116,6 +3123,7 @@ async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise
     solde += debit - credit;
     const typeLow = (l.type || "").toLowerCase();
     const isFact = typeLow.includes("facture");
+    const isRemise = typeLow.includes("remise") || typeLow.includes("avoir") || typeLow.includes("retour");
     const typeAffiche = typeLow.includes("avoir") || typeLow.includes("retour")
       ? "Retour / Avoir"
       : typeLow.includes("paiement") || typeLow.includes("règlement") || typeLow.includes("reglement")
@@ -3190,12 +3198,15 @@ async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise
     });
     let ry = y - 18;
     recapLines.forEach(([label, val], i) => {
+      const isImpaye = label.toLowerCase().includes("impayé") || label.toLowerCase().includes("solde");
+      const isRemise = label.toLowerCase().includes("remise") || label.toLowerCase().includes("avoir") || label.toLowerCase().includes("retour");
+      const color = (isImpaye || isRemise) ? FABS_COLORS.rouge : undefined;
       const last = i === recapLines.length - 2;
-      text(ctx, label, boxX + 8, ry, { size: 8.5, bold: last });
+      text(ctx, label, boxX + 8, ry, { size: 8.5, bold: last, color });
       textRight(ctx, val, boxX + boxW - 8, ry, {
         size: last ? 10 : 8.5,
         bold: true,
-        color: last ? ctx.theme.title : undefined,
+        color: last ? ctx.theme.title : color,
       });
       ry -= 14;
     });
