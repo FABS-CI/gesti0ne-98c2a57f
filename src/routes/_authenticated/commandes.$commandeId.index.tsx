@@ -1,6 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Ban, Calendar, FileText, Pencil, Receipt, User } from "lucide-react";
+import { ArrowLeft, Ban, Calendar, FileDown, FileText, Loader2, Pencil, Receipt, User } from "lucide-react";
+import { generateUnifiedCommercialPDF } from "@/lib/pdf/unified-generator";
+import { fileNameFor } from "@/lib/pdf/fabsTemplates";
+import {
+  loadCommandeDocLignes,
+  loadClientInfoForCommande,
+  loadCommandeTotals,
+} from "@/lib/pdf/enrich-lignes";
+import { usePdfDownload } from "@/hooks/use-pdf-download";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -55,6 +63,7 @@ function CommandeDetailPage() {
   const { has: hasPermission, isSuperAdmin } = usePermissions();
   const canModifier = hasPermission("commandes.modifier");
   const canDemanderAnnulation = hasPermission("commandes.supprimer") || isSuperAdmin;
+  const pdf = usePdfDownload();
   const queryClient = useQueryClient();
   const [annulOpen, setAnnulOpen] = useState(false);
   const [annulMotif, setAnnulMotif] = useState("");
@@ -114,17 +123,72 @@ function CommandeDetailPage() {
             {statut.label}
           </Badge>
         )}
-        {canModifier &&
-          (isSuperAdmin ||
-            commande.statut === "brouillon" ||
-            commande.statut === "en_attente_validation") && (
-            <Button asChild variant="default" size="sm">
-              <Link to="/commandes/$commandeId/modifier" params={{ commandeId }}>
-                <Pencil className="mr-2 h-4 w-4" />
-                Modifier la commande
-              </Link>
-            </Button>
-          )}
+        <div className="flex items-center gap-2">
+          {(() => {
+            const st = pdf.getState(commandeId);
+            return (
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={st.loading}
+                onClick={() =>
+                  pdf.download(
+                    commandeId,
+                    async () => {
+                      const [lignes, clientInfo, totals] = await Promise.all([
+                        loadCommandeDocLignes(commandeId),
+                        loadClientInfoForCommande(commandeId),
+                        loadCommandeTotals(commandeId),
+                      ]);
+                      return generateUnifiedCommercialPDF("Commande", {
+                        reference: commande.reference,
+                        date: commande.date_commande,
+                        clientNom: commande.client_nom,
+                        totalVente: Number(commande.montant_total),
+                        montantHT: Number(commande.montant_total),
+                        lignes,
+                        ...clientInfo,
+                        ...totals,
+                      });
+                    },
+                    fileNameFor(commande.reference, commande.client_nom),
+                    {
+                      type: "BC",
+                      data: {
+                        ...commande,
+                        date: commande.date_commande,
+                        statut: STATUT_LABEL[commande.statut]
+                          ? {
+                              label: STATUT_LABEL[commande.statut].label,
+                              color: STATUT_LABEL[commande.statut].color,
+                            }
+                          : null,
+                      } as any,
+                    }
+                  )
+                }
+              >
+                {st.loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <FileDown className="mr-2 h-4 w-4" />
+                )}
+                {st.loading ? "Génération…" : "Télécharger PDF"}
+              </Button>
+            );
+          })()}
+          {canModifier &&
+            (isSuperAdmin ||
+              commande.statut === "brouillon" ||
+              commande.statut === "en_attente_validation") && (
+              <Button asChild variant="default" size="sm">
+                <Link to="/commandes/$commandeId/modifier" params={{ commandeId }}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Modifier la commande
+                </Link>
+              </Button>
+            )}
+        </div>
         {canDemanderAnnulation &&
           commande.statut !== "annulee" &&
           commande.statut !== "annulation_en_attente" && (

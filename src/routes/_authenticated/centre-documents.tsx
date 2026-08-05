@@ -6,10 +6,10 @@ import { FileText, Receipt, Truck, RotateCcw, Search, Loader2 } from "lucide-rea
 import { supabase } from "@/integrations/supabase/client";
 import { formatFCFA } from "@/lib/format";
 import {
-  generateFacturePDF,
-  generateProformaPDF,
-  generateBonLivraisonPDF,
-  generateBonRetourPDF,
+  generateUnifiedCommercialPDF,
+  generateUnifiedStatementPDF,
+} from "@/lib/pdf/unified-generator";
+import {
   fileNameFor,
   type DocBase,
 } from "@/lib/pdf/fabsTemplates";
@@ -165,7 +165,7 @@ function makeGenerator(kind: DocKind, row: Row): () => Promise<Blob> {
         loadFactureTotals(row.id),
       ]);
       doc.lignes = lignes;
-      return generateFacturePDF({
+      return generateUnifiedCommercialPDF("Facture", {
         ...doc,
         ...info,
         ...totals,
@@ -179,7 +179,7 @@ function makeGenerator(kind: DocKind, row: Row): () => Promise<Blob> {
         loadProformaTotals(row.id),
       ]);
       doc.lignes = lignes;
-      return generateProformaPDF({
+      return generateUnifiedCommercialPDF("Proforma", {
         ...doc,
         ...info,
         ...totals,
@@ -198,7 +198,7 @@ function makeGenerator(kind: DocKind, row: Row): () => Promise<Blob> {
         bl?.commande_id ? loadCommandeTotals(bl.commande_id) : Promise.resolve({}),
       ]);
       doc.lignes = lignes;
-      return generateBonLivraisonPDF({
+      return generateUnifiedCommercialPDF("Bon de Livraison", {
         ...doc,
         ...info,
         ...totals,
@@ -216,12 +216,12 @@ function makeGenerator(kind: DocKind, row: Row): () => Promise<Blob> {
       br?.facture_id ? loadFactureTotals(br.facture_id) : Promise.resolve({}),
     ]);
     doc.lignes = lignes;
-    return generateBonRetourPDF({
-      ...doc,
-      ...info,
-      ...totals,
-      clientNom: info.clientNom ?? doc.clientNom,
-    });
+      return generateUnifiedCommercialPDF("Bon de Retour", {
+        ...doc,
+        ...info,
+        ...totals,
+        clientNom: info.clientNom ?? doc.clientNom,
+      });
   };
 }
 

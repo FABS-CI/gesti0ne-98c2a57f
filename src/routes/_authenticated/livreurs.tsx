@@ -7,7 +7,7 @@ const config: ResourceConfig = {
   table: "livreurs",
   idField: "livreur_id",
   title: "Livreurs",
-  subtitle: "Fiche des livreurs (aucun accès à l'application, données à titre logistique)",
+  subtitle: "Fiche des livreurs (données logistiques — aucun accès à l'application)",
   icon: User,
   newLabel: "Nouveau livreur",
   entityLabel: "le livreur",

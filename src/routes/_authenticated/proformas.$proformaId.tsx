@@ -1,6 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Calendar, FileText, Receipt, User } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Calendar, FileDown, FileText, Loader2, Receipt, User } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
+import { generateUnifiedCommercialPDF } from "@/lib/pdf/unified-generator";
+import { fileNameFor } from "@/lib/pdf/fabsTemplates";
+import { pdfCacheKey } from "@/lib/pdf/pdfCache";
+import { viewCached, printCached, emailDoc } from "@/lib/pdf/actions";
+import {
+  loadProformaDocLignes,
+  loadClientInfoForProforma,
+  loadProformaTotals,
+} from "@/lib/pdf/enrich-lignes";
+import { usePdfDownload } from "@/hooks/use-pdf-download";
 
 import { supabase } from "@/integrations/supabase/client";
 import { formatFCFA } from "@/lib/format";
@@ -91,6 +103,7 @@ function ProformaDetailPage() {
     queryKey: ["proforma", proformaId],
     queryFn: () => getProforma(proformaId),
   });
+  const pdf = usePdfDownload();
   const { data: lignes = [] } = useQuery({
     queryKey: ["proforma-lignes", proformaId],
     queryFn: () => getProformaLignes(proformaId),
@@ -133,6 +146,52 @@ function ProformaDetailPage() {
               {proforma.client_nom ?? "Client non renseigné"}
             </p>
           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {(() => {
+            const st = pdf.getState(proformaId);
+            return (
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={st.loading}
+                onClick={() =>
+                  pdf.download(
+                    proformaId,
+                    async () => {
+                      const [lignes, clientInfo, totals] = await Promise.all([
+                        loadProformaDocLignes(proformaId),
+                        loadClientInfoForProforma(proformaId),
+                        loadProformaTotals(proformaId),
+                      ]);
+                      return generateUnifiedCommercialPDF("Proforma", {
+                        reference: proforma.reference,
+                        date: proforma.date_proforma,
+                        clientNom: proforma.client_nom,
+                        totalVente: Number(proforma.montant_total),
+                        montantHT: Number(proforma.montant_total),
+                        lignes,
+                        ...clientInfo,
+                        ...totals,
+                      });
+                    },
+                    fileNameFor(proforma.reference, proforma.client_nom),
+                    {
+                      type: "PF",
+                      data: { ...proforma, date: proforma.date_proforma } as any,
+                    }
+                  )
+                }
+              >
+                {st.loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <FileDown className="mr-2 h-4 w-4" />
+                )}
+                {st.loading ? "Génération…" : "Télécharger PDF"}
+              </Button>
+            );
+          })()}
         </div>
       </div>
 

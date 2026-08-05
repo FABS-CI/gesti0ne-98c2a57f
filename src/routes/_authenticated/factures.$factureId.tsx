@@ -25,7 +25,8 @@ import {
   STATUT_FACTURE_LABEL,
 } from "@/lib/factures-api";
 import { formatFCFA } from "@/lib/format";
-import { generateFacturePDF, fileNameFor } from "@/lib/pdf/fabsTemplates";
+import { fileNameFor } from "@/lib/pdf/fabsTemplates";
+import { generateUnifiedCommercialPDF } from "@/lib/pdf/unified-generator";
 import {
   loadFactureDocLignes,
   loadClientInfoForFacture,
@@ -171,10 +172,10 @@ function FactureDetailPage() {
                         loadClientInfoForFacture(facture.facture_id),
                         loadFactureTotals(facture.facture_id),
                       ]);
-                      return generateFacturePDF({ ...docData, ...clientInfo, ...totals, lignes });
+                      return generateUnifiedCommercialPDF("Facture", { ...docData, ...clientInfo, ...totals, lignes });
                     },
                     fileNameFor(facture.reference, facture.client_nom),
-                    { type: "FC", data: docData },
+                    { type: "FC", data: { ...docData, date: docData.date } },
                   )
                 }
               >
