@@ -452,11 +452,11 @@ export class BaseDocument {
     
     if (this.totals.remiseLignes) {
       const pct = this.totals.remiseLignesPct ? ` (${this.totals.remiseLignesPct.toFixed(2)} %)` : "";
-      row(`Remise lignes${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
+      row(`Remise sur lignes (Remise A)${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
     }
     
     if (this.totals.remiseGlobale) {
-      row(`Remise globale (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
+      row(`Remise globale (Remise B) (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
     }
 
     row("TOTAL À PAYER", formatFCFA(this.totals.totalAPayer), true);
