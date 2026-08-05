@@ -94,7 +94,6 @@ export async function exportPdf(
     startY: tableStartY,
     head: [headers],
     body,
-    headStyles: options?.headStyles ?? defaultHead,
     styles: {
       fontSize: 9,
       cellPadding: 3,
@@ -107,7 +106,7 @@ export async function exportPdf(
       minCellHeight: 8,
     },
     bodyStyles: { fontStyle: "normal", textColor: [20, 20, 20] },
-    alternateRowStyles: { fillColor: [247, 247, 247] }, // Gris clair #F7F7F7 per instructions previous turn
+    alternateRowStyles: { fillColor: [247, 247, 247] }, // Gris clair #F7F7F7
     headStyles: {
       ...(options?.headStyles ?? defaultHead),
       cellPadding: 4,
