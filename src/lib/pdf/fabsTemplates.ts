@@ -1831,7 +1831,7 @@ async function buildTableDoc(
   y = await drawTableau(ctx, TITRES[type], cols, data.lignes ?? [], y, opts.groupByCycle ?? false);
 
   // V10 : encadré 6 lignes pour les documents de vente, totaux génériques sinon
-  const useV10 = type === "FC" || type === "PF" || type === "AV" || type === "BC";
+  const useV10 = type === "FC" || type === "PF" || type === "AV" || type === "BC" || type === "BL";
   const neededAfterTable =
     (useV10 ? 112 : 64) + (opts.mentionRouge ? 20 : 0) + (opts.signatures === "bl" ? 45 : 0);
   if (y - neededAfterTable < BODY_BOTTOM_Y) {

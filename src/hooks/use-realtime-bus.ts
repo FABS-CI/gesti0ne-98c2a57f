@@ -104,7 +104,15 @@ export function useRealtimeBus() {
       qc.invalidateQueries({ queryKey: ["livsuivi"] });
       qc.invalidateQueries({ queryKey: ["livsuivi-commandes"] });
     });
-    on("proformas", () => qc.invalidateQueries({ queryKey: ["proformas"] }));
+    on("proformas", (r, evt) => {
+      qc.invalidateQueries({ queryKey: ["proformas"] });
+      if (r.proforma_id) qc.invalidateQueries({ queryKey: ["proforma", r.proforma_id] });
+      
+      const ref = typeof r.reference === "string" ? r.reference : null;
+      if (evt === "INSERT") {
+        toast.message(ref ? `Nouvelle proforma ${ref}` : "Nouvelle proforma enregistrée");
+      }
+    });
 
     channel.subscribe();
 
