@@ -180,42 +180,6 @@ function CommandeDetailPage() {
         {canDemanderAnnulation &&
           commande.statut !== "annulee" &&
           commande.statut !== "annulation_en_attente" && (
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={st.loading}
-              onClick={() =>
-                pdf.download(
-                  commandeId,
-                  async () => {
-                    const [lignes, clientInfo, totals] = await Promise.all([
-                      loadCommandeDocLignes(commandeId),
-                      loadClientInfoForCommande(commandeId),
-                      loadCommandeTotals(commandeId),
-                    ]);
-                    return generateUnifiedCommercialPDF("Commande", {
-                      reference: commande.reference,
-                      date: commande.date_commande,
-                      clientNom: commande.client_nom,
-                      totalVente: Number(commande.montant_total),
-                      montantHT: Number(commande.montant_total),
-                      lignes,
-                      ...clientInfo,
-                      ...totals,
-                    });
-                  },
-                  fileNameFor(commande.reference, commande.client_nom),
-                  { type: "BC", data: commande }
-                )
-              }
-            >
-              {st.loading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <FileDown className="mr-2 h-4 w-4" />
-              )}
-              {st.loading ? "Génération…" : "Télécharger PDF"}
-            </Button>
             <Button variant="outline" size="sm" onClick={() => setAnnulOpen(true)}>
               <Ban className="mr-2 h-4 w-4 text-destructive" />
               Demander l'annulation
