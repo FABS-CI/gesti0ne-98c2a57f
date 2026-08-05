@@ -245,25 +245,27 @@ export class BaseDocument {
     this.page.drawText("CORIS BANK: 01011 007630824101 34", { x: MARGINS.x + colW * 2, y: yBot - 10, size: 7, font: this.fonts.regular });
     this.page.drawText("SGBCI: 01123012343259990 95", { x: MARGINS.x + colW * 2, y: yBot - 18, size: 7, font: this.fonts.regular });
 
-    // Bandeau rouge
-    this.page.drawRectangle({
-      x: MARGINS.x,
-      y: 20,
-      width: CONTENT_W,
-      height: 15,
-      color: rgb(1, 0.95, 0.95),
-      borderColor: COLORS.rougeFabs,
-      borderWidth: 0.5,
-    });
-    const warning = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués sont valables.";
-    const warnW = this.fonts.bold.widthOfTextAtSize(warning, 7);
-    this.page.drawText(warning, {
-      x: MARGINS.x + (CONTENT_W - warnW) / 2,
-      y: 25,
-      size: 7,
-      font: this.fonts.bold,
-      color: COLORS.rougeFabs,
-    });
+    // Bandeau rouge (conditionnel : seulement sur les Factures)
+    if (this.data.type === "Facture") {
+      this.page.drawRectangle({
+        x: MARGINS.x,
+        y: 20,
+        width: CONTENT_W,
+        height: 15,
+        color: rgb(1, 0.95, 0.95),
+        borderColor: COLORS.rougeFabs,
+        borderWidth: 0.5,
+      });
+      const warning = "IMPORTANT : Seuls les paiements effectués sur les numéros officiels indiqués sont valables.";
+      const warnW = this.fonts.bold.widthOfTextAtSize(warning, 7);
+      this.page.drawText(warning, {
+        x: MARGINS.x + (CONTENT_W - warnW) / 2,
+        y: 25,
+        size: 7,
+        font: this.fonts.bold,
+        color: COLORS.rougeFabs,
+      });
+    }
 
     // Pagination
     const pageCount = this.doc.getPageCount();
