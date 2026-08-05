@@ -46,23 +46,28 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
   }
   const headers = [
     "N°",
-    "Code article",
+    "Réf.",
     "Désignation",
-    "Prix achat (FCFA)",
-    "Prix vente (FCFA)",
+    ...(canSeeSensitive ? ["Prix achat", "Prix vente", "Valeur vente"] : []),
     "Stock",
   ];
+
   const rows = all.map((prod, i) => {
     const parts = [prod.titre, prod.auteur || null].filter(Boolean);
-    return [
+    const row = [
       String(i + 1),
       prod.reference,
       parts.join(" — "),
-
-      canSeeSensitive ? formatFCFA(prod.prix_achat, false) : "—",
-      canSeeSensitive ? formatFCFA(prod.prix_vente, false) : "—",
-      String(prod.stock ?? 0),
     ];
+
+    if (canSeeSensitive) {
+      row.push(formatFCFA(prod.prix_achat, false));
+      row.push(formatFCFA(prod.prix_vente, false));
+      row.push(formatFCFA(prod.stock * prod.prix_vente, false));
+    }
+
+    row.push(String(prod.stock ?? 0));
+    return row;
   });
   const totalAchat = all.reduce(
     (s, x) => s + (Number(x.prix_achat) || 0) * (Number(x.stock) || 0),
@@ -73,15 +78,23 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
     0,
   );
   const qte = all.reduce((s, x) => s + (Number(x.stock) || 0), 0);
+  const columnStyles: Record<number, any> = {
+    0: { cellWidth: 10, halign: "center", fontStyle: "bold" },
+    1: { cellWidth: 25, fontStyle: "bold" },
+    2: { cellWidth: "auto" },
+  };
+
+  if (canSeeSensitive) {
+    columnStyles[3] = { cellWidth: 22, halign: "right" }; // Achat
+    columnStyles[4] = { cellWidth: 22, halign: "right" }; // Vente
+    columnStyles[5] = { cellWidth: 25, halign: "right", fontStyle: "bold" }; // Valeur Vente
+    columnStyles[6] = { cellWidth: 15, halign: "center", fontStyle: "bold" }; // Stock
+  } else {
+    columnStyles[3] = { cellWidth: 18, halign: "center", fontStyle: "bold" }; // Stock
+  }
+
   await exportCsv(`liste_produits_fabs_${new Date().toISOString().slice(0, 10)}`, headers, rows, {
-    columnStyles: {
-      0: { cellWidth: 10, halign: "center", fontStyle: "bold", overflow: "visible" },
-      1: { cellWidth: 28, fontStyle: "bold", overflow: "visible" },
-      2: { cellWidth: "auto" },
-      3: { cellWidth: 26, halign: "right" },
-      4: { cellWidth: 26, halign: "right", fontStyle: "bold" },
-      5: { cellWidth: 18, halign: "center", fontStyle: "bold" },
-    },
+    columnStyles,
 
     pageTitle: "LISTE DES PRODUITS",
     summary: [
