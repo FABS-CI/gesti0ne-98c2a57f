@@ -2,6 +2,7 @@ import { CommercialDocument } from "./commercial-document";
 import { StatementDocument } from "./statement-document";
 import { resolveDiscountMode, type DocTotals as DataTotals } from "./enrich-lignes";
 import type { DocBase as DataBase } from "./fabsTemplates";
+import { numberToLetters } from "./number-to-letters";
 
 /**
  * Adaptateur pour brancher le nouveau moteur BaseDocument sur les fonctions legacy
@@ -34,7 +35,7 @@ export async function generateUnifiedCommercialPDF(
     remiseGlobalePct: data.remiseGlobalePct || 0,
     tva: data.tva || 0,
     totalAPayer: data.totalTTC || data.montantHT || 0,
-    montantLettres: (data as any).montantLettres || (data as any).montantEnLettres || "Arrêtée à la somme de zéro francs CFA",
+    montantLettres: (data as any).montantLettres || (data as any).montantEnLettres || numberToLetters(data.totalTTC || data.montantHT || 0),
   };
 
   const doc = new CommercialDocument(docBase, totals);
