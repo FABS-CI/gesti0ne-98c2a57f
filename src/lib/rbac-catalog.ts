@@ -111,7 +111,7 @@ export const MODULE_GROUPS: ModuleGroup[] = [
       { code: "flotte", libelle: "Flotte" },
       { code: "tournees", libelle: "Tournées" },
       { code: "livreurs", libelle: "Livreurs" },
-      { code: "colisage_responsables", libelle: "Préparateurs / Responsables colisage" },
+      { code: "colisage_responsables", libelle: "Préparateurs & Responsables colisage" },
       { code: "livraison_suivi", libelle: "Suivi des livraisons" },
       { code: "bons_livraison", libelle: "Bons de livraison" },
       { code: "livraisons", libelle: "Livraisons" },
