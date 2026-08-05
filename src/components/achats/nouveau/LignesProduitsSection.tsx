@@ -1,4 +1,5 @@
-import { Plus, Trash2, PackagePlus } from "lucide-react";
+import { Plus, Trash2, PackagePlus, Package } from "lucide-react";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -73,6 +74,7 @@ export function LignesProduitsSection({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-14"></TableHead>
             <TableHead className="w-[32%]">Produit</TableHead>
             <TableHead>Référence</TableHead>
             <TableHead className="text-right w-20">Qté *</TableHead>
@@ -85,6 +87,16 @@ export function LignesProduitsSection({
         <TableBody>
           {lignes.map((l, i) => (
             <TableRow key={i}>
+              <TableCell>
+                <ProductCoverThumb 
+                  produit={{ 
+                    titre: l.designation, 
+                    cover_path: (l as any).cover_path, 
+                    cover_thumb_path: (l as any).cover_thumb_path 
+                  }} 
+                  size="xs" 
+                />
+              </TableCell>
               <TableCell>
                 <div className="flex gap-1">
                   <div className="flex-1 min-w-0">

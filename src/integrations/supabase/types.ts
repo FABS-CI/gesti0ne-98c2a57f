@@ -633,9 +633,12 @@ export type Database = {
           date_bon: string | null
           date_emission: string | null
           date_livraison: string | null
+          date_reception_client: string | null
           exercice_id: string | null
           livraison_id: string | null
           montant: number | null
+          nom_livreur: string | null
+          nom_receptionnaire_client: string | null
           notes: string | null
           reference: string | null
           statut: string
@@ -652,9 +655,12 @@ export type Database = {
           date_bon?: string | null
           date_emission?: string | null
           date_livraison?: string | null
+          date_reception_client?: string | null
           exercice_id?: string | null
           livraison_id?: string | null
           montant?: number | null
+          nom_livreur?: string | null
+          nom_receptionnaire_client?: string | null
           notes?: string | null
           reference?: string | null
           statut?: string
@@ -671,9 +677,12 @@ export type Database = {
           date_bon?: string | null
           date_emission?: string | null
           date_livraison?: string | null
+          date_reception_client?: string | null
           exercice_id?: string | null
           livraison_id?: string | null
           montant?: number | null
+          nom_livreur?: string | null
+          nom_receptionnaire_client?: string | null
           notes?: string | null
           reference?: string | null
           statut?: string

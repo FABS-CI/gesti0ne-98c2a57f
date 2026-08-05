@@ -112,6 +112,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       appliquer_tva: false,
       depot_id: "",
       depot_override_motif: null,
+      livreur_nom: "",
+      nom_receptionnaire_client: "",
       lignes: [],
       ...initialValues,
     },
@@ -338,8 +340,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       prix_unitaire: p.prix_vente,
       remise_pct: form.getValues(`lignes.${index}.remise_pct`) || 0,
       stock_produit: typeof p.stock === "number" ? p.stock : null,
-      cover_path: p.cover_path,
-      cover_thumb_path: p.cover_thumb_path,
+      cover_path: p.cover_path ?? null,
+      cover_thumb_path: p.cover_thumb_path ?? null,
     });
   };
 
