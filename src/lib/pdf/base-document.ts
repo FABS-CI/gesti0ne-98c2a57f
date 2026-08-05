@@ -476,14 +476,14 @@ export class BaseDocument {
     
     this.page.drawText(labelLetters, { x: MARGINS.x, y: letY - 13, size: 8, font: this.fonts.bold, color: COLORS.noir });
     
-    // Découper le montant en lettres si trop long pour tenir sur une ligne ?
-    // Pour l'instant on garde une ligne simple avec le décalage Y.
+    // Montant en lettres en orange et agrandi
+    const montantSize = 10;
     this.page.drawText(this.totals.montantLettres, { 
       x: MARGINS.x + labelW + 5, 
       y: letY - 13, 
-      size: 8, 
-      font: this.fonts.italic, 
-      color: COLORS.noir 
+      size: montantSize, 
+      font: this.fonts.bold, 
+      color: COLORS.orangeFabs 
     });
 
     return curY - 20;
