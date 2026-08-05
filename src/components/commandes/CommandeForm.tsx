@@ -465,8 +465,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <Label className="text-xs">Établissement</Label>
-                <Input readOnly {...form.register("etablissement")} />
+                <Label className="text-xs">Client (Établissement)</Label>
+                <Input readOnly className="bg-muted font-semibold" {...form.register("etablissement")} />
               </div>
               <div>
                 <Label className="text-xs">Représentant</Label>
@@ -510,16 +510,16 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                     form.setValue("depot_id", id, { shouldValidate: true });
                     form.setValue("depot_override_motif", motif ?? null);
                   }}
-                  label="Dépôt de sortie"
+                  label="Dépôt de sortie *"
                 />
               </div>
               <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
                 <div>
-                  <Label htmlFor="livreur_nom" className="text-xs">Nom du Livreur</Label>
+                  <Label htmlFor="livreur_nom" className="text-xs">Nom du Livreur (Expédition)</Label>
                   <Input id="livreur_nom" {...form.register("livreur_nom")} placeholder="Optionnel" />
                 </div>
                 <div>
-                  <Label htmlFor="nom_receptionnaire_client" className="text-xs">Réceptionné par (Client)</Label>
+                  <Label htmlFor="nom_receptionnaire_client" className="text-xs">Réceptionné par (Nom du client)</Label>
                   <Input id="nom_receptionnaire_client" {...form.register("nom_receptionnaire_client")} placeholder="Optionnel" />
                 </div>
               </div>
