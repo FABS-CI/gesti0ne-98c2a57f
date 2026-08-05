@@ -34,7 +34,7 @@ export async function generateUnifiedCommercialPDF(
     remiseGlobalePct: data.remiseGlobalePct || 0,
     tva: data.tva || 0,
     totalAPayer: data.totalTTC || data.montantHT || 0,
-    montantLettres: (data as any).montantLettres || (data as any).montantEnLettres || "Arrêtée à la somme de zéro francs CFA",
+    montantLettres: (data as any).montantLettres || (data as any).montantEnLettres || "",
   };
 
   const doc = new CommercialDocument(docBase, totals);
