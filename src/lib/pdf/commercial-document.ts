@@ -33,19 +33,21 @@ export class CommercialDocument extends BaseDocument {
     y = await this.drawClientAndQr(y);
     
     // Tableau
+    const isBL = this.data.type === 'Bon de Livraison';
     const colonnes = [
       { label: "N°", key: "num", width: 25 },
       { label: "Code", key: "code", width: 65 },
-      { label: "Désignation", key: "designation", width: 220 },
+      { label: "Désignation", key: "designation", width: isBL ? 300 : 220 },
       { label: "Qté", key: "qte", width: 40 },
-      { label: "Prix Unitaire", key: "pu", width: 80 },
     ];
     
-    if (this.discountMode === 'A') {
-      colonnes.push({ label: "Remise", key: "remisePct", width: 50 });
+    if (!isBL) {
+      colonnes.push({ label: "Prix Unitaire", key: "pu", width: 80 });
+      if (this.discountMode === 'A') {
+        colonnes.push({ label: "Remise", key: "remisePct", width: 50 });
+      }
+      colonnes.push({ label: "Montant", key: "total", width: 80 });
     }
-    
-    colonnes.push({ label: "Montant", key: "total", width: 80 });
     
     // Conversion des lignes
     const lignes = (this.data as any).lignes?.map((l: any, i: number) => ({
@@ -69,8 +71,10 @@ export class CommercialDocument extends BaseDocument {
       y = PAGE.h - 110;
     }
     
-    // Totaux
-    y = this.drawTotals(y);
+    // Totaux - Uniquement si ce n'est pas un BL
+    if (!isBL) {
+      y = this.drawTotals(y);
+    }
     
     // Montant impayé retiré à la demande de l'utilisateur
     // if (this.data.type === 'Facture' && (this.data as any).soldeDu > 0) {
