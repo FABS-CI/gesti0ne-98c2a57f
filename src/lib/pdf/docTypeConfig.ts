@@ -6,17 +6,20 @@
  */
 export type FabsDocCode = "FC" | "PF" | "BC" | "BL" | "BR" | "AV" | "RP" | "BP" | "SP" | "IN";
 
-/** Par défaut le QR est activé ; les documents internes simples le désactivent. */
+/** 
+ * Le QR code est désormais activé pour tous les documents commerciaux 
+ * pour permettre la vérification d'authenticité via UUID.
+ */
 const QR_BY_TYPE: Record<FabsDocCode, boolean> = {
-  FC: false, // Facture — QR retiré à la demande métier
-  PF: false, // Proforma (non opposable)
+  FC: true, // Facture
+  PF: true, // Proforma
   BC: true, // Bon de commande
-  BL: false, // Bon de livraison
-  BR: false, // Bon de retour
+  BL: true, // Bon de livraison
+  BR: true, // Bon de retour
   AV: true, // Avoir
   RP: true, // Reçu de paiement
-  BP: false, // Bulletin de paie
-  SP: false, // Bon spécimens
+  BP: false, // Bulletin de paie (interne)
+  SP: true, // Bon spécimens
   IN: false, // Déclaration d'incident (interne)
 };
 
