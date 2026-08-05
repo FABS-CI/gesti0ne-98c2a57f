@@ -199,6 +199,7 @@ import { Route as ApiPublicVerifyDocUuidRouteImport } from './routes/api/public/
 import { Route as ApiPublicHooksRunSchedulesRouteImport } from './routes/api/public/hooks/run-schedules'
 import { Route as ApiPublicHooksGlobalBackupRouteImport } from './routes/api/public/hooks/global-backup'
 import { Route as ApiPublicHooksAlertRouteImport } from './routes/api/public/hooks/alert'
+import { Route as ApiPublicBackupCronRouteImport } from './routes/api/public/backup.cron'
 import { Route as AuthenticatedUtilisateursUserIdModifierRouteImport } from './routes/_authenticated/utilisateurs.$userId.modifier'
 import { Route as AuthenticatedStockProduitIdMouvementsRouteImport } from './routes/_authenticated/stock_.$produitId.mouvements'
 import { Route as AuthenticatedLivraisonSuiviTourneesTourneeIdRouteImport } from './routes/_authenticated/livraison-suivi.tournees.$tourneeId'
@@ -1303,6 +1304,11 @@ const ApiPublicHooksAlertRoute = ApiPublicHooksAlertRouteImport.update({
   path: '/api/public/hooks/alert',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicBackupCronRoute = ApiPublicBackupCronRouteImport.update({
+  id: '/api/public/backup/cron',
+  path: '/api/public/backup/cron',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedUtilisateursUserIdModifierRoute =
   AuthenticatedUtilisateursUserIdModifierRouteImport.update({
     id: '/utilisateurs/$userId/modifier',
@@ -1579,6 +1585,7 @@ export interface FileRoutesByFullPath {
   '/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
   '/stock/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
   '/utilisateurs/$userId/modifier': typeof AuthenticatedUtilisateursUserIdModifierRoute
+  '/api/public/backup/cron': typeof ApiPublicBackupCronRoute
   '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
   '/api/public/hooks/global-backup': typeof ApiPublicHooksGlobalBackupRoute
   '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
@@ -1761,6 +1768,7 @@ export interface FileRoutesByTo {
   '/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
   '/stock/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
   '/utilisateurs/$userId/modifier': typeof AuthenticatedUtilisateursUserIdModifierRoute
+  '/api/public/backup/cron': typeof ApiPublicBackupCronRoute
   '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
   '/api/public/hooks/global-backup': typeof ApiPublicHooksGlobalBackupRoute
   '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
@@ -1967,6 +1975,7 @@ export interface FileRoutesById {
   '/_authenticated/livraison-suivi/tournees/$tourneeId': typeof AuthenticatedLivraisonSuiviTourneesTourneeIdRoute
   '/_authenticated/stock_/$produitId/mouvements': typeof AuthenticatedStockProduitIdMouvementsRoute
   '/_authenticated/utilisateurs/$userId/modifier': typeof AuthenticatedUtilisateursUserIdModifierRoute
+  '/api/public/backup/cron': typeof ApiPublicBackupCronRoute
   '/api/public/hooks/alert': typeof ApiPublicHooksAlertRoute
   '/api/public/hooks/global-backup': typeof ApiPublicHooksGlobalBackupRoute
   '/api/public/hooks/run-schedules': typeof ApiPublicHooksRunSchedulesRoute
@@ -2173,6 +2182,7 @@ export interface FileRouteTypes {
     | '/livraison-suivi/tournees/$tourneeId'
     | '/stock/$produitId/mouvements'
     | '/utilisateurs/$userId/modifier'
+    | '/api/public/backup/cron'
     | '/api/public/hooks/alert'
     | '/api/public/hooks/global-backup'
     | '/api/public/hooks/run-schedules'
@@ -2355,6 +2365,7 @@ export interface FileRouteTypes {
     | '/livraison-suivi/tournees/$tourneeId'
     | '/stock/$produitId/mouvements'
     | '/utilisateurs/$userId/modifier'
+    | '/api/public/backup/cron'
     | '/api/public/hooks/alert'
     | '/api/public/hooks/global-backup'
     | '/api/public/hooks/run-schedules'
@@ -2560,6 +2571,7 @@ export interface FileRouteTypes {
     | '/_authenticated/livraison-suivi/tournees/$tourneeId'
     | '/_authenticated/stock_/$produitId/mouvements'
     | '/_authenticated/utilisateurs/$userId/modifier'
+    | '/api/public/backup/cron'
     | '/api/public/hooks/alert'
     | '/api/public/hooks/global-backup'
     | '/api/public/hooks/run-schedules'
@@ -2580,6 +2592,7 @@ export interface RootRouteChildren {
   VerifyUuidRoute: typeof VerifyUuidRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicSeedUsersRoute: typeof ApiPublicSeedUsersRoute
+  ApiPublicBackupCronRoute: typeof ApiPublicBackupCronRoute
   ApiPublicHooksAlertRoute: typeof ApiPublicHooksAlertRoute
   ApiPublicHooksGlobalBackupRoute: typeof ApiPublicHooksGlobalBackupRoute
   ApiPublicHooksRunSchedulesRoute: typeof ApiPublicHooksRunSchedulesRoute
@@ -3918,6 +3931,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksAlertRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/backup/cron': {
+      id: '/api/public/backup/cron'
+      path: '/api/public/backup/cron'
+      fullPath: '/api/public/backup/cron'
+      preLoaderRoute: typeof ApiPublicBackupCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/utilisateurs/$userId/modifier': {
       id: '/_authenticated/utilisateurs/$userId/modifier'
       path: '/utilisateurs/$userId/modifier'
@@ -4788,6 +4808,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerifyUuidRoute: VerifyUuidRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicSeedUsersRoute: ApiPublicSeedUsersRoute,
+  ApiPublicBackupCronRoute: ApiPublicBackupCronRoute,
   ApiPublicHooksAlertRoute: ApiPublicHooksAlertRoute,
   ApiPublicHooksGlobalBackupRoute: ApiPublicHooksGlobalBackupRoute,
   ApiPublicHooksRunSchedulesRoute: ApiPublicHooksRunSchedulesRoute,
