@@ -49,6 +49,10 @@ export type AchatLigne = {
   remise_pct: number;
   total_ligne: number;
   created_at: string;
+  produits?: {
+    cover_path: string | null;
+    cover_thumb_path: string | null;
+  } | null;
 };
 
 export type ApprovisionnementLigneInput = {
