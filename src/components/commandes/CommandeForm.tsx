@@ -512,7 +512,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                   }}
                   label="Dépôt de sortie"
                 />
-              <div className="grid gap-4 sm:grid-cols-2">
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
                 <div>
                   <Label htmlFor="livreur_nom" className="text-xs">Nom du Livreur</Label>
                   <Input id="livreur_nom" {...form.register("livreur_nom")} placeholder="Optionnel" />
