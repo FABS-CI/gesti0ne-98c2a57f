@@ -408,7 +408,7 @@ export class BaseDocument {
           y: curY - 12,
           size: 8,
           font: this.fonts.regular,
-          color: col.key === 'remisePct' ? COLORS.rougeFabs : COLORS.noir,
+          color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
         });
         curX += col.width;
       });
