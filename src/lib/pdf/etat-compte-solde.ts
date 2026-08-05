@@ -191,7 +191,7 @@ export function computeSoldeClient(input: RawInputs): SoldeResultat {
     ? [
         "Aucun mouvement valide sur la période.",
         `Solde d'ouverture (report à-nouveau) = ${soldeOuvertureRow.toLocaleString("fr-FR")} + report antérieur ${reportAnterieur.toLocaleString("fr-FR")} = ${soldeOuverture.toLocaleString("fr-FR")}.`,
-        `Solde dû = Solde d'ouverture + Débits (0) − Crédits (0) = ${solde.toLocaleString("fr-FR")} FCFA.`,
+        `Total impayé (FCFA) = Solde d'ouverture + Débits (0) − Crédits (0) = ${solde.toLocaleString("fr-FR")} FCFA.`,
         "Filtres appliqués : paiements/avoirs avec statut = « valide » uniquement, dans les bornes de l'exercice consulté.",
       ].join(" ")
     : undefined;

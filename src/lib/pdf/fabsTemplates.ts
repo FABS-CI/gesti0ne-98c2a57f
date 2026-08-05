@@ -73,7 +73,7 @@ type Theme = {
   id: string;
   primary: RGB; // ligne pied orange / accent
   accent: RGB;
-  title: RGB; // couleur titre document droite + Solde dû
+  title: RGB; // couleur titre document droite + Total impayé (FCFA)
   tableHdrBg: RGB;
   tableHdrTxt: RGB;
 };
@@ -1311,7 +1311,7 @@ function drawV2Title(ctx: Ctx, titre: string, yStart: number): number {
 
 // ----------------------------------------------------------------------------
 // V10 : encadré 6 lignes (Total Vente / % Remise / Remise / Montant HT /
-// Payé / Solde dû). Solde dû coloré au thème, gras.
+// Payé / Total impayé (FCFA)). Total impayé (FCFA) coloré au thème, gras.
 // ----------------------------------------------------------------------------
 function drawTotauxV10(ctx: Ctx, data: DocBase, yStart: number): number {
   const totalVente = Number(data.totalVente ?? data.montantHT ?? 0);
@@ -2004,7 +2004,7 @@ function drawIncidentSignatures(ctx: Ctx, yTop: number): number {
   const labels = [
     "Gestionnaire de Stock",
     "Responsable Logistique",
-    "Directeur Commercial",
+    "Directeur Représentant",
     "Direction Générale",
   ];
   const colW = CONTENT_W / labels.length;
@@ -2319,17 +2319,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
         : null;
 
   let y = drawHeader(ctx, TITRES.RP);
-  y -= 14;
-
-  // Bande orange (titre déjà porté par l'en-tête)
-  ctx.page.drawRectangle({
-    x: MARGIN.x,
-    y: y - 4,
-    width: CONTENT_W,
-    height: 3,
-    color: FABS_COLORS.orange ?? ctx.theme.title,
-  });
-  y -= 20;
+  y -= 24; // Augmentation de l'espace après l'en-tête (V10)
 
   // Deux colonnes : Client (gauche) / Paiement (droite)
   const colLx = MARGIN.x;
@@ -2385,7 +2375,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
 
   // Représentant commercial
   const rep = data.representant?.trim();
-  text(ctx, "Représentant commercial :", MARGIN.x, y, { size: 9, bold: true });
+  text(ctx, "Représentant :", MARGIN.x, y, { size: 9, bold: true });
   text(ctx, rep && rep.length ? rep : "Non renseigné", MARGIN.x + 150, y, {
     size: 9,
     color: rep ? FABS_COLORS.noir : FABS_COLORS.gris,
@@ -2871,7 +2861,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     docType: "etat_compte",
   });
   let y = drawHeader(ctx, "RELEVÉ DE COMPTE CLIENT");
-  y -= 8;
+  y -= 24; // Augmentation de l'espace après l'en-tête pour éviter le chevauchement (V10)
 
   // ---------- Bloc infos client + période ----------
   const colR = MARGIN.x + CONTENT_W / 2;
@@ -2914,7 +2904,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     yL -= 12;
   }
   if (client.representant) {
-    text(ctx, "Commercial :", colR, yR, { size: 10, bold: true });
+    text(ctx, "Représentant :", colR, yR, { size: 10, bold: true });
     text(ctx, client.representant, colR + 80, yR, { size: 10, bold: true });
     yR -= 14;
   }
@@ -3074,7 +3064,7 @@ export async function generateEtatCompteClientPDF(data: EtatCompteData): Promise
     { label: "Date", w: 1.0, align: "left" },
     { label: "Type d'opération", w: 1.3, align: "left" },
     { label: "Référence", w: 1.5, align: "left" },
-    { label: "N° Facture", w: 1.5, align: "left" },
+    { label: "N° de commande", w: 1.5, align: "left" },
     { label: "Débit (+) FCFA", w: 1.2, align: "right" },
     { label: "Crédit (-) FCFA", w: 1.2, align: "right" },
     { label: "Solde après opération", w: 1.4, align: "right" },
