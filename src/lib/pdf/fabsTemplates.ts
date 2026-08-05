@@ -196,8 +196,8 @@ const BODY_BOTTOM_Y = MARGIN.bottom + 85;
 // Types
 // ----------------------------------------------------------------------------
 export type DocLigne = {
+  num?: number;
   classe?: string;
-  /** Cycle scolaire pour regroupement V10 (PRIMAIRE / PREMIER CYCLE / SECOND CYCLE / LITTÉRATURE / LIVRES COMMUNS). */
   cycle?: string;
   niveau?: string;
   matiere?: string;
