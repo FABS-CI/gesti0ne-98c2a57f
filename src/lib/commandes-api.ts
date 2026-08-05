@@ -192,11 +192,17 @@ export async function listCommandes(params: ListCommandesParams = {}) {
 export async function getCommandeLignes(commandeId: string) {
   const { data, error } = await supabase
     .from("commande_lignes")
-    .select("*")
+    .select(`
+      *,
+      produits (
+        cover_path,
+        cover_thumb_path
+      )
+    `)
     .eq("commande_id", commandeId)
     .order("created_at", { ascending: true });
   if (error) throw error;
-  return (data ?? []) as Required<CommandeLigne>[];
+  return (data ?? []) as any[];
 }
 
 export async function deleteCommande(id: string, motif?: string | null, force?: boolean) {
