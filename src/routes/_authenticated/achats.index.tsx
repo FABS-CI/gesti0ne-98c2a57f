@@ -207,7 +207,7 @@ function ApprovisionnementsPage() {
               value: String(new Set(filtered.map((a) => a.fournisseur_id)).size),
             },
             { label: "Quantité totale reçue", value: String(totalQte) },
-            { label: "Montant total", value: totalMt.toLocaleString("fr-FR") + " FCFA" },
+            { label: "Montant total (FCFA)", value: totalMt.toLocaleString("fr-FR") + " FCFA" },
           ];
         })(),
       },
