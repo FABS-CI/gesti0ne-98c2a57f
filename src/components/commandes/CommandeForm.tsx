@@ -66,6 +66,8 @@ const formSchema = z.object({
   depot_id: z.string().optional(),
   depot_override_motif: z.string().nullable().optional(),
   appliquer_tva: z.boolean(),
+  livreur_nom: z.string().optional(),
+  nom_receptionnaire_client: z.string().optional(),
   lignes: z.array(ligneSchema).min(1, "Ajoutez au moins une ligne produit"),
 });
 
@@ -271,7 +273,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   });
 
   const onSubmit = form.handleSubmit(
-    (values) => {
+    (values: CommandeFormValues) => {
       if (mode === "create") {
         if (canValiderCommande) {
           setPendingValues(values);
