@@ -468,6 +468,6 @@ export class BaseDocument {
 
   async getBlob() {
     const bytes = await this.getBytes();
-    return new Blob([bytes], { type: "application/pdf" });
+    return new Blob([bytes as any], { type: "application/pdf" });
   }
 }
