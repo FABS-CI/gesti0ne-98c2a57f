@@ -1,19 +1,3 @@
-/**
- * # PROMPT DE PRODUCTION — SAUVEGARDE & RESTAURATION INTÉGRALE DE L'ERP FABS-CI
- *
- * ## Objectif unique de ce chantier
- * Garantir qu'à tout moment, à partir de deux éléments seulement — (1) le dépôt GitHub du code, 
- * (2) la dernière archive de sauvegarde générée par ce système — il soit possible de restaurer l'ERP 
- * dans un état exactement identique, sans perte de donnée, sans casse de fonctionnalité.
- *
- * ## CE QUI DOIT ÊTRE SAUVEGARDÉ
- * - Toutes les tables métier de la base de données (clients, produits, commandes, factures, stock, comptabilité, RH, rôles/permissions, etc.).
- * - Tous les buckets de fichiers (Storage), avec arborescence préservée.
- * - Les comptes d'authentification (utilisateurs, rôles, métadonnées).
- * - La configuration critique (policies RLS, Edge Functions, etc.).
- *
- * ## DOUBLE DESTINATION AUTOMATIQUE (Google Drive + Copie locale)
- */
 import { getCurrentUser } from "@/lib/current-user";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -21,22 +5,23 @@ import {
   DatabaseBackup,
   Download,
   Loader2,
-  ShieldAlert,
   HardDrive,
   Clock,
   CheckCircle2,
   XCircle,
   History,
-  User as UserIcon,
   ShieldCheck,
   Cloud,
+  Play,
+  RotateCcw,
+  ShieldAlert,
+  AlertTriangle,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { exportCsv } from "@/lib/export-csv";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -46,19 +31,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BackupSchedulesCard } from "@/components/backup/BackupSchedulesCard";
-import { BackupRestoreCard } from "@/components/backup/BackupRestoreCard";
 import { useServerFn } from "@tanstack/react-start";
-import { uploadBackupToGoogleDrive } from "@/lib/gdrive-backup.functions";
-import { exportCriticalArtifacts } from "@/lib/gdrive-artifacts-backup.functions";
-import { runGlobalBackup } from "@/lib/global-backup.functions";
-
-import { exportStorageBinariesZip } from "@/lib/gdrive-covers-zip.functions";
-import { downloadDriveFile } from "@/lib/gdrive-download.functions";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "@tanstack/react-router";
-import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { runFullBackup, runFullRestore } from "@/lib/backup.functions";
 import { friendlyError } from "@/lib/friendly-error";
+import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/backup")({
   component: BackupPage,
@@ -66,93 +42,14 @@ export const Route = createFileRoute("/_authenticated/backup")({
   notFoundComponent: RouteNotFound,
 });
 
-const TABLES = [
-  // Administration & RBAC
-  "profiles",
-  "rbac_roles",
-  "rbac_permissions",
-  "rbac_role_permissions",
-  "user_roles",
-  "rbac_user_roles",
-  "parametres_systeme",
-  "parametres_entreprise",
-  // Référentiels
-  "departements",
-  "fonctions",
-  "depots",
-  "preparateurs",
-  "livreurs",
-  "vehicules",
-  "plan_comptable",
-  "journaux_comptables",
-  "exercices_comptables",
-  "rubriques_paie",
-  "parametres_paie",
-  // Tiers & catalogue
-  "clients",
-  "fournisseurs",
-  "produits",
-  "employes",
-  // Commercial
-  "proformas",
-  "proforma_lignes",
-  "commandes",
-  "commande_lignes",
-  "factures",
-  "paiements",
-  "paiement_annulations_audit",
-  "retours",
-  "retour_lignes",
-  "specimens",
-  "crm_interactions",
-  // Achats & stock
-  "achats",
-  "achat_lignes",
-  "approvisionnements",
-  "approvisionnement_lignes",
-  "stock_mouvements",
-  "inventaires",
-  "inventaire_lignes",
-  "transferts",
-  "transfert_lignes",
-  "incidents",
-  "alertes_stock",
-  "audit_stock",
-  // Logistique
-  "tournees",
-
-  "livraisons",
-  "bons_livraison",
-  // Finance & compta
-  "transactions",
-  "fne_declarations",
-  "couts_logistiques",
-  "ecritures_comptables",
-  "ecriture_lignes",
-  // RH & paie
-  "contrats",
-  "conges",
-  "absences",
-  "missions",
-  "evaluations",
-  "bulletins_paie",
-  "bulletin_lignes",
-  "declarations_paie",
-  // Journaux
-  "audit_logs",
-  "rbac_audit_log",
-];
-
-
 type BackupRow = {
   backup_id: string;
   created_at: string;
-  started_at: string;
   finished_at: string | null;
   user_email: string | null;
   type: string;
   destination: string;
-  statut: "en_cours" | "succes" | "echec";
+  statut: string;
   taille_octets: number | null;
   duree_ms: number | null;
   nb_tables: number | null;
@@ -160,7 +57,6 @@ type BackupRow = {
   fichier_nom: string | null;
   message: string | null;
   sha256: string | null;
-  verifie: boolean | null;
   destination_url: string | null;
 };
 
@@ -170,132 +66,20 @@ function formatSize(n: number | null) {
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} Ko`;
   return `${(n / (1024 * 1024)).toFixed(2)} Mo`;
 }
-function formatDuration(ms: number | null) {
-  if (!ms) return "—";
-  if (ms < 1000) return `${ms} ms`;
-  return `${(ms / 1000).toFixed(1)} s`;
-}
 
 function BackupPage() {
   const [running, setRunning] = useState(false);
-  const [progress, setProgress] = useState<string>("");
+  const [restoring, setRestoring] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [history, setHistory] = useState<BackupRow[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
-  const [sendToDrive, setSendToDrive] = useState(true);
-  const uploadToDrive = useServerFn(uploadBackupToGoogleDrive);
-  const runCriticalExport = useServerFn(exportCriticalArtifacts);
-  const [criticalRunning, setCriticalRunning] = useState(false);
-  const [criticalResult, setCriticalResult] = useState<{
-    users_count: number;
-    buckets_count: number;
-    files_count: number;
-    users_drive: { id: string; url: string | null };
-    storage_drive: { id: string; url: string | null };
-  } | null>(null);
-  const runBinariesZip = useServerFn(exportStorageBinariesZip);
-  const [binariesRunning, setBinariesRunning] = useState(false);
-  const [binariesResult, setBinariesResult] = useState<{
-    total_files: number;
-    total_bytes: number;
-    zip_bytes: number;
-    buckets: Array<{ bucket: string; files: number; bytes: number }>;
-    drive: { id: string; url: string | null };
-  } | null>(null);
-  const runDriveDownload = useServerFn(downloadDriveFile);
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
-  const runGlobalZip = useServerFn(runGlobalBackup);
-  const [globalRunning, setGlobalRunning] = useState(false);
-  const [globalResult, setGlobalResult] = useState<{
-    fileName: string;
-    size: number;
-    sha256: string;
-    tables_count: number;
-    rows_count: number;
-    users_count: number;
-    files_count: number;
-    files_embedded: number;
-    drive: { id: string; url: string | null };
-    purged: number;
-  } | null>(null);
-
-
-  async function downloadFromDrive(fileId: string, fallbackName: string) {
-    setDownloadingId(fileId);
-    try {
-      const res = await runDriveDownload({ data: { fileId } });
-      const bin = atob(res.base64);
-      const bytes = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-      const blob = new Blob([bytes], { type: res.mimeType });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = res.name || fallbackName;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      toast.success(`Téléchargé — ${res.name}`);
-    } catch (e) {
-      toast.error(friendlyError(e));
-    } finally {
-      setDownloadingId(null);
-    }
-  }
-
-  async function backupCriticalArtifacts() {
-    setCriticalRunning(true);
-    try {
-      const res = await runCriticalExport();
-      setCriticalResult(res);
-      toast.success(
-        `Export critique OK — ${res.users_count} comptes, ${res.files_count} fichiers`,
-      );
-    } catch (e) {
-      toast.error(friendlyError(e));
-    } finally {
-      setCriticalRunning(false);
-    }
-  }
-
-  async function backupBinariesZip() {
-    setBinariesRunning(true);
-    try {
-      const res = await runBinariesZip();
-      setBinariesResult(res);
-      toast.success(
-        `ZIP binaires OK — ${res.total_files} fichiers (${(res.zip_bytes / 1024 / 1024).toFixed(1)} Mo)`,
-      );
-    } catch (e) {
-      toast.error(friendlyError(e));
-    } finally {
-      setBinariesRunning(false);
-    }
-  }
-
-  async function backupGlobalZip() {
-    setGlobalRunning(true);
-    try {
-      const res = await runGlobalZip();
-      setGlobalResult(res);
-      toast.success(
-        `Archive globale OK — ${res.tables_count} tables, ${res.rows_count} enregistrements, ${res.users_count} comptes`,
-      );
-      loadHistory();
-    } catch (e) {
-      toast.error(friendlyError(e));
-    } finally {
-      setGlobalRunning(false);
-    }
-  }
-
+  
+  const startBackup = useServerFn(runFullBackup);
+  const startRestore = useServerFn(runFullRestore);
 
   useEffect(() => {
     (async () => {
       const { data: userData } = await getCurrentUser();
-      setUserEmail(userData.user?.email ?? null);
       if (!userData.user) {
         setIsAdmin(false);
         return;
@@ -314,7 +98,7 @@ function BackupPage() {
       .from("backups")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(50);
+      .limit(20);
     setLoadingHistory(false);
     if (error) {
       toast.error(friendlyError(error));
@@ -322,644 +106,262 @@ function BackupPage() {
     }
     setHistory((data ?? []) as BackupRow[]);
   }
+
   useEffect(() => {
     if (isAdmin) loadHistory();
   }, [isAdmin]);
 
-  async function logAudit(
-    action: string,
-    backupId: string,
-    details: Record<string, string | number | boolean | null>,
-  ) {
-    const { data: userData } = await getCurrentUser();
-    await supabase.from("audit_logs").insert({
-      user_id: userData.user?.id ?? null,
-      user_email: userData.user?.email ?? null,
-      action,
-      table_name: "backups",
-      record_id: backupId,
-      new_values: details,
-    });
-  }
-
-  async function fetchTable(table: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.from(table as any) as any).select("*");
-    if (error) throw error;
-    return (data ?? []) as Record<string, unknown>[];
-  }
-
-  async function backupAllJson() {
-    if (!isAdmin) {
-      toast.error("Accès refusé");
-      return;
-    }
-    try {
-      const { assertPermission } = await import("@/lib/rbac-api");
-      await assertPermission("backup.planifier");
-    } catch (e) {
-      toast.error(friendlyError(e));
-      return;
-    }
+  async function handleBackup() {
     setRunning(true);
-    const t0 = Date.now();
-    // Créer l'entrée d'historique
-    const { data: created, error: insErr } = await supabase
-      .from("backups")
-      .insert({
-        type: "complete",
-        destination: "local",
-        statut: "en_cours",
-        user_email: userEmail,
-        scope: { tables: TABLES },
-      })
-      .select("backup_id")
-      .single();
-    if (insErr || !created) {
-      setRunning(false);
-      toast.error(friendlyError(insErr, "Impossible de démarrer la sauvegarde"));
-      return;
-    }
-    const backupId = created.backup_id as string;
     try {
-      const backup: Record<string, unknown[]> = {};
-      let totalRows = 0;
-      for (const t of TABLES) {
-        setProgress(`Sauvegarde de ${t}...`);
-        backup[t] = await fetchTable(t);
-        totalRows += backup[t].length;
-      }
-      const json = JSON.stringify(backup, null, 2);
-      const blob = new Blob([json], { type: "application/json" });
-      // SHA-256 (Web Crypto) pour vérification d'intégrité
-      const hashBuf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(json));
-      const sha256 = Array.from(new Uint8Array(hashBuf))
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
-      const fichier_nom = `backup_fabs_${new Date().toISOString().slice(0, 10)}.json`;
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = fichier_nom;
-      a.click();
-      URL.revokeObjectURL(url);
-      const duree_ms = Date.now() - t0;
-      await supabase
-        .from("backups")
-        .update({
-          statut: "succes",
-          finished_at: new Date().toISOString(),
-          taille_octets: blob.size,
-          duree_ms,
-          nb_tables: TABLES.length,
-          nb_enregistrements: totalRows,
-          fichier_nom,
-          sha256,
-          verifie: true,
-          verifie_at: new Date().toISOString(),
-          verifie_methode: "sha256-auto",
-        })
-        .eq("backup_id", backupId);
-      await logAudit("backup_create", backupId, {
-        type: "complete",
-        nb_tables: TABLES.length,
-        nb_enregistrements: totalRows,
-        taille_octets: blob.size,
-        duree_ms,
-        sha256,
-      });
-      toast.success("Sauvegarde JSON générée");
-      if (sendToDrive) {
-        setProgress("Envoi vers Google Drive…");
-        try {
-          const res = await uploadToDrive({
-            data: { backupId, fileName: fichier_nom, json, sha256 },
-          });
-          await logAudit("backup_upload_gdrive", backupId, {
-            file_id: res.id,
-            url: res.url,
-          });
-          toast.success("Envoyée vers Google Drive");
-        } catch (e) {
-          toast.error(friendlyError(e, "Google Drive"));
-        }
-      }
+      await startBackup({ data: { trigger: "manuel" } });
+      toast.success("Sauvegarde intégrale réussie (Local + Cloud)");
       loadHistory();
     } catch (e) {
-      await supabase
-        .from("backups")
-        .update({
-          statut: "echec",
-          finished_at: new Date().toISOString(),
-          duree_ms: Date.now() - t0,
-          error: (e as Error).message,
-        })
-        .eq("backup_id", backupId);
-      await logAudit("backup_failed", backupId, { error: (e as Error).message });
       toast.error(friendlyError(e));
-      loadHistory();
     } finally {
       setRunning(false);
-      setProgress("");
     }
   }
 
-  async function backupTableCsv(table: string) {
-    if (!isAdmin) {
-      toast.error("Accès refusé");
-      return;
-    }
+  async function handleRestore(backup: BackupRow) {
+    if (!confirm(`ATTENTION : Vous allez restaurer l'ERP à l'état du ${new Date(backup.created_at).toLocaleString()}. Cette action peut écraser des données récentes. Continuer ?`)) return;
+    
+    setRestoring(backup.backup_id);
     try {
-      const { assertPermission } = await import("@/lib/rbac-api");
-      await assertPermission("backup.exporter_csv");
+      const result = await startRestore({ data: { backupId: backup.backup_id } });
+      toast.success(`Restauration terminée : ${result.tables.length} tables, ${result.users} comptes, ${result.files} fichiers.`);
     } catch (e) {
       toast.error(friendlyError(e));
-      return;
-    }
-    try {
-      const rows = await fetchTable(table);
-      if (!rows.length) {
-        toast.info(`Table ${table} vide`);
-        return;
-      }
-      const headers = Object.keys(rows[0]);
-      exportCsv(
-        `backup_${table}`,
-        headers,
-        rows.map((r) => headers.map((h) => (r[h] == null ? "" : String(r[h])))),
-        {
-          pageTitle: `SAUVEGARDE — ${table.toUpperCase()}`,
-          summary: [
-            { label: "Table sauvegardée", value: table },
-            { label: "Enregistrements exportés", value: String(rows.length) },
-            { label: "Colonnes", value: String(headers.length) },
-            { label: "Date de génération", value: new Date().toLocaleString("fr-FR") },
-          ],
-        },
-      );
-    } catch (e) {
-      toast.error(friendlyError(e));
+    } finally {
+      setRestoring(null);
     }
   }
 
-  if (isAdmin === null) {
+  if (isAdmin === false) {
     return (
-      <div className="flex h-64 items-center justify-center text-muted-foreground">
-        <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Vérification des accès…
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <ShieldAlert className="h-12 w-12 text-destructive" />
+        <h1 className="text-2xl font-bold">Accès réservé aux administrateurs</h1>
+        <p className="text-muted-foreground">Vous n'avez pas les permissions nécessaires pour accéder aux sauvegardes.</p>
       </div>
     );
   }
-  if (!isAdmin) {
-    return (
-      <Card className="border-destructive/50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-destructive">
-            <ShieldAlert className="h-5 w-5" /> Accès réservé aux super-administrateurs
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
-          La sauvegarde et la restauration de l'ERP sont limitées aux comptes disposant du rôle{" "}
-          <b>super_admin</b>. Contactez votre administrateur pour obtenir l'accès.
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const derniere = history[0];
-  const succes = history.filter((h) => h.statut === "succes").length;
-  const echecs = history.filter((h) => h.statut === "echec").length;
-  const espace = history.reduce((s, h) => s + (h.taille_octets ?? 0), 0);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold">
-          <DatabaseBackup className="h-6 w-6 text-primary" /> Sauvegarde &amp; Restauration
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Administration → Sauvegarde &amp; Restauration — export complet des données de l'ERP
-        </p>
-      </div>
-
-      {/* Tableau de bord */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <Clock className="h-4 w-4" /> Dernière sauvegarde
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-semibold">
-              {derniere ? new Date(derniere.created_at).toLocaleString("fr-FR") : "—"}
-            </div>
-            {derniere && (
-              <div className="mt-1 text-xs text-muted-foreground">
-                {derniere.type} • {formatSize(derniere.taille_octets)}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <History className="h-4 w-4" /> Sauvegardes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{history.length}</div>
-            <div className="mt-1 text-xs text-muted-foreground">
-              <span className="text-emerald-600">{succes} succès</span> ·{" "}
-              <span className="text-destructive">{echecs} échecs</span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <HardDrive className="h-4 w-4" /> Espace utilisé
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatSize(espace)}</div>
-            <div className="mt-1 text-xs text-muted-foreground">50 derniers historiques</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <UserIcon className="h-4 w-4" /> Session
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="truncate text-sm font-medium">{userEmail ?? "—"}</div>
-            <Badge variant="outline" className="mt-1">
-              super_admin
-            </Badge>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Sauvegarde complète</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Génère un fichier JSON unique contenant toutes les données des tables principales.
-            L'opération est enregistrée dans l'historique et le journal d'audit.
+    <div className="container mx-auto py-8 space-y-8 max-w-6xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <DatabaseBackup className="h-8 w-8 text-primary" />
+            Sauvegarde & Restauration
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Gestion intégrale de la sécurité de vos données (Données + Fichiers + Comptes).
           </p>
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox
-              checked={sendToDrive}
-              onCheckedChange={(v) => setSendToDrive(v === true)}
-              disabled={running}
-            />
-            <Cloud className="h-4 w-4 text-primary" />
-            Envoyer aussi vers Google Drive (connecteur atelier)
-          </label>
-          <div className="text-xs text-muted-foreground">
-            <Link to="/admin/google-drive" className="text-primary hover:underline">
-              Vérifier / configurer le connecteur Google Drive →
-            </Link>
-          </div>
-          <Button onClick={backupAllJson} disabled={running}>
-            {running ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="mr-2 h-4 w-4" />
-            )}
-            {running ? progress || "Sauvegarde…" : "Créer une sauvegarde maintenant (JSON)"}
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card className="border-primary/40">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-            Archive globale unique (ZIP)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Une seule archive contenant <b>tout</b> : données métier (toutes les tables),
-            comptes utilisateurs, fichiers stockés (avec les binaires) et configuration
-            technique (politiques d'accès, fonctions, triggers, extensions), plus un
-            manifeste et une empreinte SHA-256. Générée automatiquement toutes les 3 heures
-            et conservée sur Google Drive (30 dernières archives).
-          </p>
-          <Button onClick={backupGlobalZip} disabled={globalRunning}>
-            {globalRunning ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Cloud className="mr-2 h-4 w-4" />
-            )}
-            {globalRunning
-              ? "Archive en cours… (peut durer plusieurs minutes)"
-              : "Créer l'archive globale maintenant"}
-          </Button>
-          {globalResult && (
-            <div className="rounded-md border bg-muted/40 p-3 text-sm space-y-1">
-              <div>
-                ✅ <b>{globalResult.fileName}</b> —{" "}
-                {(globalResult.size / 1024 / 1024).toFixed(1)} Mo
-              </div>
-              <div>
-                {globalResult.tables_count} tables · {globalResult.rows_count} enregistrements ·{" "}
-                {globalResult.users_count} comptes · {globalResult.files_embedded}/
-                {globalResult.files_count} fichiers inclus
-              </div>
-              <div className="font-mono text-xs break-all">SHA-256 : {globalResult.sha256}</div>
-              {globalResult.drive?.url && (
-                <a
-                  href={globalResult.drive.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  Ouvrir dans Google Drive →
-                </a>
-              )}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-
-
-      <Card className="border-amber-500/40">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-amber-600" />
-            Export critique — Comptes & Fichiers
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Complète la sauvegarde JSON avec les deux éléments non couverts par le dump SQL :
-            la liste des comptes <code>auth.users</code> (id, email, métadonnées, providers) et
-            un <b>manifest storage</b> avec URLs signées 7 jours pour tous les buckets
-            (product-covers, avatars, exports). Indispensable pour reconstruire l'ERP à
-            l'identique sur une autre instance.
-          </p>
-          <Button onClick={backupCriticalArtifacts} disabled={criticalRunning}>
-            {criticalRunning ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Cloud className="mr-2 h-4 w-4" />
-            )}
-            {criticalRunning
-              ? "Export en cours…"
-              : "Exporter comptes + fichiers vers Google Drive"}
-          </Button>
-          {criticalResult && (
-            <div className="rounded-md border bg-muted/40 p-3 text-sm space-y-1">
-              <div>
-                ✅ <b>{criticalResult.users_count}</b> comptes auth exportés ·{" "}
-                <b>{criticalResult.files_count}</b> fichiers dans{" "}
-                <b>{criticalResult.buckets_count}</b> buckets
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs">
-                {criticalResult.users_drive.id && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={downloadingId === criticalResult.users_drive.id}
-                    onClick={() =>
-                      downloadFromDrive(criticalResult.users_drive.id, "auth_users.json")
-                    }
-                  >
-                    {downloadingId === criticalResult.users_drive.id ? (
-                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                    ) : (
-                      <Download className="mr-1 h-3 w-3" />
-                    )}
-                    auth_users.json
-                  </Button>
-                )}
-                {criticalResult.storage_drive.id && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={downloadingId === criticalResult.storage_drive.id}
-                    onClick={() =>
-                      downloadFromDrive(
-                        criticalResult.storage_drive.id,
-                        "storage_manifest.json",
-                      )
-                    }
-                  >
-                    {downloadingId === criticalResult.storage_drive.id ? (
-                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                    ) : (
-                      <Download className="mr-1 h-3 w-3" />
-                    )}
-                    storage_manifest.json
-                  </Button>
-                )}
-                {criticalResult.users_drive.url && (
-                  <a
-                    href={criticalResult.users_drive.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-primary hover:underline self-center"
-                  >
-                    <Cloud className="h-3 w-3" /> Ouvrir dans Drive
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card className="border-emerald-500/40">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Download className="h-5 w-5 text-emerald-600" />
-            ZIP binaires Storage (couvertures, avatars, RH)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Contrairement au manifest (URLs signées 7 jours), ce ZIP contient les{" "}
-            <b>fichiers binaires réels</b> des buckets métier : <code>product-covers</code>,{" "}
-            <code>avatars</code>, <code>employe-photos</code>, <code>employe-documents</code>.
-            Nécessaire pour restaurer l'ERP hors ligne au-delà de 7 jours.
-          </p>
-          <Button onClick={backupBinariesZip} disabled={binariesRunning} variant="outline">
-            {binariesRunning ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Download className="mr-2 h-4 w-4" />
-            )}
-            {binariesRunning
-              ? "Compression & upload…"
-              : "Exporter ZIP binaires vers Google Drive"}
-          </Button>
-          {binariesResult && (
-            <div className="rounded-md border bg-muted/40 p-3 text-sm space-y-2">
-              <div>
-                ✅ <b>{binariesResult.total_files}</b> fichiers ·{" "}
-                <b>{(binariesResult.zip_bytes / 1024 / 1024).toFixed(1)} Mo</b> compressés
-                ({(binariesResult.total_bytes / 1024 / 1024).toFixed(1)} Mo décompressés)
-              </div>
-              <ul className="text-xs text-muted-foreground space-y-0.5">
-                {binariesResult.buckets.map((b) => (
-                  <li key={b.bucket}>
-                    • <b>{b.bucket}</b> — {b.files} fichiers (
-                    {(b.bytes / 1024 / 1024).toFixed(1)} Mo)
-                  </li>
-                ))}
-              </ul>
-              <div className="flex flex-wrap gap-2">
-                {binariesResult.drive.id && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={downloadingId === binariesResult.drive.id}
-                    onClick={() =>
-                      downloadFromDrive(binariesResult.drive.id, "storage_binaries.zip")
-                    }
-                  >
-                    {downloadingId === binariesResult.drive.id ? (
-                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                    ) : (
-                      <Download className="mr-1 h-3 w-3" />
-                    )}
-                    Télécharger storage_binaries.zip
-                  </Button>
-                )}
-                {binariesResult.drive.url && (
-                  <a
-                    href={binariesResult.drive.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-primary hover:underline text-xs self-center"
-                  >
-                    <Cloud className="h-3 w-3" /> Ouvrir dans Drive
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-
-      <BackupSchedulesCard />
-
-      <BackupRestoreCard />
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Export par table (PDF)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {TABLES.map((t) => (
-              <Button
-                key={t}
-                variant="outline"
-                className="justify-start"
-                onClick={() => backupTableCsv(t)}
-              >
-                <Download className="mr-2 h-4 w-4" />
-                {t}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Historique */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <History className="h-5 w-5" /> Historique des sauvegardes
-          </CardTitle>
-          <Button variant="outline" size="sm" onClick={loadHistory} disabled={loadingHistory}>
-            {loadingHistory ? <Loader2 className="h-4 w-4 animate-spin" /> : "Rafraîchir"}
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {history.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucune sauvegarde enregistrée.</p>
+        </div>
+        <Button 
+          size="lg" 
+          onClick={handleBackup} 
+          disabled={running}
+          className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg"
+        >
+          {running ? (
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
+            <Play className="mr-2 h-5 w-5 fill-current" />
+          )}
+          SAUVEGARDER MAINTENANT
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="border-green-500/20 bg-green-50/30 dark:bg-green-950/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Cloud className="h-4 w-4 text-green-600" />
+              Destination Cloud
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-700">Google Drive</div>
+            <p className="text-xs text-muted-foreground mt-1">Sauvegardes archivées sur le Drive sécurisé.</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-blue-500/20 bg-blue-50/30 dark:bg-blue-950/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <HardDrive className="h-4 w-4 text-blue-600" />
+              Destination Locale
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-700">Serveur ERP</div>
+            <p className="text-xs text-muted-foreground mt-1">Copie rapide stockée sur le système de fichiers.</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-orange-500/20 bg-orange-50/30 dark:bg-orange-950/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Clock className="h-4 w-4 text-orange-600" />
+              Automatisation
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-700">Toutes les 3h</div>
+            <p className="text-xs text-muted-foreground mt-1">Prochaine exécution automatique planifiée.</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <History className="h-5 w-5" />
+            Historique des sauvegardes
+          </CardTitle>
+          <CardDescription>
+            Liste des dernières sauvegardes globales effectuées.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead>Date / Heure</TableHead>
+                  <TableHead>Fichier</TableHead>
+                  <TableHead>Taille</TableHead>
+                  <TableHead>Contenu</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loadingHistory ? (
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Utilisateur</TableHead>
-                    <TableHead>Destination</TableHead>
-                    <TableHead>Taille</TableHead>
-                    <TableHead>Durée</TableHead>
-                    <TableHead>Statut</TableHead>
-                    <TableHead>Intégrité</TableHead>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {history.map((h) => (
-                    <TableRow key={h.backup_id}>
-                      <TableCell className="text-xs">
-                        {new Date(h.created_at).toLocaleString("fr-FR")}
+                ) : history.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                      Aucun historique disponible.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  history.map((row) => (
+                    <TableRow key={row.backup_id} className="group">
+                      <TableCell className="font-medium whitespace-nowrap">
+                        {new Date(row.created_at).toLocaleString("fr-FR")}
+                      </TableCell>
+                      <TableCell className="max-w-[200px] truncate" title={row.fichier_nom || ""}>
+                        {row.fichier_nom || "—"}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {formatSize(row.taille_octets)}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {row.nb_tables || 0} tables / {row.nb_enregistrements || 0} lignes
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{h.type}</Badge>
+                        <div className="flex items-center gap-1.5">
+                          {row.statut === "succes" ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4 text-green-600" />
+                              <Badge variant="outline" className="text-green-700 bg-green-50 border-green-200">Succès</Badge>
+                            </>
+                          ) : row.statut === "echec" ? (
+                            <>
+                              <XCircle className="h-4 w-4 text-destructive" />
+                              <Badge variant="destructive">Échec</Badge>
+                            </>
+                          ) : (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                              <Badge variant="secondary">En cours</Badge>
+                            </>
+                          )}
+                        </div>
                       </TableCell>
-                      <TableCell className="text-xs">{h.user_email ?? "—"}</TableCell>
-                      <TableCell className="text-xs">
-                        {h.destination_url ? (
-                          <a
-                            href={h.destination_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1 text-primary hover:underline"
-                          >
-                            <Cloud className="h-3 w-3" /> {h.destination}
-                          </a>
-                        ) : (
-                          h.destination
+                      <TableCell className="text-right space-x-2">
+                        {row.destination_url && (
+                          <Button variant="ghost" size="sm" asChild>
+                            <a href={row.destination_url} target="_blank" rel="noopener noreferrer">
+                              <Download className="h-4 w-4" />
+                            </a>
+                          </Button>
                         )}
-                      </TableCell>
-                      <TableCell className="text-xs">{formatSize(h.taille_octets)}</TableCell>
-                      <TableCell className="text-xs">{formatDuration(h.duree_ms)}</TableCell>
-                      <TableCell>
-                        {h.statut === "succes" ? (
-                          <Badge className="bg-emerald-600 hover:bg-emerald-700">
-                            <CheckCircle2 className="mr-1 h-3 w-3" /> Succès
-                          </Badge>
-                        ) : h.statut === "echec" ? (
-                          <Badge variant="destructive">
-                            <XCircle className="mr-1 h-3 w-3" /> Échec
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline">
-                            <Loader2 className="mr-1 h-3 w-3 animate-spin" /> En cours
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {h.verifie ? (
-                          <Badge
-                            className="bg-sky-600 hover:bg-sky-700"
-                            title={h.sha256 ?? undefined}
-                          >
-                            <ShieldCheck className="mr-1 h-3 w-3" /> SHA-256
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline">—</Badge>
-                        )}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleRestore(row)}
+                          disabled={row.statut !== "succes" || !!restoring}
+                          className="hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200"
+                        >
+                          {restoring === row.backup_id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <RotateCcw className="h-4 w-4 mr-1" />
+                          )}
+                          Restaurer
+                        </Button>
                       </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-amber-500/40 bg-amber-50/30">
+        <CardHeader>
+          <CardTitle className="text-amber-800 flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Zone de Danger : Restauration Manuelle
+          </CardTitle>
+          <CardDescription className="text-amber-700">
+            Utilisez cette section uniquement si vous avez un fichier de sauvegarde (.zip) externe à importer.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <label className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-amber-300 rounded-lg p-6 bg-white cursor-pointer hover:bg-amber-50 transition-colors">
+              <Download className="h-8 w-8 text-amber-500 mb-2" />
+              <span className="text-sm font-medium">Glissez ou cliquez pour importer une archive globale (.zip)</span>
+              <input 
+                type="file" 
+                accept=".zip" 
+                className="hidden" 
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (!confirm("Attention : l'import d'un fichier externe va modifier les données de l'ERP. Continuer ?")) return;
+                  
+                  const reader = new FileReader();
+                  reader.onload = async () => {
+                    const base64 = (reader.result as string).split(',')[1];
+                    setRestoring("external");
+                    try {
+                      const res = await startRestore({ data: { base64, fileName: file.name } });
+                      toast.success(`Import réussi : ${res.tables.length} tables restaurées.`);
+                      loadHistory();
+                    } catch (err) {
+                      toast.error(friendlyError(err));
+                    } finally {
+                      setRestoring(null);
+                    }
+                  };
+                  reader.readAsDataURL(file);
+                }}
+              />
+            </label>
+          </div>
         </CardContent>
       </Card>
     </div>
