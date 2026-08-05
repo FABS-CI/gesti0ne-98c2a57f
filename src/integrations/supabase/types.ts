@@ -2665,6 +2665,7 @@ export type Database = {
           fournisseur_id: string
           raison_sociale: string
           reference: string | null
+          representant: string | null
           telephone: string | null
           updated_at: string
           ville: string | null
@@ -2678,6 +2679,7 @@ export type Database = {
           fournisseur_id?: string
           raison_sociale: string
           reference?: string | null
+          representant?: string | null
           telephone?: string | null
           updated_at?: string
           ville?: string | null
@@ -2691,6 +2693,7 @@ export type Database = {
           fournisseur_id?: string
           raison_sociale?: string
           reference?: string | null
+          representant?: string | null
           telephone?: string | null
           updated_at?: string
           ville?: string | null
