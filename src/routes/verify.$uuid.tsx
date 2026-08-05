@@ -44,9 +44,9 @@ function VerificationPage() {
                 <XCircle className="h-12 w-12 text-red-600" />
               </div>
             </div>
-            <h1 className="text-3xl font-black text-red-600 uppercase tracking-tighter">Document Invalide</h1>
+            <h1 className="text-3xl font-black text-red-600 uppercase tracking-tighter">Document Non Reconnu</h1>
             <p className="text-slate-600 text-lg">
-              Nous n'avons trouvé aucun document authentique correspondant à ce code.
+              Nous n'avons pas pu authentifier ce document avec le code scanné.
             </p>
             <Button variant="outline" onClick={() => window.location.href = 'https://editionsfabs.ci'}>
               Retour au site
