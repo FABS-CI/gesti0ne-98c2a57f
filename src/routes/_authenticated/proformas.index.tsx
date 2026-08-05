@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { FileSignature, FileDown, Eye, Printer, Mail, ScanEye, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ResourceManager, type ResourceConfig } from "@/components/crud/ResourceManager";
-import { generateProformaPDF, downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
+import { downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
+import { generateUnifiedCommercialPDF } from "@/lib/pdf/unified-generator";
 import {
   loadProformaDocLignes,
   loadClientInfoForProforma,
@@ -23,7 +24,7 @@ async function buildProformaBlob(row: Record<string, unknown>): Promise<Blob> {
     loadClientInfoForProforma(proformaId),
     loadProformaTotals(proformaId),
   ]);
-  return generateProformaPDF({
+  return generateUnifiedCommercialPDF("Proforma", {
     ...clientInfo,
     ...totals,
     reference: row.reference as string,
