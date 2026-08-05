@@ -96,13 +96,14 @@ function StockPage() {
     const rupture = produits.filter((p) => (p.stock ?? 0) <= 0).length;
     exportCsv(
       `stock_fabs_${new Date().toISOString().slice(0, 10)}`,
-      ["N°", "Référence", "Désignation", "Niveau", "Stock", "Seuil", "Prix vente"],
+      ["N°", "Référence", "Désignation", "Niveau", "Stock", "Valeur vente", "Seuil", "Prix vente"],
       produits.map((p, i) => [
         String(i + 1),
         p.reference,
         p.titre,
         p.niveau ?? "",
         p.stock,
+        formatFCFA((p.stock ?? 0) * (p.prix_vente ?? 0), false),
         p.seuil_alerte,
         p.prix_vente,
       ]),
@@ -117,10 +118,11 @@ function StockPage() {
             cellPadding: { top: 2.5, right: 2, bottom: 2.5, left: 2 },
           },
           2: { cellWidth: "auto" },
-          3: { cellWidth: 22, halign: "center" },
-          4: { cellWidth: 20, halign: "right", fontStyle: "bold" },
-          5: { cellWidth: 20, halign: "right" },
-          6: { cellWidth: 28, halign: "right" },
+          3: { cellWidth: 20, halign: "center" },
+          4: { cellWidth: 18, halign: "right", fontStyle: "bold" },
+          5: { cellWidth: 28, halign: "right", fontStyle: "bold" },
+          6: { cellWidth: 18, halign: "right" },
+          7: { cellWidth: 22, halign: "right" },
         },
         summary: [
           { label: "Nombre total de références", value: String(produits.length) },
