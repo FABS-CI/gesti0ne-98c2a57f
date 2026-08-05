@@ -452,22 +452,31 @@ export class BaseDocument {
     
     if (this.totals.remiseLignes) {
       const pct = this.totals.remiseLignesPct ? ` (${this.totals.remiseLignesPct.toFixed(2)} %)` : "";
-      row(`Remise sur lignes (Remise A)${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
+      row(`Remise sur lignes${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
     }
     
     if (this.totals.remiseGlobale) {
-      row(`Remise globale (Remise B) (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
+      row(`Remise globale (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
     }
 
     row("TOTAL À PAYER", formatFCFA(this.totals.totalAPayer), true);
 
     // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
-    const letY = curY + 20; // Revenir à la ligne du Total
+    const letY = curY - 15; // Décalage suffisant pour éviter le chevauchement avec "TOTAL À PAYER"
     const labelLetters = "Arrêtée à la présente facture à la somme de :";
     const labelW = this.fonts.bold.widthOfTextAtSize(labelLetters, 8);
     
     this.page.drawText(labelLetters, { x: MARGINS.x, y: letY - 13, size: 8, font: this.fonts.bold, color: COLORS.noir });
-    this.page.drawText(this.totals.montantLettres, { x: MARGINS.x + labelW + 5, y: letY - 13, size: 8, font: this.fonts.italic, color: COLORS.noir });
+    
+    // Découper le montant en lettres si trop long pour tenir sur une ligne ?
+    // Pour l'instant on garde une ligne simple avec le décalage Y.
+    this.page.drawText(this.totals.montantLettres, { 
+      x: MARGINS.x + labelW + 5, 
+      y: letY - 13, 
+      size: 8, 
+      font: this.fonts.italic, 
+      color: COLORS.noir 
+    });
 
     return curY - 20;
   }
