@@ -30,7 +30,10 @@ export function PWAInstallPrompt() {
       || (window.navigator as any).standalone 
       || document.referrer.includes('android-app://');
 
-    if (isStandalone) return;
+    if (isStandalone) {
+      console.log('App is already in standalone mode');
+      return;
+    }
 
     // Check last dismissal
     const lastPrompt = localStorage.getItem('pwa-prompt-last-dismissed');
@@ -46,7 +49,10 @@ export function PWAInstallPrompt() {
     if (/iphone|ipad|ipod/.test(ua)) {
       setPlatform('ios');
       // Show iOS prompt after a short delay
-      const timer = setTimeout(() => setShowPrompt(true), 3000);
+      const timer = setTimeout(() => {
+        console.log('Triggering iOS install prompt');
+        setShowPrompt(true);
+      }, 3000);
       return () => clearTimeout(timer);
     } else if (/android/.test(ua)) {
       setPlatform('android');
@@ -55,6 +61,7 @@ export function PWAInstallPrompt() {
     }
 
     const handler = (e: Event) => {
+      console.log('beforeinstallprompt event captured');
       e.preventDefault();
       setInstallEvent(e as BeforeInstallPromptEvent);
       setShowPrompt(true);
