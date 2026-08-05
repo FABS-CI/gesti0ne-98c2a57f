@@ -58,6 +58,7 @@ import {
 import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import { generateApprovisionnementPDF } from "@/lib/pdf/fabsTemplates";
 import { viewBlobAsync } from "@/lib/pdf/actions";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 
 import { authRouteHead } from "@/lib/route-head";
 import { FilterBadges, type FilterBadge } from "@/components/common/FilterBadges";
