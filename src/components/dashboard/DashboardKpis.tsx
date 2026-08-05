@@ -177,7 +177,7 @@ export function DashboardKpis({ data, canSeeCA }: Props) {
 
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
         {kpis.map((k) => (
           <Link key={k.label} to={k.to} className="group">
             <Card
@@ -188,7 +188,7 @@ export function DashboardKpis({ data, canSeeCA }: Props) {
                 className="absolute inset-y-0 left-0 w-1"
                 style={{ backgroundColor: k.color }}
               />
-              <CardHeader className="flex flex-row items-center justify-between pb-2 pl-5">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 pl-4 sm:pl-5">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {k.label}
                 </CardTitle>
@@ -199,7 +199,7 @@ export function DashboardKpis({ data, canSeeCA }: Props) {
                   <k.icon className="h-4 w-4" />
                 </span>
               </CardHeader>
-              <CardContent className="pl-5">
+              <CardContent className="pl-4 sm:pl-5 pb-4 sm:pb-6">
                 <p
                   className={`text-2xl font-bold tracking-tight ${k.tone === "danger" ? "text-red-600 dark:text-red-400" : ""}`}
                 >
@@ -212,7 +212,7 @@ export function DashboardKpis({ data, canSeeCA }: Props) {
       </div>
 
       {canSeeCA && (
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 sm:gap-4 mt-4">
         {finance.map((f) => (
           <Link key={f.label} to={f.to} className="group">
             <Card className="relative h-full overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg group-hover:border-primary">
