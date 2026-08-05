@@ -102,8 +102,8 @@ export async function exportProduitsPdf(filters: ExportFilters, canSeeSensitive:
       { label: "Quantité totale en stock", value: `${qte} ex.` },
       ...(canSeeSensitive
         ? [
-            { label: "Valeur totale (Prix d'achat)", value: formatFCFA(totalAchat) },
-            { label: "Valeur totale (Prix de vente)", value: formatFCFA(totalVente) },
+            { label: "Valeur totale au prix d'achat", value: formatFCFA(totalAchat) },
+            { label: "Valeur totale au prix de vente", value: formatFCFA(totalVente) },
           ]
         : []),
     ],
