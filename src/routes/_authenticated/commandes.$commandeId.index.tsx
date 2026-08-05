@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Ban, Calendar, FileDown, FileText, Loader2, Pencil, Receipt, User } from "lucide-react";
+import { ArrowLeft, Ban, Calendar, FileDown, FileText, Loader2, Package, Pencil, Receipt, User } from "lucide-react";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 import { generateUnifiedCommercialPDF } from "@/lib/pdf/unified-generator";
 import { fileNameFor } from "@/lib/pdf/fabsTemplates";
 import {
