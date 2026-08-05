@@ -6920,6 +6920,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      ajuster_stock_depot_v3: {
+        Args: {
+          _depot_id: string
+          _motif?: string
+          _nouvelle_quantite: number
+          _produit_id: string
+        }
+        Returns: undefined
+      }
       annuler_colisage: {
         Args: { _bl_id: string; _motif: string }
         Returns: undefined
@@ -7689,6 +7698,10 @@ export type Database = {
       has_role_compat: {
         Args: { _role: string; _user_id: string }
         Returns: boolean
+      }
+      inventaire_demander_validation: {
+        Args: { _inventaire_id: string }
+        Returns: string
       }
       is_admin: { Args: { _uid: string }; Returns: boolean }
       is_finance: { Args: { _uid: string }; Returns: boolean }

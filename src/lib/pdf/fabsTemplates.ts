@@ -2376,7 +2376,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
   // Représentant commercial
   const rep = data.representant?.trim();
   text(ctx, "Représentant :", MARGIN.x, y, { size: 9, bold: true });
-  text(ctx, rep && rep.length ? rep : "Non renseigné", MARGIN.x + 150, y, {
+  text(ctx, rep && rep.length ? rep : "Non renseigné", MARGIN.x + 100, y, {
     size: 9,
     color: rep ? FABS_COLORS.noir : FABS_COLORS.gris,
   });
@@ -2398,7 +2398,7 @@ export async function generateRecuPaiementPDF(data: RecuData): Promise<Blob> {
     ["Montant de la facture", totalFacture != null ? `${fmtMontant(totalFacture)} ${devise}` : "—"],
     ["Total déjà payé (avant ce reçu)", dejaPaye != null ? `${fmtMontant(dejaPaye)} ${devise}` : "—"],
     ["Paiement du jour", `${fmtMontant(montant)} ${devise}`],
-    ["Reste à payer", resteCalc != null ? `${fmtMontant(resteCalc)} ${devise}` : "—", true],
+    ["Total impayé (FCFA)", resteCalc != null ? `${fmtMontant(resteCalc)} ${devise}` : "—", true],
   ];
   // Header
   ctx.page.drawRectangle({
