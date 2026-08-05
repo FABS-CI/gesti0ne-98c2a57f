@@ -148,11 +148,17 @@ export class CommercialDocument extends BaseDocument {
       this.page.drawText("RÉCEPTION CLIENT", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 15, size: 8, font: this.fonts.bold });
       this.page.drawText("Nom : ....................................", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 30, size: 7, font: this.fonts.regular });
       this.page.drawText("Signature & Cachet :", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 50, size: 7, font: this.fonts.italic });
-    } else {
-      // Pour les autres documents (Facture, Proforma, Commande), on ne garde qu'un bloc simple "LA COMPTABILITÉ" ou rien ?
-      // L'utilisateur demande "pas de bloc de LA COMPTABILITÉ et RÉCEPTION CLIENT est seulemnt sur le doc bon de livraison"
-      // Donc pour les autres, on peut soit ne rien mettre, soit mettre uniquement "LA COMPTABILITÉ" à gauche sans le bloc client.
-      // Interprétation : retirer les blocs de signature pour les autres docs.
+    } else if (this.data.type === 'Facture' || this.data.type === 'Proforma' || this.data.type === 'Commande') {
+      // Pour les documents de vente, on peut garder un bloc simple de signature interne sans mention client
+      this.page.drawRectangle({
+        x: MARGINS.x,
+        y: curY - boxH,
+        width: boxW,
+        height: boxH,
+        borderColor: COLORS.grisLigne,
+        borderWidth: 0.5,
+      });
+      this.page.drawText("LA DIRECTION", { x: MARGINS.x + 5, y: curY - 15, size: 8, font: this.fonts.bold });
     }
   }
 }
