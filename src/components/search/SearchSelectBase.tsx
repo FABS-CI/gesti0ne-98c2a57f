@@ -35,6 +35,8 @@ export type SearchSelectBaseProps<T> = {
   allowClear?: boolean;
   /** Autoriser le label sélectionné à passer sur plusieurs lignes (au lieu de tronquer). */
   wrapLabel?: boolean;
+  /** Label à afficher en attendant que l'item soit chargé par id. */
+  loadingLabel?: string;
 };
 
 export function SearchSelectBase<T>({
@@ -53,6 +55,7 @@ export function SearchSelectBase<T>({
   className,
   allowClear = true,
   wrapLabel = false,
+  loadingLabel,
 }: SearchSelectBaseProps<T>) {
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
@@ -111,7 +114,7 @@ export function SearchSelectBase<T>({
               wrapLabel ? "whitespace-normal break-words leading-snug" : "truncate",
             )}
           >
-            {selected ? getLabel(selected) : placeholder}
+            {selected ? getLabel(selected) : (loadingLabel || placeholder)}
           </span>
           <span className="flex items-center gap-1">
             {allowClear && selected && !disabled && (

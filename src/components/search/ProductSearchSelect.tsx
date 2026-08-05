@@ -9,6 +9,7 @@ export type ProductSearchSelectProps = {
   disabled?: boolean;
   className?: string;
   onlyActive?: boolean;
+  loadingLabel?: string;
 };
 
 export function ProductSearchSelect({
@@ -18,6 +19,7 @@ export function ProductSearchSelect({
   disabled,
   className,
   onlyActive = true,
+  loadingLabel,
 }: ProductSearchSelectProps) {
   return (
     <SearchSelectBase<Produit>
@@ -30,6 +32,7 @@ export function ProductSearchSelect({
       emptyText="Aucun produit trouvé"
       minChars={0}
       wrapLabel
+      loadingLabel={loadingLabel}
       search={async (term) => {
         const r = await listProduits({
           q: term,

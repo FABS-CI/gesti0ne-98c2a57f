@@ -131,6 +131,7 @@ export function LignesSection({
                           <div className="flex-1 min-w-0">
                             <ProductSearchSelect
                               value={l?.produit_id}
+                              loadingLabel={l?.designation}
                               onChange={(_id, produit) => onProduitChange(i, produit)}
                             />
                             {err?.produit_id && (
