@@ -85,16 +85,16 @@ export function LignesSection({
             <Table className="w-full table-fixed [&_th]:px-1 [&_td]:px-1 [&_th]:py-1 [&_td]:py-1 text-xs">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[26%]">Produit</TableHead>
+                  <TableHead className="w-[30%]">Produit</TableHead>
                   <TableHead className="w-[10%]">Réf.</TableHead>
                   <TableHead className="text-right w-[7%]">Stock</TableHead>
                   <TableHead className="text-right w-[8%]">Qté</TableHead>
-                  <TableHead className="text-right w-[11%]">P.U.</TableHead>
-                  <TableHead className="text-right w-[7%]">Rem. %</TableHead>
-                  <TableHead className="text-right w-[11%]">Mt remise</TableHead>
-                  <TableHead className="text-right w-[11%]">Vente HT</TableHead>
-                  <TableHead className="text-right w-[13%]">Total HT</TableHead>
-                  <TableHead className="w-[7%]" />
+                  <TableHead className="text-right w-[10%]">P.U.</TableHead>
+                  <TableHead className="text-right w-[6%]">Rem.%</TableHead>
+                  <TableHead className="text-right w-[9%]">Remise</TableHead>
+                  <TableHead className="text-right w-[9%]">Vente HT</TableHead>
+                  <TableHead className="text-right w-[11%]">Total HT</TableHead>
+                  <TableHead className="w-[5%]" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -118,28 +118,31 @@ export function LignesSection({
                       className={over ? "bg-destructive/5 align-top" : "align-top"}
                     >
                       <TableCell>
-                        <ProductCoverThumb 
-                          produit={{ 
-                            titre: l?.designation, 
-                            cover_path: (l as any)?.cover_path, 
-                            cover_thumb_path: (l as any)?.cover_thumb_path 
-                          }} 
-                          size="xs" 
-                        />
+                        <div className="flex items-start gap-2">
+                          <ProductCoverThumb 
+                            produit={{ 
+                              titre: l?.designation, 
+                              cover_path: (l as any)?.cover_path, 
+                              cover_thumb_path: (l as any)?.cover_thumb_path 
+                            }} 
+                            size="xs" 
+                            className="mt-1"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <ProductSearchSelect
+                              value={l?.produit_id}
+                              onChange={(_id, produit) => onProduitChange(i, produit)}
+                            />
+                            {err?.produit_id && (
+                              <p className="text-[10px] text-destructive mt-0.5">{err.produit_id.message}</p>
+                            )}
+                          </div>
+                        </div>
                       </TableCell>
-                      <TableCell>
-                        <ProductSearchSelect
-                          value={l?.produit_id}
-                          onChange={(_id, produit) => onProduitChange(i, produit)}
-                        />
-                        {err?.produit_id && (
-                          <p className="text-xs text-destructive mt-1">{err.produit_id.message}</p>
-                        )}
-                      </TableCell>
-                      <TableCell className="font-mono text-xs select-all" title="Référence produit">
+                      <TableCell className="font-mono text-[11px] select-all py-3" title="Référence produit">
                         {form.watch(`lignes.${i}.reference_produit`) || "—"}
                       </TableCell>
-                      <TableCell className="text-right text-xs">
+                      <TableCell className="text-right text-[11px] py-3">
                         {stock == null ? (
                           "—"
                         ) : (
@@ -176,17 +179,17 @@ export function LignesSection({
                           className="text-right h-8 px-1"
                         />
                       </TableCell>
-                      <TableCell className="text-right text-muted-foreground">
+                      <TableCell className="text-right text-muted-foreground py-3">
                         {formatFCFA(calc.montantRem)}
                       </TableCell>
-                      <TableCell className="text-right text-emerald-600 font-medium">
+                      <TableCell className="text-right text-emerald-600 font-medium py-3">
                         {formatFCFA(calc.brut)}
                       </TableCell>
-                      <TableCell className="text-right font-medium">
+                      <TableCell className="text-right font-medium py-3">
                         {formatFCFA(calc.totalLigne)}
                       </TableCell>
-                      <TableCell>
-                        <Button type="button" variant="ghost" size="icon" onClick={() => remove(i)}>
+                      <TableCell className="text-right">
+                        <Button type="button" variant="ghost" size="icon" onClick={() => remove(i)} className="h-8 w-8">
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </TableCell>

@@ -73,7 +73,7 @@ export function SearchSelectBase<T>({
   const resultsQuery = useQuery({
     queryKey: [queryKey, "search", debounced],
     queryFn: () => search(debounced),
-    enabled: open && debounced.length >= minChars,
+    enabled: open && (debounced.length >= minChars || minChars === 0),
     staleTime: 30_000,
   });
 
