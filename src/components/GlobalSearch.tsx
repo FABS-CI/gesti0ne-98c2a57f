@@ -125,7 +125,7 @@ async function search(q: string): Promise<Hit[]> {
       id: `b-${b.bl_id}`,
       group: "Bons de livraison",
       label: b.reference,
-      sub: [b.signataire, b.transporteur].filter(Boolean).join(" · "),
+      sub: [b.client_nom, b.signataire, b.transporteur].filter(Boolean).join(" · "),
       to: "/bons-livraison",
       icon: Truck,
     });
