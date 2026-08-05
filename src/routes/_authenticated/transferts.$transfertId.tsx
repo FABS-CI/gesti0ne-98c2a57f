@@ -243,7 +243,7 @@ function TransfertDetailPage() {
           <TableBody>
             {lignes.map((l) => (
               <TableRow key={l.ligne_id}>
-                <TableCell className="font-mono text-sm">{l.produits?.reference ?? "—"}</TableCell>
+                <TableCell className="font-mono text-sm select-all" title="Référence produit">{l.produits?.reference ?? "—"}</TableCell>
                 <TableCell>{l.produits?.titre ?? "—"}</TableCell>
                 <TableCell className="text-right font-medium">{l.quantite}</TableCell>
               </TableRow>

@@ -45,7 +45,7 @@ export function InventaireLignesTable({ ecartsLive, editable, obs, onCompte, onO
           ) : (
             ecartsLive.map(({ ligne, compte, ecart }) => (
               <TableRow key={ligne.ligne_id}>
-                <TableCell className="font-mono text-xs">
+                <TableCell className="font-mono text-xs select-all" title="Référence produit">
                   {ligne.reference_produit ?? "—"}
                 </TableCell>
                 <TableCell>{ligne.designation}</TableCell>

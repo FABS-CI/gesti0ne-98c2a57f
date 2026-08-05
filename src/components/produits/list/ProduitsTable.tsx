@@ -114,7 +114,7 @@ export function ProduitsTable({
                   <TableCell className="py-1.5">
                     <ProductCoverThumb produit={p} size="sm" className="shadow-sm" />
                   </TableCell>
-                  <TableCell className="font-mono text-xs">{p.reference}</TableCell>
+                  <TableCell className="font-mono text-xs select-all" title="Cliquer pour sélectionner la référence">{p.reference}</TableCell>
                   <TableCell className="font-medium">
                     {canMutate ? (
                       <Link

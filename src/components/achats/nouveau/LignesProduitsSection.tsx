@@ -116,7 +116,7 @@ export function LignesProduitsSection({
                   </Button>
                 </div>
               </TableCell>
-              <TableCell className="font-mono text-xs">{l.reference_produit || "—"}</TableCell>
+              <TableCell className="font-mono text-xs select-all" title="Référence produit">{l.reference_produit || "—"}</TableCell>
               <TableCell className="text-right">
                 <Input
                   type="number"
