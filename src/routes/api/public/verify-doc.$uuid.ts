@@ -29,9 +29,9 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
                 .select('*');
                 
               if (isUuid) {
-                query = query.or(`${table.idCol}.eq.${uuid},${table.refCol}.eq.${uuid}`);
+                query = query.or(`${table.idCol}.eq.${uuid},${table.refCol}.ilike.${uuid}`);
               } else {
-                query = query.eq(table.refCol, uuid);
+                query = query.ilike(table.refCol, uuid);
               }
 
               const { data, error } = await query.maybeSingle();
