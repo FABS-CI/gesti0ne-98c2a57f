@@ -1,3 +1,19 @@
+/**
+ * # PROMPT DE PRODUCTION — SAUVEGARDE & RESTAURATION INTÉGRALE DE L'ERP FABS-CI
+ *
+ * ## Objectif unique de ce chantier
+ * Garantir qu'à tout moment, à partir de deux éléments seulement — (1) le dépôt GitHub du code, 
+ * (2) la dernière archive de sauvegarde générée par ce système — il soit possible de restaurer l'ERP 
+ * dans un état exactement identique, sans perte de donnée, sans casse de fonctionnalité.
+ *
+ * ## CE QUI DOIT ÊTRE SAUVEGARDÉ
+ * - Toutes les tables métier de la base de données (clients, produits, commandes, factures, stock, comptabilité, RH, rôles/permissions, etc.).
+ * - Tous les buckets de fichiers (Storage), avec arborescence préservée.
+ * - Les comptes d'authentification (utilisateurs, rôles, métadonnées).
+ * - La configuration critique (policies RLS, Edge Functions, etc.).
+ *
+ * ## DOUBLE DESTINATION AUTOMATIQUE (Google Drive + Copie locale)
+ */
 import { getCurrentUser } from "@/lib/current-user";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
