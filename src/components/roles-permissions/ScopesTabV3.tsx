@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Loader2 } from "lucide-react";
 
-type Profile = { id: string; email: string | null; nom: string | null; prenoms: string | null };
+type Profile = { id: string; email: string | null; nom: string | null; prenom: string | null };
 type Depot = { depot_id: string; nom: string | null; code: string | null; actif: boolean | null };
 type Scope = { user_id: string; depot_id: string; principal: boolean | null };
 
@@ -54,7 +54,7 @@ export function ScopesTabV3({ profiles }: { profiles: Profile[] }) {
     const q = search.trim().toLowerCase();
     if (!q) return profiles;
     return profiles.filter((p) =>
-      `${p.prenoms ?? ""} ${p.nom ?? ""} ${p.email ?? ""}`.toLowerCase().includes(q));
+      `${p.prenom ?? ""} ${p.nom ?? ""} ${p.email ?? ""}`.toLowerCase().includes(q));
   }, [profiles, search]);
 
   const toggle = async (userId: string, depotId: string, next: boolean) => {
@@ -111,7 +111,7 @@ export function ScopesTabV3({ profiles }: { profiles: Profile[] }) {
                 <tr key={p.id} className="border-t">
                   <td className="py-2">
                     <div className="truncate font-medium">
-                      {[p.prenoms, p.nom].filter(Boolean).join(" ") || p.email}
+                      {[p.prenom, p.nom].filter(Boolean).join(" ") || p.email}
                     </div>
                     <div className="truncate text-xs text-muted-foreground">{p.email}</div>
                   </td>
