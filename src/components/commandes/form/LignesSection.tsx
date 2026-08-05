@@ -1,4 +1,5 @@
 import { AlertTriangle, Package, Plus, Trash2 } from "lucide-react";
+import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 import type { UseFormReturn, FieldArrayWithId } from "react-hook-form";
 import type { UseQueryResult } from "@tanstack/react-query";
 
@@ -118,9 +119,9 @@ export function LignesSection({
                       <TableCell>
                         <ProductCoverThumb 
                           produit={{ 
-                            titre: field.designation, 
-                            cover_path: (field as any).cover_path, 
-                            cover_thumb_path: (field as any).cover_thumb_path 
+                            titre: l?.designation, 
+                            cover_path: (l as any)?.cover_path, 
+                            cover_thumb_path: (l as any)?.cover_thumb_path 
                           }} 
                           size="xs" 
                         />

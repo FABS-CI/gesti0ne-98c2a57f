@@ -48,6 +48,8 @@ const ligneSchema = z.object({
   prix_unitaire: z.number().min(0, "Prix ≥ 0"),
   remise_pct: z.number().min(0).max(100),
   stock_produit: z.number().nullable().optional(),
+  cover_path: z.string().nullable().optional(),
+  cover_thumb_path: z.string().nullable().optional(),
 });
 
 const formSchema = z.object({
