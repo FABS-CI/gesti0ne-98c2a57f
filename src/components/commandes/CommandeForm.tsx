@@ -274,17 +274,18 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
   const onSubmit = form.handleSubmit(
     (values: CommandeFormValues) => {
+      const typedValues = values as CommandeFormValues;
       if (mode === "create") {
         if (canValiderCommande) {
-          setPendingValues(values);
+          setPendingValues(typedValues);
           setConfirmValidationOpen(true);
         } else {
-          setPendingValues(values);
+          setPendingValues(typedValues);
           setConfirmOpen(true);
         }
         return;
       }
-      mutation.mutate(values);
+      mutation.mutate(typedValues);
     },
     () => toast.error("Veuillez corriger les erreurs du formulaire"),
   );
