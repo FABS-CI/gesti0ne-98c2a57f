@@ -292,3 +292,11 @@ export async function loadProformaTotals(proformaId: string): Promise<DocTotals>
   if (!data?.commande_id) return {};
   return loadCommandeTotals(data.commande_id);
 }
+
+export type DiscountMode = 'A' | 'B' | 'NONE';
+
+export function resolveDiscountMode(totals: DocTotals): DiscountMode {
+  if (totals.remiseGlobale && totals.remiseGlobale > 0) return 'B';
+  if (totals.remiseLigneTotal && totals.remiseLigneTotal > 0) return 'A';
+  return 'NONE';
+}
