@@ -30,9 +30,9 @@ export const emptyLigne = (): LigneUI => ({
   produit_id: null,
   reference_produit: "",
   designation: "",
-  quantite: 1,
-  prix_unitaire: 0,
-  remise_pct: 0,
+  quantite: undefined as any,
+  prix_unitaire: undefined as any,
+  remise_pct: undefined as any,
 });
 
 /** Montant d'une ligne après remise. */
@@ -123,8 +123,8 @@ export function LignesProduitsSection({
                 <Input
                   type="number"
                   min={1}
-                  value={l.quantite}
-                  onChange={(e) => onUpdate(i, { quantite: Number(e.target.value) || 0 })}
+                  value={l.quantite ?? ""}
+                  onChange={(e) => onUpdate(i, { quantite: e.target.value === "" ? undefined as any : Number(e.target.value) })}
                   className="text-right h-9"
                 />
               </TableCell>
@@ -132,8 +132,8 @@ export function LignesProduitsSection({
                 <Input
                   type="number"
                   min={0}
-                  value={l.prix_unitaire}
-                  onChange={(e) => onUpdate(i, { prix_unitaire: Number(e.target.value) || 0 })}
+                  value={l.prix_unitaire ?? ""}
+                  onChange={(e) => onUpdate(i, { prix_unitaire: e.target.value === "" ? undefined as any : Number(e.target.value) })}
                   className="text-right h-9"
                 />
               </TableCell>
@@ -143,10 +143,10 @@ export function LignesProduitsSection({
                   min={0}
                   max={100}
                   step="0.01"
-                  value={l.remise_pct}
+                  value={l.remise_pct ?? ""}
                   onChange={(e) =>
                     onUpdate(i, {
-                      remise_pct: Math.min(Math.max(Number(e.target.value) || 0, 0), 100),
+                      remise_pct: e.target.value === "" ? undefined as any : Math.min(Math.max(Number(e.target.value), 0), 100),
                     })
                   }
                   className="text-right h-9"
