@@ -132,7 +132,7 @@ function BLPage() {
           </div>
 
           <h2 className="mb-2 text-sm font-bold uppercase">Livraisons ({livraisons.length})</h2>
-          <table className="mb-6 w-full border-collapse text-xs">
+          <table className="mb-6 w-full border-collapse text-xs table-zebra-orange table-print-borders">
             <thead>
               <tr className="border-b bg-muted/30">
                 <th className="px-2 py-2 text-left font-semibold">Référence</th>
@@ -164,7 +164,7 @@ function BLPage() {
           </table>
 
           <h2 className="mb-2 text-sm font-bold uppercase">Expéditions ({expeditions.length})</h2>
-          <table className="mb-6 w-full border-collapse text-xs">
+          <table className="mb-6 w-full border-collapse text-xs table-zebra-orange table-print-borders">
             <thead>
               <tr className="border-b bg-muted/30">
                 <th className="px-2 py-2 text-left font-semibold">Référence</th>
