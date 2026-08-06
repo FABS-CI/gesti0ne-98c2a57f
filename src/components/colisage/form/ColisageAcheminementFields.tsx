@@ -225,7 +225,20 @@ export function ColisageExpeditionFields(props: {
         <Label>
           Responsable de la gare
         </Label>
-        <Input value={gareResp} onChange={(e) => setGareResp(e.target.value)} />
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Input value={gareResp} onChange={(e) => setGareResp(e.target.value)} />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => window.open("/colisage/responsables?new=true", "_blank")}
+            title="Créer un nouveau responsable"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
         <FieldError msg={errors.gareResp} />
       </div>
       <div>
@@ -235,6 +248,7 @@ export function ColisageExpeditionFields(props: {
         <Input value={gareTel} onChange={(e) => setGareTel(e.target.value)} />
         <FieldError msg={errors.gareTel} />
       </div>
+
     </>
   );
 }
