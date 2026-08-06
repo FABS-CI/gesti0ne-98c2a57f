@@ -273,6 +273,7 @@ export class BaseDocument {
       });
     }
 
+
     // Pagination
     const pageCount = this.doc.getPageCount();
     const currPage = this.doc.getPages().indexOf(this.page) + 1;
