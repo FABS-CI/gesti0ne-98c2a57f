@@ -321,27 +321,35 @@ function RetourDetailPage() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-muted/30">
                   <TableHead>Désignation</TableHead>
                   <TableHead>Référence</TableHead>
-                  <TableHead className="text-right">Qté demandée</TableHead>
-                  <TableHead className="text-right">Qté reçue</TableHead>
-                  <TableHead>État</TableHead>
+                  <TableHead className="text-right w-24">Qté demandée</TableHead>
+                  <TableHead className="text-right w-24">Qté reçue</TableHead>
+                  <TableHead className="w-32">État</TableHead>
                   <TableHead>Motif</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {retour.lignes.map((l) => (
                   <TableRow key={l.ligne_id}>
-                    <TableCell className="font-medium">{l.designation}</TableCell>
-                    <TableCell className="font-mono text-xs">
+                    <TableCell className="font-medium select-all">{l.designation}</TableCell>
+                    <TableCell className="font-mono text-xs select-all">
                       {l.reference_produit ?? "—"}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right tabular-nums">
                       {l.quantite_demandee ?? l.quantite}
                     </TableCell>
-                    <TableCell className="text-right">{l.quantite_recue ?? "—"}</TableCell>
-                    <TableCell className="text-xs">{l.etat_reception ?? "—"}</TableCell>
+                    <TableCell className="text-right tabular-nums font-semibold">
+                      {l.quantite_recue ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {l.etat_reception ? (
+                        <Badge variant="outline" className="font-normal capitalize">
+                          {l.etat_reception}
+                        </Badge>
+                      ) : "—"}
+                    </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {l.motif ?? "—"}
                     </TableCell>
