@@ -18,7 +18,11 @@ const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableE
     <div className="relative w-full overflow-x-auto overflow-y-hidden rounded-lg border border-border/60 bg-card custom-scrollbar">
       <table
         ref={ref}
-        className={cn("w-full caption-bottom text-sm border-collapse min-w-[600px] md:min-w-0", className)}
+        className={cn(
+          "w-full caption-bottom text-sm border-collapse min-w-[600px] md:min-w-0",
+          "border-spacing-0", // Anti-overlap
+          className
+        )}
         {...props}
       />
     </div>
@@ -33,7 +37,9 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      "sticky top-0 z-10 bg-muted/40 backdrop-blur supports-[backdrop-filter]:bg-muted/30 [&_tr]:border-b [&_tr]:border-border/60",
+      "sticky top-0 z-10 bg-muted/40 backdrop-blur supports-[backdrop-filter]:bg-muted/30",
+      "[&_tr]:border-b [&_tr]:border-border/60",
+      "h-11", // Largeur fixe cohérente pour les headers
       className,
     )}
     {...props}

@@ -17,7 +17,7 @@ import { buildQrUrl } from "./qr-logic";
 export const COLORS = {
   bleuFabs: rgb(0.106, 0.165, 0.341), // #1B2A57
   rougeFabs: rgb(0.827, 0.184, 0.184), // #D32F2F (Couleur pour Remises)
-  orangeFabs: rgb(0.96, 0.486, 0.0), // #F57C00 (Couleur pour ligne séparatrice et badge commande)
+  orangeFabs: rgb(0.96, 0.486, 0.0), // #F57C00
   grisClair: rgb(0.968, 0.968, 0.968), // #F7F7F7
   orangeZebra: rgb(1, 0.953, 0.878), // #FFF3E0 (Orange très clair pour zebra)
   noir: rgb(0, 0, 0),
@@ -428,8 +428,8 @@ export class BaseDocument {
 
         // Dessiner les traits verticaux des colonnes
         this.page.drawLine({
-          start: { x: curX, y: curY },
-          end: { x: curX, y: curY - rowH },
+          start: { x: Math.round(curX * 100) / 100, y: curY },
+          end: { x: Math.round(curX * 100) / 100, y: curY - rowH },
           color: COLORS.grisLigne,
           thickness: 0.5,
         });
@@ -439,8 +439,8 @@ export class BaseDocument {
 
       // Dernier trait vertical à droite
       this.page.drawLine({
-        start: { x: curX, y: curY },
-        end: { x: curX, y: curY - rowH },
+        start: { x: Math.round((curX) * 100) / 100, y: curY },
+        end: { x: Math.round((curX) * 100) / 100, y: curY - rowH },
         color: COLORS.grisLigne,
         thickness: 0.5,
       });
@@ -544,8 +544,8 @@ export class BaseDocument {
         // Trait vertical de séparation entre label et valeur dans les totaux
         const labelColWidth = 110;
         this.page.drawLine({
-          start: { x: x + labelColWidth, y: curY },
-          end: { x: x + labelColWidth, y: curY - 20 },
+          start: { x: Math.round((x + labelColWidth) * 100) / 100, y: curY },
+          end: { x: Math.round((x + labelColWidth) * 100) / 100, y: curY - 20 },
           color: COLORS.grisLigne,
           thickness: 0.5,
         });
