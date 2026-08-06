@@ -53,7 +53,7 @@ describe("printEtiquettes", () => {
   it("mode print: déclenche window.print automatiquement au chargement", () => {
     const doc = { write: vi.fn(), close: vi.fn() };
     vi.spyOn(window, "open").mockReturnValue({ document: doc } as unknown as Window);
-    printEtiquettes("<div/>", "T", "a4-one", "print");
+    printEtiquettes("<div/>", "T", "a4-portrait-auto", "print");
     const written = doc.write.mock.calls[0][0] as string;
     expect(written).toContain("window.print()");
     expect(written).not.toContain('class="preview-bar"');
