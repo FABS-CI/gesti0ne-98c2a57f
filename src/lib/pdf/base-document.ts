@@ -187,19 +187,16 @@ export class BaseDocument {
     const cartX = PAGE.w - MARGINS.x - 110;
     const cartY = yTop;
     
-    this.page.drawRectangle({
-      x: cartX,
-      y: cartY - 18,
-      width: 110,
-      height: 18,
-      color: COLORS.bleuFabs,
-    });
     const isStatement = this.data.type === "Relevé de Compte";
-    const refText = isStatement 
-      ? this.data.reference 
-      : (this.data.reference.includes('-') || this.data.reference.includes('_') || /^[A-Z]{2,3}$/.test(this.data.reference) ? `N° ${this.data.reference}` : this.data.reference);
-    
+
+    // Bloc bleu de référence : supprimé définitivement pour le Relevé de Compte
     if (!isStatement) {
+      const refText =
+        this.data.reference.includes('-') ||
+        this.data.reference.includes('_') ||
+        /^[A-Z]{2,3}$/.test(this.data.reference)
+          ? `N° ${this.data.reference}`
+          : this.data.reference;
       this.page.drawRectangle({
         x: cartX,
         y: cartY - 18,
@@ -217,19 +214,21 @@ export class BaseDocument {
       });
     }
 
-
     const details = [
       { l: "Date", v: this.data.date.includes('T') ? this.data.date.split('T')[0].split('-').reverse().join('/') : this.data.date },
       { l: "Heure", v: this.data.heure ?? new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }) },
     ];
 
+    // Sans le cartouche de référence, on remonte la date/heure pour éviter tout vide
+    const detailsTop = isStatement ? cartY - 8 : cartY - 32;
 
     details.forEach((d, i) => {
-      const y = cartY - 32 - i * 11;
+      const y = detailsTop - i * 11;
       this.page.drawText(`${d.l} :`, { x: cartX + 15, y, size: 8, font: this.fonts.regular, color: COLORS.noir });
       const valW = this.fonts.bold.widthOfTextAtSize(d.v, 8);
       this.page.drawText(d.v, { x: PAGE.w - MARGINS.x - valW, y, size: 8, font: this.fonts.bold, color: COLORS.noir });
     });
+
 
 
     this.page.drawLine({
