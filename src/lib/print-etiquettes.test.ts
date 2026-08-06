@@ -16,7 +16,7 @@ describe("printEtiquettes", () => {
 
   it("affiche un toast quand le navigateur bloque la pop-up", () => {
     const spy = vi.spyOn(window, "open").mockReturnValue(null);
-    const result = printEtiquettes("<div/>", "T", "a4-one", "preview");
+    const result = printEtiquettes("<div/>", "T", "a4-portrait-auto", "preview");
     expect(result).toBeNull();
     expect(toastError).toHaveBeenCalledOnce();
     expect(String(toastError.mock.calls[0][0])).toMatch(/pop-?up/i);
