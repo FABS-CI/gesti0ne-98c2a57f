@@ -78,10 +78,10 @@ function frDate(d: string | null | undefined) {
 
 const WORKFLOW_STEPS = [
   { key: "demande_creee", label: "Demande" },
-  { key: "en_attente_magasin", label: "Attente magasin" },
+  { key: "attente_reception", label: "Attente magasin" },
   { key: "receptionne", label: "Réceptionné" },
-  { key: "en_attente_compta", label: "Attente compta" },
-  { key: "valide", label: "Validé" },
+  { key: "attente_validation_compta", label: "Attente compta" },
+  { key: "valide_compta", label: "Validé" },
   { key: "cloture", label: "Clôturé" },
 ] as const;
 
@@ -156,13 +156,13 @@ function RetourDetailPage() {
   const version = retour.version_no ?? 1;
 
   const canReceptionner =
-    retour.statut === "en_attente_magasin" && (isSuperAdmin || has("retours.receptionner"));
+    retour.statut === "attente_reception" && (isSuperAdmin || has("retours.receptionner"));
   const canValiderCompta =
-    retour.statut === "en_attente_compta" && (isSuperAdmin || has("retours.valider_compta"));
+    retour.statut === "attente_validation_compta" && (isSuperAdmin || has("retours.valider_compta"));
   const canRefuserMagasin =
-    retour.statut === "en_attente_magasin" && (isSuperAdmin || has("retours.refuser_magasin"));
+    retour.statut === "attente_reception" && (isSuperAdmin || has("retours.refuser_magasin"));
   const canRefuserCompta =
-    retour.statut === "en_attente_compta" && (isSuperAdmin || has("retours.refuser_compta"));
+    retour.statut === "attente_validation_compta" && (isSuperAdmin || has("retours.refuser_compta"));
   const canForcerCloture = isSuperAdmin && retour.statut !== "cloture";
 
   return (
@@ -190,32 +190,16 @@ function RetourDetailPage() {
           <Button
             variant="outline"
             onClick={async () => {
-              const { generateUnifiedCommercialPDF } = await import("@/lib/pdf/unified-generator");
-              const { fileNameFor } = await import("@/lib/pdf/fabsTemplates");
-              
-              const blob = await generateUnifiedCommercialPDF("Bon de Retour", {
-                id: retour.retour_id,
-                br_id: retour.retour_id,
-                reference: retour.numero || retour.reference,
-                date: retour.date_retour,
-                clientNom: retour.client_nom,
-                totalVente: 0, // Les montants sont souvent gérés en compta pour les retours
-                lignes: retour.lignes.map((l, i) => ({
-                  num: i + 1,
-                  code: l.reference_produit || "",
-                  designation: l.designation,
-                  qte: l.quantite_recue || l.quantite_demandee || l.quantite,
-                  pu: 0,
-                  total: 0,
-                })),
-              });
-
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = fileNameFor(retour.numero || retour.reference, retour.client_nom || "Client");
-              a.click();
-              URL.revokeObjectURL(url);
+              try {
+                const { generateBonRetourPDF, downloadBlob } = await import("@/lib/pdf/fabsTemplates");
+                const { buildRetourDocBase } = await import("@/lib/pdf/retour-builder");
+                
+                const data = await buildRetourDocBase(retour.retour_id);
+                const blob = await generateBonRetourPDF(data);
+                downloadBlob(blob, `bon-retour-${retour.numero || retour.reference}.pdf`);
+              } catch (e) {
+                toast.error("Erreur lors de la génération du PDF", { description: friendlyError(e) });
+              }
             }}
           >
             <Printer className="h-4 w-4 mr-2" />
