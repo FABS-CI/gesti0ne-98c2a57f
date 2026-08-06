@@ -68,7 +68,9 @@ function RapportsLogistique() {
       if (to) q = q.lte("date_tournee", to);
       if (statut) q = q.eq("statut", statut);
       if (chauffeur) q = q.ilike("chauffeur_nom", `%${chauffeur}%`);
-      const { data, error } = await q.order("date_tournee", { ascending: false });
+      const { data, error } = await q
+        .order("date_tournee", { ascending: false })
+        .limit(5000);
       if (error) throw error;
       return (data ?? []) as Row[];
     },

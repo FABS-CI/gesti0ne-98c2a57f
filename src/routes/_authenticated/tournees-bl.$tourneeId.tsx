@@ -51,12 +51,20 @@ function BLPage() {
   const [expeditions, setExpeditions] = useState<Expedition[]>([]);
 
   useEffect(() => {
+    // Garde anti-race : un changement rapide de tourneeId ne doit pas laisser
+    // la réponse d'un ancien fetch écraser l'état courant.
+    let cancelled = false;
     (async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("tournees")
         .select("*")
         .eq("tournee_id", tourneeId)
         .maybeSingle();
+      if (cancelled) return;
+      if (error) {
+        console.error("Chargement de la tournée impossible", error.message);
+        return;
+      }
       if (data) {
         setT(data as Tournee);
         if (data.vehicule_id) {
@@ -65,6 +73,7 @@ function BLPage() {
             .select("immatriculation, marque, modele")
             .eq("vehicule_id", data.vehicule_id)
             .maybeSingle();
+          if (cancelled) return;
           if (v)
             setVehicule(
               `${v.immatriculation ?? ""} ${v.marque ?? ""} ${v.modele ?? ""}`.trim() || "—",
@@ -77,13 +86,18 @@ function BLPage() {
           "livraison_id, reference, client_nom, adresse, transporteur, date_livraison, statut",
         )
         .eq("tournee_id", tourneeId);
+      if (cancelled) return;
       setLivraisons((lv ?? []) as Livraison[]);
       const { data: ex } = await supabase
         .from("expeditions")
         .select("expedition_id, reference, transporteur, tracking, date_depart, statut")
         .eq("tournee_id", tourneeId);
+      if (cancelled) return;
       setExpeditions((ex ?? []) as Expedition[]);
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [tourneeId]);
 
   if (!t) return <div className="p-8 text-sm text-muted-foreground">Chargement…</div>;
