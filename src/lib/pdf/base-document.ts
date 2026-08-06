@@ -539,6 +539,16 @@ export class BaseDocument {
           font: this.fonts.bold,
           color: isRemise ? COLORS.rougeFabs : COLORS.noir
         });
+
+        // Trait vertical de séparation entre label et valeur dans les totaux
+        const labelColWidth = 110;
+        this.page.drawLine({
+          start: { x: x + labelColWidth, y: curY },
+          end: { x: x + labelColWidth, y: curY - 20 },
+          color: COLORS.grisLigne,
+          thickness: 0.5,
+        });
+
         this.page.drawLine({ start: { x, y: curY - 20 }, end: { x: PAGE.w - MARGINS.x, y: curY - 20 }, color: COLORS.grisLigne, thickness: 0.5 });
       }
       curY -= 20;
