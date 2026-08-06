@@ -10,38 +10,42 @@ interface EtiquettesSectionProps {
 }
 
 export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSectionProps) {
-  const getHtml = (coliId?: string | null, layout: "a4-one" | "a4-two-landscape" = "a4-one") => {
-    if (layout === "a4-two-landscape") {
-      const allEtiquettes = coliId 
-        ? etiquettes.filter(e => e.colis_id === coliId)
-        : etiquettes;
-      
-      return allEtiquettes.map(e => {
-        const itemHtml = document.querySelector(`[data-colis-id="${e.colis_id}"]`)?.outerHTML ?? "";
-        return `
-          <div class="layout-a4-two-landscape-container">
-            <div class="etiquette-grid">
-              <div class="crop-marks">
-                <div class="mark-corner mark-tl"></div>
-                <div class="mark-corner mark-tr"></div>
-                <div class="mark-corner mark-bl"></div>
-                <div class="mark-corner mark-br"></div>
-                <div class="crop-line-v"></div>
-                <div class="cut-icon">✂️</div>
-              </div>
-              ${itemHtml}
-              ${itemHtml}
-            </div>
-          </div>
-        `;
-      }).join("");
+  const getHtml = (coliId?: string | null) => {
+    const selectedEtiquettes = coliId 
+      ? etiquettes.filter(e => e.colis_id === coliId)
+      : etiquettes;
+
+    if (selectedEtiquettes.length === 0) return "";
+
+    // Cas 1 : Une seule étiquette -> Page A4 Portrait centrée
+    if (selectedEtiquettes.length === 1) {
+      const e = selectedEtiquettes[0];
+      const itemHtml = document.querySelector(`[data-colis-id="${e.colis_id}"]`)?.outerHTML ?? "";
+      return `
+        <div class="a4-page single-label-page">
+          ${itemHtml}
+        </div>
+      `;
     }
 
-    return coliId
-      ? (document.querySelector(`[data-colis-id="${coliId}"]`)?.outerHTML ?? "")
-      : etiquettes
-          .map((e) => document.querySelector(`[data-colis-id="${e.colis_id}"]`)?.outerHTML ?? "")
-          .join("");
+    // Cas 2 : Plusieurs étiquettes -> 2 par page (A4 Portrait vertical)
+    let finalHtml = "";
+    for (let i = 0; i < selectedEtiquettes.length; i += 2) {
+      const e1 = selectedEtiquettes[i];
+      const e2 = selectedEtiquettes[i + 1];
+      
+      const item1Html = document.querySelector(`[data-colis-id="${e1.colis_id}"]`)?.outerHTML ?? "";
+      const item2Html = e2 ? (document.querySelector(`[data-colis-id="${e2.colis_id}"]`)?.outerHTML ?? "") : "";
+
+      finalHtml += `
+        <div class="a4-page double-label-page">
+          <div class="label-half">${item1Html}</div>
+          ${e2 ? `<div class="crop-marks-v"></div><div class="cut-icon">✂️</div>` : ""}
+          <div class="label-half">${item2Html}</div>
+        </div>
+      `;
+    }
+    return finalHtml;
   };
 
   return (
