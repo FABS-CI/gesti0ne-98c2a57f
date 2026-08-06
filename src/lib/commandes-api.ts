@@ -196,7 +196,7 @@ export async function getCommandeLignes(commandeId: string) {
     .eq("commande_id", commandeId)
     .order("created_at", { ascending: true });
   if (error) throw error;
-  const lignes = (data ?? []) as any[];
+  const lignes = (data ?? []) as CommandeLigne[];
 
   // Enrichissement des couvertures (pas de FK exploitable pour une jointure PostgREST)
   const ids = Array.from(
