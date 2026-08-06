@@ -715,7 +715,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
           )}
           <AlertDialogFooter>
             <AlertDialogCancel>Modifier la saisie</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmSubmit} disabled={mutation.isPending}>
+            <AlertDialogAction onClick={() => confirmSubmit(false)} disabled={mutation.isPending}>
               {mutation.isPending ? "Enregistrement…" : "Confirmer et enregistrer"}
             </AlertDialogAction>
           </AlertDialogFooter>
