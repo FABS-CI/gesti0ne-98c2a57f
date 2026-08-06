@@ -94,26 +94,11 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                       printEtiquettes(
                         h,
                         `Sticker ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
-                        "a4-one",
+                        "a4-portrait-auto",
                       );
                   }}
                 >
                   <Printer className="mr-2 h-4 w-4" /> Imprimer A4
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const h = getHtml(e.colis_id, "a4-two-landscape");
-                    if (h)
-                      printEtiquettes(
-                        h,
-                        `Stickers doubles ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
-                        "a4-two-landscape",
-                      );
-                  }}
-                >
-                  <Printer className="mr-2 h-4 w-4" /> Imprimer Double (A4)
                 </Button>
                 {e.colis_id && (
                   <Button
