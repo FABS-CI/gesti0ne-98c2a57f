@@ -379,9 +379,10 @@ export class BaseDocument {
     });
 
     // Dernier trait vertical à droite du header
+    const lastHeaderX = Math.round(x * 100) / 100;
     this.page.drawLine({
-      start: { x, y },
-      end: { x, y: y - 20 },
+      start: { x: lastHeaderX, y },
+      end: { x: lastHeaderX, y: y - 20 },
       color: COLORS.grisLigne,
       thickness: 0.5,
     });
@@ -502,8 +503,10 @@ export class BaseDocument {
     
     // On dessine le trait vertical gauche et droite pour tout le bloc
     const drawTotalBoxBorders = (height: number) => {
-      this.page.drawLine({ start: { x, y }, end: { x, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
-      this.page.drawLine({ start: { x: PAGE.w - MARGINS.x, y }, end: { x: PAGE.w - MARGINS.x, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
+      const totalLeftX = Math.round(x * 100) / 100;
+      const totalRightX = Math.round((PAGE.w - MARGINS.x) * 100) / 100;
+      this.page.drawLine({ start: { x: totalLeftX, y }, end: { x: totalLeftX, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
+      this.page.drawLine({ start: { x: totalRightX, y }, end: { x: totalRightX, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
       // Trait du haut
       this.page.drawLine({ start: { x, y }, end: { x: PAGE.w - MARGINS.x, y }, color: COLORS.grisLigne, thickness: 0.5 });
     };
