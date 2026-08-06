@@ -47,7 +47,7 @@ describe("printEtiquettes", () => {
     expect(written).toContain("2 / 2");
     // 1 colis = 1 page A4
     expect(written).toContain("size: A4 portrait");
-    expect(written).toMatch(/\.etiquette-carton\s*\{[^}]*page-break-after:\s*always/);
+    expect(written).toMatch(/\.a4-page\s*\{[^}]*page-break-after:\s*always/);
   });
 
   it("mode print: déclenche window.print automatiquement au chargement", () => {
