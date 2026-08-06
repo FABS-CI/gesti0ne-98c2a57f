@@ -94,6 +94,6 @@ describe("computeSoldeClient — parité tableau ↔ PDF", () => {
     expect(r.isEmpty).toBe(true);
     expect(r.solde).toBe(15_000);
     expect(r.emptyExplanation).toMatch(/Aucun mouvement valide/);
-    expect(r.emptyExplanation).toMatch(/Total impayé (FCFA)/);
+    expect(r.emptyExplanation).toMatch(/Total impayé \(FCFA\)/);
   });
 });
