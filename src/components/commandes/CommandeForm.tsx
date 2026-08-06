@@ -665,8 +665,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                 <InfoCell label="Adresse" value={pendingValues.adresse || "—"} />
               </div>
               <div className="rounded-md border">
-                <table className="w-full text-xs">
-                  <thead className="bg-muted/50">
+                <table className="w-full text-xs table-zebra-orange table-print-borders">
+                  <thead className="bg-muted/50 border-b">
                     <tr>
                       <th className="text-left p-2">Produit</th>
                       <th className="text-right p-2">Qté</th>

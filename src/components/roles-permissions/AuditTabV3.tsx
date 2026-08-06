@@ -52,8 +52,8 @@ export function AuditTabV3() {
         <p className="py-8 text-center text-sm text-muted-foreground">Aucun événement enregistré.</p>
       ) : (
         <ScrollArea className="h-[62vh]">
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-background">
+          <table className="w-full text-sm table-zebra-orange table-print-borders">
+            <thead className="sticky top-0 bg-background border-b shadow-sm">
               <tr className="text-left">
                 <th className="py-2 font-medium">Date</th>
                 <th className="py-2 font-medium">Auteur</th>
