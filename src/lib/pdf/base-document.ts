@@ -367,9 +367,10 @@ export class BaseDocument {
       });
 
       // Traits verticaux pour le header
+      const headerLineX = Math.round(x * 100) / 100;
       this.page.drawLine({
-        start: { x, y: y },
-        end: { x, y: y - 20 },
+        start: { x: headerLineX, y: y },
+        end: { x: headerLineX, y: y - 20 },
         color: COLORS.grisLigne,
         thickness: 0.5,
       });

@@ -52,8 +52,8 @@ export function SummaryCard({
 }) {
   const totalRemises = totaux.remisesLignes + totaux.remiseGlobaleMontant;
   return (
-    <div className="rounded-md border bg-card p-4 space-y-2 text-sm">
-      <h3 className="text-sm font-semibold">Récapitulatif</h3>
+    <div className="rounded-md border bg-card p-4 space-y-2 text-sm shadow-sm">
+      <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground border-b pb-1">Récapitulatif</h3>
       <Row label="Nombre d'articles" value={String(totalArticles)} />
       <Row label="Quantité totale" value={String(totalQuantite)} />
       <div className="border-t my-2" />
