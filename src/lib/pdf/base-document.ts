@@ -212,10 +212,11 @@ export class BaseDocument {
 
     details.forEach((d, i) => {
       const y = cartY - 32 - i * 11;
-      this.page.drawText(`${d.l} :`, { x: cartX + 40, y, size: 8, font: this.fonts.regular, color: COLORS.noir });
+      this.page.drawText(`${d.l} :`, { x: cartX + 15, y, size: 8, font: this.fonts.regular, color: COLORS.noir });
       const valW = this.fonts.bold.widthOfTextAtSize(d.v, 8);
       this.page.drawText(d.v, { x: PAGE.w - MARGINS.x - valW, y, size: 8, font: this.fonts.bold, color: COLORS.noir });
     });
+
 
     this.page.drawLine({
       start: { x: MARGINS.x, y: yTop - 70 },
