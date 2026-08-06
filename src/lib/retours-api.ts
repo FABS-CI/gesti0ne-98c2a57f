@@ -320,7 +320,7 @@ export async function creerRetourDemande(input: CreerRetourDemandePayload): Prom
       designation: l.designation,
       quantite: l.quantite,
       quantite_demandee: l.quantite,
-      prix_unitaire: l.prix_unitaire ?? null,
+      prix_unitaire: l.prix_unitaire ?? 0,
       remise_pct: l.remise_pct ?? 0,
       etat_produit: l.etat_produit ?? "revendable",
       motif: l.motif ?? null,
@@ -348,6 +348,7 @@ export async function receptionnerRetour(args: {
   version: number;
   lignes: ReceptionLigneInput[];
 }): Promise<void> {
+  await assertPermission("retours.receptionner");
   const { error } = await (
     supabase as unknown as {
       rpc: (
@@ -434,6 +435,7 @@ export async function validerRetourCompta(args: {
   montants?: Record<string, number>;
   commentaire?: string | null;
 }): Promise<void> {
+  await assertPermission("retours.valider_compta");
   const { error } = await (
     supabase as unknown as {
       rpc: (
