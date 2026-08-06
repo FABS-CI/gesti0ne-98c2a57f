@@ -294,7 +294,10 @@ export type CreerRetourDemandePayload = RetourInput & {
 
 /** Crée une demande de retour (workflow v2, magasin en attente). */
 export async function creerRetourDemande(input: CreerRetourDemandePayload): Promise<string> {
-  await assertPermission("retours.creer");
+  const { has, isSuperAdmin } = await (await import("@/lib/rbac-api")).getUserPermissions();
+  if (!isSuperAdmin && !has("retours.creer")) {
+    throw new Error("Permission refusée : retours.creer");
+  }
   const type_retour = input.type_retour ?? "physique";
   const depot_id =
     type_retour === "avoir" ? null : (input.depot_id ?? (await getDepotDefautId()));
@@ -348,6 +351,10 @@ export async function receptionnerRetour(args: {
   version: number;
   lignes: ReceptionLigneInput[];
 }): Promise<void> {
+  const { has, isSuperAdmin } = await (await import("@/lib/rbac-api")).getUserPermissions();
+  if (!isSuperAdmin && !has("retours.receptionner")) {
+    throw new Error("Permission refusée : retours.receptionner");
+  }
   const { error } = await (
     supabase as unknown as {
       rpc: (
@@ -434,6 +441,10 @@ export async function validerRetourCompta(args: {
   montants?: Record<string, number>;
   commentaire?: string | null;
 }): Promise<void> {
+  const { has, isSuperAdmin } = await (await import("@/lib/rbac-api")).getUserPermissions();
+  if (!isSuperAdmin && !has("retours.valider_compta")) {
+    throw new Error("Permission refusée : retours.valider_compta");
+  }
   const { error } = await (
     supabase as unknown as {
       rpc: (

@@ -43,6 +43,14 @@ import { createFileRoute, Navigate } from "@tanstack/react-router";
  * - MAGASINIER : Colisage, Inventaires, Réceptions.
  * - LIVREUR : Suivi des tournées, validation BL.
  * - COMPTABILITÉ : Facturation, Paiements, États financiers.
+ * 
+ * 6. MODULE RETOURS (RÉINTÉGRATION ET AVOIRS)
+ * -------------------------------------------
+ * - WORKFLOW : Demande -> Attente Magasin -> Réceptionné (Stock+) -> Attente Compta -> Clôturé (Finances).
+ * - STOCK : Réintégré lors de la RÉCEPTION (statut 'attente_validation_compta') via rpc.retour_receptionner.
+ * - COMPTABILITÉ : Impact financier lors de la VALIDATION COMPTA via rpc.retour_valider_compta.
+ *   - Options : Diminution solde client, Création Facture d'Avoir, ou Simple note.
+ * - SÉCURITÉ : Validation par rôle (Magasinier pour réception, Comptable pour validation).
  */
 
 export const Route = createFileRoute("/")({
