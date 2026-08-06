@@ -28,3 +28,4 @@ function IndexRedirect() {
     </div>
   );
 }
+
