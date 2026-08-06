@@ -1156,7 +1156,7 @@ async function drawSalesTable(
           else text(ctx, s, x0 + 4, ty, { size: 8.5 });
         });
       });
-      // Ligne inférieure fine grise entre lignes
+      // Ligne inférieure fine grise entre lignes (style moderne sans traits verticaux)
       ctx.page.drawLine({
         start: { x: MARGIN.x, y },
         end: { x: PAGE.w - MARGIN.x, y },
@@ -1166,7 +1166,8 @@ async function drawSalesTable(
       subtotal += Number(ligne.montant ?? 0);
     }
 
-    // Cadre autour du groupe
+    // Suppression du cadre vertical autour du groupe pour le style épuré
+    /*
     ctx.page.drawRectangle({
       x: MARGIN.x,
       y,
@@ -1175,19 +1176,25 @@ async function drawSalesTable(
       borderColor: ctx.theme.primary,
       borderWidth: 0.8,
     });
+    */
 
     // Sous-total : cellule alignée à droite dans la colonne Montant
     if (showSubtotals && montantColIdx >= 0) {
       const x0 = colX[montantColIdx];
       const x1 = PAGE.w - MARGIN.x;
       y -= rowH;
-      ctx.page.drawRectangle({
-        x: x0,
-        y,
-        width: x1 - x0,
-        height: rowH,
-        borderColor: ctx.theme.primary,
-        borderWidth: 0.8,
+      // Ligne horizontale pour le sous-total
+      ctx.page.drawLine({
+        start: { x: x0, y: y + rowH },
+        end: { x: x1, y: y + rowH },
+        color: ctx.theme.primary,
+        thickness: 1,
+      });
+      ctx.page.drawLine({
+        start: { x: x0, y },
+        end: { x: x1, y },
+        color: ctx.theme.primary,
+        thickness: 0.5,
       });
       textRight(ctx, fmtMontant(subtotal), x1 - 6, y + 6, {
         size: 10,
