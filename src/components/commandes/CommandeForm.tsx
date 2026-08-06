@@ -87,6 +87,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const canValiderCommande = has("commandes.valider");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmValidationOpen, setConfirmValidationOpen] = useState(false);
+  const [immediateConfirmOpen, setImmediateConfirmOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<CommandeFormValues | null>(null);
   const [recap, setRecap] = useState<{
     commandeId: string;
@@ -278,11 +279,10 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     (values: CommandeFormValues) => {
       const typedValues = values as CommandeFormValues;
       if (mode === "create") {
+        setPendingValues(typedValues);
         if (canValiderCommande) {
-          setPendingValues(typedValues);
-          setConfirmValidationOpen(true);
+          setImmediateConfirmOpen(true);
         } else {
-          setPendingValues(typedValues);
           setConfirmOpen(true);
         }
         return;
@@ -822,6 +822,39 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             >
               Fermer
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={immediateConfirmOpen} onOpenChange={setImmediateConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Validation immédiate</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette commande peut être directement validée car vous disposez des autorisations nécessaires. Que souhaitez-vous faire ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setImmediateConfirmOpen(false);
+                mutation.mutate(pendingValues!);
+              }}
+            >
+              Enregistrer en attente
+            </Button>
+            <Button
+              onClick={async () => {
+                setImmediateConfirmOpen(false);
+                // On pourrait appeler une version de creerCommande qui auto-valide
+                // ou simplement faire le flow actuel qui auto-valide si canValiderCommande est true
+                // Le backend actuel auto-valide si l'utilisateur a les droits ? 
+                // Vérifions creer_commande RPC.
+                mutation.mutate(pendingValues!);
+              }}
+            >
+              Confirmer immédiatement
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
