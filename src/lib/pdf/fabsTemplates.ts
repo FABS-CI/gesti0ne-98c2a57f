@@ -325,8 +325,9 @@ function fmtHeure(d: string | Date): string {
   if (isNaN(date.getTime())) return "";
   const h = String(date.getHours()).padStart(2, "0");
   const m = String(date.getMinutes()).padStart(2, "0");
-  return `${h}h${m}`;
+  return `${h}:${m}`;
 }
+
 
 function slug(s: string | null | undefined): string {
   return (s ?? "")
@@ -483,6 +484,7 @@ function drawHeader(ctx: Ctx, titre: string): number {
   // Date + Heure (droite, noir) + titre couleur thème, gras
   textRight(ctx, ctx.dateStr, PAGE.w - MARGIN.x, top, { size: 9 });
   textRight(ctx, fmtHeure(new Date()), PAGE.w - MARGIN.x, top - 14, { size: 9 });
+
   textRight(ctx, titre.toUpperCase(), PAGE.w - MARGIN.x, top - 46, {
     size: 22,
     bold: true,

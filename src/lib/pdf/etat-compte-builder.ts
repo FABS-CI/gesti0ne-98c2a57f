@@ -167,8 +167,8 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
             : "",
   }));
 
-  const yyyy = new Date().getFullYear();
-  const ref = `EC|${yyyy}|${(clientBlock.nom).replace(/\s+/g, "_").toUpperCase().slice(0, 20)}`;
+  const ref = cli?.reference || "RELEVÉ"; // Plus d'identifiant technique composite
+
 
   return generateEtatCompteClientPDF({
     reference: ref,
