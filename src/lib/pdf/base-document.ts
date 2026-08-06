@@ -511,6 +511,7 @@ export class BaseDocument {
     let curY = y;
 
     // Suppression des bordures verticales du bloc des totaux pour le style épuré
+    // On dessine une ligne horizontale plus visible avant les totaux
     const drawTotalBoxBorders = (height: number) => {
       // Uniquement la ligne du haut pour séparer du tableau
       this.page.drawLine({ start: { x, y }, end: { x: PAGE.w - MARGINS.x, y }, color: COLORS.grisLigne, thickness: 1 });
@@ -526,7 +527,7 @@ export class BaseDocument {
     drawTotalBoxBorders(totalRows * 20);
 
 
-    const row = (label: string, value: string, isTotal = false) => {
+    const row = (label: string, value: string, isTotal = false, isNet = false) => {
       if (isTotal) {
         this.page.drawRectangle({ x, y: curY - 20, width: boxW, height: 20, color: COLORS.bleuFabs });
         this.page.drawText(label, { x: x + 5, y: curY - 13, size: 9, font: this.fonts.bold, color: COLORS.blanc });
@@ -561,7 +562,8 @@ export class BaseDocument {
         });
         */
 
-        this.page.drawLine({ start: { x, y: curY - 20 }, end: { x: PAGE.w - MARGINS.x, y: curY - 20 }, color: COLORS.grisLigne, thickness: 0.5 });
+        // Suppression de la ligne horizontale sous chaque ligne de total intermédiaire (style épuré)
+        // this.page.drawLine({ start: { x, y: curY - 20 }, end: { x: PAGE.w - MARGINS.x, y: curY - 20 }, color: COLORS.grisLigne, thickness: 0.5 });
       }
       curY -= 20;
     };
@@ -577,7 +579,7 @@ export class BaseDocument {
       row(`Remise (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
     }
 
-    row("NET À PAYER", formatFCFA(this.totals.totalAPayer), true);
+    row("NET À PAYER", formatFCFA(this.totals.totalAPayer), true, true);
 
     // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
     const letY = curY - 15;
