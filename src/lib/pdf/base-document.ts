@@ -396,25 +396,43 @@ export class BaseDocument {
         }
         val = String(val ?? "");
         
-        const fontSize = 10; // Police augmentée de ~25% (était 8)
+        const fontSize = 10;
         const txtW = this.fonts.regular.widthOfTextAtSize(val, fontSize);
         const alignX = col.key === 'designation' ? curX + 5 : curX + (col.width - txtW) / 2;
         
         this.page.drawText(val, {
           x: alignX,
-          y: curY - 15, // Centrage vertical ajusté pour rowH 22
+          y: curY - 15,
           size: fontSize,
           font: this.fonts.regular,
           color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
         });
+
+        // Dessiner les traits verticaux des colonnes
+        this.page.drawLine({
+          start: { x: curX, y: curY },
+          end: { x: curX, y: curY - rowH },
+          color: COLORS.grisLigne,
+          thickness: 0.5,
+        });
+
         curX += col.width;
       });
 
+      // Dernier trait vertical à droite
+      this.page.drawLine({
+        start: { x: curX, y: curY },
+        end: { x: curX, y: curY - rowH },
+        color: COLORS.grisLigne,
+        thickness: 0.5,
+      });
+
+      // Trait horizontal sous la ligne
       this.page.drawLine({
         start: { x: MARGINS.x, y: curY - rowH },
         end: { x: PAGE.w - MARGINS.x, y: curY - rowH },
         color: COLORS.grisLigne,
-        thickness: 0.5, // Bordure plus visible
+        thickness: 0.5,
       });
       curY -= rowH;
 
