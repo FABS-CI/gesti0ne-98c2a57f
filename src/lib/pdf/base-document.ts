@@ -194,7 +194,7 @@ export class BaseDocument {
       height: 18,
       color: COLORS.bleuFabs,
     });
-    const refText = `N° ${this.data.reference}`;
+    const refText = this.data.reference.includes('-') || this.data.reference.includes('_') || /^[A-Z]{2,3}$/.test(this.data.reference) ? `N° ${this.data.reference}` : this.data.reference;
     const refW = this.fonts.bold.widthOfTextAtSize(refText, 9);
     this.page.drawText(refText, {
       x: cartX + (110 - refW) / 2,
@@ -205,9 +205,10 @@ export class BaseDocument {
     });
 
     const details = [
-      { l: "Date", v: this.data.date },
-      { l: "Heure", v: this.data.heure ?? new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }).replace(':', 'h') },
+      { l: "Date", v: this.data.date.includes('T') ? this.data.date.split('T')[0].split('-').reverse().join('/') : this.data.date },
+      { l: "Heure", v: this.data.heure ?? new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }) },
     ];
+
 
     details.forEach((d, i) => {
       const y = cartY - 32 - i * 11;

@@ -63,8 +63,9 @@ export async function generateUnifiedStatementPDF(data: any): Promise<Blob> {
   const docBase = {
     id: data.client_id || "statement",
     type: "Relevé de Compte",
-    reference: data.reference || `RLV-${new Date().getTime()}`,
-    date: new Date().toISOString(),
+    reference: data.reference || "RELEVÉ",
+    date: new Date().toISOString(), // On garde l'ISO ici, il sera formaté par BaseDocument.drawHeader
+
     client: {
       nom: data.client?.nom || "",
       code: data.client?.reference || "",
