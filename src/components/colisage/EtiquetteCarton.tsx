@@ -66,8 +66,8 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
       .then(({ default: QRCode }) =>
         QRCode.toDataURL(url, {
           margin: 1,
-          width: 600,
-          errorCorrectionLevel: "H",
+          width: 150, // Taille réduite pour accélération
+          errorCorrectionLevel: "M", // Équilibre vitesse/fiabilité
         }),
       )
       .then(setQr)
@@ -92,9 +92,8 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
       className="etiquette-carton bg-white text-black break-inside-avoid flex flex-col"
       data-colis-id={data.colis_id ?? ""}
       style={{
-        width: "190mm",
-        minHeight: "277mm",
-        padding: "10mm 12mm",
+        width: "100%",
+        minHeight: "100%",
         fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
       }}
     >
@@ -190,15 +189,15 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
             src={qr}
             alt="QR carton"
             style={{
-              width: "55mm",
-              height: "55mm",
+              width: "28mm",
+              height: "28mm",
               display: "block",
               margin: "0 auto",
               imageRendering: "pixelated",
             }}
           />
         ) : (
-          <div style={{ width: "55mm", height: "55mm", background: "#eee", margin: "0 auto" }} />
+          <div style={{ width: "28mm", height: "28mm", background: "#eee", margin: "0 auto" }} />
         )}
         <div
           style={{
@@ -232,7 +231,7 @@ function InfoRow({
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "55mm 1fr",
+        gridTemplateColumns: "40mm 1fr",
         gap: "4mm",
         borderBottom: "1px solid #ddd",
         padding: "2mm 0",
