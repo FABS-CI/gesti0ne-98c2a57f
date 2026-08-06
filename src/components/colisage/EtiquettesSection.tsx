@@ -118,7 +118,7 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                       printEtiquettes(
                         h,
                         `Aperçu ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
-                        "a4-one",
+                        "a4-portrait-auto",
                         "preview",
                       );
                   }}
