@@ -109,8 +109,6 @@ export const Route = createFileRoute("/api/public/hooks/run-schedules")({
             headers: { "Content-Type": "application/json" },
           });
         }
-          });
-        }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const now = new Date();
