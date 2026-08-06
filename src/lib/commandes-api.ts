@@ -26,6 +26,9 @@ export type CommandeLigne = {
   montant_remise?: number;
   total_ligne: number;
   total_ht_ligne?: number;
+  cover_path?: string | null;
+  cover_thumb_path?: string | null;
+  produits?: any | null;
 };
 
 export type Commande = {
@@ -196,7 +199,7 @@ export async function getCommandeLignes(commandeId: string) {
     .eq("commande_id", commandeId)
     .order("created_at", { ascending: true });
   if (error) throw error;
-  const lignes = (data ?? []) as any[];
+  const lignes = (data ?? []) as CommandeLigne[];
 
   // Enrichissement des couvertures (pas de FK exploitable pour une jointure PostgREST)
   const ids = Array.from(

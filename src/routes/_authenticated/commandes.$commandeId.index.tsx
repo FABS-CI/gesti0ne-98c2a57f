@@ -283,9 +283,9 @@ function CommandeDetailPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Désignation</TableHead>
+                <TableHead className="text-right">P.U.</TableHead>
                 <TableHead className="text-right">Remise (%)</TableHead>
                 <TableHead className="text-right">Qté</TableHead>
-                <TableHead className="text-right">P.U.</TableHead>
                 <TableHead className="text-right">Total</TableHead>
               </TableRow>
             </TableHeader>
@@ -315,11 +315,11 @@ function CommandeDetailPage() {
                         {l.reference_produit || "—"}
                       </div>
                     </TableCell>
+                    <TableCell className="text-right">{formatFCFA(l.prix_unitaire)}</TableCell>
                     <TableCell className="text-right text-destructive">
                       {l.remise_pct ? `${l.remise_pct} %` : "—"}
                     </TableCell>
                     <TableCell className="text-right">{l.quantite}</TableCell>
-                    <TableCell className="text-right">{formatFCFA(l.prix_unitaire)}</TableCell>
                     <TableCell className="text-right font-medium">
                       {formatFCFA(l.total_ligne)}
                     </TableCell>

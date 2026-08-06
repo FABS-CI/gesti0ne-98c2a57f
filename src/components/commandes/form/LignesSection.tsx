@@ -90,9 +90,9 @@ export function LignesSection({
                   <TableHead className="w-[8%]">Réf.</TableHead>
 
                   <TableHead className="text-right w-[7%]">Stock</TableHead>
-                  <TableHead className="text-right w-[8%]">Qté</TableHead>
-                  <TableHead className="text-right w-[10%]">P.U.</TableHead>
+                  <TableHead className="text-right w-[8%]">P.U.</TableHead>
                   <TableHead className="text-right w-[6%]">Rem.%</TableHead>
+                  <TableHead className="text-right w-[10%]">Qté</TableHead>
                   <TableHead className="text-right w-[9%]">Remise</TableHead>
                   <TableHead className="text-right w-[9%]">Vente HT</TableHead>
                   <TableHead className="text-right w-[11%]">Total HT</TableHead>
@@ -157,15 +157,6 @@ export function LignesSection({
                       <TableCell className="text-right">
                         <NumberField
                           control={form.control}
-                          name={`lignes.${i}.quantite`}
-                          integer
-                          min={1}
-                          className={`text-right h-8 px-1 ${over ? "border-destructive" : ""}`}
-                        />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <NumberField
-                          control={form.control}
                           name={`lignes.${i}.prix_unitaire`}
                           step="0.01"
                           min={0}
@@ -180,6 +171,15 @@ export function LignesSection({
                           min={0}
                           max={100}
                           className="text-right h-8 px-1"
+                        />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <NumberField
+                          control={form.control}
+                          name={`lignes.${i}.quantite`}
+                          integer
+                          min={1}
+                          className={`text-right h-8 px-1 ${over ? "border-destructive" : ""}`}
                         />
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground py-3">
@@ -275,16 +275,6 @@ export function LignesSection({
 
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <Label className="text-[11px]">Qté</Label>
-                      <NumberField
-                        control={form.control}
-                        name={`lignes.${i}.quantite`}
-                        integer
-                        min={1}
-                        className={`h-10 text-right ${over ? "border-destructive" : ""}`}
-                      />
-                    </div>
-                    <div>
                       <Label className="text-[11px]">P.U.</Label>
                       <NumberField
                         control={form.control}
@@ -303,6 +293,16 @@ export function LignesSection({
                         min={0}
                         max={100}
                         className="h-10 text-right"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[11px]">Qté</Label>
+                      <NumberField
+                        control={form.control}
+                        name={`lignes.${i}.quantite`}
+                        integer
+                        min={1}
+                        className={`h-10 text-right ${over ? "border-destructive" : ""}`}
                       />
                     </div>
                   </div>
