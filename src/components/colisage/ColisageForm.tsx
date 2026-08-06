@@ -304,36 +304,60 @@ export function ColisageForm({
               <Label>
                 Responsable du colisage <span className="text-destructive">*</span>
               </Label>
-              <Select
-                value={responsable}
-                onValueChange={(v) => {
-                  setResponsable(v);
-                  setFieldErrors((p) => ({ ...p, responsable: undefined }));
-                }}
-              >
-                <SelectTrigger
-                  ref={responsableTriggerRef}
-                  aria-label="Responsable du colisage"
-                  className={fieldErrors.responsable ? "border-destructive" : undefined}
-                  aria-invalid={!!fieldErrors.responsable}
-                >
-                  <SelectValue
-                    placeholder={
-                      responsablesList.length === 0
-                        ? "Aucun responsable disponible"
-                        : "Sélectionner un responsable"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {responsablesList.map((r) => (
-                    <SelectItem key={r.preparateur_id} value={r.nom}>
-                      {r.nom}
-                      {r.poste ? ` — ${r.poste}` : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <Select
+                    value={responsable}
+                    onValueChange={(v) => {
+                      setResponsable(v);
+                      setFieldErrors((p) => ({ ...p, responsable: undefined }));
+                    }}
+                  >
+                    <SelectTrigger
+                      ref={responsableTriggerRef}
+                      aria-label="Responsable du colisage"
+                      className={fieldErrors.responsable ? "border-destructive" : undefined}
+                      aria-invalid={!!fieldErrors.responsable}
+                    >
+                      <SelectValue
+                        placeholder={
+                          responsablesList.length === 0
+                            ? "Aucun responsable disponible"
+                            : "Sélectionner un responsable"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {responsablesList.map((r) => (
+                        <SelectItem key={r.preparateur_id} value={r.nom}>
+                          {r.nom}
+                          {r.poste ? ` — ${r.poste}` : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => window.open("/colisage/responsables?new=true", "_blank")}
+                    title="Créer un nouveau responsable"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => qc.invalidateQueries({ queryKey: ["preparateurs-colisage-actifs"] })}
+                    title="Rafraîchir la liste"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
               {fieldErrors.responsable && (
                 <p className="mt-1 text-xs text-destructive">{fieldErrors.responsable}</p>
               )}
@@ -345,6 +369,7 @@ export function ColisageForm({
                   </Link>
                 </p>
               )}
+
             </div>
             <div>
               <Label>Date / heure</Label>
