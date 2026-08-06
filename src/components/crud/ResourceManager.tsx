@@ -55,6 +55,19 @@ export function ResourceManager({ config }: { config: ResourceConfig }) {
   const q = useDebouncedValue(search, 300);
   const [advanced, setAdvanced] = useState<AdvancedFilters>({});
 
+  // Auto-open new dialog if ?new=true
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("new") === "true") {
+      openNew();
+      // Remove the param to avoid re-opening on manual reload
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.delete("new");
+      window.history.replaceState({}, "", nextUrl.toString());
+    }
+  }, []);
+
+
   const advCols = {
     reference: config.advancedFilters?.columns?.reference ?? "reference",
     client: config.advancedFilters?.columns?.client ?? "client_nom",
