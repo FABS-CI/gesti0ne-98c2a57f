@@ -26,6 +26,9 @@ export type CommandeLigne = {
   montant_remise?: number;
   total_ligne: number;
   total_ht_ligne?: number;
+  cover_path?: string | null;
+  cover_thumb_path?: string | null;
+  produits?: any | null;
 };
 
 export type Commande = {
