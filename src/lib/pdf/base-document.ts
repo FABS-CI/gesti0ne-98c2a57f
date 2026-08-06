@@ -364,7 +364,24 @@ export class BaseDocument {
         font: this.fonts.bold,
         color: COLORS.blanc,
       });
+
+      // Traits verticaux pour le header
+      this.page.drawLine({
+        start: { x, y },
+        end: { x, y: y - 20 },
+        color: COLORS.grisLigne,
+        thickness: 0.5,
+      });
+
       x += col.width;
+    });
+
+    // Dernier trait vertical à droite du header
+    this.page.drawLine({
+      start: { x, y },
+      end: { x, y: y - 20 },
+      color: COLORS.grisLigne,
+      thickness: 0.5,
     });
 
     // Lignes
@@ -396,25 +413,43 @@ export class BaseDocument {
         }
         val = String(val ?? "");
         
-        const fontSize = 10; // Police augmentée de ~25% (était 8)
+        const fontSize = 10;
         const txtW = this.fonts.regular.widthOfTextAtSize(val, fontSize);
         const alignX = col.key === 'designation' ? curX + 5 : curX + (col.width - txtW) / 2;
         
         this.page.drawText(val, {
           x: alignX,
-          y: curY - 15, // Centrage vertical ajusté pour rowH 22
+          y: curY - 15,
           size: fontSize,
           font: this.fonts.regular,
           color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
         });
+
+        // Dessiner les traits verticaux des colonnes
+        this.page.drawLine({
+          start: { x: curX, y: curY },
+          end: { x: curX, y: curY - rowH },
+          color: COLORS.grisLigne,
+          thickness: 0.5,
+        });
+
         curX += col.width;
       });
 
+      // Dernier trait vertical à droite
+      this.page.drawLine({
+        start: { x: curX, y: curY },
+        end: { x: curX, y: curY - rowH },
+        color: COLORS.grisLigne,
+        thickness: 0.5,
+      });
+
+      // Trait horizontal sous la ligne
       this.page.drawLine({
         start: { x: MARGINS.x, y: curY - rowH },
         end: { x: PAGE.w - MARGINS.x, y: curY - rowH },
         color: COLORS.grisLigne,
-        thickness: 0.5, // Bordure plus visible
+        thickness: 0.5,
       });
       curY -= rowH;
 
@@ -460,6 +495,27 @@ export class BaseDocument {
     const x = PAGE.w - MARGINS.x - boxW;
     let curY = y;
 
+    // Bordures extérieures pour le bloc des totaux
+    const totalBoxHeight = 20 * (1 + (this.totals.remiseLignes ? 1 : 0) + (this.totals.remiseGlobale ? 1 : 0) + 1 + (this.totals.tva ? 1 : 0) + (this.totals.frais ? 1 : 0));
+    
+    // On dessine le trait vertical gauche et droite pour tout le bloc
+    const drawTotalBoxBorders = (height: number) => {
+      this.page.drawLine({ start: { x, y }, end: { x, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
+      this.page.drawLine({ start: { x: PAGE.w - MARGINS.x, y }, end: { x: PAGE.w - MARGINS.x, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
+      // Trait du haut
+      this.page.drawLine({ start: { x, y }, end: { x: PAGE.w - MARGINS.x, y }, color: COLORS.grisLigne, thickness: 0.5 });
+    };
+
+    let totalRows = 1; // Montant brut HT
+    if (this.totals.remiseLignes) totalRows++;
+    if (this.totals.remiseGlobale) totalRows++;
+    if (this.totals.tva) totalRows++;
+    if (this.totals.frais) totalRows++;
+    totalRows++; // Total à payer
+
+    drawTotalBoxBorders(totalRows * 20);
+
+
     const row = (label: string, value: string, isTotal = false) => {
       if (isTotal) {
         this.page.drawRectangle({ x, y: curY - 20, width: boxW, height: 20, color: COLORS.bleuFabs });
@@ -483,6 +539,16 @@ export class BaseDocument {
           font: this.fonts.bold,
           color: isRemise ? COLORS.rougeFabs : COLORS.noir
         });
+
+        // Trait vertical de séparation entre label et valeur dans les totaux
+        const labelColWidth = 110;
+        this.page.drawLine({
+          start: { x: x + labelColWidth, y: curY },
+          end: { x: x + labelColWidth, y: curY - 20 },
+          color: COLORS.grisLigne,
+          thickness: 0.5,
+        });
+
         this.page.drawLine({ start: { x, y: curY - 20 }, end: { x: PAGE.w - MARGINS.x, y: curY - 20 }, color: COLORS.grisLigne, thickness: 0.5 });
       }
       curY -= 20;
