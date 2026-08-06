@@ -364,7 +364,24 @@ export class BaseDocument {
         font: this.fonts.bold,
         color: COLORS.blanc,
       });
+
+      // Traits verticaux pour le header
+      this.page.drawLine({
+        start: { x, y },
+        end: { x, y: y - 20 },
+        color: COLORS.grisLigne,
+        thickness: 0.5,
+      });
+
       x += col.width;
+    });
+
+    // Dernier trait vertical à droite du header
+    this.page.drawLine({
+      start: { x, y },
+      end: { x, y: y - 20 },
+      color: COLORS.grisLigne,
+      thickness: 0.5,
     });
 
     // Lignes
