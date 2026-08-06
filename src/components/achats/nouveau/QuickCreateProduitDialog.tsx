@@ -62,9 +62,9 @@ export function QuickCreateProduitDialog({ open, onOpenChange, onCreated }: Prop
         matiere: matiere || null,
         auteur: auteur || null,
         editeur: editeur || null,
-        prix_achat: Number(prixAchat) || 0,
-        prix_vente: Number(prixVente) || 0,
-        seuil_alerte: Number(seuil) || 0,
+        prix_achat: prixAchat === "" ? 0 : Number(prixAchat),
+        prix_vente: prixVente === "" ? 0 : Number(prixVente),
+        seuil_alerte: seuil === "" ? 0 : Number(seuil),
       }),
     onSuccess: (p) => {
       toast.success("Produit créé");

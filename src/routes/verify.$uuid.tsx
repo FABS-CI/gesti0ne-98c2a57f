@@ -80,7 +80,7 @@ function VerificationPage() {
             <div className="space-y-2">
               <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Authenticité Confirmée</h1>
               <p className="text-green-600 font-bold text-lg uppercase tracking-wide">
-                {data.docType} VALIDÉ
+                {data.docType.toUpperCase()} VALIDÉ
               </p>
             </div>
 
