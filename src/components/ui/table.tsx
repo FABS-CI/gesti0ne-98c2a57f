@@ -48,8 +48,8 @@ const TableBody = React.forwardRef<
   <tbody
     ref={ref}
     className={cn(
-      // Zebra striping subtil : une ligne sur deux legerement teintee.
-      "[&_tr:nth-child(even)]:bg-muted/20 [&_tr:last-child]:border-0",
+      "divide-y divide-border/40",
+      "[&_tr:nth-child(even)]:bg-[#FFF3E0]/30 [&_tr:last-child]:border-0",
       className,
     )}
     {...props}

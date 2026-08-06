@@ -19,6 +19,7 @@ export const COLORS = {
   rougeFabs: rgb(0.827, 0.184, 0.184), // #D32F2F (Couleur pour Remises)
   orangeFabs: rgb(0.96, 0.486, 0.0), // #F57C00 (Couleur pour ligne séparatrice et badge commande)
   grisClair: rgb(0.968, 0.968, 0.968), // #F7F7F7
+  orangeZebra: rgb(1, 0.953, 0.878), // #FFF3E0 (Orange très clair pour zebra)
   noir: rgb(0, 0, 0),
   blanc: rgb(1, 1, 1),
   grisTexte: rgb(0.3, 0.3, 0.3),
@@ -367,7 +368,7 @@ export class BaseDocument {
 
       // Traits verticaux pour le header
       this.page.drawLine({
-        start: { x, y },
+        start: { x, y: y },
         end: { x, y: y - 20 },
         color: COLORS.grisLigne,
         thickness: 0.5,
@@ -392,14 +393,14 @@ export class BaseDocument {
         curY = PAGE.h - 120; // Reprendre sous le header suite
       }
       
-      const rowH = 22; // Hauteur augmentée pour la lisibilité
+      const rowH = 22;
       if (i % 2 === 1) {
         this.page.drawRectangle({ 
           x: MARGINS.x, 
           y: curY - rowH, 
           width: CONTENT_W, 
           height: rowH, 
-          color: COLORS.grisClair 
+          color: COLORS.orangeZebra
         });
       }
 
@@ -447,7 +448,7 @@ export class BaseDocument {
       // Trait horizontal sous la ligne
       this.page.drawLine({
         start: { x: MARGINS.x, y: curY - rowH },
-        end: { x: PAGE.w - MARGINS.x, y: curY - rowH },
+        end: { x: MARGINS.x + CONTENT_W, y: curY - rowH },
         color: COLORS.grisLigne,
         thickness: 0.5,
       });
