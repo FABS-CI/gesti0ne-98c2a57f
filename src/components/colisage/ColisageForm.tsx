@@ -328,12 +328,18 @@ export function ColisageForm({
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {responsablesList.map((r) => (
-                        <SelectItem key={r.preparateur_id} value={r.nom}>
-                          {r.nom}
-                          {r.poste ? ` — ${r.poste}` : ""}
-                        </SelectItem>
-                      ))}
+                      {responsablesList.length === 0 ? (
+                        <div className="p-2 text-xs text-muted-foreground text-center">
+                          Aucun responsable trouvé
+                        </div>
+                      ) : (
+                        responsablesList.map((r) => (
+                          <SelectItem key={r.preparateur_id} value={r.nom}>
+                            {r.nom}
+                            {r.poste ? ` — ${r.poste}` : ""}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>

@@ -60,11 +60,18 @@ export function useColisageDetail(blId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("livreurs")
-        .select("livreur_id, nom, telephone, vehicule_defaut, immatriculation, societe")
+        .select("livreur_id, nom_complet, telephone, actif")
         .eq("actif", true)
-        .order("nom");
+        .order("nom_complet");
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []).map((l) => ({
+        livreur_id: l.livreur_id,
+        nom: l.nom_complet,
+        telephone: l.telephone,
+        vehicule_defaut: null,
+        immatriculation: null,
+        societe: null,
+      }));
     },
   });
 

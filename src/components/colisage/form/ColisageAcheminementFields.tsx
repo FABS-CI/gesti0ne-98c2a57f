@@ -83,12 +83,18 @@ export function ColisageLivraisonFields(props: {
                 <SelectValue placeholder="Sélectionner un livreur" />
               </SelectTrigger>
               <SelectContent>
-                {livreursList.map((l) => (
-                  <SelectItem key={l.livreur_id} value={l.nom}>
-                    {l.nom}
-                    {l.societe ? ` — ${l.societe}` : ""}
-                  </SelectItem>
-                ))}
+                {livreursList.length === 0 ? (
+                  <div className="p-2 text-xs text-muted-foreground text-center">
+                    Aucun livreur trouvé
+                  </div>
+                ) : (
+                  livreursList.map((l) => (
+                    <SelectItem key={l.livreur_id} value={l.nom}>
+                      {l.nom}
+                      {l.societe ? ` — ${l.societe}` : ""}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>
