@@ -82,10 +82,10 @@ type Theme = {
 const THEMES: Record<string, Theme> = {
   fabs_ci: {
     id: "fabs_ci",
-    primary: hex("#F57C00"),
-    accent: hex("#F57C00"),
-    title: hex("#424242"),
-    tableHdrBg: hex("#F57C00"),
+    primary: hex("#1B2A57"), // Bleu officiel FABS pour la ligne pied
+    accent: hex("#1B2A57"),
+    title: hex("#1B2A57"), // Titre en bleu officiel
+    tableHdrBg: hex("#1B2A57"),
     tableHdrTxt: rgb(1, 1, 1),
   },
   classique_professionnel: {
@@ -475,7 +475,7 @@ function drawHeader(ctx: Ctx, titre: string): number {
 
   // Société (gras noir) + slogan italique gris + adresse/phone/email noir
   text(ctx, FABS_INFO.nom, tx, top, { size: 11, bold: true });
-  text(ctx, FABS_INFO.slogan, tx, top - 9, { size: 8, color: hex("#555555") });
+  text(ctx, FABS_INFO.slogan, tx, top - 9, { size: 8, bold: true, color: FABS_COLORS.noir });
   text(ctx, `Adresse :  ${FABS_INFO.adresse}`, tx, top - 20, { size: 8.5 });
   text(ctx, `Phone : ${FABS_INFO.telephone}`, tx, top - 33, { size: 8.5 });
   text(ctx, `Email : ${FABS_INFO.email}`, tx, top - 46, { size: 8.5 });
@@ -605,7 +605,7 @@ function drawInfosTransaction(
   text(ctx, partyLabel, MARGIN.x, yL, {
     size: 10,
     bold: true,
-    color: ctx.theme.primary,
+    color: ctx.theme.primary, // Bleu officiel FABS
   });
   yL -= 14;
   if (data.clientNom) {
@@ -634,7 +634,7 @@ function drawInfosTransaction(
   text(ctx, "DOCUMENT", colR, yR, {
     size: 10,
     bold: true,
-    color: ctx.theme.primary,
+    color: ctx.theme.primary, // Bleu officiel FABS
   });
   yR -= 14;
   text(ctx, `Réf.  : ${shortRef(data.reference)}`, colR, yR, { size: 11, bold: true });
@@ -1528,7 +1528,7 @@ async function drawBarcode(ctx: Ctx, value: string, x: number, y: number, w = 14
 // Bloc de signatures multi-zones (Établi / Contrôlé / Validé / Cachet client)
 // ----------------------------------------------------------------------------
 function drawSignaturesBlock(ctx: Ctx, yTop: number): number {
-  const labels = ["Établi par", "Contrôlé par", "Validé par", "Cachet & Signature client"];
+  const labels = ["Établi par", "Contrôlé par", "Validé par", "SIGNATURES"];
   const colW = CONTENT_W / labels.length;
   const boxH = 50;
   const y = yTop - boxH;

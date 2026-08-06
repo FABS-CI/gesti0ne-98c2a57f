@@ -166,8 +166,8 @@ export class BaseDocument {
         x: MARGINS.x,
         y: yTop - h - 12,
         size: 8,
-        font: this.fonts.italic,
-      color: this.totals.montantLettres.includes("CFA") ? COLORS.orangeFabs : COLORS.grisTexte,
+        font: this.fonts.bold, // Passé en gras pour plus de netteté
+        color: COLORS.noir,    // Noir profond au lieu de gris/orange
       });
     }
 
@@ -180,7 +180,7 @@ export class BaseDocument {
       y: yTop - 28,
       size: titleSize,
       font: this.fonts.bold,
-      color: COLORS.orangeFabs,
+      color: COLORS.bleuFabs, // Remplacé orange par bleu officiel FABS
     });
 
     // Cartouche (D) - Déplacé un peu vers la droite pour éviter chevauchement si titre long
@@ -573,20 +573,20 @@ export class BaseDocument {
     row("NET À PAYER", formatFCFA(this.totals.totalAPayer), true);
 
     // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
-    const letY = curY - 15; // Décalage suffisant pour éviter le chevauchement avec "TOTAL À PAYER"
+    const letY = curY - 15;
     const labelLetters = "Arrêtée à la présente facture à la somme de :";
     const labelW = this.fonts.bold.widthOfTextAtSize(labelLetters, 8);
     
     this.page.drawText(labelLetters, { x: MARGINS.x, y: letY - 13, size: 8, font: this.fonts.bold, color: COLORS.noir });
     
-    // Montant en lettres en orange et agrandi
+    // Montant en lettres en noir profond, gras et bien espacé
     const montantSize = 10;
     this.page.drawText(this.totals.montantLettres, { 
-      x: MARGINS.x + labelW + 5, 
+      x: MARGINS.x + labelW + 8, // Espacement accru
       y: letY - 13, 
       size: montantSize, 
       font: this.fonts.bold, 
-      color: COLORS.orangeFabs 
+      color: COLORS.noir // Noir profond au lieu d'orange
     });
 
     return curY - 20;
