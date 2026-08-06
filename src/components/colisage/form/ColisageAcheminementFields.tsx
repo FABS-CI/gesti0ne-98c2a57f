@@ -9,8 +9,13 @@ import {
 } from "@/components/ui/select";
 import { Combobox } from "@/components/ui/combobox";
 import { VILLES_CI, COMMUNES_ABIDJAN } from "@/lib/ci-locations";
+import { Plus, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
+
 import type { Livreur } from "./colisage-form-types";
 import type { ColisageFieldErrors } from "./colisage-validation";
+
 
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null;
@@ -49,6 +54,8 @@ export function ColisageLivraisonFields(props: {
     setVilleLivraison,
     errors = {},
   } = props;
+  const qc = useQueryClient();
+
   return (
     <>
       <div
@@ -61,27 +68,53 @@ export function ColisageLivraisonFields(props: {
         <Label>
           Nom du livreur <span className="text-destructive">*</span>
         </Label>
-        <Select
-          value={livreurNom}
-          onValueChange={(v) => {
-            setLivreurNom(v);
-            const l = livreursList.find((x) => x.nom === v);
-            if (l?.telephone) setLivreurTel(l.telephone);
-            if (l?.vehicule_defaut) setVehicule(l.vehicule_defaut);
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionner un livreur" />
-          </SelectTrigger>
-          <SelectContent>
-            {livreursList.map((l) => (
-              <SelectItem key={l.livreur_id} value={l.nom}>
-                {l.nom}
-                {l.societe ? ` — ${l.societe}` : ""}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Select
+              value={livreurNom}
+              onValueChange={(v) => {
+                setLivreurNom(v);
+                const l = livreursList.find((x) => x.nom === v);
+                if (l?.telephone) setLivreurTel(l.telephone);
+                if (l?.vehicule_defaut) setVehicule(l.vehicule_defaut);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionner un livreur" />
+              </SelectTrigger>
+              <SelectContent>
+                {livreursList.map((l) => (
+                  <SelectItem key={l.livreur_id} value={l.nom}>
+                    {l.nom}
+                    {l.societe ? ` — ${l.societe}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => window.open("/livreurs?new=true", "_blank")}
+              title="Créer un nouveau livreur"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => qc.invalidateQueries({ queryKey: ["livreurs-actifs-colisage"] })}
+              title="Rafraîchir la liste"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+
+        </div>
+
         <FieldError msg={errors.livreurNom} />
       </div>
       <div>
@@ -192,7 +225,20 @@ export function ColisageExpeditionFields(props: {
         <Label>
           Responsable de la gare
         </Label>
-        <Input value={gareResp} onChange={(e) => setGareResp(e.target.value)} />
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Input value={gareResp} onChange={(e) => setGareResp(e.target.value)} />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => window.open("/colisage/responsables?new=true", "_blank")}
+            title="Créer un nouveau responsable"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
         <FieldError msg={errors.gareResp} />
       </div>
       <div>
@@ -202,6 +248,7 @@ export function ColisageExpeditionFields(props: {
         <Input value={gareTel} onChange={(e) => setGareTel(e.target.value)} />
         <FieldError msg={errors.gareTel} />
       </div>
+
     </>
   );
 }

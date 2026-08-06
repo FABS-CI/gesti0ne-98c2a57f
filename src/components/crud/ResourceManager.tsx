@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { Search, Plus, Download, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
@@ -53,6 +54,19 @@ export function ResourceManager({ config }: { config: ResourceConfig }) {
   const [statutFilter, setStatutFilter] = useState("all");
   const q = useDebouncedValue(search, 300);
   const [advanced, setAdvanced] = useState<AdvancedFilters>({});
+
+  // Auto-open new dialog if ?new=true
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("new") === "true") {
+      openNew();
+      // Remove the param to avoid re-opening on manual reload
+      const nextUrl = new URL(window.location.href);
+      nextUrl.searchParams.delete("new");
+      window.history.replaceState({}, "", nextUrl.toString());
+    }
+  }, []);
+
 
   const advCols = {
     reference: config.advancedFilters?.columns?.reference ?? "reference",

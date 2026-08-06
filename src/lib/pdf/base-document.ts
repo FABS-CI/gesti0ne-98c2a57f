@@ -343,7 +343,7 @@ export class BaseDocument {
     return y - boxH - 20;
   }
 
-  drawTable(y: number, colonnes: { label: string, key: string, width: number }[], lignes: DocLigne[]): number {
+  drawTable(y: number, colonnes: { label: string, key: string, width: number }[], lignes: DocLigne[], options?: { showClientReception?: boolean }): number {
     // Header
     this.page.drawRectangle({
       x: MARGINS.x,
@@ -420,8 +420,40 @@ export class BaseDocument {
 
     });
 
+    if (options?.showClientReception) {
+      this.drawClientReception(curY - 20);
+    }
+
     return curY - 20;
   }
+
+  drawClientReception(y: number) {
+    const boxW = 150;
+    const x = MARGINS.x;
+    this.page.drawText("RÉCEPTION CLIENT", {
+      x: x,
+      y: y - 15,
+      size: 9,
+      font: this.fonts.bold,
+      color: COLORS.bleuFabs,
+    });
+    this.page.drawRectangle({
+      x: x,
+      y: y - 80,
+      width: boxW,
+      height: 60,
+      borderColor: COLORS.grisLigne,
+      borderWidth: 0.5,
+    });
+    this.page.drawText("(Nom et signature)", {
+      x: x + 5,
+      y: y - 75,
+      size: 7,
+      font: this.fonts.italic,
+      color: COLORS.grisTexte,
+    });
+  }
+
 
   drawTotals(y: number): number {
     const boxW = 200;

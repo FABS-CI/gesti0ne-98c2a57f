@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const livraisonSchema = z.object({
-  livreurNom: z.string().trim().min(1, "Nom du livreur requis"),
+  livreurNom: z.string().trim().min(1, "Veuillez sélectionner ou créer un livreur"),
   livreurTel: z
     .string()
     .trim()
