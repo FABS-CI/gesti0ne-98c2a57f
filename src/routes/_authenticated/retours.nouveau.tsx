@@ -123,6 +123,8 @@ function RetourNouveauPage() {
         reference_produit: "",
         designation: "",
         quantite: form.getValues(`lignes.${index}.quantite`) || 1,
+        prix_unitaire: 0,
+        remise_pct: 0,
         motif: form.getValues(`lignes.${index}.motif`) || "",
       });
       return;
@@ -132,6 +134,8 @@ function RetourNouveauPage() {
       reference_produit: p.reference,
       designation: p.titre,
       quantite: form.getValues(`lignes.${index}.quantite`) || 1,
+      prix_unitaire: p.prix_vente || 0,
+      remise_pct: 0,
       motif: form.getValues(`lignes.${index}.motif`) || "",
     });
   };
