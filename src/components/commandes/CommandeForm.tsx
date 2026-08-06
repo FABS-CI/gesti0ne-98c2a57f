@@ -109,8 +109,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       ville: "",
       adresse: "",
       observations: "",
-      remise_globale_pct: 0,
-      taux_tva: 0,
+      remise_globale_pct: undefined as any,
+      taux_tva: undefined as any,
       appliquer_tva: false,
       depot_id: "",
       depot_override_motif: null,
@@ -303,9 +303,9 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       produit_id: "",
       reference_produit: "",
       designation: "",
-      quantite: 1,
-      prix_unitaire: 0,
-      remise_pct: 0,
+      quantite: undefined as any,
+      prix_unitaire: undefined as any,
+      remise_pct: undefined as any,
       stock_produit: null,
     });
   };

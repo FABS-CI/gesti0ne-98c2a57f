@@ -34,7 +34,7 @@ export function NumberField({
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const [local, setLocal] = useState<string | null>(null);
         const numeric =
-          field.value === undefined || field.value === null || Number.isNaN(field.value as number)
+          field.value === undefined || field.value === null || Number.isNaN(field.value as number) || field.value === 0
             ? ""
             : String(field.value).replace(".", ",");
         const displayed = local ?? numeric;
