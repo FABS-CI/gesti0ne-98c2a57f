@@ -532,7 +532,7 @@ function FeuilleTourneePage() {
         </div>
 
         {/* Tableau enrichi des livraisons */}
-        <table className="w-full border-collapse text-[10px]">
+        <table className="w-full border-collapse text-[10px] table-zebra-orange table-print-borders">
           <thead>
             <tr className="bg-slate-100">
               <th className="border p-1 text-left">N°</th>
@@ -644,7 +644,7 @@ function FeuilleTourneePage() {
                 Total cartons : <b>{totalCartonsColis}</b>
               </span>
             </div>
-            <table className="w-full border-collapse text-[10px]">
+            <table className="w-full border-collapse text-[10px] table-zebra-orange table-print-borders">
               <thead>
                 <tr className="bg-slate-100">
                   <th className="border p-1 text-left">Réf. colis</th>
