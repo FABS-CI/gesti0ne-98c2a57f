@@ -29,7 +29,7 @@ export function DraftRestoreBanner({ updatedAt, onRestore, onDiscard, label }: P
         <div>
           <p className="font-medium">
             Un brouillon non terminé a été trouvé
-            {label ? ` pour cette ${label}` : ""} — voulez-vous le reprendre ou recommencer ?
+            {label ? ` pour cette ${label}` : ""} — souhaitez-vous la reprendre ou recommencer ?
           </p>
           {when ? (
             <p className="text-muted-foreground">Dernière sauvegarde automatique : {when}</p>

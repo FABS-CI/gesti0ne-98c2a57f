@@ -32,10 +32,10 @@ export function SidebarBrandHeader({ accentGrad }: { accentGrad: string | null }
         />
         <span
           style={{
-            fontSize: "16px",
+            fontSize: "16pt",
             fontWeight: 900,
             color: "#FFFFFF",
-            letterSpacing: "0.1em",
+            letterSpacing: "0.05em",
             textShadow: "0 2px 4px rgba(0,0,0,0.3)",
           }}
         >
