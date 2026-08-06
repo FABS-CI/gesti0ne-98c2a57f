@@ -92,15 +92,27 @@ export function ColisageLivraisonFields(props: {
               </SelectContent>
             </Select>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => window.open("/livreurs?new=true", "_blank")}
-            title="Créer un nouveau livreur"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => window.open("/livreurs?new=true", "_blank")}
+              title="Créer un nouveau livreur"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => qc.invalidateQueries({ queryKey: ["livreurs-actifs-colisage"] })}
+              title="Rafraîchir la liste"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+
         </div>
 
         <FieldError msg={errors.livreurNom} />
