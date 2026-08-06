@@ -26,7 +26,7 @@ export class StatementDocument extends BaseDocument {
       libelle: l.libelle || l.designation || "",
       debit: l.debit || 0,
       credit: l.credit || 0,
-      solde: l.soldeProgressif || l.solde || 0,
+      solde: l.soldeProgressif || 0,
     }));
 
     y = this.drawTable(y, colonnes, lignes);
