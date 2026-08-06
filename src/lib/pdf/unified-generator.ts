@@ -70,6 +70,8 @@ export async function generateUnifiedStatementPDF(data: any): Promise<Blob> {
       nom: data.client?.nom || "",
       code: data.client?.reference || "",
       telephone: data.client?.telephone || "",
+      representant: data.client?.representant || "",
+      ville: data.client?.ville || "",
     }
   };
 

@@ -39,7 +39,7 @@ export class StatementDocument extends BaseDocument {
   }
 
   async drawClientInfo(y: number, data: any): Promise<number> {
-    const boxH = 80;
+    const boxH = 90;
     const boxW = (CONTENT_W - 15) / 2;
     
     // Bloc Client
@@ -51,10 +51,23 @@ export class StatementDocument extends BaseDocument {
       color: COLORS.grisClair,
       opacity: 0.5,
     });
-    this.page.drawText("RELEVÉ POUR", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
-    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 10, font: this.fonts.bold });
-    this.page.drawText(`Code : ${this.data.client.code || '—'}`, { x: MARGINS.x + 10, y: y - 45, size: 8, font: this.fonts.regular });
-    this.page.drawText(`Tél : ${this.data.client.telephone || '—'}`, { x: MARGINS.x + 10, y: y - 55, size: 8, font: this.fonts.regular });
+
+    const bleuFabs = COLORS.bleuFabs;
+    this.page.drawText("RELEVÉ POUR", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: bleuFabs });
+    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 12, font: this.fonts.bold, color: bleuFabs });
+    
+    const kv = [
+      { l: "Code", v: this.data.client.code || "—" },
+      { l: "Représentant", v: this.data.client.representant || "—" },
+      { l: "Téléphone", v: this.data.client.telephone || "—" },
+      { l: "Ville", v: this.data.client.ville || "—" },
+    ];
+
+    kv.forEach((item, i) => {
+      const rowY = y - 48 - i * 11;
+      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: rowY, size: 8, font: this.fonts.regular });
+      this.page.drawText(item.v, { x: MARGINS.x + 80, y: rowY, size: 8, font: this.fonts.bold });
+    });
 
     // Bloc Période
     const perX = MARGINS.x + boxW + 15;
