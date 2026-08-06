@@ -16,7 +16,7 @@ describe("printEtiquettes", () => {
 
   it("affiche un toast quand le navigateur bloque la pop-up", () => {
     const spy = vi.spyOn(window, "open").mockReturnValue(null);
-    const result = printEtiquettes("<div/>", "T", "a4-one", "preview");
+    const result = printEtiquettes("<div/>", "T", "a4-portrait-auto", "preview");
     expect(result).toBeNull();
     expect(toastError).toHaveBeenCalledOnce();
     expect(String(toastError.mock.calls[0][0])).toMatch(/pop-?up/i);
@@ -31,7 +31,7 @@ describe("printEtiquettes", () => {
     const html =
       '<div class="etiquette-carton" data-colis-id="c1">1 / 2</div>' +
       '<div class="etiquette-carton" data-colis-id="c2">2 / 2</div>';
-    const w = printEtiquettes(html, "Aperçu BL", "a4-one", "preview");
+    const w = printEtiquettes(html, "Aperçu BL", "a4-portrait-auto", "preview");
     expect(w).toBe(fake);
 
     const written = doc.write.mock.calls[0][0] as string;
@@ -47,13 +47,13 @@ describe("printEtiquettes", () => {
     expect(written).toContain("2 / 2");
     // 1 colis = 1 page A4
     expect(written).toContain("size: A4 portrait");
-    expect(written).toMatch(/\.etiquette-carton\s*\{[^}]*page-break-after:\s*always/);
+    expect(written).toMatch(/\.a4-page\s*\{[^}]*page-break-after:\s*always/);
   });
 
   it("mode print: déclenche window.print automatiquement au chargement", () => {
     const doc = { write: vi.fn(), close: vi.fn() };
     vi.spyOn(window, "open").mockReturnValue({ document: doc } as unknown as Window);
-    printEtiquettes("<div/>", "T", "a4-one", "print");
+    printEtiquettes("<div/>", "T", "a4-portrait-auto", "print");
     const written = doc.write.mock.calls[0][0] as string;
     expect(written).toContain("window.print()");
     expect(written).not.toContain('class="preview-bar"');

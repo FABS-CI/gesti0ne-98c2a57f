@@ -10,38 +10,42 @@ interface EtiquettesSectionProps {
 }
 
 export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSectionProps) {
-  const getHtml = (coliId?: string | null, layout: "a4-one" | "a4-two-landscape" = "a4-one") => {
-    if (layout === "a4-two-landscape") {
-      const allEtiquettes = coliId 
-        ? etiquettes.filter(e => e.colis_id === coliId)
-        : etiquettes;
-      
-      return allEtiquettes.map(e => {
-        const itemHtml = document.querySelector(`[data-colis-id="${e.colis_id}"]`)?.outerHTML ?? "";
-        return `
-          <div class="layout-a4-two-landscape-container">
-            <div class="etiquette-grid">
-              <div class="crop-marks">
-                <div class="mark-corner mark-tl"></div>
-                <div class="mark-corner mark-tr"></div>
-                <div class="mark-corner mark-bl"></div>
-                <div class="mark-corner mark-br"></div>
-                <div class="crop-line-v"></div>
-                <div class="cut-icon">✂️</div>
-              </div>
-              ${itemHtml}
-              ${itemHtml}
-            </div>
-          </div>
-        `;
-      }).join("");
+  const getHtml = (coliId?: string | null) => {
+    const selectedEtiquettes = coliId 
+      ? etiquettes.filter(e => e.colis_id === coliId)
+      : etiquettes;
+
+    if (selectedEtiquettes.length === 0) return "";
+
+    // Cas 1 : Une seule étiquette -> Page A4 Portrait centrée
+    if (selectedEtiquettes.length === 1) {
+      const e = selectedEtiquettes[0];
+      const itemHtml = document.querySelector(`[data-colis-id="${e.colis_id}"]`)?.outerHTML ?? "";
+      return `
+        <div class="a4-page single-label-page">
+          ${itemHtml}
+        </div>
+      `;
     }
 
-    return coliId
-      ? (document.querySelector(`[data-colis-id="${coliId}"]`)?.outerHTML ?? "")
-      : etiquettes
-          .map((e) => document.querySelector(`[data-colis-id="${e.colis_id}"]`)?.outerHTML ?? "")
-          .join("");
+    // Cas 2 : Plusieurs étiquettes -> 2 par page (A4 Portrait vertical)
+    let finalHtml = "";
+    for (let i = 0; i < selectedEtiquettes.length; i += 2) {
+      const e1 = selectedEtiquettes[i];
+      const e2 = selectedEtiquettes[i + 1];
+      
+      const item1Html = document.querySelector(`[data-colis-id="${e1.colis_id}"]`)?.outerHTML ?? "";
+      const item2Html = e2 ? (document.querySelector(`[data-colis-id="${e2.colis_id}"]`)?.outerHTML ?? "") : "";
+
+      finalHtml += `
+        <div class="a4-page double-label-page">
+          <div class="label-half">${item1Html}</div>
+          ${e2 ? `<div class="crop-marks-v"></div><div class="cut-icon">✂️</div>` : ""}
+          <div class="label-half">${item2Html}</div>
+        </div>
+      `;
+    }
+    return finalHtml;
   };
 
   return (
@@ -54,27 +58,17 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
             size="sm"
             onClick={() => {
               const h = getHtml();
-              if (h) printEtiquettes(h, `Étiquettes ${blReference}`, "a4-one");
+              if (h) printEtiquettes(h, `Étiquettes ${blReference}`, "a4-portrait-auto");
             }}
           >
-            <Printer className="mr-2 h-4 w-4" /> Imprimer A4 (1/page × {etiquettes.length})
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const h = getHtml(null, "a4-two-landscape");
-              if (h) printEtiquettes(h, `Étiquettes doubles ${blReference}`, "a4-two-landscape");
-            }}
-          >
-            <Printer className="mr-2 h-4 w-4" /> Imprimer A4 (2/page × {etiquettes.length})
+            <Printer className="mr-2 h-4 w-4" /> Imprimer les étiquettes ({etiquettes.length})
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
               const h = getHtml();
-              if (h) printEtiquettes(h, `Aperçu étiquettes ${blReference}`, "a4-one", "preview");
+              if (h) printEtiquettes(h, `Aperçu étiquettes ${blReference}`, "a4-portrait-auto", "preview");
             }}
           >
             <Eye className="mr-2 h-4 w-4" /> Aperçu
@@ -100,26 +94,11 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                       printEtiquettes(
                         h,
                         `Sticker ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
-                        "a4-one",
+                        "a4-portrait-auto",
                       );
                   }}
                 >
                   <Printer className="mr-2 h-4 w-4" /> Imprimer A4
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const h = getHtml(e.colis_id, "a4-two-landscape");
-                    if (h)
-                      printEtiquettes(
-                        h,
-                        `Stickers doubles ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
-                        "a4-two-landscape",
-                      );
-                  }}
-                >
-                  <Printer className="mr-2 h-4 w-4" /> Imprimer Double (A4)
                 </Button>
                 {e.colis_id && (
                   <Button
@@ -139,7 +118,7 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                       printEtiquettes(
                         h,
                         `Aperçu ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
-                        "a4-one",
+                        "a4-portrait-auto",
                         "preview",
                       );
                   }}

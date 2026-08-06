@@ -1,19 +1,18 @@
 import logoUrl from "@/assets/fabs-logo.png";
 import { toast } from "sonner";
 
-export type PrintLayout = "a4-one" | "a4-two-landscape";
+export type PrintLayout = "a4-portrait-auto";
 
 /**
  * Ouvre une fenêtre d'impression dédiée pour une ou plusieurs étiquettes.
- *
- * - `a6`   : une étiquette QR par page A6 (105 × 148 mm).
- * - `a4-4up` : jusqu'à 4 codes-barres par feuille A4 (2 colonnes × 2 lignes),
- *   avec marges régulières et espacement suffisant pour la découpe.
+ * La mise en page est optimisée pour A4 Portrait :
+ * - 1 étiquette -> 1 page pleine
+ * - 2+ étiquettes -> 2 par page (disposition verticale)
  */
 export function printEtiquettes(
   html: string,
   title = "Étiquettes colis",
-  layout: PrintLayout = "a4-one",
+  layout: PrintLayout = "a4-portrait-auto",
   mode: "print" | "preview" = "print",
 ): Window | null {
   const w = window.open("", "_blank", "width=800,height=900");
@@ -24,80 +23,80 @@ export function printEtiquettes(
     );
     return null;
   }
-  void layout;
+
   const styles = `
   @page { size: A4 portrait; margin: 0; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: #fff; color: #000;
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  .sheet { display: block; width: 100%; height: 100%; position: relative; }
+  
+  .sheet { display: block; width: 100%; min-height: 297mm; position: relative; }
 
-  /* Layout A4 standard (1 par page portrait) */
-  .layout-a4-one .etiquette-carton {
-    width: 210mm !important;
-    min-height: 297mm !important;
-    padding: 12mm 14mm !important;
+  /* Conteneur d'une page A4 */
+  .a4-page {
+    width: 210mm;
+    height: 297mm;
     page-break-after: always;
     break-after: page;
-  }
-
-  /* Layout A4 Paysage (2 par page) */
-  .layout-a4-two-landscape { width: 297mm; height: 210mm; overflow: hidden; position: relative; }
-  @media print {
-    .layout-a4-two-landscape-container { 
-      width: 297mm; height: 210mm; 
-      page-break-after: always; break-after: page; 
-    }
-    @page { size: A4 landscape; margin: 0; }
-  }
-
-  .layout-a4-two-landscape .etiquette-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 297mm;
-    height: 210mm;
-    position: relative;
-  }
-
-  .layout-a4-two-landscape .etiquette-carton {
-    width: 148.5mm !important;
-    height: 210mm !important;
-    padding: 8mm 10mm !important;
-    border: none !important;
     position: relative;
     overflow: hidden;
   }
 
-  /* Repères de découpe */
-  .crop-marks {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none;
-    z-index: 100;
+  /* Cas 1 étiquette par page (Page entière) */
+  .single-label-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15mm;
   }
-  .crop-line-v {
+  .single-label-page .etiquette-carton {
+    width: 180mm !important;
+    height: 260mm !important;
+    border: 1px solid #eee;
+  }
+
+  /* Cas 2 étiquettes par page (Moitié A4) */
+  .double-label-page {
+    display: flex;
+    flex-direction: column;
+  }
+  .label-half {
+    height: 148.5mm;
+    width: 210mm;
+    padding: 10mm 15mm;
+    position: relative;
+    border-bottom: 0.2mm dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .label-half:last-child { border-bottom: none; }
+  
+  .label-half .etiquette-carton {
+    width: 180mm !important;
+    height: 128mm !important;
+    transform: scale(0.95); /* Légère réduction pour tenir proprement */
+  }
+
+  /* Repères de découpe et ciseaux pour le mode double */
+  .crop-marks-v {
     position: absolute;
-    left: 50%; top: 5mm; bottom: 5mm;
-    border-left: 0.2mm dashed #ccc;
-    transform: translateX(-50%);
+    top: 148.5mm;
+    left: 0;
+    right: 0;
+    border-top: 0.2mm dashed #666;
+    z-index: 100;
   }
   .cut-icon {
     position: absolute;
-    left: 50%; top: 50%;
-    transform: translate(-50%, -50%);
+    left: 10mm;
+    top: 148.5mm;
+    transform: translateY(-50%);
     background: white;
     padding: 2px;
-    font-size: 14pt;
+    font-size: 16pt;
+    z-index: 101;
   }
-  .mark-corner {
-    position: absolute;
-    width: 10mm; height: 10mm;
-    border: 0.1mm solid #bbb;
-  }
-  .mark-tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
-  .mark-tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
-  .mark-bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
-  .mark-br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
 
   img { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .preview-bar { position: fixed; top: 0; left: 0; right: 0; padding: 8px 12px;
