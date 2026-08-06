@@ -205,7 +205,7 @@ export class BaseDocument {
 
     const details = [
       { l: "Date", v: this.data.date },
-      { l: "Heure", v: this.data.heure ?? new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }) },
+      { l: "Heure", v: this.data.heure ?? new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }).replace(':', 'h') },
     ];
 
     details.forEach((d, i) => {

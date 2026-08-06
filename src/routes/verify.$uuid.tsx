@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle2, XCircle, Loader2, FileText, Calendar, User, ArrowLeft } from 'lucide-react';
-import { formatFCFA } from '@/lib/format';
+import { formatFCFA, formatDate } from '@/lib/format';
 import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/verify/$uuid')({
@@ -98,7 +98,7 @@ function VerificationPage() {
                   <Calendar className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
                     <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Émission</p>
-                    <p className="text-slate-900 font-bold">{data.date ? new Date(data.date).toLocaleDateString('fr-FR') : '—'}</p>
+                    <p className="text-slate-900 font-bold">{data.date ? formatDate(data.date) : '—'}</p>
                   </div>
                 </div>
 

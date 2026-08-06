@@ -35,9 +35,9 @@ export function QuickCreateProduitDialog({ open, onOpenChange, onCreated }: Prop
   const [matiere, setMatiere] = useState("");
   const [auteur, setAuteur] = useState("");
   const [editeur, setEditeur] = useState("");
-  const [prixAchat, setPrixAchat] = useState(0);
-  const [prixVente, setPrixVente] = useState(0);
-  const [seuil, setSeuil] = useState(10);
+  const [prixAchat, setPrixAchat] = useState<number | "">("");
+  const [prixVente, setPrixVente] = useState<number | "">("");
+  const [seuil, setSeuil] = useState<number | "">("");
 
   function reset() {
     setTitre("");
@@ -47,9 +47,9 @@ export function QuickCreateProduitDialog({ open, onOpenChange, onCreated }: Prop
     setMatiere("");
     setAuteur("");
     setEditeur("");
-    setPrixAchat(0);
-    setPrixVente(0);
-    setSeuil(10);
+    setPrixAchat("");
+    setPrixVente("");
+    setSeuil("");
   }
 
   const mutation = useMutation({
@@ -62,9 +62,9 @@ export function QuickCreateProduitDialog({ open, onOpenChange, onCreated }: Prop
         matiere: matiere || null,
         auteur: auteur || null,
         editeur: editeur || null,
-        prix_achat: prixAchat,
-        prix_vente: prixVente,
-        seuil_alerte: seuil,
+        prix_achat: Number(prixAchat) || 0,
+        prix_vente: Number(prixVente) || 0,
+        seuil_alerte: Number(seuil) || 0,
       }),
     onSuccess: (p) => {
       toast.success("Produit créé");
@@ -125,7 +125,7 @@ export function QuickCreateProduitDialog({ open, onOpenChange, onCreated }: Prop
               type="number"
               min={0}
               value={prixAchat}
-              onChange={(e) => setPrixAchat(Number(e.target.value) || 0)}
+              onChange={(e) => setPrixAchat(e.target.value === "" ? "" : Number(e.target.value))}
             />
           </div>
           <div>
@@ -134,7 +134,7 @@ export function QuickCreateProduitDialog({ open, onOpenChange, onCreated }: Prop
               type="number"
               min={0}
               value={prixVente}
-              onChange={(e) => setPrixVente(Number(e.target.value) || 0)}
+              onChange={(e) => setPrixVente(e.target.value === "" ? "" : Number(e.target.value))}
             />
           </div>
           <div>
@@ -143,7 +143,7 @@ export function QuickCreateProduitDialog({ open, onOpenChange, onCreated }: Prop
               type="number"
               min={0}
               value={seuil}
-              onChange={(e) => setSeuil(Number(e.target.value) || 0)}
+              onChange={(e) => setSeuil(e.target.value === "" ? "" : Number(e.target.value))}
             />
           </div>
         </div>
