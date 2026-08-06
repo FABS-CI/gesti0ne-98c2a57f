@@ -73,9 +73,6 @@ export function useColisageDetail(blId: string) {
         societe: null,
       }));
     },
-      if (error) throw error;
-      return data ?? [];
-    },
   });
 
   const { data: zonesDirectes } = useQuery({
