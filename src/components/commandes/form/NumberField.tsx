@@ -3,8 +3,8 @@ import { Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 
 /**
- * Champ numérique contrôlé : accepte l'état vide pendant la frappe,
- * évite les NaN qui font "disparaître" la valeur avec valueAsNumber.
+ * Champ numérique contrôlé : accepte l'état vide par défaut,
+ * évitant les '0' accidentels lors de la création de documents.
  */
 export function NumberField({
   control,
@@ -33,14 +33,19 @@ export function NumberField({
       render={({ field }) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const [local, setLocal] = useState<string | null>(null);
+        
+        // On traite 0, null ou undefined comme une chaîne vide pour l'affichage initial
         const numeric =
           field.value === undefined || field.value === null || Number.isNaN(field.value as number) || field.value === 0
             ? ""
             : String(field.value).replace(".", ",");
+            
         const displayed = local ?? numeric;
+        
         return (
           <Input
             type="text"
+            placeholder=""
             inputMode={inputMode ?? (integer ? "numeric" : "decimal")}
             pattern={integer ? "[0-9]*" : "[0-9]*[.,]?[0-9]*"}
             value={displayed}
@@ -50,13 +55,18 @@ export function NumberField({
             onChange={(e) => {
               const input = e.target.value;
               const raw = input.replace(",", ".");
+              
               if (input === "") {
                 setLocal("");
-                field.onChange(0);
+                // On met null ou undefined pour signifier "vide", 
+                // mais le schéma Zod s'occupe de la validation finale
+                field.onChange(undefined);
                 return;
               }
+              
               const re = integer ? /^-?\d*$/ : /^-?\d*[.,]?\d*$/;
               if (!re.test(input)) return;
+              
               setLocal(input);
               if (/^-?\d+(\.\d+)?$/.test(raw)) {
                 const n = integer ? parseInt(raw, 10) : parseFloat(raw);

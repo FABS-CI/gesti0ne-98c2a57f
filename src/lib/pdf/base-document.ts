@@ -166,7 +166,7 @@ export class BaseDocument {
         y: yTop - h - 12,
         size: 8,
         font: this.fonts.italic,
-        color: COLORS.grisTexte,
+      color: this.totals.montantLettres.includes("CFA") ? COLORS.orangeFabs : COLORS.grisTexte,
       });
     }
 

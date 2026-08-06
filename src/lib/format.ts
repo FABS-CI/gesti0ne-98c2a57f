@@ -33,6 +33,6 @@ export function formatDateTime(date: string | Date | null | undefined): string {
   if (!date) return "—";
   const d = typeof date === "string" ? new Date(date) : date;
   if (isNaN(d.getTime())) return String(date);
-  return dateFnsFormat(d, "dd/MM/yyyy HH:mm");
+  return dateFnsFormat(d, "dd/MM/yyyy HH'h'mm");
 }
 

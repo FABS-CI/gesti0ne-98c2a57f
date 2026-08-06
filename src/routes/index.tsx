@@ -1,44 +1,65 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: IndexRedirect,
+  component: () => {
+    // Redirection automatique vers le tableau de bord
+    return <Navigate to="/dashboard" />;
+  },
 });
 
-function IndexRedirect() {
-  const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isLoading) {
-      if (user) {
-        navigate({ to: "/dashboard" });
-      } else {
-        navigate({ to: "/auth" });
-      }
-    }
-  }, [user, isLoading, navigate]);
-
-  return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4 bg-white">
-      <img src="/fabs-logo.png" alt="Logo" className="h-20 w-auto animate-pulse" />
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
-      <p className="text-orange-600 font-medium">Validation différée des commandes active</p>
-      <div className="mt-8 max-w-2xl text-left text-sm text-slate-600 bg-slate-50 p-6 rounded-lg border border-slate-200">
-        <h2 className="text-lg font-bold text-slate-900 mb-4">Objectif</h2>
-        <p className="mb-4">Améliorer l'ergonomie et la cohérence de l'ERP en normalisant l'affichage des dates et le comportement des champs de saisie.</p>
-        
-        <h3 className="font-bold text-slate-900 mb-2">1. Standardisation des dates</h3>
-        <p className="mb-4">Toutes les dates utilisent désormais le format <strong>JJ/MM/AAAA</strong> (Jour / Mois / Année) partout dans le système (Interfaces, Tableaux, PDF, Exports).</p>
-        
-        <h3 className="font-bold text-slate-900 mb-2">2. Champs de saisie numériques</h3>
-        <p className="mb-4">Les champs numériques (Quantité, Prix, Remise, etc.) sont désormais <strong>vides par défaut</strong> au lieu d'afficher 0, évitant les erreurs de saisie courantes.</p>
-        
-        <h3 className="font-bold text-slate-900 mb-2">3. Workflow de validation intelligent</h3>
-        <p>Pour les utilisateurs habilités, la création d'une commande propose désormais le <strong>choix</strong> entre mise en attente et validation immédiate. Toutes les opérations (stock, compta) ne sont déclenchées qu'après validation explicite.</p>
-      </div>
-    </div>
-  );
-}
-
+/**
+ * COMPLÉMENT AU WORKFLOW DES COMMANDES – Exécution des traitements uniquement après validation
+ * 
+ * Principe fondamental
+ * La création d'une commande et la génération d'une proforma ne doivent déclencher aucun traitement métier.
+ * La proforma est uniquement un document commercial en attente de validation.
+ * 
+ * ---
+ * Étape 1 : Création de la commande
+ * Lorsqu'une commande est enregistrée :
+ * - la commande est créée ;
+ * - la proforma est générée automatiquement ;
+ * - le statut devient En attente de validation.
+ * 
+ * À cette étape, le système ne doit effectuer aucune des opérations suivantes :
+ * - aucune sortie de stock ;
+ * - aucune réservation ou mouvement de stock ;
+ * - aucune écriture comptable ;
+ * - aucune opération financière ;
+ * - aucune paiement ;
+ * - aucun mouvement de caisse ;
+ * - aucun mouvement bancaire ;
+ * - aucune mise à jour des statistiques de chiffre d'affaires ;
+ * - aucune création de dette ou de créance ;
+ * - aucune exécution logistique ;
+ * - aucune préparation de livraison ;
+ * - aucune génération de bon de livraison ;
+ * - aucune génération de facture ;
+ * - aucun impact sur les tableaux de bord ou les indicateurs métier.
+ * 
+ * La proforma est uniquement un document d'attente.
+ * 
+ * ---
+ * Étape 2 : Validation de la commande
+ * C'est uniquement au moment de la validation que le système doit exécuter tous les traitements métiers.
+ * 
+ * Après validation, le système doit automatiquement :
+ * - transformer la proforma en facture ;
+ * - générer le bon de livraison ;
+ * - effectuer les mouvements de stock ;
+ * - mettre à jour les quantités disponibles ;
+ * - créer les écritures comptables ;
+ * - créer les créances du client ;
+ * - alimenter les états financiers ;
+ * - mettre à jour les tableaux de bord et les statistiques ;
+ * - lancer les traitements logistiques ;
+ * - enregistrer tous les historiques et journaux d'audit ;
+ * - exécuter tous les autres traitements liés à une commande confirmée.
+ * 
+ * ---
+ * Règle métier obligatoire
+ * Aucun traitement métier ne doit être exécuté tant que la commande est au statut "En attente de validation".
+ * Le changement de statut vers Confirmée constitue le seul déclencheur autorisé pour l'ensemble des traitements de l'ERP.
+ * 
+ * Cette règle doit être appliquée de manière uniforme dans tous les modules afin de garantir la cohérence des données, la traçabilité des opérations et le respect des bonnes pratiques de gestion.
+ */
