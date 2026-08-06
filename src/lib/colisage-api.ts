@@ -232,16 +232,6 @@ export type ColisRow = {
   date_colisage: string | null;
 };
 
-export async function creerColisage(blId: string, payload: ColisagePayload): Promise<ColisRow[]> {
-  const { data, error } = await callRpc("creer_colisage", {
-    _bl_id: blId,
-    // RPC expects jsonb; the generated Json type isn't friendly here
-    _payload: JSON.parse(JSON.stringify(payload)),
-  });
-  if (error) throw error;
-  return (data ?? []) as ColisRow[];
-}
-
 export type CartonManuel = {
   numero?: number;
   poids?: number | null;
@@ -269,22 +259,6 @@ export async function creerColisageManuel(
   );
   if (error) throw error;
   return (data ?? []) as ColisRow[];
-}
-
-export async function modifierColisLignes(
-  colisId: string,
-  lignes: CartonManuel["lignes"],
-  motif = "",
-): Promise<void> {
-  const { error } = await supabase.rpc(
-    "modifier_colis_lignes" as never,
-    {
-      _colis_id: colisId,
-      _lignes: JSON.parse(JSON.stringify(lignes)),
-      _motif: motif,
-    } as never,
-  );
-  if (error) throw error;
 }
 
 export async function listColisForBL(blId: string): Promise<ColisRow[]> {

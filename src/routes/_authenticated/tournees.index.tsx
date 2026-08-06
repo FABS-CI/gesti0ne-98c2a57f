@@ -261,6 +261,7 @@ function TourneesPage() {
       qc.invalidateQueries({ queryKey: ["tournees"] });
       qc.invalidateQueries({ queryKey: ["livsuivi"] });
       qc.invalidateQueries({ queryKey: ["livsuivi-commandes"] });
+      qc.invalidateQueries({ queryKey: ["dashboard-logistique"] });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Erreur inconnue";
       toast.error("Impossible de valider", { id: tid, description: msg });

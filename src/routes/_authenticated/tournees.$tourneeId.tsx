@@ -251,25 +251,53 @@ function EditTourneePage() {
         nb_cartons: totals.nb_cartons,
         nb_clients: totals.nb_clients,
       };
+      // Les mutations de colis sont appliquées en premier : en cas d'échec de
+      // la mise à jour de la tournée, elles sont annulées (rollback manuel)
+      // afin de ne jamais laisser tournée et colis dans un état incohérent.
+      const removed = Array.from(toRemove);
+      const added = Array.from(toAdd);
+
+      if (removed.length) {
+        const { error: rmErr } = await supabase
+          .from("colis")
+          .update({ tournee_id: null } as never)
+          .in("colis_id", removed);
+        if (rmErr) throw rmErr;
+      }
+      if (added.length) {
+        const { error: addErr } = await supabase
+          .from("colis")
+          .update({ tournee_id: tourneeId } as never)
+          .in("colis_id", added);
+        if (addErr) {
+          if (removed.length) {
+            await supabase
+              .from("colis")
+              .update({ tournee_id: tourneeId } as never)
+              .in("colis_id", removed);
+          }
+          throw addErr;
+        }
+      }
+
       const { error } = await supabase
         .from("tournees")
         .update(payload as never)
         .eq("tournee_id", tourneeId);
-      if (error) throw error;
-
-      if (toRemove.size) {
-        const { error: rmErr } = await supabase
-          .from("colis")
-          .update({ tournee_id: null } as never)
-          .in("colis_id", Array.from(toRemove));
-        if (rmErr) throw rmErr;
-      }
-      if (toAdd.size) {
-        const { error: addErr } = await supabase
-          .from("colis")
-          .update({ tournee_id: tourneeId } as never)
-          .in("colis_id", Array.from(toAdd));
-        if (addErr) throw addErr;
+      if (error) {
+        if (removed.length) {
+          await supabase
+            .from("colis")
+            .update({ tournee_id: tourneeId } as never)
+            .in("colis_id", removed);
+        }
+        if (added.length) {
+          await supabase
+            .from("colis")
+            .update({ tournee_id: null } as never)
+            .in("colis_id", added);
+        }
+        throw error;
       }
 
       toast.success("Tournée enregistrée");
