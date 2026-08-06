@@ -358,8 +358,12 @@ export class BaseDocument {
     colonnes.forEach(col => {
       const txt = col.label.toUpperCase();
       const txtW = this.fonts.bold.widthOfTextAtSize(txt, 8);
+      let headerX = x + (col.width - txtW) / 2;
+      if (col.key === 'designation') headerX = x + 5;
+      else if (col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct') headerX = x + col.width - txtW - 5;
+      
       this.page.drawText(txt, {
-        x: x + (col.width - txtW) / 2,
+        x: headerX,
         y: y - 13,
         size: 8,
         font: this.fonts.bold,
@@ -422,7 +426,7 @@ export class BaseDocument {
         
         const fontSize = 10;
         const txtW = this.fonts.regular.widthOfTextAtSize(val, fontSize);
-        const alignX = col.key === 'designation' ? curX + 5 : curX + (col.width - txtW) / 2;
+        const alignX = col.key === 'designation' ? curX + 5 : (col.key === 'qte' || col.key === 'num' ? curX + (col.width - txtW) / 2 : curX + col.width - txtW - 5);
         
         this.page.drawText(val, {
           x: alignX,
