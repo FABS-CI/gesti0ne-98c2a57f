@@ -245,7 +245,7 @@ function BonDeSortiePage() {
           </div>
         </div>
 
-        <table className="w-full border-collapse text-xs">
+        <table className="w-full border-collapse text-xs table-zebra-orange table-print-borders">
           <thead>
             <tr className="bg-slate-100">
               <th className="border p-1 text-left">Réf. colis</th>
