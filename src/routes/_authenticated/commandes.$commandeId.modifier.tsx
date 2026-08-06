@@ -110,7 +110,7 @@ function CommandeModifierPage() {
         if (existing) {
           existing.quantite += l.quantite;
         } else {
-          const prod = Array.isArray(l.produits) ? l.produits[0] : l.produits;
+          const prod = l.produits;
           map.set(key, {
             produit_id: l.produit_id ?? "",
             reference_produit: l.reference_produit ?? "",
