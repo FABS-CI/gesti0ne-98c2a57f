@@ -12,6 +12,7 @@ export type MouvementLigne = {
   reference: string;
   debit?: number;
   credit?: number;
+  soldeProgressif?: number;
 };
 
 export type RawInputs = {
@@ -180,11 +181,16 @@ export function computeSoldeClient(input: RawInputs): SoldeResultat {
 
   let totalDebit = 0;
   let totalCredit = 0;
+  let currentSolde = soldeOuverture;
   for (const l of lignes) {
-    totalDebit += Number(l.debit ?? 0);
-    totalCredit += Number(l.credit ?? 0);
+    const debit = Number(l.debit ?? 0);
+    const credit = Number(l.credit ?? 0);
+    totalDebit += debit;
+    totalCredit += credit;
+    currentSolde = currentSolde + debit - credit;
+    l.soldeProgressif = currentSolde;
   }
-  const solde = soldeOuverture + totalDebit - totalCredit;
+  const solde = currentSolde;
 
   const isEmpty = lignes.length === 0;
   const emptyExplanation = isEmpty
