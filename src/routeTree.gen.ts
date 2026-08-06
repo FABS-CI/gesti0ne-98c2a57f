@@ -77,7 +77,6 @@ import { Route as AuthenticatedDepotsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDepartementsRouteImport } from './routes/_authenticated/departements'
 import { Route as AuthenticatedDashboardLogistiqueRouteImport } from './routes/_authenticated/dashboard-logistique'
 import { Route as AuthenticatedDashboardGlobalRouteImport } from './routes/_authenticated/dashboard-global'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedContratsRouteImport } from './routes/_authenticated/contrats'
 import { Route as AuthenticatedCongesEnCoursRouteImport } from './routes/_authenticated/conges-en-cours'
 import { Route as AuthenticatedCongesRouteImport } from './routes/_authenticated/conges'
@@ -590,11 +589,6 @@ const AuthenticatedDashboardGlobalRoute =
     path: '/dashboard-global',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedContratsRoute = AuthenticatedContratsRouteImport.update({
   id: '/contrats',
   path: '/contrats',
@@ -815,9 +809,9 @@ const AuthenticatedEmployesIndexRoute =
   } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedDashboardRoute,
+    id: '/dashboard/',
+    path: '/dashboard/',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedContratsIndexRoute =
   AuthenticatedContratsIndexRouteImport.update({
@@ -1415,7 +1409,6 @@ export interface FileRoutesByFullPath {
   '/conges': typeof AuthenticatedCongesRouteWithChildren
   '/conges-en-cours': typeof AuthenticatedCongesEnCoursRoute
   '/contrats': typeof AuthenticatedContratsRouteWithChildren
-  '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/dashboard-global': typeof AuthenticatedDashboardGlobalRoute
   '/dashboard-logistique': typeof AuthenticatedDashboardLogistiqueRoute
   '/departements': typeof AuthenticatedDepartementsRoute
@@ -1804,7 +1797,6 @@ export interface FileRoutesById {
   '/_authenticated/conges': typeof AuthenticatedCongesRouteWithChildren
   '/_authenticated/conges-en-cours': typeof AuthenticatedCongesEnCoursRoute
   '/_authenticated/contrats': typeof AuthenticatedContratsRouteWithChildren
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/dashboard-global': typeof AuthenticatedDashboardGlobalRoute
   '/_authenticated/dashboard-logistique': typeof AuthenticatedDashboardLogistiqueRoute
   '/_authenticated/departements': typeof AuthenticatedDepartementsRoute
@@ -2011,7 +2003,6 @@ export interface FileRouteTypes {
     | '/conges'
     | '/conges-en-cours'
     | '/contrats'
-    | '/dashboard'
     | '/dashboard-global'
     | '/dashboard-logistique'
     | '/departements'
@@ -2399,7 +2390,6 @@ export interface FileRouteTypes {
     | '/_authenticated/conges'
     | '/_authenticated/conges-en-cours'
     | '/_authenticated/contrats'
-    | '/_authenticated/dashboard'
     | '/_authenticated/dashboard-global'
     | '/_authenticated/dashboard-logistique'
     | '/_authenticated/departements'
@@ -3075,13 +3065,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardGlobalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/contrats': {
       id: '/_authenticated/contrats'
       path: '/contrats'
@@ -3350,10 +3333,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
-      path: '/'
+      path: '/dashboard'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/contrats/': {
       id: '/_authenticated/contrats/'
@@ -4206,20 +4189,6 @@ const AuthenticatedContratsRouteWithChildren =
     AuthenticatedContratsRouteChildren,
   )
 
-interface AuthenticatedDashboardRouteChildren {
-  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
-}
-
-const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
-  {
-    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
-  }
-
-const AuthenticatedDashboardRouteWithChildren =
-  AuthenticatedDashboardRoute._addFileChildren(
-    AuthenticatedDashboardRouteChildren,
-  )
-
 interface AuthenticatedEmployesRouteChildren {
   AuthenticatedEmployesNouveauRoute: typeof AuthenticatedEmployesNouveauRoute
   AuthenticatedEmployesIndexRoute: typeof AuthenticatedEmployesIndexRoute
@@ -4585,7 +4554,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCongesRoute: typeof AuthenticatedCongesRouteWithChildren
   AuthenticatedCongesEnCoursRoute: typeof AuthenticatedCongesEnCoursRoute
   AuthenticatedContratsRoute: typeof AuthenticatedContratsRouteWithChildren
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRouteWithChildren
   AuthenticatedDashboardGlobalRoute: typeof AuthenticatedDashboardGlobalRoute
   AuthenticatedDashboardLogistiqueRoute: typeof AuthenticatedDashboardLogistiqueRoute
   AuthenticatedDepartementsRoute: typeof AuthenticatedDepartementsRoute
@@ -4673,6 +4641,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedUtilisateursNouveauRoute: typeof AuthenticatedUtilisateursNouveauRoute
   AuthenticatedUtilisateursProductionRoute: typeof AuthenticatedUtilisateursProductionRoute
   AuthenticatedAchatsIndexRoute: typeof AuthenticatedAchatsIndexRoute
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedSpecimensIndexRoute: typeof AuthenticatedSpecimensIndexRoute
   AuthenticatedTourneesIndexRoute: typeof AuthenticatedTourneesIndexRoute
   AuthenticatedUtilisateursIndexRoute: typeof AuthenticatedUtilisateursIndexRoute
@@ -4700,7 +4669,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCongesRoute: AuthenticatedCongesRouteWithChildren,
   AuthenticatedCongesEnCoursRoute: AuthenticatedCongesEnCoursRoute,
   AuthenticatedContratsRoute: AuthenticatedContratsRouteWithChildren,
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRouteWithChildren,
   AuthenticatedDashboardGlobalRoute: AuthenticatedDashboardGlobalRoute,
   AuthenticatedDashboardLogistiqueRoute: AuthenticatedDashboardLogistiqueRoute,
   AuthenticatedDepartementsRoute: AuthenticatedDepartementsRoute,
@@ -4795,6 +4763,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedUtilisateursProductionRoute:
     AuthenticatedUtilisateursProductionRoute,
   AuthenticatedAchatsIndexRoute: AuthenticatedAchatsIndexRoute,
+  AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedSpecimensIndexRoute: AuthenticatedSpecimensIndexRoute,
   AuthenticatedTourneesIndexRoute: AuthenticatedTourneesIndexRoute,
   AuthenticatedUtilisateursIndexRoute: AuthenticatedUtilisateursIndexRoute,
