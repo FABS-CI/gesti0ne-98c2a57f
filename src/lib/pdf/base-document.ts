@@ -495,6 +495,27 @@ export class BaseDocument {
     const x = PAGE.w - MARGINS.x - boxW;
     let curY = y;
 
+    // Bordures extérieures pour le bloc des totaux
+    const totalBoxHeight = 20 * (1 + (this.totals.remiseLignes ? 1 : 0) + (this.totals.remiseGlobale ? 1 : 0) + 1 + (this.totals.tva ? 1 : 0) + (this.totals.frais ? 1 : 0));
+    
+    // On dessine le trait vertical gauche et droite pour tout le bloc
+    const drawTotalBoxBorders = (height: number) => {
+      this.page.drawLine({ start: { x, y }, end: { x, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
+      this.page.drawLine({ start: { x: PAGE.w - MARGINS.x, y }, end: { x: PAGE.w - MARGINS.x, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
+      // Trait du haut
+      this.page.drawLine({ start: { x, y }, end: { x: PAGE.w - MARGINS.x, y }, color: COLORS.grisLigne, thickness: 0.5 });
+    };
+
+    let totalRows = 1; // Montant brut HT
+    if (this.totals.remiseLignes) totalRows++;
+    if (this.totals.remiseGlobale) totalRows++;
+    if (this.totals.tva) totalRows++;
+    if (this.totals.frais) totalRows++;
+    totalRows++; // Total à payer
+
+    drawTotalBoxBorders(totalRows * 20);
+
+
     const row = (label: string, value: string, isTotal = false) => {
       if (isTotal) {
         this.page.drawRectangle({ x, y: curY - 20, width: boxW, height: 20, color: COLORS.bleuFabs });
