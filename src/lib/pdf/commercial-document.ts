@@ -60,7 +60,7 @@ export class CommercialDocument extends BaseDocument {
       total: l.montant ?? l.total ?? 0,
     })) || [];
 
-    y = this.drawTable(y, colonnes, lignes, { showClientReception: isBL });
+    y = this.drawTable(y, colonnes, lignes);
     
     // Si des remises globales existent, on les affiche en rouge dans le tableau de totaux
     // (Déjà géré dans base-document.ts par la recherche du mot 'remise' dans le label)

@@ -486,9 +486,11 @@ export class BaseDocument {
 
     });
 
+    /*
     if (options?.showClientReception) {
       this.drawClientReception(curY - 20);
     }
+    */
 
     return curY - 20;
   }

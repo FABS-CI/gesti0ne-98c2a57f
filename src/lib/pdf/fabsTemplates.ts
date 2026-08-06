@@ -566,7 +566,7 @@ async function drawFooter(ctx: Ctx) {
     text(ctx, "Date : .... / .... / 2026", MARGIN.x + 5, ySign + boxH - 38, { size: 8 });
     text(ctx, "Signature & Cachet :", MARGIN.x + 5, ySign + boxH - 48, { size: 7, italic: true, font: ctx.italic });
 
-    // Bloc 2 : Livraison effectuée par
+    // Bloc 2 : Le Livreur (Renommé pour cohérence)
     ctx.page.drawRectangle({
       x: PAGE.w - MARGIN.x - boxW,
       y: ySign,
@@ -575,10 +575,9 @@ async function drawFooter(ctx: Ctx) {
       borderWidth: 0.5,
       borderColor: FABS_COLORS.grisLigne,
     });
-    text(ctx, "LIVRAISON EFFECTUÉE PAR", PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 12, { size: 8, bold: true });
+    text(ctx, "LE LIVREUR", PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 12, { size: 8, bold: true });
     text(ctx, "Nom : ....................................", PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 25, { size: 8 });
-    text(ctx, `Date : ${ctx.dateStr}`, PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 38, { size: 8 });
-    text(ctx, "Signature Livreur :", PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 48, { size: 7, italic: true, font: ctx.italic });
+    text(ctx, "Signature :", PAGE.w - MARGIN.x - boxW + 5, ySign + boxH - 48, { size: 7, italic: true, font: ctx.italic });
 
     return;
   }
