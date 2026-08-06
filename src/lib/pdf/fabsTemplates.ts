@@ -1542,7 +1542,7 @@ function drawSignaturesBlock(ctx: Ctx, yTop: number): number {
       borderColor: FABS_COLORS.separateur,
       borderWidth: 0.5,
     });
-    text(ctx, lab, x + 6, y + boxH - 11, { size: 8, bold: true, color: ctx.theme.title });
+    text(ctx, lab.toUpperCase(), x + 6, y + boxH - 11, { size: 9, bold: true, color: ctx.theme.primary });
     text(ctx, "Date : ____ / ____ / ______", x + 6, y + 6, {
       size: 6.5,
       color: FABS_COLORS.gris,
