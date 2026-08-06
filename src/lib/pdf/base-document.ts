@@ -366,7 +366,8 @@ export class BaseDocument {
         color: COLORS.blanc,
       });
 
-      // Traits verticaux pour le header
+      // Suppression des traits verticaux du header pour un style moderne épuré
+      /*
       const headerLineX = Math.round(x * 100) / 100;
       this.page.drawLine({
         start: { x: headerLineX, y: y },
@@ -374,11 +375,13 @@ export class BaseDocument {
         color: COLORS.grisLigne,
         thickness: 0.5,
       });
+      */
 
       x += col.width;
     });
 
-    // Dernier trait vertical à droite du header
+    // Suppression du dernier trait vertical à droite du header
+      /*
     const lastHeaderX = Math.round(x * 100) / 100;
     this.page.drawLine({
       start: { x: lastHeaderX, y },
@@ -386,6 +389,7 @@ export class BaseDocument {
       color: COLORS.grisLigne,
       thickness: 0.5,
     });
+    */
 
     // Lignes
     let curY = y - 20;
@@ -428,24 +432,28 @@ export class BaseDocument {
           color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
         });
 
-        // Dessiner les traits verticaux des colonnes
+        // Suppression des traits verticaux des colonnes
+        /*
         this.page.drawLine({
           start: { x: Math.round(curX * 100) / 100, y: curY },
           end: { x: Math.round(curX * 100) / 100, y: curY - rowH },
           color: COLORS.grisLigne,
           thickness: 0.5,
         });
+        */
 
         curX += col.width;
       });
 
-      // Dernier trait vertical à droite
+      // Suppression du dernier trait vertical à droite
+      /*
       this.page.drawLine({
         start: { x: Math.round((curX) * 100) / 100, y: curY },
         end: { x: Math.round((curX) * 100) / 100, y: curY - rowH },
         color: COLORS.grisLigne,
         thickness: 0.5,
       });
+      */
 
       // Trait horizontal sous la ligne
       this.page.drawLine({
@@ -498,17 +506,10 @@ export class BaseDocument {
     const x = PAGE.w - MARGINS.x - boxW;
     let curY = y;
 
-    // Bordures extérieures pour le bloc des totaux
-    const totalBoxHeight = 20 * (1 + (this.totals.remiseLignes ? 1 : 0) + (this.totals.remiseGlobale ? 1 : 0) + 1 + (this.totals.tva ? 1 : 0) + (this.totals.frais ? 1 : 0));
-    
-    // On dessine le trait vertical gauche et droite pour tout le bloc
+    // Suppression des bordures verticales du bloc des totaux pour le style épuré
     const drawTotalBoxBorders = (height: number) => {
-      const totalLeftX = Math.round(x * 100) / 100;
-      const totalRightX = Math.round((PAGE.w - MARGINS.x) * 100) / 100;
-      this.page.drawLine({ start: { x: totalLeftX, y }, end: { x: totalLeftX, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
-      this.page.drawLine({ start: { x: totalRightX, y }, end: { x: totalRightX, y: y - height }, color: COLORS.grisLigne, thickness: 0.5 });
-      // Trait du haut
-      this.page.drawLine({ start: { x, y }, end: { x: PAGE.w - MARGINS.x, y }, color: COLORS.grisLigne, thickness: 0.5 });
+      // Uniquement la ligne du haut pour séparer du tableau
+      this.page.drawLine({ start: { x, y }, end: { x: PAGE.w - MARGINS.x, y }, color: COLORS.grisLigne, thickness: 1 });
     };
 
     let totalRows = 1; // Montant brut HT
@@ -545,7 +546,8 @@ export class BaseDocument {
           color: isRemise ? COLORS.rougeFabs : COLORS.noir
         });
 
-        // Trait vertical de séparation entre label et valeur dans les totaux
+        // Suppression du trait vertical de séparation dans les totaux
+        /*
         const labelColWidth = 110;
         this.page.drawLine({
           start: { x: Math.round((x + labelColWidth) * 100) / 100, y: curY },
@@ -553,6 +555,7 @@ export class BaseDocument {
           color: COLORS.grisLigne,
           thickness: 0.5,
         });
+        */
 
         this.page.drawLine({ start: { x, y: curY - 20 }, end: { x: PAGE.w - MARGINS.x, y: curY - 20 }, color: COLORS.grisLigne, thickness: 0.5 });
       }
