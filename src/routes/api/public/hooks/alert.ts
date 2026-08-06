@@ -29,7 +29,11 @@ export const Route = createFileRoute("/api/public/hooks/alert")({
           });
         }
         const provided = request.headers.get("x-alert-secret");
-        if (provided !== secret) {
+        const encoder = new TextEncoder();
+        const a = encoder.encode(provided || "");
+        const b = encoder.encode(secret);
+        
+        if (a.length !== b.length || !crypto.subtle.timingSafeEqual(a, b)) {
           return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json", ...CORS },

@@ -6,7 +6,11 @@ export const Route = createFileRoute('/api/public/backup/cron')({
       GET: async ({ request }) => {
         // Sécurité : Vérification d'un secret partagé pour éviter les appels malveillants
         const secret = request.headers.get('X-Backup-Secret');
-        const expectedSecret = process.env.BACKUP_CRON_SECRET || 'fabs-ci-system-backup-secret-2026';
+        const expectedSecret = process.env.BACKUP_CRON_SECRET;
+        if (!expectedSecret) {
+          console.error("CRITICAL: BACKUP_CRON_SECRET environment variable is not set.");
+          return new Response('Server configuration error', { status: 500 });
+        }
         
         if (secret !== expectedSecret) {
           return new Response('Unauthorized', { status: 401 });

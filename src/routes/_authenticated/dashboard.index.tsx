@@ -31,7 +31,7 @@ const DashboardStockAlerts = lazy(() =>
   })),
 );
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard/")({
   validateSearch: zodValidator(periodeSchema),
   component: Dashboard,
   errorComponent: RouteError,

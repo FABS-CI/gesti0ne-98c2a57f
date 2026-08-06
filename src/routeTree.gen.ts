@@ -77,7 +77,6 @@ import { Route as AuthenticatedDepotsRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDepartementsRouteImport } from './routes/_authenticated/departements'
 import { Route as AuthenticatedDashboardLogistiqueRouteImport } from './routes/_authenticated/dashboard-logistique'
 import { Route as AuthenticatedDashboardGlobalRouteImport } from './routes/_authenticated/dashboard-global'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedContratsRouteImport } from './routes/_authenticated/contrats'
 import { Route as AuthenticatedCongesEnCoursRouteImport } from './routes/_authenticated/conges-en-cours'
 import { Route as AuthenticatedCongesRouteImport } from './routes/_authenticated/conges'
@@ -116,6 +115,7 @@ import { Route as AuthenticatedFournisseursIndexRouteImport } from './routes/_au
 import { Route as AuthenticatedFacturesIndexRouteImport } from './routes/_authenticated/factures.index'
 import { Route as AuthenticatedEvaluationsIndexRouteImport } from './routes/_authenticated/evaluations.index'
 import { Route as AuthenticatedEmployesIndexRouteImport } from './routes/_authenticated/employes.index'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedContratsIndexRouteImport } from './routes/_authenticated/contrats.index'
 import { Route as AuthenticatedCongesIndexRouteImport } from './routes/_authenticated/conges.index'
 import { Route as AuthenticatedComptabiliteIndexRouteImport } from './routes/_authenticated/comptabilite.index'
@@ -124,7 +124,6 @@ import { Route as AuthenticatedColisageIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedClientsIndexRouteImport } from './routes/_authenticated/clients.index'
 import { Route as AuthenticatedAchatsIndexRouteImport } from './routes/_authenticated/achats.index'
 import { Route as AuthenticatedAbsencesIndexRouteImport } from './routes/_authenticated/absences.index'
-import { Route as ApiPublicSeedUsersRouteImport } from './routes/api/public/seed-users'
 import { Route as AuthenticatedUtilisateursProductionRouteImport } from './routes/_authenticated/utilisateurs.production'
 import { Route as AuthenticatedUtilisateursNouveauRouteImport } from './routes/_authenticated/utilisateurs.nouveau'
 import { Route as AuthenticatedTransfertsNouveauRouteImport } from './routes/_authenticated/transferts.nouveau'
@@ -590,11 +589,6 @@ const AuthenticatedDashboardGlobalRoute =
     path: '/dashboard-global',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedContratsRoute = AuthenticatedContratsRouteImport.update({
   id: '/contrats',
   path: '/contrats',
@@ -813,6 +807,12 @@ const AuthenticatedEmployesIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedEmployesRoute,
   } as any)
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
+    id: '/dashboard/',
+    path: '/dashboard/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedContratsIndexRoute =
   AuthenticatedContratsIndexRouteImport.update({
     id: '/',
@@ -861,11 +861,6 @@ const AuthenticatedAbsencesIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAbsencesRoute,
   } as any)
-const ApiPublicSeedUsersRoute = ApiPublicSeedUsersRouteImport.update({
-  id: '/api/public/seed-users',
-  path: '/api/public/seed-users',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedUtilisateursProductionRoute =
   AuthenticatedUtilisateursProductionRouteImport.update({
     id: '/utilisateurs/production',
@@ -1414,7 +1409,6 @@ export interface FileRoutesByFullPath {
   '/conges': typeof AuthenticatedCongesRouteWithChildren
   '/conges-en-cours': typeof AuthenticatedCongesEnCoursRoute
   '/contrats': typeof AuthenticatedContratsRouteWithChildren
-  '/dashboard': typeof AuthenticatedDashboardRoute
   '/dashboard-global': typeof AuthenticatedDashboardGlobalRoute
   '/dashboard-logistique': typeof AuthenticatedDashboardLogistiqueRoute
   '/departements': typeof AuthenticatedDepartementsRoute
@@ -1546,7 +1540,6 @@ export interface FileRoutesByFullPath {
   '/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
   '/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
   '/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
-  '/api/public/seed-users': typeof ApiPublicSeedUsersRoute
   '/absences/': typeof AuthenticatedAbsencesIndexRoute
   '/achats/': typeof AuthenticatedAchatsIndexRoute
   '/clients/': typeof AuthenticatedClientsIndexRoute
@@ -1555,6 +1548,7 @@ export interface FileRoutesByFullPath {
   '/comptabilite/': typeof AuthenticatedComptabiliteIndexRoute
   '/conges/': typeof AuthenticatedCongesIndexRoute
   '/contrats/': typeof AuthenticatedContratsIndexRoute
+  '/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/employes/': typeof AuthenticatedEmployesIndexRoute
   '/evaluations/': typeof AuthenticatedEvaluationsIndexRoute
   '/factures/': typeof AuthenticatedFacturesIndexRoute
@@ -1612,7 +1606,6 @@ export interface FileRoutesByTo {
   '/centre-documents': typeof AuthenticatedCentreDocumentsRoute
   '/compta-dashboard': typeof AuthenticatedComptaDashboardRoute
   '/conges-en-cours': typeof AuthenticatedCongesEnCoursRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
   '/dashboard-global': typeof AuthenticatedDashboardGlobalRoute
   '/dashboard-logistique': typeof AuthenticatedDashboardLogistiqueRoute
   '/departements': typeof AuthenticatedDepartementsRoute
@@ -1729,7 +1722,6 @@ export interface FileRoutesByTo {
   '/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
   '/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
   '/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
-  '/api/public/seed-users': typeof ApiPublicSeedUsersRoute
   '/absences': typeof AuthenticatedAbsencesIndexRoute
   '/achats': typeof AuthenticatedAchatsIndexRoute
   '/clients': typeof AuthenticatedClientsIndexRoute
@@ -1738,6 +1730,7 @@ export interface FileRoutesByTo {
   '/comptabilite': typeof AuthenticatedComptabiliteIndexRoute
   '/conges': typeof AuthenticatedCongesIndexRoute
   '/contrats': typeof AuthenticatedContratsIndexRoute
+  '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/employes': typeof AuthenticatedEmployesIndexRoute
   '/evaluations': typeof AuthenticatedEvaluationsIndexRoute
   '/factures': typeof AuthenticatedFacturesIndexRoute
@@ -1804,7 +1797,6 @@ export interface FileRoutesById {
   '/_authenticated/conges': typeof AuthenticatedCongesRouteWithChildren
   '/_authenticated/conges-en-cours': typeof AuthenticatedCongesEnCoursRoute
   '/_authenticated/contrats': typeof AuthenticatedContratsRouteWithChildren
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/dashboard-global': typeof AuthenticatedDashboardGlobalRoute
   '/_authenticated/dashboard-logistique': typeof AuthenticatedDashboardLogistiqueRoute
   '/_authenticated/departements': typeof AuthenticatedDepartementsRoute
@@ -1936,7 +1928,6 @@ export interface FileRoutesById {
   '/_authenticated/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
   '/_authenticated/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
   '/_authenticated/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
-  '/api/public/seed-users': typeof ApiPublicSeedUsersRoute
   '/_authenticated/absences/': typeof AuthenticatedAbsencesIndexRoute
   '/_authenticated/achats/': typeof AuthenticatedAchatsIndexRoute
   '/_authenticated/clients/': typeof AuthenticatedClientsIndexRoute
@@ -1945,6 +1936,7 @@ export interface FileRoutesById {
   '/_authenticated/comptabilite/': typeof AuthenticatedComptabiliteIndexRoute
   '/_authenticated/conges/': typeof AuthenticatedCongesIndexRoute
   '/_authenticated/contrats/': typeof AuthenticatedContratsIndexRoute
+  '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/employes/': typeof AuthenticatedEmployesIndexRoute
   '/_authenticated/evaluations/': typeof AuthenticatedEvaluationsIndexRoute
   '/_authenticated/factures/': typeof AuthenticatedFacturesIndexRoute
@@ -2011,7 +2003,6 @@ export interface FileRouteTypes {
     | '/conges'
     | '/conges-en-cours'
     | '/contrats'
-    | '/dashboard'
     | '/dashboard-global'
     | '/dashboard-logistique'
     | '/departements'
@@ -2143,7 +2134,6 @@ export interface FileRouteTypes {
     | '/transferts/nouveau'
     | '/utilisateurs/nouveau'
     | '/utilisateurs/production'
-    | '/api/public/seed-users'
     | '/absences/'
     | '/achats/'
     | '/clients/'
@@ -2152,6 +2142,7 @@ export interface FileRouteTypes {
     | '/comptabilite/'
     | '/conges/'
     | '/contrats/'
+    | '/dashboard/'
     | '/employes/'
     | '/evaluations/'
     | '/factures/'
@@ -2209,7 +2200,6 @@ export interface FileRouteTypes {
     | '/centre-documents'
     | '/compta-dashboard'
     | '/conges-en-cours'
-    | '/dashboard'
     | '/dashboard-global'
     | '/dashboard-logistique'
     | '/departements'
@@ -2326,7 +2316,6 @@ export interface FileRouteTypes {
     | '/transferts/nouveau'
     | '/utilisateurs/nouveau'
     | '/utilisateurs/production'
-    | '/api/public/seed-users'
     | '/absences'
     | '/achats'
     | '/clients'
@@ -2335,6 +2324,7 @@ export interface FileRouteTypes {
     | '/comptabilite'
     | '/conges'
     | '/contrats'
+    | '/dashboard'
     | '/employes'
     | '/evaluations'
     | '/factures'
@@ -2400,7 +2390,6 @@ export interface FileRouteTypes {
     | '/_authenticated/conges'
     | '/_authenticated/conges-en-cours'
     | '/_authenticated/contrats'
-    | '/_authenticated/dashboard'
     | '/_authenticated/dashboard-global'
     | '/_authenticated/dashboard-logistique'
     | '/_authenticated/departements'
@@ -2532,7 +2521,6 @@ export interface FileRouteTypes {
     | '/_authenticated/transferts/nouveau'
     | '/_authenticated/utilisateurs/nouveau'
     | '/_authenticated/utilisateurs/production'
-    | '/api/public/seed-users'
     | '/_authenticated/absences/'
     | '/_authenticated/achats/'
     | '/_authenticated/clients/'
@@ -2541,6 +2529,7 @@ export interface FileRouteTypes {
     | '/_authenticated/comptabilite/'
     | '/_authenticated/conges/'
     | '/_authenticated/contrats/'
+    | '/_authenticated/dashboard/'
     | '/_authenticated/employes/'
     | '/_authenticated/evaluations/'
     | '/_authenticated/factures/'
@@ -2591,7 +2580,6 @@ export interface RootRouteChildren {
   CartonColisIdRoute: typeof CartonColisIdRoute
   VerifyUuidRoute: typeof VerifyUuidRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  ApiPublicSeedUsersRoute: typeof ApiPublicSeedUsersRoute
   ApiPublicBackupCronRoute: typeof ApiPublicBackupCronRoute
   ApiPublicHooksAlertRoute: typeof ApiPublicHooksAlertRoute
   ApiPublicHooksGlobalBackupRoute: typeof ApiPublicHooksGlobalBackupRoute
@@ -3077,13 +3065,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardGlobalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/contrats': {
       id: '/_authenticated/contrats'
       path: '/contrats'
@@ -3350,6 +3331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmployesIndexRouteImport
       parentRoute: typeof AuthenticatedEmployesRoute
     }
+    '/_authenticated/dashboard/': {
+      id: '/_authenticated/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/contrats/': {
       id: '/_authenticated/contrats/'
       path: '/'
@@ -3405,13 +3393,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/absences/'
       preLoaderRoute: typeof AuthenticatedAbsencesIndexRouteImport
       parentRoute: typeof AuthenticatedAbsencesRoute
-    }
-    '/api/public/seed-users': {
-      id: '/api/public/seed-users'
-      path: '/api/public/seed-users'
-      fullPath: '/api/public/seed-users'
-      preLoaderRoute: typeof ApiPublicSeedUsersRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/utilisateurs/production': {
       id: '/_authenticated/utilisateurs/production'
@@ -4573,7 +4554,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCongesRoute: typeof AuthenticatedCongesRouteWithChildren
   AuthenticatedCongesEnCoursRoute: typeof AuthenticatedCongesEnCoursRoute
   AuthenticatedContratsRoute: typeof AuthenticatedContratsRouteWithChildren
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDashboardGlobalRoute: typeof AuthenticatedDashboardGlobalRoute
   AuthenticatedDashboardLogistiqueRoute: typeof AuthenticatedDashboardLogistiqueRoute
   AuthenticatedDepartementsRoute: typeof AuthenticatedDepartementsRoute
@@ -4661,6 +4641,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedUtilisateursNouveauRoute: typeof AuthenticatedUtilisateursNouveauRoute
   AuthenticatedUtilisateursProductionRoute: typeof AuthenticatedUtilisateursProductionRoute
   AuthenticatedAchatsIndexRoute: typeof AuthenticatedAchatsIndexRoute
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedSpecimensIndexRoute: typeof AuthenticatedSpecimensIndexRoute
   AuthenticatedTourneesIndexRoute: typeof AuthenticatedTourneesIndexRoute
   AuthenticatedUtilisateursIndexRoute: typeof AuthenticatedUtilisateursIndexRoute
@@ -4688,7 +4669,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCongesRoute: AuthenticatedCongesRouteWithChildren,
   AuthenticatedCongesEnCoursRoute: AuthenticatedCongesEnCoursRoute,
   AuthenticatedContratsRoute: AuthenticatedContratsRouteWithChildren,
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDashboardGlobalRoute: AuthenticatedDashboardGlobalRoute,
   AuthenticatedDashboardLogistiqueRoute: AuthenticatedDashboardLogistiqueRoute,
   AuthenticatedDepartementsRoute: AuthenticatedDepartementsRoute,
@@ -4783,6 +4763,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedUtilisateursProductionRoute:
     AuthenticatedUtilisateursProductionRoute,
   AuthenticatedAchatsIndexRoute: AuthenticatedAchatsIndexRoute,
+  AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedSpecimensIndexRoute: AuthenticatedSpecimensIndexRoute,
   AuthenticatedTourneesIndexRoute: AuthenticatedTourneesIndexRoute,
   AuthenticatedUtilisateursIndexRoute: AuthenticatedUtilisateursIndexRoute,
@@ -4807,7 +4788,6 @@ const rootRouteChildren: RootRouteChildren = {
   CartonColisIdRoute: CartonColisIdRoute,
   VerifyUuidRoute: VerifyUuidRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  ApiPublicSeedUsersRoute: ApiPublicSeedUsersRoute,
   ApiPublicBackupCronRoute: ApiPublicBackupCronRoute,
   ApiPublicHooksAlertRoute: ApiPublicHooksAlertRoute,
   ApiPublicHooksGlobalBackupRoute: ApiPublicHooksGlobalBackupRoute,

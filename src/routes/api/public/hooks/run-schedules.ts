@@ -87,14 +87,23 @@ export const Route = createFileRoute("/api/public/hooks/run-schedules")({
       POST: async ({ request }) => {
         // Authorize: either shared secret (legacy) or Supabase anon apikey (pg_cron pattern)
         const expected = process.env.SCHEDULE_WEBHOOK_SECRET;
-        const anon = process.env.SUPABASE_PUBLISHABLE_KEY;
+        if (!expected) {
+          return new Response(JSON.stringify({ error: "Endpoint not configured" }), {
+            status: 503,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
         const provided =
           request.headers.get("x-schedule-secret") ||
           request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
           request.headers.get("apikey");
-        const okAuth =
-          (expected && provided === expected) || (anon && provided === anon);
-        if (!okAuth) {
+
+        const encoder = new TextEncoder();
+        const a = encoder.encode(provided || "");
+        const b = encoder.encode(expected);
+
+        if (a.length !== b.length || !crypto.subtle.timingSafeEqual(a, b)) {
           return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" },

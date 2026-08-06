@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
     // Avantages : mises à jour instantanées côté web, pas de rebuild APK.
     // Pour un mode bundle offline, retirer `url` et exécuter `bun run build`
     // puis `npx cap sync android` avec un dossier `dist/` local.
-    url: "https://gesti-one.lovable.app",
+    url: "https://gesti0ne.lovable.app",
     cleartext: false,
     androidScheme: "https",
   },
