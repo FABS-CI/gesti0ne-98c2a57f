@@ -87,6 +87,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const canValiderCommande = has("commandes.valider");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmValidationOpen, setConfirmValidationOpen] = useState(false);
+  const [shouldAutoValidate, setShouldAutoValidate] = useState(false);
   const [immediateConfirmOpen, setImmediateConfirmOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<CommandeFormValues | null>(null);
   const [recap, setRecap] = useState<{
@@ -202,6 +203,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
         observations: values.observations || null,
         remise_globale_pct: values.remise_globale_pct,
         taux_tva: values.appliquer_tva ? values.taux_tva : 0,
+        auto_validate: shouldAutoValidate,
         depot_id: values.depot_id || null,
         livreur_nom: values.livreur_nom || null,
         nom_receptionnaire_client: values.nom_receptionnaire_client || null,
@@ -234,8 +236,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       const cId = (created as { commande_id?: string; reference?: string })?.commande_id;
       const cRef = (created as { commande_id?: string; reference?: string })?.reference ?? "";
 
-      if (!canValiderCommande || !cId) {
-        toast.success("Commande créée, en attente de validation");
+      if (!shouldAutoValidate || !cId) {
+        toast.success("Commande enregistrée en attente de validation");
         navigate({ to: "/commandes" });
         return;
       }
@@ -292,9 +294,10 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     () => toast.error("Veuillez corriger les erreurs du formulaire"),
   );
 
-  const confirmSubmit = () => {
+  const confirmSubmit = (validate: boolean = false) => {
     if (!pendingValues) return;
     setConfirmOpen(false);
+    setShouldAutoValidate(validate);
     mutation.mutate(pendingValues);
   };
 
@@ -838,7 +841,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
               variant="outline"
               onClick={() => {
                 setImmediateConfirmOpen(false);
-                mutation.mutate(pendingValues!);
+                confirmSubmit(false);
               }}
             >
               Enregistrer en attente
@@ -850,7 +853,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                 // ou simplement faire le flow actuel qui auto-valide si canValiderCommande est true
                 // Le backend actuel auto-valide si l'utilisateur a les droits ? 
                 // Vérifions creer_commande RPC.
-                mutation.mutate(pendingValues!);
+                confirmSubmit(true);
               }}
             >
               Confirmer immédiatement
