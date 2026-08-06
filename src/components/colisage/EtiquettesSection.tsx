@@ -58,27 +58,17 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
             size="sm"
             onClick={() => {
               const h = getHtml();
-              if (h) printEtiquettes(h, `Étiquettes ${blReference}`, "a4-one");
+              if (h) printEtiquettes(h, `Étiquettes ${blReference}`, "a4-portrait-auto");
             }}
           >
-            <Printer className="mr-2 h-4 w-4" /> Imprimer A4 (1/page × {etiquettes.length})
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const h = getHtml(null, "a4-two-landscape");
-              if (h) printEtiquettes(h, `Étiquettes doubles ${blReference}`, "a4-two-landscape");
-            }}
-          >
-            <Printer className="mr-2 h-4 w-4" /> Imprimer A4 (2/page × {etiquettes.length})
+            <Printer className="mr-2 h-4 w-4" /> Imprimer les étiquettes ({etiquettes.length})
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
               const h = getHtml();
-              if (h) printEtiquettes(h, `Aperçu étiquettes ${blReference}`, "a4-one", "preview");
+              if (h) printEtiquettes(h, `Aperçu étiquettes ${blReference}`, "a4-portrait-auto", "preview");
             }}
           >
             <Eye className="mr-2 h-4 w-4" /> Aperçu
