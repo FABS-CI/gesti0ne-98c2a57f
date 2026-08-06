@@ -64,27 +64,41 @@ export function ColisageLivraisonFields(props: {
         <Label>
           Nom du livreur <span className="text-destructive">*</span>
         </Label>
-        <Select
-          value={livreurNom}
-          onValueChange={(v) => {
-            setLivreurNom(v);
-            const l = livreursList.find((x) => x.nom === v);
-            if (l?.telephone) setLivreurTel(l.telephone);
-            if (l?.vehicule_defaut) setVehicule(l.vehicule_defaut);
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionner un livreur" />
-          </SelectTrigger>
-          <SelectContent>
-            {livreursList.map((l) => (
-              <SelectItem key={l.livreur_id} value={l.nom}>
-                {l.nom}
-                {l.societe ? ` — ${l.societe}` : ""}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Select
+              value={livreurNom}
+              onValueChange={(v) => {
+                setLivreurNom(v);
+                const l = livreursList.find((x) => x.nom === v);
+                if (l?.telephone) setLivreurTel(l.telephone);
+                if (l?.vehicule_defaut) setVehicule(l.vehicule_defaut);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Sélectionner un livreur" />
+              </SelectTrigger>
+              <SelectContent>
+                {livreursList.map((l) => (
+                  <SelectItem key={l.livreur_id} value={l.nom}>
+                    {l.nom}
+                    {l.societe ? ` — ${l.societe}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => window.open("/livreurs?new=true", "_blank")}
+            title="Créer un nouveau livreur"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+
         <FieldError msg={errors.livreurNom} />
       </div>
       <div>
