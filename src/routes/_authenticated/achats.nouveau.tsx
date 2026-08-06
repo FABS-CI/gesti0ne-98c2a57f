@@ -365,8 +365,8 @@ function NouvelApprovisionnementPage() {
               </div>
             </div>
             <div className="rounded-md border max-h-64 overflow-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50">
+              <table className="w-full text-sm table-zebra-orange table-print-borders">
+                <thead className="bg-muted/50 border-b">
                   <tr>
                     <th className="text-left p-2">Produit</th>
                     <th className="text-right p-2">Qté</th>

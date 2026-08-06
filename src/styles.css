@@ -205,6 +205,22 @@
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
     gap: 1rem;
   }
+
+  /* Zebra styling utility for tables */
+  .table-zebra-orange tbody tr:nth-child(even) {
+    background-color: #FFF3E0;
+  }
+  .dark .table-zebra-orange tbody tr:nth-child(even) {
+    background-color: rgba(249, 115, 22, 0.1);
+  }
+  
+  /* Print-optimized table borders */
+  .table-print-borders, 
+  .table-print-borders th, 
+  .table-print-borders td {
+    border: 0.5px solid #d1d5db !important; /* gray-300 */
+    border-collapse: collapse;
+  }
 }
 
 /* Hide the "Edit with Lovable" badge on published deployments */

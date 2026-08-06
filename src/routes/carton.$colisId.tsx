@@ -150,7 +150,7 @@ function CartonPublicPage() {
           {(data.produits ?? []).length === 0 ? (
             <p className="p-3 text-sm text-slate-500">Aucun détail produit disponible.</p>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full text-sm table-zebra-orange">
               <thead className="border-b bg-slate-50 text-left text-xs uppercase text-slate-500">
                 <tr>
                   <th className="p-3">Désignation</th>
