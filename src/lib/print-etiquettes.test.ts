@@ -31,7 +31,7 @@ describe("printEtiquettes", () => {
     const html =
       '<div class="etiquette-carton" data-colis-id="c1">1 / 2</div>' +
       '<div class="etiquette-carton" data-colis-id="c2">2 / 2</div>';
-    const w = printEtiquettes(html, "Aperçu BL", "a4-one", "preview");
+    const w = printEtiquettes(html, "Aperçu BL", "a4-portrait-auto", "preview");
     expect(w).toBe(fake);
 
     const written = doc.write.mock.calls[0][0] as string;
