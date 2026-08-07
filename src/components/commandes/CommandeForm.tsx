@@ -211,9 +211,10 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
   const mutation = useMutation({
     mutationFn: (values: CommandeFormValues) => {
-      const payload = {
+      const payload: any = {
         date_commande: values.date_commande,
         client_id: values.client_id,
+        client_nom: selectedClient?.nom || values.etablissement || null,
         etablissement: values.etablissement || null,
         representant_nom: values.representant_nom || null,
         telephone: values.telephone || null,
@@ -299,7 +300,6 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       const typedValues = values as CommandeFormValues;
       if (mode === "create") {
         setPendingValues(typedValues);
-        // Toujours afficher le récapitulatif d'abord
         setConfirmOpen(true);
         return;
       }
@@ -312,6 +312,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     if (!pendingValues) return;
     setConfirmOpen(false);
     setShouldAutoValidate(validate);
+    // Explicitly pass auto_validate here to override any previous state
     mutation.mutate({ ...pendingValues, auto_validate: validate } as any);
   };
 
