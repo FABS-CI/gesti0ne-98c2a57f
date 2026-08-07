@@ -74,7 +74,7 @@ function CommandeModifierPage() {
     telephone: commande.telephone ?? "",
     ville: commande.ville ?? "",
     adresse: commande.adresse ?? "",
-    observations: commande.observations ?? "",
+    
     remise_globale_pct: Number(commande.remise_globale_pct ?? 0),
     taux_tva: Number(commande.taux_tva ?? 0),
     lignes: (() => {
