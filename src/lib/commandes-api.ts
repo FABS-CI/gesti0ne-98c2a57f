@@ -81,6 +81,7 @@ export type CreerCommandeLignePayload = {
 export type CreerCommandePayload = {
   date_commande: string;
   client_id: string;
+  client_nom?: string | null;
   etablissement?: string | null;
   representant_nom?: string | null;
   telephone?: string | null;
@@ -91,6 +92,7 @@ export type CreerCommandePayload = {
   taux_tva?: number;
   depot_id?: string | null;
   idempotency_key?: string | null;
+  auto_validate?: boolean;
   lignes: CreerCommandeLignePayload[];
 };
 

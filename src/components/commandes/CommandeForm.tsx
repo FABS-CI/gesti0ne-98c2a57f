@@ -211,9 +211,10 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
   const mutation = useMutation({
     mutationFn: (values: CommandeFormValues) => {
-      const payload = {
+      const payload: any = {
         date_commande: values.date_commande,
         client_id: values.client_id,
+        client_nom: (values as any).client_nom || selectedClient?.nom || values.etablissement || null,
         etablissement: values.etablissement || null,
         representant_nom: values.representant_nom || null,
         telephone: values.telephone || null,
@@ -299,7 +300,6 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       const typedValues = values as CommandeFormValues;
       if (mode === "create") {
         setPendingValues(typedValues);
-        // Toujours afficher le récapitulatif d'abord
         setConfirmOpen(true);
         return;
       }
@@ -312,7 +312,12 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     if (!pendingValues) return;
     setConfirmOpen(false);
     setShouldAutoValidate(validate);
-    mutation.mutate({ ...pendingValues, auto_validate: validate } as any);
+    // On passe explicitement auto_validate dans la mutation pour écraser shouldAutoValidate
+    mutation.mutate({ 
+      ...pendingValues, 
+      auto_validate: validate,
+      client_nom: selectedClient?.nom || pendingValues.etablissement || null
+    } as any);
   };
 
   const addLigne = () => {
@@ -826,7 +831,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
               onClick={() => {
                 setImmediateConfirmOpen(false);
                 setShouldAutoValidate(true);
-                mutation.mutate({ ...pendingValues!, auto_validate: true } as any);
+                confirmSubmit(true);
               }}
             >
               <span className="font-semibold text-base">Option 1 : Valider la facture</span>
