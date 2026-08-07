@@ -214,7 +214,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       const payload: any = {
         date_commande: values.date_commande,
         client_id: values.client_id,
-        client_nom: selectedClient?.nom || values.etablissement || null,
+        client_nom: (values as any).client_nom || selectedClient?.nom || values.etablissement || null,
         etablissement: values.etablissement || null,
         representant_nom: values.representant_nom || null,
         telephone: values.telephone || null,
