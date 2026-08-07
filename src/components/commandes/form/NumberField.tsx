@@ -15,6 +15,7 @@ export function NumberField({
   step,
   className,
   inputMode,
+  disabled,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: any;
@@ -25,6 +26,7 @@ export function NumberField({
   step?: string | number;
   className?: string;
   inputMode?: "numeric" | "decimal";
+  disabled?: boolean;
 }) {
   return (
     <Controller
@@ -80,6 +82,7 @@ export function NumberField({
             ref={field.ref}
             name={field.name}
             className={className}
+            disabled={disabled}
           />
         );
       }}

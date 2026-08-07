@@ -170,10 +170,19 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
   // --- Totaux (useWatch = souscription réactive, re-render à chaque frappe) ---
   const lignesWatch = useWatch({ control: form.control, name: "lignes" }) ?? [];
-  const remiseGlobalePct = useWatch({ control: form.control, name: "remise_globale_pct" }) || 0;
+  const remiseGlobalePct = useWatch({ control: form.control, name: "remise_globale_pct" });
   const appliquerTva = useWatch({ control: form.control, name: "appliquer_tva" });
   const tauxTvaRaw = useWatch({ control: form.control, name: "taux_tva" }) || 0;
   const tauxTva = appliquerTva ? tauxTvaRaw : 0;
+
+  // Calcul des exclusions mutuelles pour les remises
+  const hasRemiseEnLigne = useMemo(() => {
+    return (lignesWatch || []).some((l) => (l?.remise_pct || 0) > 0);
+  }, [lignesWatch]);
+
+  const hasRemiseGlobale = useMemo(() => {
+    return (remiseGlobalePct || 0) > 0;
+  }, [remiseGlobalePct]);
 
   const totaux = useMemo(() => {
     let brut = 0;
@@ -185,7 +194,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       remisesLignes += c.montantRem;
       htNet += c.totalLigne;
     }
-    const remiseGlobaleMontant = Math.round(((htNet * remiseGlobalePct) / 100) * 100) / 100;
+    const remiseGlobaleMontant = Math.round(((htNet * (remiseGlobalePct || 0)) / 100) * 100) / 100;
     const htApresRG = htNet - remiseGlobaleMontant;
     const tva = Math.round(((htApresRG * tauxTva) / 100) * 100) / 100;
     const ttc = htApresRG + tva;
@@ -563,6 +572,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             addLigne={addLigne}
             remove={remove}
             onProduitChange={onProduitChange}
+            remiseEnLigneDisabled={hasRemiseGlobale}
           />
 
           {/* 4. Remise globale */}
@@ -585,6 +595,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                   step="0.01"
                   min={0}
                   max={100}
+                  disabled={hasRemiseEnLigne}
                 />
                 {form.formState.errors.remise_globale_pct && (
                   <p className="text-[10px] text-destructive mt-0.5">{form.formState.errors.remise_globale_pct.message}</p>
@@ -592,8 +603,10 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                 <p className="text-xs text-muted-foreground mt-1">
                   S'applique sur le total HT après remises de ligne.
                   <br />
-                  <span className="text-[10px] font-semibold text-amber-600 italic">
-                    Note : Impossible d'utiliser une remise globale si des remises en ligne sont déjà saisies.
+                  <span className={`text-[10px] font-semibold italic ${hasRemiseEnLigne ? "text-destructive" : "text-amber-600"}`}>
+                    {hasRemiseEnLigne 
+                      ? "Attention : Remise globale bloquée car des remises en ligne sont utilisées. Supprimez-les pour l'activer." 
+                      : "Note : Impossible d'utiliser une remise globale si des remises en ligne sont déjà saisies."}
                   </span>
                 </p>
               </div>
@@ -607,7 +620,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             <SummaryCard
               totaux={totaux}
               tauxTva={tauxTva}
-              remiseGlobalePct={remiseGlobalePct}
+              remiseGlobalePct={remiseGlobalePct || 0}
               totalArticles={totalArticles}
               totalQuantite={totalQuantite}
             />
