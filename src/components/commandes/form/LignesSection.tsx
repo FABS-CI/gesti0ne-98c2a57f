@@ -38,6 +38,7 @@ type Props = {
   addLigne: () => void;
   remove: (index: number) => void;
   onProduitChange: (index: number, p: Produit | null) => void;
+  remiseEnLigneDisabled?: boolean;
 };
 
 export function LignesSection({
@@ -51,6 +52,7 @@ export function LignesSection({
   addLigne,
   remove,
   onProduitChange,
+  remiseEnLigneDisabled,
 }: Props) {
   const hasOvershoot = overshootIndexes.length > 0;
   return (
@@ -171,9 +173,13 @@ export function LignesSection({
                           min={0}
                           max={100}
                           className="text-right h-8 px-1"
+                          disabled={remiseEnLigneDisabled}
                         />
                         {err?.remise_pct && (
                           <p className="text-[9px] text-destructive mt-0.5 leading-tight">{err.remise_pct.message}</p>
+                        )}
+                        {remiseEnLigneDisabled && (
+                          <p className="text-[9px] text-amber-600 mt-0.5 leading-tight italic">Bloqué (RG active)</p>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
@@ -296,9 +302,13 @@ export function LignesSection({
                         min={0}
                         max={100}
                         className="h-10 text-right"
+                        disabled={remiseEnLigneDisabled}
                       />
                       {err?.remise_pct && (
                         <p className="text-[10px] text-destructive mt-0.5 leading-tight">{err.remise_pct.message}</p>
+                      )}
+                      {remiseEnLigneDisabled && (
+                        <p className="text-[9px] text-amber-600 mt-0.5 leading-tight italic">Bloqué (RG active)</p>
                       )}
                     </div>
                     <div>
