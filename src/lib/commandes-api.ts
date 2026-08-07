@@ -92,17 +92,32 @@ export type CreerCommandePayload = {
   taux_tva?: number;
   depot_id?: string | null;
   idempotency_key?: string | null;
-  auto_validate?: boolean;
+  auto_validate: boolean;
   lignes: CreerCommandeLignePayload[];
 };
 
 export async function creerCommande(payload: CreerCommandePayload) {
+  if (typeof payload.auto_validate !== "boolean") {
+    throw new Error("Le choix de validation de la commande est obligatoire");
+  }
   const depot_id = payload.depot_id ?? (await getDepotDefautId());
+  console.info("[commande.workflow] Envoi au backend", {
+    autoValidate: payload.auto_validate,
+    idempotencyKey: payload.idempotency_key ?? null,
+    lineCount: payload.lignes.length,
+  });
   const { data, error } = await callRpc("creer_commande", {
     _payload: { ...payload, depot_id } as never,
   });
   if (error) throw new Error(error.message);
-  return data as unknown as Commande;
+  const created = Array.isArray(data) ? data[0] : data;
+  console.info("[commande.workflow] Réponse du backend", {
+    commandeId: created?.commande_id ?? null,
+    reference: created?.reference ?? null,
+    statut: created?.statut ?? null,
+    autoValidateRequested: payload.auto_validate,
+  });
+  return created as unknown as Commande;
 }
 
 export async function modifierCommande(commandeId: string, payload: Partial<CreerCommandePayload>) {

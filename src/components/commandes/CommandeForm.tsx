@@ -99,7 +99,6 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const { has } = usePermissions();
   const canValiderCommande = has("commandes.valider");
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [shouldAutoValidate, setShouldAutoValidate] = useState(false);
   const [immediateConfirmOpen, setImmediateConfirmOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<CommandeFormValues | null>(null);
   const [recap, setRecap] = useState<{
@@ -210,7 +209,10 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const idempotencyKey = useMemo(() => newIdempotencyKey("cmd"), []);
 
   const mutation = useMutation({
-    mutationFn: (values: CommandeFormValues) => {
+    mutationFn: (values: CommandeFormValues & { auto_validate?: boolean }) => {
+      if (mode === "create" && typeof values.auto_validate !== "boolean") {
+        throw new Error("Choisissez « Valider la facture » ou « Mettre en attente »");
+      }
       const payload: any = {
         date_commande: values.date_commande,
         client_id: values.client_id,
@@ -223,7 +225,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
         
         remise_globale_pct: values.remise_globale_pct || 0,
         taux_tva: values.appliquer_tva ? (values.taux_tva || 0) : 0,
-        auto_validate: (values as any).auto_validate ?? shouldAutoValidate,
+        auto_validate: values.auto_validate,
         depot_id: values.depot_id || null,
         lignes: values.lignes.map((l) => ({
           produit_id: l.produit_id,
@@ -237,7 +239,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       if (mode === "edit" && commandeId) return modifierCommande(commandeId, payload);
       return creerCommande({ ...payload, idempotency_key: idempotencyKey });
     },
-    onSuccess: async (created) => {
+    onSuccess: async (created, submittedValues) => {
       if (mode === "create") void draft.markConverted();
       const clientId = form.getValues("client_id") ?? undefined;
       invalidateCommande(qc, {
@@ -254,7 +256,14 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       const cId = (created as { commande_id?: string; reference?: string })?.commande_id;
       const cRef = (created as { commande_id?: string; reference?: string })?.reference ?? "";
 
-      if (!shouldAutoValidate || !cId) {
+      const validationRequested = submittedValues.auto_validate === true;
+      console.info("[commande.workflow] Création terminée", {
+        commandeId: cId ?? null,
+        validationRequested,
+        returnedStatus: (created as { statut?: string })?.statut ?? null,
+      });
+
+      if (!validationRequested || !cId) {
         toast.success("Commande enregistrée en attente de validation");
         navigate({ to: "/commandes" });
         return;
@@ -310,9 +319,10 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
 
   const confirmSubmit = (validate: boolean = false) => {
     if (!pendingValues) return;
+    console.info("[commande.workflow] Choix utilisateur confirmé", {
+      decision: validate ? "valider_facture" : "mettre_en_attente",
+    });
     setConfirmOpen(false);
-    setShouldAutoValidate(validate);
-    // On passe explicitement auto_validate dans la mutation pour écraser shouldAutoValidate
     mutation.mutate({ 
       ...pendingValues, 
       auto_validate: validate,
@@ -830,7 +840,6 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
               className="justify-start h-auto py-3 px-4 flex-col items-start gap-1"
               onClick={() => {
                 setImmediateConfirmOpen(false);
-                setShouldAutoValidate(true);
                 confirmSubmit(true);
               }}
             >
