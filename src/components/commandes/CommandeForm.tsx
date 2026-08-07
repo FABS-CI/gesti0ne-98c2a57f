@@ -620,7 +620,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             <SummaryCard
               totaux={totaux}
               tauxTva={tauxTva}
-              remiseGlobalePct={remiseGlobalePct}
+              remiseGlobalePct={remiseGlobalePct || 0}
               totalArticles={totalArticles}
               totalQuantite={totalQuantite}
             />
