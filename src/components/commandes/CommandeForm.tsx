@@ -60,14 +60,11 @@ const formSchema = z.object({
   telephone: z.string().optional(),
   ville: z.string().optional(),
   adresse: z.string().optional(),
-  observations: z.string().optional(),
   remise_globale_pct: z.number().min(0).max(100).optional().or(z.literal(undefined)),
   taux_tva: z.number().min(0).max(100).optional().or(z.literal(undefined)),
   depot_id: z.string().optional(),
   depot_override_motif: z.string().nullable().optional(),
   appliquer_tva: z.boolean(),
-  livreur_nom: z.string().optional(),
-  nom_receptionnaire_client: z.string().optional(),
   lignes: z.array(ligneSchema).min(1, "Ajoutez au moins une ligne produit"),
 })
   .refine(
@@ -126,14 +123,12 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       telephone: "",
       ville: "",
       adresse: "",
-      observations: "",
+      
       remise_globale_pct: undefined,
       taux_tva: undefined,
       appliquer_tva: false,
       depot_id: "",
       depot_override_motif: null,
-      livreur_nom: "",
-      nom_receptionnaire_client: "",
       lignes: [],
       ...initialValues,
     },
@@ -225,13 +220,11 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
         telephone: values.telephone || null,
         ville: values.ville || null,
         adresse: values.adresse || null,
-        observations: values.observations || null,
+        
         remise_globale_pct: values.remise_globale_pct || 0,
         taux_tva: values.appliquer_tva ? (values.taux_tva || 0) : 0,
-        auto_validate: shouldAutoValidate,
+        auto_validate: (values as any).auto_validate ?? shouldAutoValidate,
         depot_id: values.depot_id || null,
-        livreur_nom: values.livreur_nom || null,
-        nom_receptionnaire_client: values.nom_receptionnaire_client || null,
         lignes: values.lignes.map((l) => ({
           produit_id: l.produit_id,
           reference_produit: l.reference_produit ?? null,
@@ -323,7 +316,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     if (!pendingValues) return;
     setConfirmOpen(false);
     setShouldAutoValidate(validate);
-    mutation.mutate(pendingValues);
+    mutation.mutate({ ...pendingValues, auto_validate: validate } as any);
   };
 
   const addLigne = () => {
@@ -541,22 +534,6 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                   label="Dépôt de sortie *"
                 />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-2">
-                <div>
-                  <Label htmlFor="livreur_nom" className="text-xs">Nom du Livreur (Expédition)</Label>
-                  <Input id="livreur_nom" {...form.register("livreur_nom")} placeholder="Optionnel" />
-                </div>
-                <div>
-                  <Label htmlFor="nom_receptionnaire_client" className="text-xs">Réceptionné par (Nom du client)</Label>
-                  <Input id="nom_receptionnaire_client" {...form.register("nom_receptionnaire_client")} placeholder="Optionnel" />
-                </div>
-              </div>
-              <div className="sm:col-span-2 lg:col-span-3">
-                <Label htmlFor="observations" className="text-xs">
-                  Observations / Notes internes
-                </Label>
-                <Textarea id="observations" rows={2} {...form.register("observations")} />
-              </div>
             </div>
           </section>
 
@@ -741,12 +718,6 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                 />
                 <InfoCell label="Net à payer" value={formatFCFA(totaux.ttc)} emphasis />
               </div>
-              {pendingValues.observations && (
-                <div className="rounded-md border p-2 text-xs">
-                  <div className="font-semibold mb-1">Observations</div>
-                  <div className="whitespace-pre-wrap">{pendingValues.observations}</div>
-                </div>
-              )}
             </div>
           )}
           <AlertDialogFooter>
@@ -885,11 +856,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
             <Button
               onClick={async () => {
                 setImmediateConfirmOpen(false);
-                // On pourrait appeler une version de creerCommande qui auto-valide
-                // ou simplement faire le flow actuel qui auto-valide si canValiderCommande est true
-                // Le backend actuel auto-valide si l'utilisateur a les droits ? 
-                // Vérifions creer_commande RPC.
-                confirmSubmit(true);
+                setShouldAutoValidate(true);
+                mutation.mutate({ ...pendingValues!, auto_validate: true } as any);
               }}
             >
               Confirmer immédiatement
