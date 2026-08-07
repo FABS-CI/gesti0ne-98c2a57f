@@ -79,8 +79,11 @@ const formSchema = z.object({
     {
       message: "Il est interdit d'utiliser simultanément une remise globale et des remises en ligne.",
       path: ["remise_globale_pct"],
-    },
+    }
   );
+
+// On crée aussi un type pour Zod data brut avant transformation/validation du schéma final si nécessaire
+type RawFormData = z.input<typeof formSchema>;
 
 export type CommandeFormValues = z.infer<typeof formSchema>;
 
