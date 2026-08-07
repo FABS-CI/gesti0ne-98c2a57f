@@ -180,7 +180,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     let remisesLignes = 0;
     let htNet = 0;
     for (const l of lignesWatch) {
-      const c = computeLigne(l.quantite, l.prix_unitaire, l.remise_pct);
+      const c = computeLigne(l.quantite || 0, l.prix_unitaire || 0, l.remise_pct || 0);
       brut += c.brut;
       remisesLignes += c.montantRem;
       htNet += c.totalLigne;
@@ -322,8 +322,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       produit_id: "",
       reference_produit: "",
       designation: "",
-      quantite: undefined,
-      prix_unitaire: undefined,
+      quantite: undefined as any,
+      prix_unitaire: undefined as any,
       remise_pct: undefined,
       stock_produit: null,
     });
@@ -700,7 +700,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                   </thead>
                   <tbody>
                     {pendingValues.lignes.map((l, i) => {
-                      const c = computeLigne(l.quantite, l.prix_unitaire, l.remise_pct);
+                      const c = computeLigne(l.quantite || 0, l.prix_unitaire || 0, l.remise_pct || 0);
                       return (
                         <tr key={i} className="border-t">
                           <td className="p-2">{l.designation}</td>
