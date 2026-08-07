@@ -69,9 +69,25 @@ const formSchema = z.object({
   livreur_nom: z.string().optional(),
   nom_receptionnaire_client: z.string().optional(),
   lignes: z.array(ligneSchema).min(1, "Ajoutez au moins une ligne produit"),
-});
+})
+  .refine(
+    (data) => {
+      const hasRemiseLigne = data.lignes.some((l) => (l.remise_pct || 0) > 0);
+      const hasRemiseGlobale = (data.remise_globale_pct || 0) > 0;
+      return !(hasRemiseLigne && hasRemiseGlobale);
+    },
+    {
+      message: "Il est interdit d'utiliser simultanément une remise globale et des remises en ligne.",
+      path: ["remise_globale_pct"],
+    }
+  );
+
+// On crée aussi un type pour Zod data brut avant transformation/validation du schéma final si nécessaire
+type RawFormData = z.input<typeof formSchema>;
 
 export type CommandeFormValues = z.infer<typeof formSchema>;
+// @ts-ignore - necessary for react-hook-form to accept the refined schema
+type ValidatedCommandeFormValues = z.output<typeof formSchema>;
 
 type Props = {
   mode: "create" | "edit";
@@ -559,7 +575,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
               4. Remise globale
             </h2>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="remise_globale_pct" className="text-xs">
                   Remise globale (%)
                 </Label>
@@ -570,8 +586,15 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
                   min={0}
                   max={100}
                 />
+                {form.formState.errors.remise_globale_pct && (
+                  <p className="text-[10px] text-destructive mt-0.5">{form.formState.errors.remise_globale_pct.message}</p>
+                )}
                 <p className="text-xs text-muted-foreground mt-1">
                   S'applique sur le total HT après remises de ligne.
+                  <br />
+                  <span className="text-[10px] font-semibold text-amber-600 italic">
+                    Note : Impossible d'utiliser une remise globale si des remises en ligne sont déjà saisies.
+                  </span>
                 </p>
               </div>
             </div>
