@@ -312,8 +312,12 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     if (!pendingValues) return;
     setConfirmOpen(false);
     setShouldAutoValidate(validate);
-    // Explicitly pass auto_validate here to override any previous state
-    mutation.mutate({ ...pendingValues, auto_validate: validate } as any);
+    // On passe explicitement auto_validate dans la mutation pour écraser shouldAutoValidate
+    mutation.mutate({ 
+      ...pendingValues, 
+      auto_validate: validate,
+      client_nom: selectedClient?.nom || pendingValues.etablissement || null
+    } as any);
   };
 
   const addLigne = () => {
