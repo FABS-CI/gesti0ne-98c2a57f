@@ -172,6 +172,9 @@ export function LignesSection({
                           max={100}
                           className="text-right h-8 px-1"
                         />
+                        {err?.remise_pct && (
+                          <p className="text-[9px] text-destructive mt-0.5 leading-tight">{err.remise_pct.message}</p>
+                        )}
                       </TableCell>
                       <TableCell className="text-right">
                         <NumberField
@@ -294,6 +297,9 @@ export function LignesSection({
                         max={100}
                         className="h-10 text-right"
                       />
+                      {err?.remise_pct && (
+                        <p className="text-[10px] text-destructive mt-0.5 leading-tight">{err.remise_pct.message}</p>
+                      )}
                     </div>
                     <div>
                       <Label className="text-[11px]">Qté</Label>
