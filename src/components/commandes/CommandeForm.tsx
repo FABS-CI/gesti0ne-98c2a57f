@@ -827,7 +827,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
               onClick={() => {
                 setImmediateConfirmOpen(false);
                 setShouldAutoValidate(true);
-                mutation.mutate({ ...pendingValues!, auto_validate: true } as any);
+                confirmSubmit(true);
               }}
             >
               <span className="font-semibold text-base">Option 1 : Valider la facture</span>
