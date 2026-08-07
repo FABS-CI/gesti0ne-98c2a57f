@@ -84,7 +84,7 @@ export function LignesSection({
         <>
           {/* Desktop : tableau */}
           <div className="hidden lg:block w-full">
-            <Table className="w-full table-fixed [&_th]:px-1 [&_td]:px-1 [&_th]:py-1 [&_td]:py-1 text-xs">
+            <Table className="w-full table-auto [&_th]:px-2 [&_td]:px-2 [&_th]:py-2 [&_td]:py-2 text-xs">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[6%]">Cover</TableHead>
@@ -131,8 +131,8 @@ export function LignesSection({
                           size="xs"
                         />
                       </TableCell>
-                      <TableCell>
-                        <div className="min-w-0">
+                      <TableCell className="py-2">
+                        <div className="min-w-0 max-w-[400px] whitespace-normal break-words">
                           <ProductSearchSelect
                             value={l?.produit_id}
                             loadingLabel={l?.designation}

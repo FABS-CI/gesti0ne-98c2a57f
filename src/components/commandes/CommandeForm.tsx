@@ -99,7 +99,6 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
   const { has } = usePermissions();
   const canValiderCommande = has("commandes.valider");
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmValidationOpen, setConfirmValidationOpen] = useState(false);
   const [shouldAutoValidate, setShouldAutoValidate] = useState(false);
   const [immediateConfirmOpen, setImmediateConfirmOpen] = useState(false);
   const [pendingValues, setPendingValues] = useState<CommandeFormValues | null>(null);
@@ -300,11 +299,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       const typedValues = values as CommandeFormValues;
       if (mode === "create") {
         setPendingValues(typedValues);
-        if (canValiderCommande) {
-          setImmediateConfirmOpen(true);
-        } else {
-          setConfirmOpen(true);
-        }
+        // Toujours afficher le récapitulatif d'abord
+        setConfirmOpen(true);
         return;
       }
       mutation.mutate(typedValues);
@@ -722,57 +718,24 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
           )}
           <AlertDialogFooter>
             <AlertDialogCancel>Modifier la saisie</AlertDialogCancel>
-            <AlertDialogAction onClick={() => confirmSubmit(false)} disabled={mutation.isPending}>
-              {mutation.isPending ? "Enregistrement…" : "Confirmer et enregistrer"}
-            </AlertDialogAction>
+            <Button 
+              variant="default"
+              onClick={() => {
+                if (canValiderCommande) {
+                  setConfirmOpen(false);
+                  setImmediateConfirmOpen(true);
+                } else {
+                  confirmSubmit(false);
+                }
+              }}
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? "Enregistrement…" : "Suivant"}
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Confirmation de Validation Immédiate */}
-      <AlertDialog open={confirmValidationOpen} onOpenChange={setConfirmValidationOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Validation de la commande</AlertDialogTitle>
-            <AlertDialogDescription>
-              Vous disposez des droits de validation. Souhaitez-vous valider cette commande immédiatement pour générer la facture et le bon de livraison ?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-            <AlertDialogCancel asChild>
-              <Button variant="ghost" className="w-full sm:w-auto" onClick={() => setConfirmValidationOpen(false)}>
-                Annuler
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button 
-                variant="outline" 
-                className="w-full sm:w-auto"
-                onClick={() => {
-                  setConfirmValidationOpen(false);
-                  confirmSubmit();
-                }}
-              >
-                Garder en attente
-              </Button>
-            </AlertDialogAction>
-            <AlertDialogAction asChild>
-              <Button 
-                className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-                onClick={async () => {
-                  setConfirmValidationOpen(false);
-                  // On pourrait passer un flag pour valider direct, 
-                  // mais le backend actuel semble le faire par défaut si l'utilisateur a les droits ? 
-                  // Dans le doute, on appelle la mutation et on verra si on doit forcer le statut.
-                  mutation.mutate(pendingValues!);
-                }}
-              >
-                Valider maintenant
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <AlertDialog open={!!recap} onOpenChange={(o) => !o && setRecap(null)}>
         <AlertDialogContent className="max-w-lg">
@@ -836,32 +799,44 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
         </AlertDialogContent>
       </AlertDialog>
       <AlertDialog open={immediateConfirmOpen} onOpenChange={setImmediateConfirmOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Validation immédiate</AlertDialogTitle>
+            <AlertDialogTitle>Action de validation</AlertDialogTitle>
             <AlertDialogDescription>
-              Cette commande peut être directement validée car vous disposez des autorisations nécessaires. Que souhaitez-vous faire ?
+              La commande est prête. Vous disposez des droits de validation. Que souhaitez-vous faire ?
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+          <div className="grid gap-3 py-4">
             <Button
               variant="outline"
+              className="justify-start h-auto py-3 px-4 flex-col items-start gap-1"
               onClick={() => {
                 setImmediateConfirmOpen(false);
                 confirmSubmit(false);
               }}
             >
-              Enregistrer en attente
+              <span className="font-semibold text-base text-amber-600">Option 2 : Mettre en attente</span>
+              <span className="text-xs text-muted-foreground text-left">
+                Crée uniquement la proforma et le bon de commande. Le statut sera "En attente".
+              </span>
             </Button>
+            
             <Button
-              onClick={async () => {
+              className="justify-start h-auto py-3 px-4 flex-col items-start gap-1"
+              onClick={() => {
                 setImmediateConfirmOpen(false);
                 setShouldAutoValidate(true);
                 mutation.mutate({ ...pendingValues!, auto_validate: true } as any);
               }}
             >
-              Confirmer immédiatement
+              <span className="font-semibold text-base">Option 1 : Valider la facture</span>
+              <span className="text-xs text-primary-foreground/80 text-left">
+                Crée la facture définitive, le BL, et exécute toutes les opérations (stock, compta).
+              </span>
             </Button>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmOpen(true)}>Retour au récapitulatif</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
