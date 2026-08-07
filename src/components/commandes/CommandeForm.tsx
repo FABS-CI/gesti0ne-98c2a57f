@@ -86,6 +86,8 @@ const formSchema = z.object({
 type RawFormData = z.input<typeof formSchema>;
 
 export type CommandeFormValues = z.infer<typeof formSchema>;
+// @ts-ignore - necessary for react-hook-form to accept the refined schema
+type ValidatedCommandeFormValues = z.output<typeof formSchema>;
 
 type Props = {
   mode: "create" | "edit";
