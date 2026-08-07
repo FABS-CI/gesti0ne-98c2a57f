@@ -84,21 +84,21 @@ export function LignesSection({
         <>
           {/* Desktop : tableau */}
           <div className="hidden lg:block w-full">
-            <Table className="w-full table-fixed [&_th]:px-1 [&_td]:px-1 [&_th]:py-1 [&_td]:py-1 text-xs">
+            <Table className="w-full table-auto [&_th]:px-2 [&_td]:px-2 [&_th]:py-2 [&_td]:py-2 text-xs">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[6%]">Cover</TableHead>
-                  <TableHead className="w-[26%]">Produit</TableHead>
-                  <TableHead className="w-[8%]">Réf.</TableHead>
-
-                  <TableHead className="text-right w-[7%]">Stock</TableHead>
-                  <TableHead className="text-right w-[8%]">P.U.</TableHead>
-                  <TableHead className="text-right w-[6%]">Rem.%</TableHead>
-                  <TableHead className="text-right w-[10%]">Qté</TableHead>
-                  <TableHead className="text-right w-[9%]">Remise</TableHead>
-                  <TableHead className="text-right w-[9%]">Vente HT</TableHead>
-                  <TableHead className="text-right w-[11%]">Total HT</TableHead>
-                  <TableHead className="w-[5%]" />
+                   <TableHead className="w-[50px]">Cover</TableHead>
+                   <TableHead className="min-w-[200px]">Produit</TableHead>
+                   <TableHead className="w-[100px]">Réf.</TableHead>
+ 
+                   <TableHead className="text-right w-[80px]">Stock</TableHead>
+                   <TableHead className="text-right w-[110px]">P.U.</TableHead>
+                   <TableHead className="text-right w-[80px]">Rem.%</TableHead>
+                   <TableHead className="text-right w-[100px]">Qté</TableHead>
+                   <TableHead className="text-right w-[100px]">Remise</TableHead>
+                   <TableHead className="text-right w-[110px]">Vente HT</TableHead>
+                   <TableHead className="text-right w-[120px]">Total HT</TableHead>
+                   <TableHead className="w-[40px]" />
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -131,8 +131,8 @@ export function LignesSection({
                           size="xs"
                         />
                       </TableCell>
-                      <TableCell>
-                        <div className="min-w-0">
+                      <TableCell className="py-2">
+                        <div className="min-w-0 max-w-[400px] whitespace-normal break-words">
                           <ProductSearchSelect
                             value={l?.produit_id}
                             loadingLabel={l?.designation}
