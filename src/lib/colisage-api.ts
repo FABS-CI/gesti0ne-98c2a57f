@@ -166,6 +166,7 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
   const telephone =
     cmd?.telephone ?? clientFallback?.telephone ?? null;
 
+  const clientNom = cmd?.client_nom ?? clientFallback?.nom ?? null;
 
   return {
     bl_id: data.bl_id,
@@ -176,7 +177,7 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
     client_id: data.client_id,
     commande_id: data.commande_id,
     commande_reference: cmd?.reference ?? null,
-    client_nom: cmd?.client_nom ?? clientFallback?.nom ?? null,
+    client_nom: clientNom,
     etablissement: cmd?.etablissement ?? null,
     representant_nom: cmd?.representant_nom ?? clientFallback?.representant ?? null,
     telephone,

@@ -42,50 +42,7 @@ export function ColisageLivraisonFields(props: {
   } = props;
   const qc = useQueryClient();
 
-  return (
-    <>
-      <div
-        className="md:col-span-3 -mb-2 mt-2 rounded-md px-3 py-2 font-semibold"
-        style={{ backgroundColor: "#F97316", color: "#000" }}
-      >
-        Livraison
-      </div>
-      <div className="hidden">
-        {/* Informations de livraison masquées car gérées dans les Tournées */}
-      </div>
-      <div>
-        <Label>Quartier</Label>
-        <Input
-          value={quartier}
-          onChange={(e) => setQuartier(e.target.value)}
-          placeholder="Quartier"
-        />
-      </div>
-      <div>
-        <Label>
-          Commune <span className="text-destructive">*</span>
-        </Label>
-        <Combobox
-          value={commune}
-          onChange={(v) => setCommune(v ?? "")}
-          options={COMMUNES_ABIDJAN}
-          placeholder="Sélectionner une commune"
-        />
-        <FieldError msg={errors.commune} />
-      </div>
-      <div>
-        <Label>
-          Ville <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          value={villeLivraison}
-          onChange={(e) => setVilleLivraison(e.target.value.toUpperCase())}
-          placeholder="ABIDJAN"
-        />
-        <FieldError msg={errors.villeLivraison} />
-      </div>
-    </>
-  );
+  return null;
 }
 
 export function ColisageExpeditionFields(props: {
