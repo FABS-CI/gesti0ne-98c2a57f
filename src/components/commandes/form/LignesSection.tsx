@@ -187,7 +187,7 @@ export function LignesSection({
                           control={form.control}
                           name={`lignes.${i}.quantite`}
                           integer
-                          min={1}
+                           min={0}
                           className={`text-right h-8 px-1 ${over ? "border-destructive" : ""}`}
                         />
                       </TableCell>
@@ -317,7 +317,7 @@ export function LignesSection({
                         control={form.control}
                         name={`lignes.${i}.quantite`}
                         integer
-                        min={1}
+                        min={0}
                         className={`h-10 text-right ${over ? "border-destructive" : ""}`}
                       />
                     </div>

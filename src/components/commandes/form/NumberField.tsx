@@ -34,7 +34,7 @@ export function NumberField({
       name={name}
       render={({ field }) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        const [local, setLocal] = useState<string | null>(null);
+        const [local, setLocal] = useState<string | null>(field.value === undefined || field.value === null ? "" : null);
         
         // On traite 0, null ou undefined comme une chaîne vide pour l'affichage initial
         const numeric =

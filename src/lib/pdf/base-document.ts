@@ -413,13 +413,42 @@ export class BaseDocument {
 
     // Lignes
     let curY = y - 20;
+    const fontSize = 10;
+    const colHPadding = 5;
+
     lignes.forEach((l, i) => {
-      if (curY < MARGINS.bottom + 50) {
+      // 1. Calculer la hauteur nécessaire pour cette ligne (rowH)
+      let maxRowH = 22;
+      const wrapResults = new Map<string, string[]>();
+
+      colonnes.forEach(col => {
+        let val = (l as any)[col.key];
+        if (typeof val === 'number' && col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct') {
+          val = formatFCFA(val, false);
+        } else if (col.key === 'remisePct' && val) {
+          val = `${val} %`;
+        }
+        val = String(val ?? "");
+        
+        const availableW = col.width - colHPadding * 2;
+        const wrapped = this.wrapText(val, availableW, fontSize);
+        wrapResults.set(col.key, wrapped);
+        
+        const lineH = fontSize * 1.2;
+        const textH = wrapped.length * lineH;
+        const neededH = textH + 8; // padding vertical
+        if (neededH > maxRowH) maxRowH = neededH;
+      });
+
+      // 2. Vérifier saut de page
+      if (curY - maxRowH < MARGINS.bottom + 50) {
         this.addNewPage();
-        curY = PAGE.h - 120; // Reprendre sous le header suite
+        curY = PAGE.h - 120;
       }
       
-      const rowH = 22;
+      const rowH = maxRowH;
+
+      // 3. Dessiner le fond (Zebra)
       if (i % 2 === 1) {
         this.page.drawRectangle({ 
           x: MARGINS.x, 
@@ -430,50 +459,35 @@ export class BaseDocument {
         });
       }
 
+      // 4. Dessiner le contenu des colonnes
       let curX = MARGINS.x;
       colonnes.forEach(col => {
-        let val = (l as any)[col.key];
-        if (typeof val === 'number' && col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct') {
-          val = formatFCFA(val, false);
-        } else if (col.key === 'remisePct' && val) {
-          val = `${val} %`;
-        }
-        val = String(val ?? "");
+        const wrapped = wrapResults.get(col.key) || [];
+        const lineH = fontSize * 1.2;
         
-        const fontSize = 10;
-        const txtW = this.fonts.regular.widthOfTextAtSize(val, fontSize);
-        const alignX = col.key === 'designation' ? curX + 5 : (col.key === 'qte' || col.key === 'num' ? curX + (col.width - txtW) / 2 : curX + col.width - txtW - 5);
-        
-        this.page.drawText(val, {
-          x: alignX,
-          y: curY - 15,
-          size: fontSize,
-          font: this.fonts.regular,
-          color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
+        wrapped.forEach((lineText, lineIdx) => {
+          const txtW = this.fonts.regular.widthOfTextAtSize(lineText, fontSize);
+          
+          let alignX = curX + colHPadding;
+          if (col.key !== 'designation') {
+             if (col.key === 'qte' || col.key === 'num') {
+               alignX = curX + (col.width - txtW) / 2;
+             } else {
+               alignX = curX + col.width - txtW - colHPadding;
+             }
+          }
+          
+          this.page.drawText(lineText, {
+            x: alignX,
+            y: curY - 15 - (lineIdx * lineH),
+            size: fontSize,
+            font: this.fonts.regular,
+            color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
+          });
         });
-
-        // Suppression des traits verticaux des colonnes
-        /*
-        this.page.drawLine({
-          start: { x: Math.round(curX * 100) / 100, y: curY },
-          end: { x: Math.round(curX * 100) / 100, y: curY - rowH },
-          color: COLORS.grisLigne,
-          thickness: 0.5,
-        });
-        */
 
         curX += col.width;
       });
-
-      // Suppression du dernier trait vertical à droite
-      /*
-      this.page.drawLine({
-        start: { x: Math.round((curX) * 100) / 100, y: curY },
-        end: { x: Math.round((curX) * 100) / 100, y: curY - rowH },
-        color: COLORS.grisLigne,
-        thickness: 0.5,
-      });
-      */
 
       // Trait horizontal sous la ligne
       this.page.drawLine({
@@ -482,17 +496,32 @@ export class BaseDocument {
         color: COLORS.grisLigne,
         thickness: 0.5,
       });
-      curY -= rowH;
 
+      curY -= rowH;
     });
 
-    /*
-    if (options?.showClientReception) {
-      this.drawClientReception(curY - 20);
-    }
-    */
+    return curY;
+  }
 
-    return curY - 20;
+  // Helper pour le retour à la ligne
+  wrapText(text: string, maxWidth: number, fontSize: number): string[] {
+    if (!text) return [""];
+    const words = text.split(/\s+/);
+    const lines: string[] = [];
+    let currentLine = '';
+
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      const testWidth = this.fonts.regular.widthOfTextAtSize(testLine, fontSize);
+      if (testWidth > maxWidth && currentLine) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
   }
 
   drawClientReception(y: number) {
