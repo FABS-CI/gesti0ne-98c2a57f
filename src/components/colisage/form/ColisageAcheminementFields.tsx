@@ -58,7 +58,7 @@ export function ColisageLivraisonFields(props: {
         <Input
           value={quartier}
           onChange={(e) => setQuartier(e.target.value)}
-          placeholder="Ex. Riviera 3, Angré 8ᵉ Tranche…"
+          placeholder="Quartier"
         />
       </div>
       <div>
@@ -77,11 +77,10 @@ export function ColisageLivraisonFields(props: {
         <Label>
           Ville <span className="text-destructive">*</span>
         </Label>
-        <Combobox
+        <Input
           value={villeLivraison}
-          onChange={(v) => setVilleLivraison(v ?? "")}
-          options={VILLES_CI}
-          placeholder="Sélectionner une ville"
+          onChange={(e) => setVilleLivraison(e.target.value.toUpperCase())}
+          placeholder="ABIDJAN"
         />
         <FieldError msg={errors.villeLivraison} />
       </div>
