@@ -631,24 +631,37 @@ export class BaseDocument {
 
     row("NET À PAYER", formatFCFA(this.totals.totalAPayer), true, true);
 
-    // Montant en lettres (Sur la même ligne que TOTAL À PAYER)
-    const letY = curY - 15;
+    // Montant en lettres avec retour automatique à la ligne
+    let letY = curY - 25;
     const labelLetters = "Arrêtée à la présente facture à la somme de :";
-    const labelW = this.fonts.bold.widthOfTextAtSize(labelLetters, 8);
     
-    this.page.drawText(labelLetters, { x: MARGINS.x, y: letY - 13, size: 8, font: this.fonts.bold, color: COLORS.noir });
+    // On calcule la largeur disponible pour le montant en lettres
+    // La phrase complète "Label : Montant" doit tenir dans CONTENT_W
+    const fullText = `${labelLetters} ${this.totals.montantLettres}`;
+    const fontSize = 10;
     
-    // Montant en lettres en noir profond, gras et bien espacé
-    const montantSize = 10;
-    this.page.drawText(this.totals.montantLettres, { 
-      x: MARGINS.x + labelW + 8, // Espacement accru
-      y: letY - 13, 
-      size: montantSize, 
-      font: this.fonts.bold, 
-      color: COLORS.noir // Noir profond au lieu d'orange
+    // wrapText utilise CONTENT_W (largeur totale imprimable)
+    const wrappedLines = this.wrapText(fullText, CONTENT_W, fontSize);
+    
+    wrappedLines.forEach((line, idx) => {
+      // Pour la première ligne, on peut mettre le label en gras si on veut, 
+      // mais le plus simple et propre est de tout mettre dans le même style
+      // ou de gérer le gras par segment si on veut vraiment du "Label (gras) : Montant (regular)"
+      
+      this.page.drawText(line, {
+        x: MARGINS.x,
+        y: letY - (idx * (fontSize * 1.3)),
+        size: fontSize,
+        font: this.fonts.bold,
+        color: COLORS.noir
+      });
     });
 
-    return curY - 20;
+    // On ajuste curY selon le nombre de lignes utilisées
+    curY = letY - (wrappedLines.length * (fontSize * 1.3)) - 10;
+
+
+    return curY;
   }
 
   drawSignatures(y: number) {
