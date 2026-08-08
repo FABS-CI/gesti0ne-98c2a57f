@@ -413,13 +413,42 @@ export class BaseDocument {
 
     // Lignes
     let curY = y - 20;
+    const fontSize = 10;
+    const colHPadding = 5;
+
     lignes.forEach((l, i) => {
-      if (curY < MARGINS.bottom + 50) {
+      // 1. Calculer la hauteur nécessaire pour cette ligne (rowH)
+      let maxRowH = 22;
+      const wrapResults = new Map<string, string[]>();
+
+      colonnes.forEach(col => {
+        let val = (l as any)[col.key];
+        if (typeof val === 'number' && col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct') {
+          val = formatFCFA(val, false);
+        } else if (col.key === 'remisePct' && val) {
+          val = `${val} %`;
+        }
+        val = String(val ?? "");
+        
+        const availableW = col.width - colHPadding * 2;
+        const wrapped = this.wrapText(val, availableW, fontSize);
+        wrapResults.set(col.key, wrapped);
+        
+        const lineH = fontSize * 1.2;
+        const textH = wrapped.length * lineH;
+        const neededH = textH + 8; // padding vertical
+        if (neededH > maxRowH) maxRowH = neededH;
+      });
+
+      // 2. Vérifier saut de page
+      if (curY - maxRowH < MARGINS.bottom + 50) {
         this.addNewPage();
-        curY = PAGE.h - 120; // Reprendre sous le header suite
+        curY = PAGE.h - 120;
       }
       
-      const rowH = 22;
+      const rowH = maxRowH;
+
+      // 3. Dessiner le fond (Zebra)
       if (i % 2 === 1) {
         this.page.drawRectangle({ 
           x: MARGINS.x, 
@@ -430,50 +459,54 @@ export class BaseDocument {
         });
       }
 
+      // 4. Dessiner le contenu des colonnes
       let curX = MARGINS.x;
       colonnes.forEach(col => {
-        let val = (l as any)[col.key];
-        if (typeof val === 'number' && col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct') {
-          val = formatFCFA(val, false);
-        } else if (col.key === 'remisePct' && val) {
-          val = `${val} %`;
-        }
-        val = String(val ?? "");
-        
-        const fontSize = 10;
-        const colHPadding = 5;
-        const availableW = col.width - colHPadding * 2;
-        
-        // --- Correction Chevauchement (Designation Longue) ---
-        if (col.key === 'designation') {
-          const lines = this.wrapText(val, availableW, fontSize);
-          const lineH = fontSize * 1.2;
-          const totalTextH = lines.length * lineH;
-          
-          // Ajuster rowH si le texte est long
-          const actualRowH = Math.max(22, totalTextH + 10);
-          
-          // Si on a dessiné un zebra ou un fond, on doit peut-être le redessiner ou l'avoir anticipé.
-          // Ici le zebra est dessiné AVANT la boucle des colonnes, donc on a un problème si rowH change par colonne.
-          // Strategie : On calcule le maxRowH pour toute la ligne d'abord.
-        }
-        
-        // [Re-calcul global de la hauteur de ligne nécessaire pour cette data]
-        const lines = col.key === 'designation' ? this.wrapText(val, availableW, fontSize) : [val];
+        const wrapped = wrapResults.get(col.key) || [];
         const lineH = fontSize * 1.2;
-        const textH = lines.length * lineH;
-        const rowH = Math.max(22, textH + 8);
+        
+        wrapped.forEach((lineText, lineIdx) => {
+          const txtW = this.fonts.regular.widthOfTextAtSize(lineText, fontSize);
+          
+          let alignX = curX + colHPadding;
+          if (col.key !== 'designation') {
+             if (col.key === 'qte' || col.key === 'num') {
+               alignX = curX + (col.width - txtW) / 2;
+             } else {
+               alignX = curX + col.width - txtW - colHPadding;
+             }
+          }
+          
+          this.page.drawText(lineText, {
+            x: alignX,
+            y: curY - 15 - (lineIdx * lineH),
+            size: fontSize,
+            font: this.fonts.regular,
+            color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
+          });
+        });
 
-        // ... rest of logic needs to calculate rowH first for the whole row.
-        // Let's rewrite the loop slightly.
+        curX += col.width;
       });
+
+      // Trait horizontal sous la ligne
+      this.page.drawLine({
+        start: { x: MARGINS.x, y: curY - rowH },
+        end: { x: MARGINS.x + CONTENT_W, y: curY - rowH },
+        color: COLORS.grisLigne,
+        thickness: 0.5,
+      });
+
+      curY -= rowH;
     });
+
     return curY;
   }
 
   // Helper pour le retour à la ligne
   wrapText(text: string, maxWidth: number, fontSize: number): string[] {
-    const words = text.split(' ');
+    if (!text) return [""];
+    const words = text.split(/\s+/);
     const lines: string[] = [];
     let currentLine = '';
 
@@ -489,15 +522,6 @@ export class BaseDocument {
     }
     if (currentLine) lines.push(currentLine);
     return lines;
-  }
-
-    /*
-    if (options?.showClientReception) {
-      this.drawClientReception(curY - 20);
-    }
-    */
-
-    return curY - 20;
   }
 
   drawClientReception(y: number) {
