@@ -11,7 +11,7 @@ import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 const searchSchema = z.object({
   clientId: z.string().optional(),
   periode: z.string().or(z.number()).optional(),
-}).catchall(z.any());
+}).passthrough();
 
 export const Route = createFileRoute("/_authenticated/commandes/nouvelle")({
   validateSearch: zodValidator(searchSchema),

@@ -13,7 +13,7 @@ import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 // guidance). On valide comme string libre et on clamp côté composant.
 const layoutSearchSchema = z.object({
   periode: z.string().or(z.number()).optional(),
-}).catchall(z.any());
+}).passthrough();
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
