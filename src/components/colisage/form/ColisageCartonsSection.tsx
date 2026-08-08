@@ -152,16 +152,22 @@ export function ColisageCartonsSection({
                             Tous les articles ont été répartis
                           </div>
                         ) : (
-                          optionsDisponibles.map((l) => {
-                            const k = keyForLigne(l);
-                            const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
-                            const affiche = k === li.produit_id ? dispo + currentQte : dispo;
-                            return (
-                              <SelectItem key={k} value={k}>
-                                {l.designation} — reste {affiche} / {l.quantite}
-                              </SelectItem>
-                            );
-                          })
+                          optionsDisponibles
+                            .filter((l) => {
+                              const k = keyForLigne(l);
+                              const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
+                              return k === li.produit_id || dispo > 0;
+                            })
+                            .map((l) => {
+                              const k = keyForLigne(l);
+                              const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
+                              const affiche = k === li.produit_id ? dispo + currentQte : dispo;
+                              return (
+                                <SelectItem key={k} value={k}>
+                                  {l.designation} — reste {affiche} / {l.quantite}
+                                </SelectItem>
+                              );
+                            })
                         )}
                       </SelectContent>
                     </Select>

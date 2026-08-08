@@ -183,10 +183,11 @@ export function ColisageForm({
         i === ci ? { ...c, lignes: [...c.lignes, { produit_id: "", quantite: "" }] } : c,
       ),
     );
-  const removeLigne = (ci: number, li: number) =>
+  const removeLigne = (ci: number, li: number) => {
     setCartons((p) =>
       p.map((c, i) => (i === ci ? { ...c, lignes: c.lignes.filter((_, j) => j !== li) } : c)),
     );
+  };
   const updateLigne = (
     ci: number,
     li: number,
