@@ -469,12 +469,11 @@ export class BaseDocument {
           const txtW = this.fonts.regular.widthOfTextAtSize(lineText, fontSize);
           
           let alignX = curX + colHPadding;
-          if (col.key !== 'designation') {
-             if (col.key === 'qte' || col.key === 'num') {
-               alignX = curX + (col.width - txtW) / 2;
-             } else {
-               alignX = curX + col.width - txtW - colHPadding;
-             }
+          if (col.key === 'qte' || col.key === 'num' || col.key === 'remisePct') {
+            alignX = curX + (col.width - txtW) / 2;
+          } else if (col.key !== 'designation' && col.key !== 'code') {
+            // Montant et PU à droite
+            alignX = curX + col.width - txtW - colHPadding;
           }
           
           this.page.drawText(lineText, {
@@ -482,7 +481,7 @@ export class BaseDocument {
             y: curY - 15 - (lineIdx * lineH),
             size: fontSize,
             font: this.fonts.regular,
-            color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
+            color: (col.key === 'remisePct') ? COLORS.rougeFabs : COLORS.noir,
           });
         });
 
