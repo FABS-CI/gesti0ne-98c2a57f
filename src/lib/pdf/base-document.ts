@@ -464,6 +464,7 @@ export class BaseDocument {
       colonnes.forEach(col => {
         const wrapped = wrapResults.get(col.key) || [];
         const lineH = fontSize * 1.2;
+        const colHPadding = 5; // On s'assure que le padding est constant
         
         wrapped.forEach((lineText, lineIdx) => {
           const txtW = this.fonts.regular.widthOfTextAtSize(lineText, fontSize);
