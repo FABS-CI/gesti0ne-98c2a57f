@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 export const livraisonSchema = z.object({
-  livreurNom: z.string().trim().min(1, "Veuillez sélectionner ou créer un livreur"),
+  livreurNom: z.string().trim().optional(),
   livreurTel: z
     .string()
     .trim()
-    .min(1, "Téléphone requis")
-    .regex(/^[+0-9 .-]{6,}$/, "Téléphone invalide"),
-  vehicule: z.string().trim().min(1, "Véhicule requis"),
+    .optional()
+    .refine((v) => !v || /^[+0-9 .-]{6,}$/.test(v), "Téléphone invalide"),
+  vehicule: z.string().trim().optional(),
   villeLivraison: z.string().trim().min(1, "Ville requise"),
   commune: z.string().trim().min(1, "Commune requise"),
 });
