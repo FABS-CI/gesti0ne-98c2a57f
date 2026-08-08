@@ -661,7 +661,7 @@ export class BaseDocument {
     curY = letY - (wrappedLines.length * (fontSize * 1.3)) - 10;
 
 
-    return curY - 20;
+    return curY;
   }
 
   drawSignatures(y: number) {
