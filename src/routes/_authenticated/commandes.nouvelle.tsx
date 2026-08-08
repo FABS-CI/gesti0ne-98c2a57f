@@ -10,6 +10,7 @@ import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const searchSchema = z.object({
   clientId: fallback(z.string().optional(), undefined).default(undefined),
+  periode: fallback(z.string().optional(), undefined).default(undefined),
 });
 
 export const Route = createFileRoute("/_authenticated/commandes/nouvelle")({

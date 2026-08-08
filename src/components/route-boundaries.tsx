@@ -57,10 +57,10 @@ export function RouteError({ error, reset }: { error: Error; reset: () => void }
     <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Cette page n'a pas pu se charger
+          Cette page n'a pas pu charger
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Une erreur est survenue. Vous pouvez réessayer ou revenir à l'accueil.
+          Une erreur est survenue. Vous pouvez réessayer plus tard.
         </p>
         <p className="mt-3 text-xs text-muted-foreground">
           Trace ID:{" "}
