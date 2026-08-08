@@ -82,7 +82,7 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
   const isExpedition = data.mode_acheminement === "expedition";
   const telephone = isExpedition
     ? data.gare_telephone || data.telephone
-    : data.telephone || data.livreur_telephone;
+    : data.telephone;
 
   const modeLabel = isExpedition ? "EXPÉDITION" : "LIVRAISON DIRECTE";
 

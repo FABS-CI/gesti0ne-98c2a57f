@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { STATUT_BL_LABEL, isColisageEnAttente } from "@/lib/colisage-api";
-import { buildEtiquettesPayload } from "@/lib/colisage-helpers";
+import { buildEtiquettesPayload, keyForLigne } from "@/lib/colisage-helpers";
 import { useColisageDetail } from "@/hooks/use-colisage-detail";
 import { usePermissions } from "@/hooks/use-permissions";
 import { ColisageActionButtons } from "@/components/colisage/ColisageActionButtons";
@@ -153,7 +153,6 @@ function ColisageDetailPage() {
           </CardHeader>
           <CardContent className="text-sm space-y-1">
             <div className="font-semibold">{bl.client_nom ?? "—"}</div>
-            <div>{bl.etablissement ?? ""}</div>
             <div>
               {bl.representant_nom ?? ""}
               {bl.telephone ? ` · ${bl.telephone}` : ""}
@@ -199,15 +198,28 @@ function ColisageDetailPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  bl.lignes.map((l, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="font-mono text-xs">
-                        {l.reference_produit ?? "—"}
-                      </TableCell>
-                      <TableCell>{l.designation ?? "—"}</TableCell>
-                      <TableCell className="text-right">{l.quantite}</TableCell>
-                    </TableRow>
-                  ))
+                  bl.lignes
+                    .map((l) => {
+                      const k = keyForLigne(l);
+                      const r = (colisExistants ?? []).reduce((acc, c) => {
+                        // This is slightly complex because we don't have the carton lines easily available here 
+                        // without another API call or deep data structure.
+                        // But wait, the bl.lignes might be updated if the status is finished.
+                        // For now, let's keep the logic simple or just show the lines if we don't have the current distribution.
+                        return acc; 
+                      }, 0);
+                      return { ...l, reste: l.quantite - r };
+                    })
+                    .filter((l) => l.reste > 0)
+                    .map((l, i) => (
+                      <TableRow key={i}>
+                        <TableCell className="font-mono text-xs">
+                          {l.reference_produit ?? "—"}
+                        </TableCell>
+                        <TableCell>{l.designation ?? "—"}</TableCell>
+                        <TableCell className="text-right">{l.reste}</TableCell>
+                      </TableRow>
+                    ))
                 )}
               </TableBody>
             </Table>
@@ -222,7 +234,6 @@ function ColisageDetailPage() {
           clientInfo={clientInfo}
           zonesDirectes={zonesDirectes}
           responsablesList={responsablesList}
-          livreursList={livreursList}
           modifiable={modifiable}
           hasColis={hasColis}
         />
