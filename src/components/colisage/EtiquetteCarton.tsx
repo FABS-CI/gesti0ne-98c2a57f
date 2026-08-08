@@ -167,16 +167,17 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
           <InfoRow label="N° Colisage" value={data.colis_id.slice(0, 8).toUpperCase()} mono />
         )}
         <InfoRow label="N° Commande" value={data.commande ?? "—"} strong />
-        <InfoRow label="Client" value={data.etablissement ?? data.client ?? "—"} strong />
-        <InfoRow label="Destination" value={destination || "—"} strong uppercase />
-        {isExpedition ? (
-          <>
-            <InfoRow label="Tél. Chef de gare" value={data.gare_telephone ?? "—"} strong />
-            <InfoRow label="Tél. Client" value={data.telephone ?? "—"} strong />
-          </>
-        ) : (
-          <InfoRow label="Téléphone" value={telephone ?? "—"} strong />
-        )}
+        <InfoRow label="Client" value={data.client ?? "—"} strong />
+        <div style={{ padding: "4mm 0", borderBottom: "1px solid #ddd" }}>
+          <div style={{ color: "#333", fontSize: "10pt", marginBottom: "1mm" }}>Responsable Achat</div>
+          <div style={{ fontWeight: 800, fontSize: "14pt" }}>
+            {data.representant ?? "—"}
+            {data.telephone ? ` · ${data.telephone}` : ""}
+          </div>
+          <div style={{ marginTop: "2mm", fontSize: "14pt", fontWeight: 700, textTransform: "uppercase" }}>
+            {data.ville || "—"}
+          </div>
+        </div>
       </div>
 
       {/* QR code central et imposant */}
