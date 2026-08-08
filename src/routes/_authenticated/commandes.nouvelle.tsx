@@ -9,9 +9,9 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const searchSchema = z.object({
-  clientId: fallback(z.string().optional(), undefined).default(undefined),
-  periode: fallback(z.string().optional(), undefined).default(undefined),
-});
+  clientId: z.string().optional(),
+  periode: z.string().or(z.number()).optional(),
+}).passthrough();
 
 export const Route = createFileRoute("/_authenticated/commandes/nouvelle")({
   validateSearch: zodValidator(searchSchema),
@@ -21,7 +21,8 @@ export const Route = createFileRoute("/_authenticated/commandes/nouvelle")({
 });
 
 function CommandeNouvellePage() {
-  const { clientId: presetClientId } = Route.useSearch();
+  const search = Route.useSearch();
+  const presetClientId = search.clientId;
   const { has, isLoading: permLoading } = usePermissions();
   const canManage = has("commandes.creer");
 
