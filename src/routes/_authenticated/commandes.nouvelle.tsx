@@ -9,8 +9,8 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const searchSchema = z.object({
-  clientId: fallback(z.string().optional(), undefined).default(undefined),
-  periode: fallback(z.string().optional(), undefined).default(undefined),
+  clientId: z.string().optional(),
+  periode: z.string().or(z.number()).optional(),
 });
 
 export const Route = createFileRoute("/_authenticated/commandes/nouvelle")({

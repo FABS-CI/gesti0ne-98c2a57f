@@ -28,6 +28,7 @@ function computeState(ch: RealtimeChannel): OnlinePresence[] {
   const raw = ch.presenceState<OnlinePresence>();
   const list: OnlinePresence[] = [];
   Object.values(raw).forEach((entries) => {
+    if (!entries || entries.length === 0) return;
     const latest = entries.reduce((a, b) =>
       new Date(a.last_activity) > new Date(b.last_activity) ? a : b,
       entries[0]
