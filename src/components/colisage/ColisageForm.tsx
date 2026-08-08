@@ -238,7 +238,7 @@ export function ColisageForm({
     }
     const parsed =
       mode === "livraison"
-        ? livraisonSchema.safeParse({ villeLivraison, commune })
+        ? livraisonSchema.safeParse({})
         : expeditionSchema.safeParse({ gareDepart, villeDest, gareResp, gareTel });
     if (!parsed.success) {
       const errs = zodToErrors(parsed.error);

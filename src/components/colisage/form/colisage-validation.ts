@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 export const livraisonSchema = z.object({
-  villeLivraison: z.string().trim().min(1, "Ville requise"),
-  commune: z.string().trim().min(1, "Commune requise"),
+  // Champs de livraison supprimés (gérés dans le module Tournées)
 });
 
 export const expeditionSchema = z.object({
