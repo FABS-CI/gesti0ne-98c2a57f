@@ -9,9 +9,9 @@ import { usePermissions } from "@/hooks/use-permissions";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 const searchSchema = z.object({
-  clientId: z.any().optional(),
-  periode: z.any().optional(),
-});
+  clientId: z.string().optional(),
+  periode: z.string().or(z.number()).optional(),
+}).catchall(z.any());
 
 export const Route = createFileRoute("/_authenticated/commandes/nouvelle")({
   validateSearch: zodValidator(searchSchema),
