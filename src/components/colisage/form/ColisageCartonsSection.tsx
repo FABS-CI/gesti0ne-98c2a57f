@@ -110,7 +110,7 @@ export function ColisageCartonsSection({
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-base">Carton {ci + 1}</CardTitle>
             {cartons.length > 1 && (
-              <Button type="button" variant="ghost" size="sm" onClick={() => removeCarton(ci)}>
+              <Button type="button" variant="ghost" size="sm" onClick={(e) => { e.preventDefault(); removeCarton(ci); }}>
                 <X className="mr-1 h-4 w-4" /> Retirer
               </Button>
             )}
@@ -198,7 +198,7 @@ export function ColisageCartonsSection({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      onClick={() => removeLigne(ci, lj)}
+                      onClick={(e) => { e.preventDefault(); removeLigne(ci, lj); }}
                       disabled={c.lignes.length === 1}
                     >
                       <Minus className="h-4 w-4" />
@@ -211,7 +211,7 @@ export function ColisageCartonsSection({
                   </div>
                 );
               })}
-              <Button type="button" variant="outline" size="sm" onClick={() => addLigne(ci)}>
+              <Button type="button" variant="outline" size="sm" onClick={(e) => { e.preventDefault(); addLigne(ci); }}>
                 <Plus className="mr-1 h-4 w-4" /> Ajouter un article
               </Button>
             </div>
@@ -219,7 +219,7 @@ export function ColisageCartonsSection({
         </Card>
       ))}
       <div>
-        <Button type="button" variant="secondary" size="sm" onClick={addCarton}>
+        <Button type="button" variant="secondary" size="sm" onClick={(e) => { e.preventDefault(); addCarton(); }}>
           <Plus className="mr-1 h-4 w-4" /> Ajouter un carton
         </Button>
       </div>

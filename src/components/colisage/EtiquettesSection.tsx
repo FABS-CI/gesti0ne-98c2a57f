@@ -56,7 +56,8 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
           <Button
             variant="default"
             size="sm"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               const h = getHtml();
               if (h) printEtiquettes(h, `Étiquettes ${blReference}`, "a4-portrait-auto");
             }}
@@ -66,7 +67,8 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               const h = getHtml();
               if (h) printEtiquettes(h, `Aperçu étiquettes ${blReference}`, "a4-portrait-auto", "preview");
             }}
@@ -88,7 +90,8 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
+                  onClick={(e_btn) => {
+                    e_btn.preventDefault();
                     const h = getHtml(e.colis_id);
                     if (h)
                       printEtiquettes(
@@ -104,7 +107,7 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => window.open(`/carton/${e.colis_id}`, "_blank")}
+                    onClick={(e_btn) => { e_btn.preventDefault(); window.open(`/carton/${e.colis_id}`, "_blank"); }}
                   >
                     <ExternalLink className="mr-2 h-4 w-4" /> Prévisualiser QR
                   </Button>
@@ -112,7 +115,8 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => {
+                  onClick={(e_btn) => {
+                    e_btn.preventDefault();
                     const h = getHtml(e.colis_id);
                     if (h)
                       printEtiquettes(

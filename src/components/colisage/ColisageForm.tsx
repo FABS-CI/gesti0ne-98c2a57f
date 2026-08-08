@@ -341,7 +341,10 @@ export function ColisageForm({
                     type="button"
                     variant="outline"
                     size="icon"
-                    onClick={() => window.open("/colisage/responsables?new=true", "_blank")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.open("/colisage/responsables?new=true", "_blank");
+                    }}
                     title="Créer un nouveau responsable"
                   >
                     <Plus className="h-4 w-4" />
@@ -350,7 +353,10 @@ export function ColisageForm({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    onClick={() => qc.invalidateQueries({ queryKey: ["preparateurs-colisage-actifs"] })}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      qc.invalidateQueries({ queryKey: ["preparateurs-colisage-actifs"] });
+                    }}
                     title="Rafraîchir la liste"
                   >
                     <RefreshCw className="h-4 w-4" />
