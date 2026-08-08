@@ -2,9 +2,7 @@ import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 /**
  * ============================================================================
- * '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
-                                            
-                                            AUDIT
+ * AUDIT COMPLET DU WORKFLOW MÉTIER (LOGIQUE, STOCKS, COMPTABILITÉ)
  * ============================================================================
  * 
  * 1. CARTOGRAPHIE DU WORKFLOW
