@@ -36,17 +36,17 @@ export class CommercialDocument extends BaseDocument {
     const isBL = this.data.type === 'Bon de Livraison';
     const colonnes = [
       { label: "N°", key: "num", width: 20 },
-      { label: "Code", key: "code", width: 60 },
-      { label: "Désignation", key: "designation", width: isBL ? 350 : 180 },
-      { label: "Qté", key: "qte", width: 35 },
+      { label: "Code", key: "code", width: 55 },
+      { label: "Désignation", key: "designation", width: isBL ? 415 : 180 },
+      { label: "Qté", key: "qte", width: 30 },
     ];
     
     if (!isBL) {
-      colonnes.push({ label: "Prix Unitaire", key: "pu", width: 75 });
+      colonnes.push({ label: "P.U.", key: "pu", width: 75 });
       if (this.discountMode === 'A') {
-        colonnes.push({ label: "Remise (%)", key: "remisePct", width: 45 });
+        colonnes.push({ label: "Remise (%)", key: "remisePct", width: 55 });
       }
-      // Le montant prend le reste de l'espace pour garantir la visibilité
+      // Le montant prend le reste exact de l'espace disponible (CONTENT_W)
       const currentWidth = colonnes.reduce((acc, c) => acc + c.width, 0);
       colonnes.push({ label: "Montant", key: "total", width: CONTENT_W - currentWidth });
     }
