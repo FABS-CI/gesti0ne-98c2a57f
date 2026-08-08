@@ -375,8 +375,11 @@ export class BaseDocument {
       const txt = col.label.toUpperCase();
       const txtW = this.fonts.bold.widthOfTextAtSize(txt, 8);
       let headerX = x + (col.width - txtW) / 2;
-      if (col.key === 'designation') headerX = x + 5;
-      else if (col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct') headerX = x + col.width - txtW - 5;
+      if (col.key === 'designation' || col.key === 'code') {
+        headerX = x + 5;
+      } else if (col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct') {
+        headerX = x + col.width - txtW - 5;
+      }
       
       this.page.drawText(txt, {
         x: headerX,
@@ -464,17 +467,17 @@ export class BaseDocument {
       colonnes.forEach(col => {
         const wrapped = wrapResults.get(col.key) || [];
         const lineH = fontSize * 1.2;
+        const colHPadding = 5; // On s'assure que le padding est constant
         
         wrapped.forEach((lineText, lineIdx) => {
           const txtW = this.fonts.regular.widthOfTextAtSize(lineText, fontSize);
           
           let alignX = curX + colHPadding;
-          if (col.key !== 'designation') {
-             if (col.key === 'qte' || col.key === 'num') {
-               alignX = curX + (col.width - txtW) / 2;
-             } else {
-               alignX = curX + col.width - txtW - colHPadding;
-             }
+          if (col.key === 'qte' || col.key === 'num' || col.key === 'remisePct') {
+            alignX = curX + (col.width - txtW) / 2;
+          } else if (col.key !== 'designation' && col.key !== 'code') {
+            // Montant et PU à droite
+            alignX = curX + col.width - txtW - colHPadding;
           }
           
           this.page.drawText(lineText, {
@@ -482,7 +485,7 @@ export class BaseDocument {
             y: curY - 15 - (lineIdx * lineH),
             size: fontSize,
             font: this.fonts.regular,
-            color: (col.key === 'remisePct' || col.key === 'remiseMontant') ? COLORS.rougeFabs : COLORS.noir,
+            color: (col.key === 'remisePct') ? COLORS.rougeFabs : COLORS.noir,
           });
         });
 
