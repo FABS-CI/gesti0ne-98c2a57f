@@ -174,7 +174,7 @@ export function ColisageCartonsSection({
                     </Select>
                     <Input
                       type="number"
-                      min={1}
+                      min={0}
                       max={restant ?? undefined}
                       placeholder="Qté"
                       value={li.quantite}

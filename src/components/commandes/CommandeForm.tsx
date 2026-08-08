@@ -348,7 +348,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
         produit_id: "",
         reference_produit: "",
         designation: "",
-        quantite: form.getValues(`lignes.${index}.quantite`) || 1,
+        quantite: form.getValues(`lignes.${index}.quantite`) || undefined,
         prix_unitaire: 0,
         remise_pct: form.getValues(`lignes.${index}.remise_pct`) || 0,
         stock_produit: null,
@@ -359,7 +359,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
     const current = form.getValues("lignes") ?? [];
     const existingIdx = current.findIndex((l, i) => i !== index && l.produit_id === p.produit_id);
     if (existingIdx !== -1) {
-      const addQty = form.getValues(`lignes.${index}.quantite`) || 1;
+      const addQty = form.getValues(`lignes.${index}.quantite`) || 0;
       const existingQty = form.getValues(`lignes.${existingIdx}.quantite`) || 0;
       update(existingIdx, {
         ...current[existingIdx],
@@ -373,7 +373,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       produit_id: p.produit_id,
       reference_produit: p.reference,
       designation: p.titre,
-      quantite: form.getValues(`lignes.${index}.quantite`) || 1,
+      quantite: form.getValues(`lignes.${index}.quantite`) || undefined,
       prix_unitaire: p.prix_vente,
       remise_pct: form.getValues(`lignes.${index}.remise_pct`) || 0,
       stock_produit: typeof p.stock === "number" ? p.stock : null,
