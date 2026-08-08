@@ -234,7 +234,6 @@ function ColisageDetailPage() {
           clientInfo={clientInfo}
           zonesDirectes={zonesDirectes}
           responsablesList={responsablesList}
-          livreursList={livreursList}
           modifiable={modifiable}
           hasColis={hasColis}
         />

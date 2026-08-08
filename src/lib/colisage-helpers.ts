@@ -88,8 +88,6 @@ export function buildEtiquettesPayload(
     responsable: c.responsable_nom,
     date: c.date_colisage ?? new Date().toISOString(),
     mode_acheminement: (c.mode_acheminement as ModeAcheminement) ?? "livraison",
-    livreur_nom: c.livreur_nom,
-    livreur_telephone: c.livreur_telephone,
     gare_depart: c.gare_depart,
     ville_destination: c.ville_destination,
     gare_responsable: c.gare_responsable,

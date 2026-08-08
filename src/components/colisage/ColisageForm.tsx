@@ -32,7 +32,7 @@ import {
   ColisageExpeditionFields,
 } from "./form/ColisageAcheminementFields";
 import { ColisageCartonsSection } from "./form/ColisageCartonsSection";
-import type { CartonState, Responsable, Livreur, ClientInfo } from "./form/colisage-form-types";
+import type { CartonState, Responsable, ClientInfo } from "./form/colisage-form-types";
 import { friendlyError } from "@/lib/friendly-error";
 import {
   livraisonSchema,
@@ -47,7 +47,6 @@ interface ColisageFormProps {
   clientInfo: ClientInfo;
   zonesDirectes?: ZonesDirectes;
   responsablesList: Responsable[];
-  livreursList: Livreur[];
   modifiable: boolean;
   hasColis: boolean;
 }
@@ -58,7 +57,6 @@ export function ColisageForm({
   clientInfo,
   zonesDirectes,
   responsablesList,
-  livreursList,
   modifiable,
   hasColis,
 }: ColisageFormProps) {

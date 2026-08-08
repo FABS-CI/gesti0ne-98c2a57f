@@ -197,9 +197,6 @@ export type ColisagePayload = {
   date_colisage?: string | null;
   mode_acheminement: ModeAcheminement;
   // livraison
-  livreur_nom?: string | null;
-  livreur_telephone?: string | null;
-  vehicule?: string | null;
   quartier?: string | null;
   commune?: string | null;
   ville_livraison?: string | null;
@@ -218,9 +215,6 @@ export type ColisRow = {
   destinataire: string | null;
   responsable_nom: string | null;
   mode_acheminement: string | null;
-  livreur_nom: string | null;
-  livreur_telephone: string | null;
-  vehicule: string | null;
   quartier: string | null;
   commune: string | null;
   ville_livraison: string | null;
