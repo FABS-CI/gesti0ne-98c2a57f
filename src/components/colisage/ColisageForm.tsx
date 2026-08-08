@@ -394,23 +394,7 @@ export function ColisageForm({
               modeManuel={modeManuel}
             />
 
-            {mode === "livraison" ? (
-              <ColisageLivraisonFields
-                quartier={quartier}
-                setQuartier={setQuartier}
-                commune={commune}
-                setCommune={(v) => {
-                  setCommune(v);
-                  clearFieldError("commune");
-                }}
-                villeLivraison={villeLivraison}
-                setVilleLivraison={(v) => {
-                  setVilleLivraison(v);
-                  clearFieldError("villeLivraison");
-                }}
-                errors={fieldErrors}
-              />
-            ) : (
+            {mode === "livraison" ? null : (
               <ColisageExpeditionFields
                 gareDepart={gareDepart}
                 setGareDepart={(v) => {
