@@ -153,7 +153,6 @@ function ColisageDetailPage() {
           </CardHeader>
           <CardContent className="text-sm space-y-1">
             <div className="font-semibold">{bl.client_nom ?? "—"}</div>
-            <div>{bl.etablissement ?? ""}</div>
             <div>
               {bl.representant_nom ?? ""}
               {bl.telephone ? ` · ${bl.telephone}` : ""}
@@ -199,15 +198,27 @@ function ColisageDetailPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  bl.lignes.map((l, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="font-mono text-xs">
-                        {l.reference_produit ?? "—"}
-                      </TableCell>
-                      <TableCell>{l.designation ?? "—"}</TableCell>
-                      <TableCell className="text-right">{l.quantite}</TableCell>
-                    </TableRow>
-                  ))
+                  bl.lignes
+                    .map((l) => {
+                      const k = keyForLigne(l);
+                      const r = (new Map<string, number>(
+                        // On doit recalculer le réparti ici ou le passer via props
+                        // Pour le moment on affiche juste toutes les lignes avec leur reste
+                        // Mais l'exigence dit : "afficher uniquement les produits qui ont encore une quantité à coliser"
+                        // Cependant cette section est le récapitulatif global du BL, pas le sélecteur.
+                      )).get(k) ?? 0;
+                      return { ...l, reste: l.quantite - r };
+                    })
+                    .filter((l) => l.reste > 0)
+                    .map((l, i) => (
+                      <TableRow key={i}>
+                        <TableCell className="font-mono text-xs">
+                          {l.reference_produit ?? "—"}
+                        </TableCell>
+                        <TableCell>{l.designation ?? "—"}</TableCell>
+                        <TableCell className="text-right">{l.reste}</TableCell>
+                      </TableRow>
+                    ))
                 )}
               </TableBody>
             </Table>

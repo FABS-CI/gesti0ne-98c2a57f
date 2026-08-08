@@ -155,16 +155,17 @@ export function ColisageCartonsSection({
                           optionsDisponibles
                             .filter((l) => {
                               const k = keyForLigne(l);
-                              const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
-                              return k === li.produit_id || dispo > 0;
+                              const dispoTotal = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
+                              const dispoLigne = k === li.produit_id ? dispoTotal + currentQte : dispoTotal;
+                              return dispoLigne > 0;
                             })
                             .map((l) => {
                               const k = keyForLigne(l);
-                              const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
-                              const affiche = k === li.produit_id ? dispo + currentQte : dispo;
+                              const dispoTotal = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
+                              const dispoAffiche = k === li.produit_id ? dispoTotal + currentQte : dispoTotal;
                               return (
                                 <SelectItem key={k} value={k}>
-                                  {l.designation} — reste {affiche} / {l.quantite}
+                                  {l.designation} — reste {dispoAffiche} / {l.quantite}
                                 </SelectItem>
                               );
                             })

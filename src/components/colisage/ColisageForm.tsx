@@ -70,9 +70,6 @@ export function ColisageForm({
   const [mode, setMode] = useState<ModeAcheminement>("livraison");
   const [modeManuel, setModeManuel] = useState(false);
 
-  const [livreurNom, setLivreurNom] = useState("");
-  const [livreurTel, setLivreurTel] = useState("");
-  const [vehicule, setVehicule] = useState("");
   const [quartier, setQuartier] = useState("");
   const [commune, setCommune] = useState("");
   const [villeLivraison, setVilleLivraison] = useState("");
@@ -243,7 +240,7 @@ export function ColisageForm({
     }
     const parsed =
       mode === "livraison"
-        ? livraisonSchema.safeParse({ livreurNom, livreurTel, vehicule, villeLivraison, commune })
+        ? livraisonSchema.safeParse({ villeLivraison, commune })
         : expeditionSchema.safeParse({ gareDepart, villeDest, gareResp, gareTel });
     if (!parsed.success) {
       const errs = zodToErrors(parsed.error);
@@ -261,9 +258,9 @@ export function ColisageForm({
       observations: observations || null,
       date_colisage: new Date().toISOString(),
       mode_acheminement: mode,
-      livreur_nom: mode === "livraison" ? livreurNom || null : null,
-      livreur_telephone: mode === "livraison" ? livreurTel || null : null,
-      vehicule: mode === "livraison" ? vehicule || null : null,
+      livreur_nom: null,
+      livreur_telephone: null,
+      vehicule: null,
       quartier: mode === "livraison" ? quartier || null : null,
       commune: mode === "livraison" ? commune || null : null,
       ville_livraison: mode === "livraison" ? villeLivraison || null : null,
@@ -404,22 +401,6 @@ export function ColisageForm({
 
             {mode === "livraison" ? (
               <ColisageLivraisonFields
-                livreursList={livreursList}
-                livreurNom={livreurNom}
-                setLivreurNom={(v) => {
-                  setLivreurNom(v);
-                  clearFieldError("livreurNom");
-                }}
-                livreurTel={livreurTel}
-                setLivreurTel={(v) => {
-                  setLivreurTel(v);
-                  clearFieldError("livreurTel");
-                }}
-                vehicule={vehicule}
-                setVehicule={(v) => {
-                  setVehicule(v);
-                  clearFieldError("vehicule");
-                }}
                 quartier={quartier}
                 setQuartier={setQuartier}
                 commune={commune}
