@@ -12,7 +12,7 @@ import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 // throw en SSR au lieu de retomber sur le fallback (cf. TanStack search-params
 // guidance). On valide comme string libre et on clamp côté composant.
 const layoutSearchSchema = z.object({
-  periode: z.string().or(z.number()).optional().catch("30"),
+  periode: z.any().optional().catch("30"),
 });
 
 export const Route = createFileRoute("/_authenticated")({
