@@ -21,7 +21,8 @@ export const Route = createFileRoute("/_authenticated/commandes/nouvelle")({
 });
 
 function CommandeNouvellePage() {
-  const { clientId: presetClientId } = Route.useSearch();
+  const search = Route.useSearch();
+  const presetClientId = search.clientId;
   const { has, isLoading: permLoading } = usePermissions();
   const canManage = has("commandes.creer");
 
