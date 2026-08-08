@@ -157,7 +157,7 @@ function ColisageDetailPage() {
               {bl.representant_nom ?? ""}
               {bl.telephone ? ` · ${bl.telephone}` : ""}
             </div>
-            <div>{[bl.adresse, bl.ville].filter(Boolean).join(", ")}</div>
+            <div>{bl.ville ?? ""}</div>
           </CardContent>
         </Card>
         <Card>
