@@ -375,8 +375,11 @@ export class BaseDocument {
       const txt = col.label.toUpperCase();
       const txtW = this.fonts.bold.widthOfTextAtSize(txt, 8);
       let headerX = x + (col.width - txtW) / 2;
-      if (col.key === 'designation' || col.key === 'code') headerX = x + 5;
-      else if (col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct') headerX = x + col.width - txtW - 5;
+      if (col.key === 'designation' || col.key === 'code') {
+        headerX = x + 5;
+      } else if (col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct') {
+        headerX = x + col.width - txtW - 5;
+      }
       
       this.page.drawText(txt, {
         x: headerX,
