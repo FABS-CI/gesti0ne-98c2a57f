@@ -172,7 +172,7 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
           <div style={{ color: "#333", fontSize: "10pt", marginBottom: "1mm" }}>Responsable Achat</div>
           <div style={{ fontWeight: 800, fontSize: "14pt" }}>
             {data.representant ?? "—"}
-            {data.telephone ? ` · ${data.telephone}` : ""}
+            {telephone ? ` · ${telephone}` : ""}
           </div>
           <div style={{ marginTop: "2mm", fontSize: "14pt", fontWeight: 700, textTransform: "uppercase" }}>
             {data.ville || "—"}
