@@ -136,7 +136,7 @@ export function FNESettingsPanel() {
           {
             reference: "TEST",
             description: `Test ${template}`,
-            quantity: 1,
+            quantity: undefined as any,
             amount: 1000,
             taxes: ["TVA"],
           },

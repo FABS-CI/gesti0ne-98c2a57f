@@ -39,7 +39,7 @@ export function LignesSection({ form, fa, onProduitChange }: Props) {
       produit_id: "",
       reference_produit: "",
       designation: "",
-      quantite: 1,
+      quantite: undefined as any,
       prix_unitaire: 0,
       remise_pct: 0,
       etat_produit: "revendable",
@@ -99,7 +99,8 @@ export function LignesSection({ form, fa, onProduitChange }: Props) {
                         type="number"
                         min={1}
                         {...form.register(`lignes.${i}.quantite`, { valueAsNumber: true })}
-                        className="text-right"
+                        className="text-right w-24"
+                        placeholder=""
                       />
                       {err?.quantite && (
                         <p className="text-xs text-red-600 mt-1">{err.quantite.message}</p>

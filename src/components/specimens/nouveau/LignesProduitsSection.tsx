@@ -29,7 +29,7 @@ export function LignesProduitsSection({ form, fa, onProduitChange }: Props) {
       reference_produit: "",
       designation: "",
       stock_dispo: 0,
-      quantite: 1,
+      quantite: undefined as any,
     });
   return (
     <section className="rounded-md border bg-card p-5 space-y-4">
@@ -83,7 +83,9 @@ export function LignesProduitsSection({ form, fa, onProduitChange }: Props) {
                         min={1}
                         max={form.watch(`lignes.${i}.stock_dispo`) || undefined}
                         {...form.register(`lignes.${i}.quantite`, { valueAsNumber: true })}
-                        className="text-right"
+                        className="text-right w-24"
+                        placeholder=""
+                        onFocus={(e) => { if (e.target.value === "0") e.target.value = ""; }}
                       />
                       {err?.quantite && (
                         <p className="text-xs text-red-600 mt-1">{err.quantite.message}</p>

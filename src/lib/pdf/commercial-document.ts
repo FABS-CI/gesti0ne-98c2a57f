@@ -35,18 +35,20 @@ export class CommercialDocument extends BaseDocument {
     // Tableau
     const isBL = this.data.type === 'Bon de Livraison';
     const colonnes = [
-      { label: "N°", key: "num", width: 25 },
-      { label: "Code", key: "code", width: 65 },
-      { label: "Désignation", key: "designation", width: isBL ? 300 : 220 },
-      { label: "Qté", key: "qte", width: 40 },
+      { label: "N°", key: "num", width: 20 },
+      { label: "Code", key: "code", width: 60 },
+      { label: "Désignation", key: "designation", width: isBL ? 350 : 180 },
+      { label: "Qté", key: "qte", width: 35 },
     ];
     
     if (!isBL) {
-      colonnes.push({ label: "Prix Unitaire", key: "pu", width: 80 });
+      colonnes.push({ label: "Prix Unitaire", key: "pu", width: 75 });
       if (this.discountMode === 'A') {
-        colonnes.push({ label: "Remise (%)", key: "remisePct", width: 50 });
+        colonnes.push({ label: "Remise (%)", key: "remisePct", width: 45 });
       }
-      colonnes.push({ label: "Montant", key: "total", width: 80 });
+      // Le montant prend le reste de l'espace pour garantir la visibilité
+      const currentWidth = colonnes.reduce((acc, c) => acc + c.width, 0);
+      colonnes.push({ label: "Montant", key: "total", width: CONTENT_W - currentWidth });
     }
     
     // Conversion des lignes
