@@ -39,7 +39,7 @@ export function LignesSection({ form, fa, onProduitChange }: Props) {
       produit_id: "",
       reference_produit: "",
       designation: "",
-      quantite: 1,
+      quantite: undefined as any,
       prix_unitaire: 0,
       remise_pct: 0,
       etat_produit: "revendable",

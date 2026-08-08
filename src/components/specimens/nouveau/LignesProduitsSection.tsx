@@ -29,7 +29,7 @@ export function LignesProduitsSection({ form, fa, onProduitChange }: Props) {
       reference_produit: "",
       designation: "",
       stock_dispo: 0,
-      quantite: 1,
+      quantite: undefined as any,
     });
   return (
     <section className="rounded-md border bg-card p-5 space-y-4">
