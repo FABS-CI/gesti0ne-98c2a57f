@@ -81,6 +81,7 @@ export async function generateUnifiedAchatPDF(
   const totals = {
     sousTotal: data.totalVente || 0,
     remiseLignes: data.remiseLigneTotal || 0,
+    remiseLignesPct: data.remisePct || 0,
     remiseGlobale: data.remiseGlobale || 0,
     remiseGlobalePct: data.remiseGlobalePct || 0,
     tva: data.tva || 0,

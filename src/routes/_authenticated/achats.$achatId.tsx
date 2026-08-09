@@ -58,6 +58,19 @@ function AchatDetailPage() {
 
   const buildBlob = async () => {
     if (!achat) throw new Error("Approvisionnement introuvable");
+
+    // Calcul des totaux à partir des lignes pour garantir la cohérence (Audit point 7 & 10)
+    const totalBrut = lignes.reduce((s, l) => s + Number(l.quantite) * Number(l.prix_unitaire), 0);
+    const totalRemiseLignes = lignes.reduce((s, l) => {
+      const q = Number(l.quantite);
+      const p = Number(l.prix_unitaire);
+      const r = Number(l.remise_pct ?? 0);
+      return s + (q * p * r) / 100;
+    }, 0);
+
+    // Calcul du pourcentage moyen de remise (si homogène)
+    const remisePctMoyenne = totalBrut > 0 ? (totalRemiseLignes / totalBrut) * 100 : 0;
+
     return generateApprovisionnementPDF({
       id: achat.achat_id,
       br_id: achat.achat_id,
@@ -79,12 +92,13 @@ function AchatDetailPage() {
         remisePct: Number(l.remise_pct ?? 0),
         montant: Number(l.total_ligne),
       })),
-      totalVente: Number((achat as any).montant_brut || achat.montant),
-      remiseLigneTotal: Number((achat as any).total_remises_lignes || 0),
-      remiseGlobalePct: Number((achat as any).remise_globale_pct || 0),
-      remiseGlobale: Number((achat as any).remise_globale_montant || 0),
-      montantHT: Number((achat as any).montant_ht_net || achat.montant),
-      totalTTC: Number((achat as any).montant_ttc || achat.montant),
+      totalVente: totalBrut,
+      remiseLigneTotal: totalRemiseLignes,
+      remisePct: remisePctMoyenne,
+      remiseGlobalePct: 0,
+      remiseGlobale: 0,
+      montantHT: totalBrut - totalRemiseLignes,
+      totalTTC: totalBrut - totalRemiseLignes,
       montant: Number(achat.montant),
       notes: achat.notes ?? undefined,
     });
