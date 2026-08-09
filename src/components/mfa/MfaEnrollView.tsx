@@ -258,7 +258,7 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
 
               <Button 
                 onClick={onConfirm} 
-                disabled={busy || code.length !== 6} 
+                disabled={busy} 
                 className="w-full h-12 text-lg font-bold bg-green-600 hover:bg-green-700"
               >
                 {busy ? (
