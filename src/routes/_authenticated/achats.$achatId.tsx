@@ -79,9 +79,12 @@ function AchatDetailPage() {
         remisePct: Number(l.remise_pct ?? 0),
         montant: Number(l.total_ligne),
       })),
-      totalVente: Number(achat.montant),
-      montantHT: Number(achat.montant),
-      totalTTC: Number(achat.montant),
+      totalVente: Number((achat as any).montant_brut || achat.montant),
+      remiseLigneTotal: Number((achat as any).total_remises_lignes || 0),
+      remiseGlobalePct: Number((achat as any).remise_globale_pct || 0),
+      remiseGlobale: Number((achat as any).remise_globale_montant || 0),
+      montantHT: Number((achat as any).montant_ht_net || achat.montant),
+      totalTTC: Number((achat as any).montant_ttc || achat.montant),
       notes: achat.notes ?? undefined,
     });
   };

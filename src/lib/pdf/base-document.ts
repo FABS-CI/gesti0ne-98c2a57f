@@ -629,7 +629,8 @@ export class BaseDocument {
       row(`Remise (${this.totals.remiseGlobalePct} %)`, `- ${formatFCFA(this.totals.remiseGlobale)}`);
     }
 
-    row("NET À PAYER", formatFCFA(this.totals.totalAPayer), true, true);
+    const netLabel = this.data.type === "Bon de Réception" ? "MONTANT NET" : "NET À PAYER";
+    row(netLabel, formatFCFA(this.totals.totalAPayer), true, true);
 
     // Montant en lettres avec retour automatique à la ligne
     let letY = curY - 25;

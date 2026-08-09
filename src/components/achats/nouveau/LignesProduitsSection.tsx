@@ -73,103 +73,112 @@ export function LignesProduitsSection({
         </Button>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-14"></TableHead>
-            <TableHead className="w-[32%]">Produit</TableHead>
-            <TableHead>Référence</TableHead>
-            <TableHead className="text-right w-20">Qté *</TableHead>
-            <TableHead className="text-right w-28">Prix achat</TableHead>
-            <TableHead className="text-right w-24">Remise (%)</TableHead>
-            <TableHead className="text-right w-32">Total</TableHead>
-            <TableHead className="w-12" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {lignes.map((l, i) => (
-            <TableRow key={i}>
-              <TableCell>
-                <ProductCoverThumb 
-                  produit={{ 
-                    titre: l.designation, 
-                    cover_path: (l as any).cover_path, 
-                    cover_thumb_path: (l as any).cover_thumb_path 
-                  }} 
-                  size="xs" 
-                />
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-1">
-                  <div className="flex-1 min-w-0">
-                    <ProductSearchSelect
-                      value={l.produit_id}
-                      onChange={(_id, produit) => onPick(i, produit)}
-                    />
-                  </div>
-                  <Button aria-label="Créer un nouveau produit"
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    title="Créer un nouveau produit"
-                    onClick={() => onOpenQuickCreate(i)}
-                  >
-                    <PackagePlus className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
-              <TableCell className="font-mono text-xs select-all" title="Référence produit">{l.reference_produit || "—"}</TableCell>
-              <TableCell className="text-right">
-                <Input
-                  type="number"
-                  min={1}
-                  value={l.quantite ?? ""}
-                  onChange={(e) => onUpdate(i, { quantite: e.target.value === "" ? undefined as any : Number(e.target.value) })}
-                  className="text-right h-9"
-                />
-              </TableCell>
-              <TableCell className="text-right">
-                <Input
-                  type="number"
-                  min={0}
-                  value={l.prix_unitaire ?? ""}
-                  onChange={(e) => onUpdate(i, { prix_unitaire: e.target.value === "" ? undefined as any : Number(e.target.value) })}
-                  className="text-right h-9"
-                />
-              </TableCell>
-              <TableCell className="text-right">
-                <Input
-                  type="number"
-                  min={0}
-                  max={100}
-                  step="0.01"
-                  value={l.remise_pct ?? ""}
-                  onChange={(e) =>
-                    onUpdate(i, {
-                      remise_pct: e.target.value === "" ? undefined as any : Math.min(Math.max(Number(e.target.value), 0), 100),
-                    })
-                  }
-                  className="text-right h-9"
-                />
-              </TableCell>
-              <TableCell className="text-right font-semibold">
-                {formatFCFA(montantLigne(l))}
-              </TableCell>
-              <TableCell>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onRemove(i)}
-                  disabled={lignes.length === 1}
-                >
-                  <Trash2 className="h-4 w-4 text-red-600" />
-                </Button>
-              </TableCell>
+      <div className="overflow-x-auto -mx-5 px-5">
+        <Table className="min-w-[800px]">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-14"></TableHead>
+              <TableHead className="w-[30%]">Produit</TableHead>
+              <TableHead className="w-32">Référence</TableHead>
+              <TableHead className="text-right w-24">Qté *</TableHead>
+              <TableHead className="text-right w-36">Prix achat</TableHead>
+              <TableHead className="text-right w-28">Remise (%)</TableHead>
+              <TableHead className="text-right w-40">Total</TableHead>
+              <TableHead className="w-12" />
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {lignes.map((l, i) => (
+              <TableRow key={i}>
+                <TableCell>
+                  <ProductCoverThumb 
+                    produit={{ 
+                      titre: l.designation, 
+                      cover_path: (l as any).cover_path, 
+                      cover_thumb_path: (l as any).cover_thumb_path 
+                    }} 
+                    size="xs" 
+                  />
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-1 min-w-[200px]">
+                    <div className="flex-1 min-w-0">
+                      <ProductSearchSelect
+                        value={l.produit_id}
+                        onChange={(_id, produit) => onPick(i, produit)}
+                      />
+                    </div>
+                    <Button aria-label="Créer un nouveau produit"
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      title="Créer un nouveau produit"
+                      onClick={() => onOpenQuickCreate(i)}
+                      className="h-10 w-10 shrink-0"
+                    >
+                      <PackagePlus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell className="font-mono text-xs select-all whitespace-nowrap overflow-hidden text-ellipsis" title={l.reference_produit || "—"}>
+                  {l.reference_produit || "—"}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Input
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    value={l.quantite ?? ""}
+                    onChange={(e) => onUpdate(i, { quantite: e.target.value === "" ? undefined as any : Number(e.target.value) })}
+                    className="text-right h-10 w-full min-w-[70px] text-base"
+                  />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    min={0}
+                    value={l.prix_unitaire ?? ""}
+                    onChange={(e) => onUpdate(i, { prix_unitaire: e.target.value === "" ? undefined as any : Number(e.target.value) })}
+                    className="text-right h-10 w-full min-w-[100px] text-base"
+                  />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    min={0}
+                    max={100}
+                    step="0.01"
+                    value={l.remise_pct ?? ""}
+                    onChange={(e) =>
+                      onUpdate(i, {
+                        remise_pct: e.target.value === "" ? undefined as any : Math.min(Math.max(Number(e.target.value), 0), 100),
+                      })
+                    }
+                    className="text-right h-10 w-full min-w-[80px] text-base"
+                  />
+                </TableCell>
+                <TableCell className="text-right font-semibold whitespace-nowrap min-w-[120px]">
+                  {formatFCFA(montantLigne(l))}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRemove(i)}
+                    disabled={lignes.length === 1}
+                    className="h-10 w-10"
+                  >
+                    <Trash2 className="h-4 w-4 text-red-600" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
       <div className="flex justify-end gap-6 border-t pt-4 text-sm">
         <span className="text-muted-foreground">
