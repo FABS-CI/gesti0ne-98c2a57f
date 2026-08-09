@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { mfaEnrollStart, mfaEnrollConfirm } from "@/lib/mfa.functions";
 
 
-export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: string, onSuccess?: () => void }) {
+export function MfaEnrollView({ targetUserId, targetUserLabel, onSuccess }: { targetUserId?: string, targetUserLabel?: string, onSuccess?: () => void }) {
   const start = useServerFn(mfaEnrollStart);
   const confirm = useServerFn(mfaEnrollConfirm);
   const navigate = useNavigate();
