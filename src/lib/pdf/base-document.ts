@@ -567,12 +567,12 @@ export class BaseDocument {
       this.page.drawLine({ start: { x, y }, end: { x: PAGE.w - MARGINS.x, y }, color: COLORS.grisLigne, thickness: 1 });
     };
 
-    let totalRows = 1; // Montant brut HT
+    let totalRows = 1; // Montant brut
     if (this.totals.remiseLignes) totalRows++;
     if (this.totals.remiseGlobale) totalRows++;
     if (this.totals.tva) totalRows++;
     if (this.totals.frais) totalRows++;
-    totalRows++; // Total à payer
+    totalRows++; // Net à payer
 
     drawTotalBoxBorders(totalRows * 20);
 
@@ -618,7 +618,8 @@ export class BaseDocument {
       curY -= 20;
     };
 
-    row("Montant brut HT", formatFCFA(this.totals.sousTotal));
+    const brutLabel = this.data.type === "Bon de Réception" ? "Montant brut" : "Montant brut HT";
+    row(brutLabel, formatFCFA(this.totals.sousTotal));
     
     if (this.totals.remiseLignes) {
       const pct = this.totals.remiseLignesPct ? ` (${this.totals.remiseLignesPct.toFixed(2)} %)` : "";

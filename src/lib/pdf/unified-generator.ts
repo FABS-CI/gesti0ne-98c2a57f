@@ -31,10 +31,10 @@ export async function generateUnifiedCommercialPDF(
   const totals = {
     sousTotal: data.totalVente || 0,
     remiseLignes: data.remiseLigneTotal || 0,
-    remiseGlobale: data.remiseGlobale || 0,
-    remiseGlobalePct: data.remiseGlobalePct || 0,
+    remiseGlobale: data.remiseGlobale || data.remise || 0,
+    remiseGlobalePct: data.remiseGlobalePct || data.remisePct || 0,
     tva: data.tva || 0,
-    totalAPayer: data.totalTTC || data.montantHT || 0,
+    totalAPayer: data.totalTTC || data.montantHT || data.totalVente || 0,
     montantLettres: (data as any).montantLettres || (data as any).montantEnLettres || numberToLetters(data.totalTTC || data.montantHT || 0),
   };
 
