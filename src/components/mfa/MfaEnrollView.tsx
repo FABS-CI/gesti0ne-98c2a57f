@@ -40,14 +40,7 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
     setError(null);
     setStep("loading");
     
-    // Si targetUserId ressemble à un UUID, c'est l'ID réel pour l'API.
-    // Sinon (si c'est un nom/email passé pour l'affichage), on ne le passe pas tel quel à l'API.
-    // Idéalement on devrait passer l'ID réel séparement du label, mais modifions MfaEnrollView 
-    // pour accepter targetUserLabel et targetUserId.
-    // Pour l'instant, on suppose que targetUserId est l'ID technique.
-    const technicalId = (targetUserId && targetUserId.includes("-")) ? targetUserId : undefined;
-    
-    start({ data: { targetUserId: technicalId } })
+    start({ data: { targetUserId } })
       .then(async (r) => {
         if (!active) return;
         setOtpauth(r.otpauthUrl);
@@ -121,7 +114,7 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
             <span>🟢 MFA ACTIVÉ AVEC SUCCÈS</span>
           </CardTitle>
           <div className="mt-1">
-            <p className="text-sm font-medium text-slate-700">Utilisateur : {targetUserId || "Vous"}</p>
+            <p className="text-sm font-medium text-slate-700">Utilisateur : {targetUserLabel || targetUserId || "Vous"}</p>
           </div>
         </CardHeader>
         
@@ -188,7 +181,7 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
           <span>🔐 CONFIGURATION DE L'AUTHENTIFICATION</span>
         </CardTitle>
         <div className="mt-1 flex flex-col gap-1">
-          <p className="text-sm font-medium text-slate-700">Utilisateur : {targetUserId || "Vous"}</p>
+          <p className="text-sm font-medium text-slate-700">Utilisateur : {targetUserLabel || targetUserId || "Vous"}</p>
           {targetUserId && (
             <Alert className="bg-blue-50 border-blue-200 py-2">
               <AlertCircle className="h-3.5 w-3.5 text-blue-600" />
