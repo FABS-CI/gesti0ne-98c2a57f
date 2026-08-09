@@ -704,6 +704,34 @@ export function UsersAdmin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!mfaResetTarget} onOpenChange={(open) => !open && setMfaResetTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Réinitialiser le MFA ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous certain de vouloir réinitialiser le MFA de l'utilisateur{" "}
+              <strong>{mfaResetTarget?.nom_complet || mfaResetTarget?.email}</strong> ?
+              <br /><br />
+              • Cette action réinitialisera uniquement le MFA.<br />
+              • Le compte, le rôle et les données métier ne seront pas modifiés.<br />
+              • L'utilisateur devra configurer à nouveau son MFA lors de sa prochaine connexion.<br />
+              • Cette action sera enregistrée dans le journal d'audit.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-orange-600 hover:bg-orange-700"
+              onClick={() => mfaResetMutation.mutate(mfaResetTarget!.id)}
+              disabled={mfaResetMutation.isPending}
+            >
+              {mfaResetMutation.isPending ? "Réinitialisation..." : "Confirmer la réinitialisation"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
+
