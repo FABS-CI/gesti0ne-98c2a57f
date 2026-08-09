@@ -99,7 +99,7 @@ export function LignesSection({ form, fa, onProduitChange }: Props) {
                         type="number"
                         min={1}
                         {...form.register(`lignes.${i}.quantite`, { valueAsNumber: true })}
-                        className="text-right w-24"
+                        className="text-right w-full sm:w-24 h-10"
                         placeholder=""
                       />
                       {err?.quantite && (
@@ -112,7 +112,7 @@ export function LignesSection({ form, fa, onProduitChange }: Props) {
                         min={0}
                         step={1}
                         {...form.register(`lignes.${i}.prix_unitaire`, { valueAsNumber: true })}
-                        className="text-right"
+                        className="text-right h-10 min-w-[100px]"
                       />
                     </TableCell>
                     <TableCell className="text-right">
@@ -122,7 +122,7 @@ export function LignesSection({ form, fa, onProduitChange }: Props) {
                         max={100}
                         step={0.01}
                         {...form.register(`lignes.${i}.remise_pct`, { valueAsNumber: true })}
-                        className="text-right"
+                        className="text-right h-10 min-w-[80px]"
                       />
                       {err?.remise_pct && (
                         <p className="text-xs text-red-600 mt-1">{err.remise_pct.message}</p>

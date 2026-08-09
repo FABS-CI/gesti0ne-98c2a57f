@@ -162,7 +162,7 @@ export function LignesSection({
                           name={`lignes.${i}.prix_unitaire`}
                           step="0.01"
                           min={0}
-                          className="text-right h-8 px-1"
+                          className="text-right h-10 px-1 min-w-[100px]"
                         />
                       </TableCell>
                       <TableCell className="text-right">
@@ -172,7 +172,7 @@ export function LignesSection({
                           step="0.01"
                           min={0}
                           max={100}
-                          className="text-right h-8 px-1"
+                          className="text-right h-10 px-1 min-w-[80px]"
                           disabled={remiseEnLigneDisabled}
                         />
                         {err?.remise_pct && (
@@ -188,7 +188,7 @@ export function LignesSection({
                           name={`lignes.${i}.quantite`}
                           integer
                            min={0}
-                          className={`text-right h-8 px-1 ${over ? "border-destructive" : ""}`}
+                          className={`text-right h-10 px-1 min-w-[80px] ${over ? "border-destructive" : ""}`}
                         />
                       </TableCell>
                       <TableCell className="text-right text-muted-foreground py-3">

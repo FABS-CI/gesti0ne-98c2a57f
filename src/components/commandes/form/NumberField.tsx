@@ -48,6 +48,7 @@ export function NumberField({
           <Input
             type="text"
             placeholder=""
+            className={cn("text-base md:text-base h-10", className)}
             inputMode={inputMode ?? (integer ? "numeric" : "decimal")}
             pattern={integer ? "[0-9]*" : "[0-9]*[.,]?[0-9]*"}
             value={displayed}
