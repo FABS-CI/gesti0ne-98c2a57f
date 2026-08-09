@@ -70,13 +70,28 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
       toast.success("MFA activé");
     } catch (e: any) {
       console.error("MFA Confirm Error:", e);
-      // Extraire le message d'erreur réel s'il s'agit d'une erreur TanStack ServerFn
-      const errorMsg = e?.message || (typeof e === 'string' ? e : "Code de vérification incorrect");
+      let errorMsg = "Code de vérification incorrect";
+      
+      // Extraction du message d'erreur pour TanStack ServerFn
+      if (e?.message) {
+        try {
+          const parsed = JSON.parse(e.message);
+          if (Array.isArray(parsed) && parsed[0]?.message) {
+            errorMsg = parsed[0].message;
+          } else {
+            errorMsg = e.message;
+          }
+        } catch {
+          errorMsg = e.message;
+        }
+      }
+      
       setError(errorMsg);
     } finally {
       setBusy(false);
     }
   }
+
 
 
   function downloadCodes() {
