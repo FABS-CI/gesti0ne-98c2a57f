@@ -3101,14 +3101,9 @@ async function legacy_generateEtatCompteClientPDF(data: EtatCompteData): Promise
         // Coloration en rouge pour les lignes de type retour/avoir dans l'historique
         const isMvtTable = cols.length === 7;
         const isRetourRow = isMvtTable && rows[i][1] === "Retour / Avoir";
-        const color = isRetourRow ? FABS_COLORS.rouge : undefined;
-
-        if (c.align === "right") textRight(ctx, val, x1, ty, { size: 7, bold, color });
-        else text(ctx, val, x0 + 3, ty, { size: 7, bold, color });
-      });
-    }
-
-    if (opts?.footerRow) {
+export async function generateApprovisionnementPDF(data: DocBase): Promise<Blob> {
+  return generateUnifiedAchatPDF(data);
+}
       await ensureSpace(rowH + 4, "État de Compte (suite)");
       y -= rowH;
       ctx.page.drawRectangle({

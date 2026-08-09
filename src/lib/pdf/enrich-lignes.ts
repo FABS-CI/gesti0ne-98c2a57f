@@ -155,7 +155,7 @@ export type DocClientInfo = Pick<
   | "communeClient"
   | "paysClient"
   | "ncc"
->;
+> & { modePaiement?: string };
 
 export async function loadClientDocInfo(
   clientId: string | null | undefined,
