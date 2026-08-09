@@ -179,14 +179,25 @@ function RootComponent() {
     // Lot 5 — Web Vitals (best-effort, ne bloque jamais le rendu)
     import("../lib/web-vitals-reporter").then((m) => m.installWebVitals()).catch(() => {});
 
-    // PWA Service Worker Registration
+    // PWA Service Worker Registration (avec auto-mise à jour)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('SW registered: ', registration);
+        registration.update().catch(() => {});
+        registration.addEventListener('updatefound', () => {
+          const sw = registration.installing;
+          if (!sw) return;
+          sw.addEventListener('statechange', () => {
+            // Nouveau SW actif alors qu'une ancienne version contrôlait la page
+            if (sw.state === 'activated' && navigator.serviceWorker.controller) {
+              window.location.reload();
+            }
+          });
+        });
       }).catch(registrationError => {
         console.log('SW registration failed: ', registrationError);
       });
     }
+
   }, []);
 
 
