@@ -225,15 +225,62 @@ export async function generateRapportIncidentsPDF(data: RapportIncidentsData): P
 // ----------------------------------------------------------------------------
 
 /** Déclenche le téléchargement direct d'un Blob PDF. */
+function blobToBase64(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const res = String(reader.result ?? "");
+      resolve(res.slice(res.indexOf(",") + 1));
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+/**
+ * Téléchargement d'un PDF robuste :
+ * 1. Pont natif Android (WebView Capacitor) si disponible ;
+ * 2. msSaveOrOpenBlob (legacy) ;
+ * 3. Ancre <a download> ;
+ * 4. Repli : ouverture du blob dans un nouvel onglet (navigateurs mobiles
+ *    qui ignorent l'attribut download, ex. Brave/Android).
+ */
 export function downloadBlob(blob: Blob, filename: string): void {
+  if (typeof window === "undefined") return;
+
+  const bridge = (window as any).AndroidFileSaver;
+  if (bridge?.saveBase64) {
+    blobToBase64(blob)
+      .then((b64) => bridge.saveBase64(filename, b64, blob.type || "application/pdf"))
+      .catch(() => {
+        /* noop */
+      });
+    return;
+  }
+
+  const nav = window.navigator as any;
+  if (nav?.msSaveOrOpenBlob) {
+    nav.msSaveOrOpenBlob(blob, filename);
+    return;
+  }
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
+  const supportsDownload = "download" in a;
   a.href = url;
   a.download = filename;
+  a.rel = "noopener";
+  a.target = "_blank";
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 100);
+
+  if (!supportsDownload) {
+    // Certains WebView/navigateurs mobiles ignorent le clic programmé.
+    window.open(url, "_blank");
+  }
+
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
 /** Génère un nom de fichier standardisé. */
