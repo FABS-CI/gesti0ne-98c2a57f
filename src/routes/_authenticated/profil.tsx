@@ -28,13 +28,21 @@ export const Route = createFileRoute("/_authenticated/profil")({
 
 function Profil() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const statusFn = useServerFn(mfaStatus);
   const [nom, setNom] = useState("");
   const [saving, setSaving] = useState(false);
   const [pwd, setPwd] = useState("");
   const [pwdSaving, setPwdSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const { data: mfa } = useQuery({
+    queryKey: ["mfa-status"],
+    queryFn: () => statusFn(),
+  });
+
 
   const { data: profile, refetch } = useQuery({
     queryKey: ["my-profile", user?.id],
