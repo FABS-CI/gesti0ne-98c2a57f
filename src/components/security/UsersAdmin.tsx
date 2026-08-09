@@ -30,6 +30,7 @@ import {
   secUpdateUser,
 } from "@/lib/security-users.functions";
 import { mfaResetUser } from "@/lib/mfa.functions";
+import { MfaEnrollView } from "@/components/mfa/MfaEnrollView";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -165,6 +166,7 @@ export function UsersAdmin() {
   const [pwdTarget, setPwdTarget] = useState<UserRow | null>(null);
   const [pwdValue, setPwdValue] = useState("");
   const [mfaResetTarget, setMfaResetTarget] = useState<UserRow | null>(null);
+  const [mfaEnrollTarget, setMfaEnrollTarget] = useState<UserRow | null>(null);
 
   const rows = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -406,9 +408,19 @@ export function UsersAdmin() {
                           🟢 Activé
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
-                          🟠 Non configuré
-                        </Badge>
+                        <>
+                          <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
+                            🟠 Non configuré
+                          </Badge>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-7 px-2 text-[10px] text-orange-600 hover:text-orange-700 hover:bg-orange-100/50 mt-1 block"
+                            onClick={() => setMfaEnrollTarget(u)}
+                          >
+                            [Configurer MFA]
+                          </Button>
+                        </>
                       )}
                     </TableCell>
                     <TableCell>
@@ -434,13 +446,24 @@ export function UsersAdmin() {
                           <DropdownMenuItem onClick={() => setPwdTarget(u)}>
                             <KeyRound className="mr-2 h-4 w-4" /> Réinitialiser le mot de passe
                           </DropdownMenuItem>
-                          {u.mfa_enrolled_at && !u.role_codes.includes("super_admin") && (
-                            <DropdownMenuItem 
-                              className="text-orange-600"
-                              onClick={() => setMfaResetTarget(u)}
-                            >
-                              <ShieldOff className="mr-2 h-4 w-4" /> Réinitialiser le MFA
-                            </DropdownMenuItem>
+                          {u.mfa_enrolled_at ? (
+                            !u.role_codes.includes("super_admin") && (
+                              <DropdownMenuItem 
+                                className="text-orange-600"
+                                onClick={() => setMfaResetTarget(u)}
+                              >
+                                <ShieldOff className="mr-2 h-4 w-4" /> Réinitialiser le MFA
+                              </DropdownMenuItem>
+                            )
+                          ) : (
+                            !u.role_codes.includes("super_admin") && (
+                              <DropdownMenuItem 
+                                className="text-primary font-bold"
+                                onClick={() => setMfaEnrollTarget(u)}
+                              >
+                                <ShieldCheck className="mr-2 h-4 w-4" /> Configurer le MFA
+                              </DropdownMenuItem>
+                            )
                           )}
                           <DropdownMenuSeparator />
 
@@ -750,6 +773,20 @@ export function UsersAdmin() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={!!mfaEnrollTarget} onOpenChange={(open) => !open && setMfaEnrollTarget(null)}>
+        <DialogContent className="max-w-2xl p-0 overflow-hidden border-none bg-transparent shadow-none sm:max-w-2xl">
+          {mfaEnrollTarget && (
+            <MfaEnrollView 
+              targetUserId={mfaEnrollTarget.id} 
+              onSuccess={() => {
+                setMfaEnrollTarget(null);
+                invalidate();
+              }} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

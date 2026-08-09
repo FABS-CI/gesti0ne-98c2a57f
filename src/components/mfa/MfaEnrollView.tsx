@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { mfaEnrollStart, mfaEnrollConfirm } from "@/lib/mfa.functions";
 
 
-export function MfaEnrollView() {
+export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: string, onSuccess?: () => void }) {
   const start = useServerFn(mfaEnrollStart);
   const confirm = useServerFn(mfaEnrollConfirm);
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ export function MfaEnrollView() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    start()
+    start({ data: { targetUserId } })
       .then(async (r) => {
         setOtpauth(r.otpauthUrl);
         setSecret(r.secret);
@@ -44,7 +44,7 @@ export function MfaEnrollView() {
         setStep("scan");
       })
       .catch((e) => setError(String(e?.message ?? e)));
-  }, [start]);
+  }, [start, targetUserId]);
 
   const backupText = useMemo(() => backup.join("\n"), [backup]);
 
@@ -52,7 +52,7 @@ export function MfaEnrollView() {
     setBusy(true);
     setError(null);
     try {
-      const r = await confirm({ data: { code } });
+      const r = await confirm({ data: { code, targetUserId } });
       setBackup(r.backupCodes);
       setStep("done");
       toast.success("MFA activé");
@@ -128,7 +128,7 @@ export function MfaEnrollView() {
             </Button>
           </div>
 
-          <Button variant="default" className="w-full h-12 text-lg font-bold mt-4" onClick={() => navigate({ to: "/" })}>
+          <Button variant="default" className="w-full h-12 text-lg font-bold mt-4" onClick={() => onSuccess ? onSuccess() : navigate({ to: "/" })}>
             J'AI ENREGISTRÉ MES CODES
           </Button>
         </CardContent>
@@ -145,6 +145,14 @@ export function MfaEnrollView() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-8">
+        {targetUserId && (
+          <Alert className="bg-blue-50 border-blue-200">
+            <AlertCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800 text-sm font-medium">
+              Configuration du MFA pour un autre utilisateur. L'utilisateur devra scanner ce code.
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="space-y-6">
           <div className="space-y-4">
             <h3 className="font-bold flex items-center gap-2 text-lg">

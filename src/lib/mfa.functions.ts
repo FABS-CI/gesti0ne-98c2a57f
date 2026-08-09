@@ -49,16 +49,32 @@ function bearerRaw(): string {
 /** Démarre l'enrôlement : génère un secret TOTP et l'URL otpauth (QR). */
 export const mfaEnrollStart = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { supabase, userId, claims } = context;
-    const email = (claims.email as string | undefined) ?? userId;
+  .inputValidator((input) => z.object({ targetUserId: z.string().uuid().optional() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId: actorId, claims } = context;
+    const targetId = data.targetUserId ?? actorId;
+
+    if (targetId !== actorId) {
+      const { data: superAdminFlag } = await supabase.rpc("has_role_compat", {
+        _user_id: actorId,
+        _role: "super_admin",
+      });
+      if (!superAdminFlag) throw new Error("Permission refusée");
+    }
+
+    let targetEmail = (claims.email as string | undefined) ?? actorId;
+    if (targetId !== actorId) {
+      const { data: prof } = await supabase.from("profiles").select("email").eq("id", targetId).maybeSingle();
+      if (prof?.email) targetEmail = prof.email;
+    }
+
     const secret = new Secret({ size: 20 }).base32;
-    const totp = buildTotp(secret, email);
+    const totp = buildTotp(secret, targetEmail);
     
     const { error } = await supabase
       .from("two_fa_secrets")
       .upsert(
-        { user_id: userId, secret_chiffre: secret, active: false, codes_recuperation: null },
+        { user_id: targetId, secret_chiffre: secret, active: false },
         { onConflict: "user_id" },
       );
     if (error) throw new Error(error.message);
@@ -68,46 +84,70 @@ export const mfaEnrollStart = createServerFn({ method: "POST" })
 /** Confirme l'enrôlement : vérifie 1er code, active MFA, génère les backup codes. */
 export const mfaEnrollConfirm = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((raw) => z.object({ code: z.string().regex(/^\d{6}$/) }).parse(raw))
+  .inputValidator((raw) => z.object({ 
+    code: z.string().regex(/^\d{6}$/),
+    targetUserId: z.string().uuid().optional()
+  }).parse(raw))
   .handler(async ({ data, context }) => {
-    const { supabase, userId, claims } = context;
-    const email = (claims.email as string | undefined) ?? userId;
+    const { supabase, userId: actorId, claims } = context;
+    const targetId = data.targetUserId ?? actorId;
+
+    if (targetId !== actorId) {
+      const { data: superAdminFlag } = await supabase.rpc("has_role_compat", {
+        _user_id: actorId,
+        _role: "super_admin",
+      });
+      if (!superAdminFlag) throw new Error("Permission refusée");
+    }
+
+    let targetEmail = (claims.email as string | undefined) ?? actorId;
+    if (targetId !== actorId) {
+      const { data: prof } = await supabase.from("profiles").select("email").eq("id", targetId).maybeSingle();
+      if (prof?.email) targetEmail = prof.email;
+    }
+
     const { data: row, error } = await supabase
       .from("two_fa_secrets")
       .select("secret_chiffre, active")
-      .eq("user_id", userId)
+      .eq("user_id", targetId)
       .maybeSingle();
     
     if (error) throw new Error(error.message);
     if (!row) throw new Error("Enrôlement non initié");
     
-    const totp = buildTotp(row.secret_chiffre, email);
+    const totp = buildTotp(row.secret_chiffre, targetEmail);
     const delta = totp.validate({ token: data.code, window: 1 });
     if (delta === null) throw new Error("Code invalide");
 
     const upd = await supabase
       .from("two_fa_secrets")
       .update({ active: true })
-      .eq("user_id", userId);
+      .eq("user_id", targetId);
     if (upd.error) throw new Error(upd.error.message);
     
     const profUpd = await supabase
       .from("profiles")
       .update({ mfa_enrolled_at: new Date().toISOString() })
-      .eq("id", userId);
+      .eq("id", targetId);
     if (profUpd.error) throw new Error(profUpd.error.message);
 
     const plain: string[] = Array.from({ length: BACKUP_COUNT }, genBackupCode);
-    await supabase.from("mfa_backup_codes").delete().eq("user_id", userId);
+    
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const db = supabaseAdmin;
+
+    await db.from("mfa_backup_codes").delete().eq("user_id", targetId);
     const rows = await Promise.all(
-      plain.map(async (c) => ({ user_id: userId, code_hash: await bcrypt.hash(c, 10) })),
+      plain.map(async (c) => ({ user_id: targetId, code_hash: await bcrypt.hash(c, 10) })),
     );
-    const ins = await supabase.from("mfa_backup_codes").insert(rows);
+    const ins = await db.from("mfa_backup_codes").insert(rows);
     if (ins.error) throw new Error(ins.error.message);
 
-    await supabase
-      .from("mfa_session_validations")
-      .insert({ user_id: userId, session_token: sessionKey(claims, bearerRaw()) });
+    if (targetId === actorId) {
+      await supabase
+        .from("mfa_session_validations")
+        .insert({ user_id: actorId, session_token: sessionKey(claims, bearerRaw()) });
+    }
 
     return { backupCodes: plain };
   });
