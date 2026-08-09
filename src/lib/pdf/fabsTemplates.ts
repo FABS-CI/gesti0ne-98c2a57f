@@ -90,18 +90,6 @@ export type DocBase = {
   factureMontantPayeAvant?: number | null;
   observations?: string | null;
   devise?: string;
-  clientNom?: string | null;
-  clientTel?: string | null;
-  codeClient?: string | null;
-  representant?: string | null;
-  representantTel?: string | null;
-  emailClient?: string | null;
-  adresseClient?: string | null;
-  villeClient?: string | null;
-  communeClient?: string | null;
-  paysClient?: string | null;
-  ncc?: string | null;
-  modePaiement?: string | null;
 };
 
 export type EtatCompteLigne = {
