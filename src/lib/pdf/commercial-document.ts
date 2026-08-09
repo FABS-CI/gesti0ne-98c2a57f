@@ -78,6 +78,9 @@ export class CommercialDocument extends BaseDocument {
       y = this.drawTotals(y);
     }
     
+    // Notes / Observations
+    y = this.drawNotes(y);
+    
     // Montant impayé retiré à la demande de l'utilisateur
     // if (this.data.type === 'Facture' && (this.data as any).soldeDu > 0) {
     //   y = this.drawImpaye(y, (this.data as any).soldeDu);

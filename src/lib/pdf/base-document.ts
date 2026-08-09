@@ -40,6 +40,7 @@ export type DocBase = {
   heure?: string;
   commercial?: string;
   statut?: string;
+  notes?: string;
   client: {
     nom: string;
     ville?: string;
@@ -48,6 +49,7 @@ export type DocBase = {
     telephone?: string;
     email?: string;
     code?: string;
+    modePaiement?: string;
   };
 };
 
@@ -218,6 +220,10 @@ export class BaseDocument {
       { l: "Date", v: this.data.date.includes('T') ? this.data.date.split('T')[0].split('-').reverse().join('/') : this.data.date },
       { l: "Heure", v: this.data.heure ?? new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }) },
     ];
+    
+    if (this.data.type === "Bon de Réception" && this.data.statut) {
+      details.push({ l: "Statut", v: this.data.statut });
+    }
 
     // Sans le cartouche de référence, on remonte la date/heure pour éviter tout vide
     const detailsTop = isStatement ? cartY - 8 : cartY - 32;
@@ -302,6 +308,7 @@ export class BaseDocument {
   }
 
   async drawClientAndQr(y: number): Promise<number> {
+    const isBR = this.data.type === "Bon de Réception";
     const boxH = 90;
     const boxW = (CONTENT_W - 15) / 2;
     
@@ -314,7 +321,7 @@ export class BaseDocument {
       color: COLORS.grisClair,
       opacity: 0.5,
     });
-    this.page.drawText("FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
+    this.page.drawText(isBR ? "FOURNISSEUR" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
     this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 12, font: this.fonts.bold, color: COLORS.bleuFabs });
     
     const kv = [
@@ -322,6 +329,9 @@ export class BaseDocument {
       { l: "Représentant", v: this.data.client.representant ?? "—" },
       { l: "Téléphone", v: this.data.client.telephone ?? "—" },
     ];
+    if (this.data.client.modePaiement) {
+      kv.push({ l: "Paiement", v: this.data.client.modePaiement });
+    }
     kv.forEach((item, i) => {
       this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: y - 48 - i * 11, size: 8, font: this.fonts.regular });
       this.page.drawText(item.v, { x: MARGINS.x + 80, y: y - 48 - i * 11, size: 8, font: this.fonts.bold });
@@ -554,6 +564,33 @@ export class BaseDocument {
     });
   }
 
+  drawNotes(y: number): number {
+    if (!this.data.notes) return y;
+    
+    const lines = this.wrapText(this.data.notes, CONTENT_W - 20, 8);
+    const boxH = lines.length * 10 + 20;
+    
+    // Titre
+    this.page.drawText("OBSERVATIONS / NOTES :", {
+      x: MARGINS.x,
+      y: y - 10,
+      size: 8,
+      font: this.fonts.bold,
+      color: COLORS.bleuFabs
+    });
+    
+    lines.forEach((line, i) => {
+      this.page.drawText(line, {
+        x: MARGINS.x,
+        y: y - 22 - i * 10,
+        size: 8,
+        font: this.fonts.regular,
+        color: COLORS.noir
+      });
+    });
+    
+    return y - boxH - 10;
+  }
 
   drawTotals(y: number): number {
     const boxW = 200;
@@ -618,12 +655,15 @@ export class BaseDocument {
       curY -= 20;
     };
 
-    const brutLabel = this.data.type === "Bon de Réception" ? "Montant brut" : "Montant brut HT";
+    const isBR = this.data.type === "Bon de Réception";
+    const brutLabel = isBR ? "Montant brut" : "Montant brut HT";
     row(brutLabel, formatFCFA(this.totals.sousTotal));
     
     if (this.totals.remiseLignes) {
-      const pct = this.totals.remiseLignesPct ? ` (${this.totals.remiseLignesPct.toFixed(2)} %)` : "";
-      row(`Remise sur lignes${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
+      // Pour le BR, on n'affiche pas forcément le pourcentage moyen s'il y en a plusieurs,
+      // on suit la demande de distinction claire.
+      const labelRemise = isBR ? "Montant remise" : "Remise sur lignes";
+      row(labelRemise, `- ${formatFCFA(this.totals.remiseLignes)}`);
     }
     
     if (this.totals.remiseGlobale) {

@@ -85,6 +85,7 @@ function AchatDetailPage() {
       remiseGlobale: Number((achat as any).remise_globale_montant || 0),
       montantHT: Number((achat as any).montant_ht_net || achat.montant),
       totalTTC: Number((achat as any).montant_ttc || achat.montant),
+      montant: Number(achat.montant),
       notes: achat.notes ?? undefined,
     });
   };

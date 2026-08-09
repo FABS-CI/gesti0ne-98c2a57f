@@ -57,6 +57,54 @@ export async function generateUnifiedCommercialPDF(
 }
 
 /**
+ * Adaptateur pour le Bon de Réception (Approvisionnement)
+ */
+export async function generateUnifiedAchatPDF(
+  data: DataBase
+): Promise<Blob> {
+  const docBase = {
+    id: data.br_id || data.id || "achat-id",
+    type: "Bon de Réception",
+    reference: data.reference,
+    date: data.date,
+    client: {
+      nom: data.clientNom || "",
+      ville: data.villeClient || "",
+      adresse: data.adresseClient || "",
+      representant: data.representant || "",
+      telephone: data.clientTel || "",
+      email: data.emailClient || "",
+      code: data.codeClient || "",
+    }
+  };
+
+  const totals = {
+    sousTotal: data.totalVente || 0,
+    remiseLignes: data.remiseLigneTotal || 0,
+    remiseGlobale: data.remiseGlobale || 0,
+    remiseGlobalePct: data.remiseGlobalePct || 0,
+    tva: data.tva || 0,
+    totalAPayer: data.totalTTC || data.montantHT || data.totalVente || 0,
+    montantLettres: (data as any).montantLettres || (data as any).montantEnLettres || numberToLetters(data.totalTTC || data.montantHT || 0),
+  };
+
+  const doc = new CommercialDocument(docBase, totals);
+  await doc.init();
+  
+  (doc.data as any).lignes = data.lignes || [];
+  (doc.data as any).notes = data.notes;
+
+  // Détection du mode de remise :
+  // Si remise sur lignes > 0, on affiche la colonne Remise (%)
+  const discountMode = (totals.remiseLignes && totals.remiseLignes > 0) ? 'A' : 
+                      (totals.remiseGlobale && totals.remiseGlobale > 0) ? 'B' : 'NONE';
+  doc.setDiscountMode(discountMode);
+
+  await doc.drawContent();
+  return await doc.getBlob();
+}
+
+/**
  * Génère un relevé de compte avec le nouveau moteur
  */
 export async function generateUnifiedStatementPDF(data: any): Promise<Blob> {
