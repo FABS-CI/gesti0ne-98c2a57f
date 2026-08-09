@@ -36,14 +36,26 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
+    setError(null);
+    setStep("loading");
+    
     start({ data: { targetUserId } })
       .then(async (r) => {
+        if (!active) return;
         setOtpauth(r.otpauthUrl);
         setSecret(r.secret);
         setQr(await QRCode.toDataURL(r.otpauthUrl, { width: 240, margin: 1 }));
         setStep("scan");
       })
-      .catch((e) => setError(String(e?.message ?? e)));
+      .catch((e) => {
+        if (!active) return;
+        console.error("MFA Start Error:", e);
+        setError(String(e?.message ?? "Erreur lors de la génération du MFA"));
+        setStep("scan"); // Show UI anyway so error is visible
+      });
+
+    return () => { active = false; };
   }, [start, targetUserId]);
 
   const backupText = useMemo(() => backup.join("\n"), [backup]);
@@ -56,12 +68,31 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
       setBackup(r.backupCodes);
       setStep("done");
       toast.success("MFA activé");
-    } catch (e) {
-      setError(String((e as Error).message ?? e));
+    } catch (e: any) {
+      console.error("MFA Confirm Error:", e);
+      let errorMsg = "Code de vérification incorrect";
+      
+      // Extraction du message d'erreur pour TanStack ServerFn
+      if (e?.message) {
+        try {
+          const parsed = JSON.parse(e.message);
+          if (Array.isArray(parsed) && parsed[0]?.message) {
+            errorMsg = parsed[0].message;
+          } else {
+            errorMsg = e.message;
+          }
+        } catch {
+          errorMsg = e.message;
+        }
+      }
+      
+      setError(errorMsg);
     } finally {
       setBusy(false);
     }
   }
+
+
 
   function downloadCodes() {
     const blob = new Blob(
@@ -242,7 +273,7 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
 
               <Button 
                 onClick={onConfirm} 
-                disabled={busy || code.length !== 6} 
+                disabled={busy} 
                 className="w-full h-12 text-lg font-bold bg-green-600 hover:bg-green-700"
               >
                 {busy ? (

@@ -54,6 +54,13 @@ export const mfaEnrollStart = createServerFn({ method: "POST" })
     const { supabase, userId: actorId, claims } = context;
     const targetId = data.targetUserId ?? actorId;
 
+    // Check if target is super_admin (exempt)
+    const { data: targetSuperAdmin } = await supabase.rpc("has_role_compat", {
+      _user_id: targetId,
+      _role: "super_admin",
+    });
+    if (targetSuperAdmin) throw new Error("Le Super Administrateur est exempté du MFA");
+
     if (targetId !== actorId) {
       const { data: superAdminFlag } = await supabase.rpc("has_role_compat", {
         _user_id: actorId,
@@ -74,7 +81,12 @@ export const mfaEnrollStart = createServerFn({ method: "POST" })
     const { error } = await supabase
       .from("two_fa_secrets")
       .upsert(
-        { user_id: targetId, secret_chiffre: secret, active: false },
+        { 
+          user_id: targetId, 
+          secret_chiffre: secret, 
+          active: false,
+          updated_at: new Date().toISOString()
+        },
         { onConflict: "user_id" },
       );
     if (error) throw new Error(error.message);
@@ -85,7 +97,7 @@ export const mfaEnrollStart = createServerFn({ method: "POST" })
 export const mfaEnrollConfirm = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw) => z.object({ 
-    code: z.string().regex(/^\d{6}$/),
+    code: z.string().length(6),
     targetUserId: z.string().uuid().optional()
   }).parse(raw))
   .handler(async ({ data, context }) => {
