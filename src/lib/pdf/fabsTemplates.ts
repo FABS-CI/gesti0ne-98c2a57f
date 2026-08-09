@@ -95,11 +95,12 @@ export type DocBase = {
 export type EtatCompteLigne = {
   date: string;
   reference: string;
-  libelle: string;
+  libelle?: string;
   debit?: number;
   credit?: number;
   solde?: number;
   type?: string;
+  factureReference?: string;
 };
 
 export type EtatCompteAgeing = {
