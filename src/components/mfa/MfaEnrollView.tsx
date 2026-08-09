@@ -2,13 +2,25 @@ import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
 import QRCode from "qrcode";
+import { 
+  Loader2, 
+  ShieldCheck, 
+  AlertTriangle, 
+  Copy, 
+  Download, 
+  Printer, 
+  Lock, 
+  AlertCircle, 
+  Check 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { mfaEnrollStart, mfaEnrollConfirm } from "@/lib/mfa.functions";
+
 
 export function MfaEnrollView() {
   const start = useServerFn(mfaEnrollStart);
