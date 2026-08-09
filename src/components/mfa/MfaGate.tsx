@@ -78,8 +78,8 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
 
   if (state.loading) return null;
 
-  // Le Super Administrateur n'est plus exempté par défaut pour garantir une sécurité maximale.
-  if (state.exempt && !state.enrolled) return <>{children}</>;
+  // Super admin exempté du MFA conformément aux spécifications.
+  if (state.exempt) return <>{children}</>;
 
   // Not enrolled and on enroll page → let user enroll
   if (!state.enrolled) {
