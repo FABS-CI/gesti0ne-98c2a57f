@@ -20,8 +20,9 @@ type Props = {
 export function InfosSection({ form, depots }: Props) {
   const typeRetour = form.watch("type_retour");
   return (
-    <section className="rounded-md border bg-card p-5 space-y-4">
-      <h2 className="text-lg font-semibold">2. Informations du retour</h2>
+    <section className="rounded-md border bg-card p-5 space-y-4 relative overflow-hidden">
+      <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-primary" />
+      <h2 className="text-lg font-semibold pl-1">2. Informations du retour</h2>
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <Label>Numéro</Label>

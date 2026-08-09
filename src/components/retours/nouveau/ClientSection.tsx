@@ -12,8 +12,9 @@ type Props = {
 
 export function ClientSection({ form, applyClient }: Props) {
   return (
-    <section className="rounded-md border bg-card p-5 space-y-4">
-      <h2 className="text-lg font-semibold">1. Client (Établissement)</h2>
+    <section className="rounded-md border bg-card p-5 space-y-4 relative overflow-hidden">
+      <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-primary" />
+      <h2 className="text-lg font-semibold pl-1">1. Client (Établissement)</h2>
       <div>
         <Label className="mb-1 block">
           Rechercher par établissement, représentant, ville ou téléphone

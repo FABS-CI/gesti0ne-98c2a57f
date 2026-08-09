@@ -76,8 +76,9 @@ export function DocumentSection({ form, fa }: Props) {
   };
 
   return (
-    <section className="rounded-md border bg-card p-5 space-y-3">
-      <h2 className="text-lg font-semibold">
+    <section className="rounded-md border bg-card p-5 space-y-3 border-primary/20 bg-primary/5 relative overflow-hidden">
+      <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-primary" />
+      <h2 className="text-lg font-semibold pl-1">
         0. Document d'origine *
       </h2>
       <p className="text-xs text-muted-foreground">
