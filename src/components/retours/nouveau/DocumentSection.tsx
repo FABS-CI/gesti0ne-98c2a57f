@@ -76,10 +76,10 @@ export function DocumentSection({ form, fa }: Props) {
   };
 
   return (
-    <section className="rounded-md border bg-card p-5 space-y-3">
-      <h2 className="text-lg font-semibold">
-        0. Document d'origine{" "}
-        <span className="text-sm font-normal text-muted-foreground">(facultatif)</span>
+    <section className="rounded-md border bg-card p-5 space-y-3 border-primary/20 bg-primary/5 relative overflow-hidden">
+      <span aria-hidden className="absolute inset-y-0 left-0 w-1 bg-primary" />
+      <h2 className="text-lg font-semibold pl-1">
+        0. Document d'origine *
       </h2>
       <p className="text-xs text-muted-foreground">
         Rattachez le retour à une facture pour charger automatiquement les produits retournables,
@@ -87,7 +87,7 @@ export function DocumentSection({ form, fa }: Props) {
       </p>
       <div className="flex items-center gap-2">
         <div className="flex-1">
-          <Label className="mb-1 block">Facture</Label>
+          <Label className="mb-1 block text-destructive-foreground">Facture d'origine obligatoire *</Label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button

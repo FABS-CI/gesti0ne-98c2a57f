@@ -1,5 +1,6 @@
 import type { UseFieldArrayReturn, UseFormReturn } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -85,7 +86,12 @@ export function LignesSection({ form, fa, onProduitChange }: Props) {
                     <TableCell>
                       <ProductSearchSelect
                         value={form.watch(`lignes.${i}.produit_id`)}
-                        onChange={(_id, produit) => onProduitChange(i, produit)}
+                        onChange={(_id, produit) => {
+                          if (form.getValues("facture_id") && !lignes[i]?.qte_disponible) {
+                            toast.warning("Attention : vous ajoutez un produit hors facture d'origine.");
+                          }
+                          onProduitChange(i, produit);
+                        }}
                       />
                       {err?.produit_id && (
                         <p className="text-xs text-red-600 mt-1">{err.produit_id.message}</p>

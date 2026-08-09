@@ -681,12 +681,20 @@ function ValidationComptaDialog({
 
   const optionsAvailable = useMemo(() => {
     const s = (simulation ?? {}) as SimulationFinanciere;
-    return {
+    const avail = {
       solde: true,
       avoir: true,
       remboursement: s.remboursement_possible !== false,
     };
-  }, [simulation]);
+    
+    // Auto-sélection intelligente si non encore défini
+    if (s.montant_total && !option) {
+       if (s.impact_solde && s.impact_solde > 0) setOption("solde");
+       else setOption("avoir");
+    }
+    
+    return avail;
+  }, [simulation, option]);
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
@@ -728,23 +736,35 @@ function ValidationComptaDialog({
             </div>
 
             <div className="space-y-2">
-              <Label>Option de traitement</Label>
+              <Label>Option de traitement comptable *</Label>
               <Select value={option} onValueChange={(v) => setOption(v as ValidationComptaOption)}>
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Choisir une action…" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="solde" disabled={!optionsAvailable.solde}>
-                    Créditer le solde client
+                    <div className="flex flex-col">
+                      <span>Créditer le solde client</span>
+                      <span className="text-[10px] text-muted-foreground">Impacte directement la balance du compte</span>
+                    </div>
                   </SelectItem>
                   <SelectItem value="avoir" disabled={!optionsAvailable.avoir}>
-                    Émettre un avoir
+                    <div className="flex flex-col">
+                      <span>Émettre un avoir financier</span>
+                      <span className="text-[10px] text-muted-foreground">Génère un document d'avoir utilisable plus tard</span>
+                    </div>
                   </SelectItem>
                   <SelectItem value="remboursement" disabled={!optionsAvailable.remboursement}>
-                    Remboursement (caisse/banque)
+                    <div className="flex flex-col">
+                      <span>Remboursement direct</span>
+                      <span className="text-[10px] text-muted-foreground">Sortie de caisse ou virement bancaire</span>
+                    </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-[11px] text-amber-600 bg-amber-50 p-2 rounded border border-amber-100 mt-2">
+                ⚠️ Cette action est irréversible et déclenchera les écritures comptables automatiques.
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -765,7 +785,7 @@ function ValidationComptaDialog({
             Annuler
           </Button>
           <Button onClick={() => mutation.mutate()} disabled={mutation.isPending || isLoading}>
-            {mutation.isPending ? "Validation…" : "Valider"}
+            {mutation.isPending ? "Traitement en cours…" : `Confirmer & Valider (${option})`}
           </Button>
         </DialogFooter>
       </DialogContent>
