@@ -289,3 +289,29 @@ export const mfaStatus = createServerFn({ method: "POST" })
 
     return { enrolled, required, sessionValid, isSuperAdmin };
   });
+
+/** Régénère les codes de secours pour l'utilisateur courant. */
+export const mfaRegenerateBackupCodes = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+
+    // Check if enrolled
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("mfa_enrolled_at")
+      .eq("id", userId)
+      .maybeSingle();
+    if (!prof?.mfa_enrolled_at) throw new Error("MFA non enrôlé");
+
+    const plain: string[] = Array.from({ length: BACKUP_COUNT }, genBackupCode);
+    await supabase.from("mfa_backup_codes").delete().eq("user_id", userId);
+    const rows = await Promise.all(
+      plain.map(async (c) => ({ user_id: userId, code_hash: await bcrypt.hash(c, 10) })),
+    );
+    const ins = await supabase.from("mfa_backup_codes").insert(rows);
+    if (ins.error) throw new Error(ins.error.message);
+
+    return { backupCodes: plain };
+  });
+
