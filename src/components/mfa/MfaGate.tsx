@@ -94,70 +94,96 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
   if (!state.valid) {
     return (
       <>
-        {children}
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 pointer-events-none" />
         <Dialog open>
           <DialogContent
+            className="sm:max-w-md border-primary/20 shadow-2xl z-50"
             onEscapeKeyDown={(e) => e.preventDefault()}
             onPointerDownOutside={(e) => e.preventDefault()}
             onInteractOutside={(e) => e.preventDefault()}
           >
-            <DialogHeader>
-              <DialogTitle>Vérification à deux facteurs</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                {useBackup
-                  ? "Saisissez l'un de vos codes de secours."
-                  : "Ouvrez votre application authenticator et saisissez le code à 6 chiffres."}
-              </p>
-              <div className="space-y-2">
-                <Label htmlFor="mfa-code">{useBackup ? "Code de secours" : "Code"}</Label>
-                <Input
-                  id="mfa-code"
-                  autoFocus
-                  value={code}
-                  maxLength={useBackup ? 20 : 6}
-                  onChange={(e) =>
-                    setCode(
-                      useBackup
-                        ? e.target.value.toUpperCase()
-                        : e.target.value.replace(/\D/g, ""),
-                    )
-                  }
-                  placeholder={useBackup ? "XXXXXXXXXX" : "123456"}
-                />
+            <DialogHeader className="space-y-3 pb-4 border-b">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Lock className="h-5 w-5 text-primary" />
+                </div>
+                <DialogTitle className="text-xl font-bold tracking-tight">
+                  🔐 CODE DE VÉRIFICATION
+                </DialogTitle>
               </div>
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-              <div className="flex gap-2">
+            </DialogHeader>
+
+            <div className="space-y-6 pt-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-slate-700">
+                  {useBackup
+                    ? "Saisissez l'un de vos codes de secours à usage unique."
+                    : "Saisissez le code à 6 chiffres affiché dans votre application d'authentification."}
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="relative">
+                  <Input
+                    id="mfa-code"
+                    autoFocus
+                    value={code}
+                    maxLength={useBackup ? 20 : 6}
+                    onChange={(e) =>
+                      setCode(
+                        useBackup
+                          ? e.target.value.toUpperCase()
+                          : e.target.value.replace(/\D/g, ""),
+                      )
+                    }
+                    placeholder={useBackup ? "XXXXXXXXXX" : "[ _ _ _ _ _ _ ]"}
+                    className={`h-14 text-center text-2xl font-bold tracking-[0.5em] placeholder:tracking-normal ${
+                      useBackup ? "tracking-widest" : ""
+                    }`}
+                  />
+                </div>
+
+                {error && (
+                  <Alert variant="destructive" className="py-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription className="text-xs">{error}</AlertDescription>
+                  </Alert>
+                )}
+
                 <Button
                   onClick={onSubmit}
-                  disabled={busy || code.length < (useBackup ? 6 : 6)}
-                  className="flex-1"
+                  disabled={busy || code.length < 6}
+                  className="w-full h-12 text-lg font-bold bg-primary hover:bg-primary/90"
                 >
-                  {busy ? "Vérification…" : "Valider"}
+                  {busy ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <ShieldCheck className="mr-2 h-5 w-5" />
+                  )}
+                  VALIDER
                 </Button>
               </div>
-              <button
-                type="button"
-                className="text-xs text-muted-foreground underline w-full text-center"
-                onClick={() => {
-                  setUseBackup((b) => !b);
-                  setCode("");
-                  setError(null);
-                }}
-              >
-                {useBackup ? "Utiliser mon application" : "Utiliser un code de secours"}
-              </button>
+
+              <div className="pt-2 text-center">
+                <button
+                  type="button"
+                  className="text-xs font-medium text-primary hover:underline"
+                  onClick={() => {
+                    setUseBackup((b) => !b);
+                    setCode("");
+                    setError(null);
+                  }}
+                >
+                  {useBackup ? "Utiliser mon application" : "Problème avec votre application ? Utilisez un code de secours"}
+                </button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
       </>
     );
   }
+
 
   return <>{children}</>;
 }
