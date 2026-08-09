@@ -101,6 +101,20 @@ export type Database = {
             referencedRelation: "achats"
             referencedColumns: ["achat_id"]
           },
+          {
+            foreignKeyName: "achat_lignes_produit_id_fkey"
+            columns: ["produit_id"]
+            isOneToOne: false
+            referencedRelation: "produits"
+            referencedColumns: ["produit_id"]
+          },
+          {
+            foreignKeyName: "achat_lignes_produit_id_fkey"
+            columns: ["produit_id"]
+            isOneToOne: false
+            referencedRelation: "v_produits"
+            referencedColumns: ["produit_id"]
+          },
         ]
       }
       achats: {
