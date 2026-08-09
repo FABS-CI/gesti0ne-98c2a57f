@@ -93,6 +93,7 @@ export type BLDetail = BLAColiser & {
     designation: string | null;
     reference_produit: string | null;
     quantite: number;
+    cover_path?: string | null;
   }[];
 };
 
@@ -113,7 +114,7 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
     const [{ data: ls }, { data: fact }] = await Promise.all([
       supabase
         .from("commande_lignes")
-        .select("ligne_id, produit_id, designation, reference_produit, quantite")
+        .select("ligne_id, produit_id, designation, reference_produit, quantite, produits:produit_id(cover_path)")
         .eq("commande_id", data.commande_id),
       supabase
         .from("factures")
@@ -127,6 +128,7 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
       designation: l.designation,
       reference_produit: l.reference_produit,
       quantite: l.quantite,
+      cover_path: (l.produits as any)?.cover_path ?? null,
     }));
     facture_reference = fact?.reference ?? null;
   }
@@ -225,6 +227,13 @@ export type ColisRow = {
   gare_telephone: string | null;
   observations: string | null;
   date_colisage: string | null;
+  colis_lignes?: {
+    produit_id: string | null;
+    designation: string | null;
+    reference_produit: string | null;
+    quantite: number;
+    produits?: { cover_path: string | null } | null;
+  }[];
 };
 
 export type CartonManuel = {
@@ -259,9 +268,12 @@ export async function creerColisageManuel(
 export async function listColisForBL(blId: string): Promise<ColisRow[]> {
   const { data, error } = await supabase
     .from("colis")
-    .select(
-      "colis_id, reference, numero_carton, nb_cartons, destinataire, responsable_nom, mode_acheminement, livreur_nom, livreur_telephone, vehicule, quartier, commune, ville_livraison, gare_depart, ville_destination, gare_responsable, gare_telephone, observations, date_colisage",
-    )
+    .select(`
+      colis_id, reference, numero_carton, nb_cartons, destinataire, responsable_nom, mode_acheminement, 
+      livreur_nom, livreur_telephone, vehicule, quartier, commune, ville_livraison, gare_depart, 
+      ville_destination, gare_responsable, gare_telephone, observations, date_colisage,
+      colis_lignes(produit_id, designation, reference_produit, quantite, produits:produit_id(cover_path))
+    `)
     .eq("bl_id", blId)
     .order("numero_carton");
   if (error) throw error;
