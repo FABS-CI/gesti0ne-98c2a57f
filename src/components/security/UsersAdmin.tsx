@@ -334,10 +334,12 @@ export function UsersAdmin() {
                   <TableHead>Matricule</TableHead>
                   <TableHead>Service</TableHead>
                   <TableHead>Rôles</TableHead>
-                  <TableHead>Dépôts</TableHead>
+                   <TableHead>Dépôts</TableHead>
+                  <TableHead>MFA</TableHead>
                   <TableHead>Statut</TableHead>
                   <TableHead>Dernière connexion</TableHead>
                   <TableHead className="w-10" />
+
                 </TableRow>
               </TableHeader>
               <TableBody>
