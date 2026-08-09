@@ -313,4 +313,3 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
     </Card>
   );
 }
-}
