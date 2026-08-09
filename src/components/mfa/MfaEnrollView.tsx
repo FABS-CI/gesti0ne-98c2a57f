@@ -40,9 +40,11 @@ export function MfaEnrollView({ targetUserId, targetUserLabel, onSuccess }: { ta
     setError(null);
     setStep("loading");
     
+    console.log("DEBUG: MFA Start for", targetUserId);
     start({ data: { targetUserId } })
       .then(async (r) => {
         if (!active) return;
+        console.log("DEBUG: MFA Start Success", r.secret);
         setOtpauth(r.otpauthUrl);
         setSecret(r.secret);
         setQr(await QRCode.toDataURL(r.otpauthUrl, { width: 240, margin: 1 }));
@@ -50,9 +52,9 @@ export function MfaEnrollView({ targetUserId, targetUserLabel, onSuccess }: { ta
       })
       .catch((e) => {
         if (!active) return;
-        console.error("MFA Start Error:", e);
+        console.error("DEBUG: MFA Start Error:", e);
         setError(String(e?.message ?? "Erreur lors de la génération du MFA"));
-        setStep("scan"); // Show UI anyway so error is visible
+        setStep("scan");
       });
 
     return () => { active = false; };
@@ -107,7 +109,7 @@ export function MfaEnrollView({ targetUserId, targetUserLabel, onSuccess }: { ta
 
   if (step === "done") {
     return (
-      <Card className="max-w-xl mx-auto shadow-lg border-green-200 h-full flex flex-col overflow-hidden">
+      <Card className="max-w-xl mx-auto shadow-lg border-green-200 h-[80vh] sm:h-[650px] flex flex-col overflow-hidden">
         <CardHeader className="bg-green-50/50 border-b shrink-0 py-4">
           <CardTitle className="text-green-800 flex items-center gap-2 text-lg">
             <ShieldCheck className="h-6 w-6 shrink-0" />
@@ -174,7 +176,7 @@ export function MfaEnrollView({ targetUserId, targetUserLabel, onSuccess }: { ta
   }
 
   return (
-    <Card className="max-w-xl mx-auto shadow-md border-primary/20 h-full flex flex-col overflow-hidden">
+    <Card className="max-w-xl mx-auto shadow-md border-primary/20 h-[80vh] sm:h-[650px] flex flex-col overflow-hidden">
       <CardHeader className="bg-primary/5 border-b shrink-0 py-4">
         <CardTitle className="flex items-center gap-2 text-primary text-lg">
           <Lock className="h-5 w-5 shrink-0" />
