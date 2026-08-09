@@ -40,7 +40,14 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
     setError(null);
     setStep("loading");
     
-    start({ data: { targetUserId } })
+    // Si targetUserId ressemble à un UUID, c'est l'ID réel pour l'API.
+    // Sinon (si c'est un nom/email passé pour l'affichage), on ne le passe pas tel quel à l'API.
+    // Idéalement on devrait passer l'ID réel séparement du label, mais modifions MfaEnrollView 
+    // pour accepter targetUserLabel et targetUserId.
+    // Pour l'instant, on suppose que targetUserId est l'ID technique.
+    const technicalId = (targetUserId && targetUserId.includes("-")) ? targetUserId : undefined;
+    
+    start({ data: { targetUserId: technicalId } })
       .then(async (r) => {
         if (!active) return;
         setOtpauth(r.otpauthUrl);
@@ -107,14 +114,18 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
 
   if (step === "done") {
     return (
-      <Card className="max-w-xl mx-auto shadow-lg border-green-200">
-        <CardHeader className="bg-green-50/50">
-          <CardTitle className="text-green-800 flex items-center gap-2">
-            <ShieldCheck className="h-6 w-6" />
-            🟢 MFA ACTIVÉ AVEC SUCCÈS
+      <Card className="max-w-xl mx-auto shadow-lg border-green-200 h-full flex flex-col overflow-hidden">
+        <CardHeader className="bg-green-50/50 border-b shrink-0 py-4">
+          <CardTitle className="text-green-800 flex items-center gap-2 text-lg">
+            <ShieldCheck className="h-6 w-6 shrink-0" />
+            <span>🟢 MFA ACTIVÉ AVEC SUCCÈS</span>
           </CardTitle>
+          <div className="mt-1">
+            <p className="text-sm font-medium text-slate-700">Utilisateur : {targetUserId || "Vous"}</p>
+          </div>
         </CardHeader>
-        <CardContent className="space-y-6 pt-6">
+        
+        <CardContent className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
           <div className="space-y-2">
             <h3 className="font-bold text-lg"># CODES DE RÉCUPÉRATION</h3>
             <p className="text-sm text-muted-foreground">
@@ -158,36 +169,42 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
               <Printer className="mr-2 h-4 w-4" /> Imprimer
             </Button>
           </div>
-
-          <Button variant="default" className="w-full h-12 text-lg font-bold mt-4" onClick={() => onSuccess ? onSuccess() : navigate({ to: "/" })}>
+        </CardContent>
+        
+        <div className="p-4 bg-slate-50 border-t shrink-0">
+          <Button variant="default" className="w-full h-12 text-lg font-bold" onClick={() => onSuccess ? onSuccess() : navigate({ to: "/" })}>
             J'AI ENREGISTRÉ MES CODES
           </Button>
-        </CardContent>
+        </div>
       </Card>
     );
   }
 
   return (
-    <Card className="max-w-xl mx-auto shadow-md border-primary/20">
-      <CardHeader className="bg-primary/5 border-b mb-6">
-        <CardTitle className="flex items-center gap-2 text-primary">
-          <Lock className="h-5 w-5" />
-          🔐 CONFIGURATION DE L'AUTHENTIFICATION
+    <Card className="max-w-xl mx-auto shadow-md border-primary/20 h-full flex flex-col overflow-hidden">
+      <CardHeader className="bg-primary/5 border-b shrink-0 py-4">
+        <CardTitle className="flex items-center gap-2 text-primary text-lg">
+          <Lock className="h-5 w-5 shrink-0" />
+          <span>🔐 CONFIGURATION DE L'AUTHENTIFICATION</span>
         </CardTitle>
+        <div className="mt-1 flex flex-col gap-1">
+          <p className="text-sm font-medium text-slate-700">Utilisateur : {targetUserId || "Vous"}</p>
+          {targetUserId && (
+            <Alert className="bg-blue-50 border-blue-200 py-2">
+              <AlertCircle className="h-3.5 w-3.5 text-blue-600" />
+              <AlertDescription className="text-blue-800 text-xs font-medium">
+                Configuration du MFA pour un autre utilisateur. L'utilisateur devra scanner ce code.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
       </CardHeader>
-      <CardContent className="space-y-8">
-        {targetUserId && (
-          <Alert className="bg-blue-50 border-blue-200">
-            <AlertCircle className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-800 text-sm font-medium">
-              Configuration du MFA pour un autre utilisateur. L'utilisateur devra scanner ce code.
-            </AlertDescription>
-          </Alert>
-        )}
+      
+      <CardContent className="flex-1 overflow-y-auto p-4 md:p-6 space-y-8">
         <div className="space-y-6">
           <div className="space-y-4">
             <h3 className="font-bold flex items-center gap-2 text-lg">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
                 1
               </span>
               ÉTAPE 1
@@ -197,20 +214,20 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
             </p>
             
             {qr ? (
-              <div className="flex flex-col items-center gap-4 py-4 bg-white rounded-xl border border-dashed p-6 max-w-sm mx-auto">
-                <img src={qr} alt="QR code MFA" className="w-48 h-48" />
+              <div className="flex flex-col items-center gap-4 py-4 bg-white rounded-xl border border-dashed p-6 max-w-sm mx-auto w-full">
+                <img src={qr} alt="QR code MFA" className="w-48 h-48 object-contain" />
                 {secret && (
                   <div className="w-full space-y-2">
                     <p className="text-[10px] uppercase font-bold text-center text-muted-foreground tracking-widest">
                       Clé de configuration
                     </p>
                     <div className="flex items-center justify-center gap-2 p-2 bg-slate-50 rounded border">
-                      <code className="font-mono text-xs font-bold tracking-widest">{secret}</code>
+                      <code className="font-mono text-xs font-bold tracking-widest overflow-hidden text-ellipsis whitespace-nowrap">{secret}</code>
                       <Button
                         type="button"
                         size="icon"
                         variant="ghost"
-                        className="h-6 w-6"
+                        className="h-6 w-6 shrink-0"
                         onClick={() => {
                           navigator.clipboard.writeText(secret);
                           toast.success("Clé copiée");
@@ -223,7 +240,7 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
                 )}
               </div>
             ) : (
-              <div className="h-48 flex items-center justify-center border rounded-xl bg-slate-50">
+              <div className="h-48 flex items-center justify-center border rounded-xl bg-slate-50 max-w-sm mx-auto w-full">
                 <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
               </div>
             )}
@@ -231,7 +248,7 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
             {otpauth && (
               <div className="flex flex-col items-center gap-2 sm:hidden">
                 <a href={otpauth} className="w-full">
-                  <Button type="button" variant="outline" className="w-full border-primary text-primary">
+                  <Button type="button" variant="outline" className="w-full border-primary text-primary h-12">
                     📱 Configurer automatiquement
                   </Button>
                 </a>
@@ -241,7 +258,7 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
 
           <div className="space-y-4">
             <h3 className="font-bold flex items-center gap-2 text-lg">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
                 2
               </span>
               ÉTAPE 2
@@ -266,31 +283,34 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
 
               {error && (
                 <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <AlertDescription className="text-xs">{error}</AlertDescription>
                 </Alert>
               )}
-
-              <Button 
-                onClick={onConfirm} 
-                disabled={busy} 
-                className="w-full h-12 text-lg font-bold bg-green-600 hover:bg-green-700"
-              >
-                {busy ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Check className="mr-2 h-5 w-5" />
-                )}
-                VÉRIFIER ET ACTIVER
-              </Button>
             </div>
           </div>
         </div>
         
-        <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest border-t pt-4">
+        <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest border-t pt-4 pb-2">
           Sécurité ERP FABS-CI — TOTP Authentification
         </p>
       </CardContent>
+
+      <div className="p-4 bg-slate-50 border-t shrink-0 flex flex-col gap-3">
+        <Button 
+          onClick={onConfirm} 
+          disabled={busy || code.length < 6} 
+          className="w-full h-12 text-lg font-bold bg-green-600 hover:bg-green-700"
+        >
+          {busy ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Check className="mr-2 h-5 w-5" />
+          )}
+          VÉRIFIER ET ACTIVER
+        </Button>
+      </div>
     </Card>
   );
+}
 }
