@@ -78,8 +78,7 @@ export function DocumentSection({ form, fa }: Props) {
   return (
     <section className="rounded-md border bg-card p-5 space-y-3">
       <h2 className="text-lg font-semibold">
-        0. Document d'origine{" "}
-        <span className="text-sm font-normal text-muted-foreground">(facultatif)</span>
+        0. Document d'origine *
       </h2>
       <p className="text-xs text-muted-foreground">
         Rattachez le retour à une facture pour charger automatiquement les produits retournables,

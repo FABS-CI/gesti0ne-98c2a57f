@@ -16,8 +16,8 @@ export const retourFormSchema = z
   .object({
     date_retour: z.string().min(1, "Date requise"),
     client_id: z.string().min(1, "Sélectionnez un client"),
-    facture_id: z.string().uuid().optional().or(z.literal("")),
-    livraison_id: z.string().uuid().optional().or(z.literal("")),
+    facture_id: z.string().uuid("Sélectionnez la facture d'origine").optional().or(z.literal("")),
+    livraison_id: z.string().uuid("Sélectionnez la livraison d'origine").optional().or(z.literal("")),
     type_retour: z.enum(["physique", "avoir"]),
     etablissement: z.string().optional(),
     representant_nom: z.string().optional(),
