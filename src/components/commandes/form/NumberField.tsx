@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 /**
  * Champ numérique contrôlé : accepte l'état vide par défaut,
@@ -82,7 +83,6 @@ export function NumberField({
             }}
             ref={field.ref}
             name={field.name}
-            className={className}
             disabled={disabled}
           />
         );
