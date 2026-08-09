@@ -346,7 +346,7 @@ export function UsersAdmin() {
                 {users.isLoading &&
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i}>
-                      <TableCell colSpan={8}><Skeleton className="h-8 w-full" /></TableCell>
+                      <TableCell colSpan={9}><Skeleton className="h-8 w-full" /></TableCell>
                     </TableRow>
                   ))}
                 {!users.isLoading && rows.length === 0 && (
