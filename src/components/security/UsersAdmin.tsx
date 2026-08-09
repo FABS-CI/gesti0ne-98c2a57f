@@ -775,10 +775,11 @@ export function UsersAdmin() {
       </AlertDialog>
 
       <Dialog open={!!mfaEnrollTarget} onOpenChange={(open) => !open && setMfaEnrollTarget(null)}>
-        <DialogContent className="max-w-2xl p-0 overflow-hidden border-none bg-transparent shadow-none sm:max-w-2xl">
+        <DialogContent className="max-w-2xl p-0 overflow-hidden border-none bg-transparent shadow-none sm:max-w-2xl h-[95vh] sm:h-auto sm:max-h-[90vh]">
           {mfaEnrollTarget && (
             <MfaEnrollView 
-              targetUserId={mfaEnrollTarget.id} 
+              targetUserId={mfaEnrollTarget.id}
+              targetUserLabel={mfaEnrollTarget.nom_complet || mfaEnrollTarget.email || undefined}
               onSuccess={() => {
                 setMfaEnrollTarget(null);
                 invalidate();
