@@ -408,17 +408,19 @@ export function UsersAdmin() {
                           🟢 Activé
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
-                          🟠 Non configuré
-                        </Badge>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-7 px-2 text-[10px] text-orange-600 hover:text-orange-700 hover:bg-orange-100/50 mt-1 block"
-                          onClick={() => setMfaEnrollTarget(u)}
-                        >
-                          [Configurer MFA]
-                        </Button>
+                        <>
+                          <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
+                            🟠 Non configuré
+                          </Badge>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-7 px-2 text-[10px] text-orange-600 hover:text-orange-700 hover:bg-orange-100/50 mt-1 block"
+                            onClick={() => setMfaEnrollTarget(u)}
+                          >
+                            [Configurer MFA]
+                          </Button>
+                        </>
                       )}
                     </TableCell>
                     <TableCell>
