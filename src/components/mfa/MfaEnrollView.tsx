@@ -64,101 +64,181 @@ export function MfaEnrollView() {
 
   if (step === "done") {
     return (
-      <Card className="max-w-xl mx-auto">
-        <CardHeader>
-          <CardTitle>Codes de secours</CardTitle>
+      <Card className="max-w-xl mx-auto shadow-lg border-green-200">
+        <CardHeader className="bg-green-50/50">
+          <CardTitle className="text-green-800 flex items-center gap-2">
+            <ShieldCheck className="h-6 w-6" />
+            🟢 MFA ACTIVÉ AVEC SUCCÈS
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Alert>
-            <AlertDescription>
-              Conservez ces codes en lieu sûr. Chaque code ne peut être utilisé qu'une seule fois.
-              Ils vous permettent de vous connecter en cas de perte de votre téléphone.
+        <CardContent className="space-y-6 pt-6">
+          <div className="space-y-2">
+            <h3 className="font-bold text-lg"># CODES DE RÉCUPÉRATION</h3>
+            <p className="text-sm text-muted-foreground">
+              Conservez ces codes dans un endroit sûr. Ils sont à usage unique et vous permettent
+              d'accéder à votre compte si vous perdez votre appareil.
+            </p>
+          </div>
+
+          <Alert className="bg-orange-50 border-orange-200">
+            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <AlertDescription className="text-orange-800 text-xs font-medium">
+              Une fois ces codes utilisés ou si vous quittez cette page, vous ne pourrez plus les voir.
+              Téléchargez-les ou imprimez-les maintenant.
             </AlertDescription>
           </Alert>
-          <pre className="bg-muted p-4 rounded font-mono text-sm grid grid-cols-2 gap-2">
+
+          <div className="grid grid-cols-2 gap-3 p-4 bg-slate-50 rounded-lg border font-mono text-sm">
             {backup.map((c) => (
-              <span key={c}>{c}</span>
+              <div key={c} className="flex items-center justify-between group">
+                <span className="font-bold tracking-wider">{c}</span>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                  onClick={() => {
+                    navigator.clipboard.writeText(c);
+                    toast.success("Code copié");
+                  }}
+                >
+                  <Copy className="h-3 w-3" />
+                </Button>
+              </div>
             ))}
-          </pre>
-          <div className="flex gap-2">
-            <Button onClick={downloadCodes}>Télécharger (.txt)</Button>
-            <Button variant="outline" onClick={() => window.print()}>
-              Imprimer
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 justify-center pt-2">
+            <Button onClick={downloadCodes} className="flex-1 min-w-[140px]">
+              <Download className="mr-2 h-4 w-4" /> Télécharger (.txt)
             </Button>
-            <Button variant="secondary" onClick={() => navigate({ to: "/" })}>
-              Continuer
+            <Button variant="outline" onClick={() => window.print()} className="flex-1 min-w-[140px]">
+              <Printer className="mr-2 h-4 w-4" /> Imprimer
             </Button>
           </div>
+
+          <Button variant="default" className="w-full h-12 text-lg font-bold mt-4" onClick={() => navigate({ to: "/" })}>
+            J'AI ENREGISTRÉ MES CODES
+          </Button>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="max-w-xl mx-auto">
-      <CardHeader>
-        <CardTitle>Activer l'authentification à deux facteurs</CardTitle>
+    <Card className="max-w-xl mx-auto shadow-md border-primary/20">
+      <CardHeader className="bg-primary/5 border-b mb-6">
+        <CardTitle className="flex items-center gap-2 text-primary">
+          <Lock className="h-5 w-5" />
+          🔐 CONFIGURATION DE L'AUTHENTIFICATION
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <ol className="list-decimal ml-5 space-y-1 text-sm">
-          <li>Installez <b>Google Authenticator</b> ou <b>Microsoft Authenticator</b>.</li>
-          <li>Scannez le QR code ci-dessous depuis l'application.</li>
-          <li>Saisissez le code à 6 chiffres affiché pour confirmer.</li>
-        </ol>
-        {qr ? (
-          <div className="flex justify-center">
-            <img src={qr} alt="QR code MFA" className="border rounded" />
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground text-center">Génération du QR…</p>
-        )}
-        {otpauth && (
-          <div className="flex flex-col items-center gap-2">
-            <a href={otpauth} className="sm:hidden">
-              <Button type="button" variant="secondary">
-                📱 Ouvrir dans mon app Authenticator
-              </Button>
-            </a>
-            <p className="text-xs text-muted-foreground text-center sm:hidden">
-              Sur téléphone : appuyez sur le bouton ci-dessus (Google / Microsoft Authenticator s'ouvre et enregistre le compte automatiquement).
+      <CardContent className="space-y-8">
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <h3 className="font-bold flex items-center gap-2 text-lg">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+                1
+              </span>
+              ÉTAPE 1
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Scannez ce QR Code avec votre application d'authentification (Google Authenticator, Microsoft Authenticator, Authy, etc.).
             </p>
+            
+            {qr ? (
+              <div className="flex flex-col items-center gap-4 py-4 bg-white rounded-xl border border-dashed p-6 max-w-sm mx-auto">
+                <img src={qr} alt="QR code MFA" className="w-48 h-48" />
+                {secret && (
+                  <div className="w-full space-y-2">
+                    <p className="text-[10px] uppercase font-bold text-center text-muted-foreground tracking-widest">
+                      Clé de configuration
+                    </p>
+                    <div className="flex items-center justify-center gap-2 p-2 bg-slate-50 rounded border">
+                      <code className="font-mono text-xs font-bold tracking-widest">{secret}</code>
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="ghost"
+                        className="h-6 w-6"
+                        onClick={() => {
+                          navigator.clipboard.writeText(secret);
+                          toast.success("Clé copiée");
+                        }}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="h-48 flex items-center justify-center border rounded-xl bg-slate-50">
+                <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
+              </div>
+            )}
+
+            {otpauth && (
+              <div className="flex flex-col items-center gap-2 sm:hidden">
+                <a href={otpauth} className="w-full">
+                  <Button type="button" variant="outline" className="w-full border-primary text-primary">
+                    📱 Configurer automatiquement
+                  </Button>
+                </a>
+              </div>
+            )}
           </div>
-        )}
-        {secret && (
-          <div className="text-xs text-muted-foreground text-center space-y-1">
-            <p>Ou saisie manuelle de la clé :</p>
-            <div className="flex items-center justify-center gap-2">
-              <code className="font-mono break-all">{secret}</code>
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  navigator.clipboard.writeText(secret);
-                  toast.success("Clé copiée");
-                }}
+
+          <div className="space-y-4">
+            <h3 className="font-bold flex items-center gap-2 text-lg">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
+                2
+              </span>
+              ÉTAPE 2
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Saisissez le code à 6 chiffres généré par votre application.
+            </p>
+
+            <div className="space-y-4 max-w-sm mx-auto">
+              <div className="relative">
+                <Input
+                  id="code"
+                  inputMode="numeric"
+                  pattern="\d{6}"
+                  maxLength={6}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="[ _ _ _ _ _ _ ]"
+                  className="h-14 text-center text-2xl font-bold tracking-[0.5em] placeholder:tracking-normal"
+                />
+              </div>
+
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <Button 
+                onClick={onConfirm} 
+                disabled={busy || code.length !== 6} 
+                className="w-full h-12 text-lg font-bold bg-green-600 hover:bg-green-700"
               >
-                Copier
+                {busy ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Check className="mr-2 h-5 w-5" />
+                )}
+                VÉRIFIER ET ACTIVER
               </Button>
             </div>
           </div>
-        )}
-        <div className="space-y-2">
-          <Label htmlFor="code">Code à 6 chiffres</Label>
-          <Input
-            id="code"
-            inputMode="numeric"
-            pattern="\d{6}"
-            maxLength={6}
-            value={code}
-            onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-            placeholder="123456"
-          />
         </div>
-        {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
-        <Button onClick={onConfirm} disabled={busy || code.length !== 6} className="w-full">
-          {busy ? "Vérification…" : "Activer"}
-        </Button>
+        
+        <p className="text-[10px] text-center text-muted-foreground uppercase tracking-widest border-t pt-4">
+          Sécurité ERP FABS-CI — TOTP Authentification
+        </p>
       </CardContent>
     </Card>
   );
