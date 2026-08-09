@@ -150,6 +150,8 @@ export function UsersAdmin() {
   const setStatut = useServerFn(secSetUserStatut);
   const resetPwd = useServerFn(secResetPassword);
 
+  const mfaReset = useServerFn(mfaResetUser);
+
   const users = useQuery({ queryKey: ["sec", "users"], queryFn: () => listUsers({ data: {} }) });
   const refs = useQuery({ queryKey: ["sec", "refs"], queryFn: () => listRefs({ data: {} }) });
 
@@ -159,17 +161,18 @@ export function UsersAdmin() {
   const [form, setForm] = useState<typeof emptyForm | null>(null);
   const [pwdTarget, setPwdTarget] = useState<UserRow | null>(null);
   const [pwdValue, setPwdValue] = useState("");
+  const [mfaResetTarget, setMfaResetTarget] = useState<UserRow | null>(null);
 
   const rows = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return ((users.data ?? []) as UserRow[]).filter((u) => {
+    return ((users.data ?? []) as any[]).filter((u) => {
       if (statutFilter !== "tous" && u.statut !== statutFilter) return false;
       if (roleFilter !== "tous" && !u.role_codes.includes(roleFilter)) return false;
       if (!q) return true;
       return [u.nom_complet, u.email, u.matricule, u.fonction]
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(q));
-    });
+    }) as UserRow[];
   }, [users.data, search, statutFilter, roleFilter]);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["sec", "users"] });
@@ -221,6 +224,16 @@ export function UsersAdmin() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const mfaResetMutation = useMutation({
+    mutationFn: (userId: string) => mfaReset({ data: { targetUserId: userId } }),
+    onSuccess: () => {
+      toast.success("MFA réinitialisé avec succès");
+      setMfaResetTarget(null);
+      invalidate();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const services = refs.data?.services ?? [];
   const departements = refs.data?.departements ?? [];
   const depots = refs.data?.depots ?? [];
@@ -249,13 +262,14 @@ export function UsersAdmin() {
     });
 
   const counters = useMemo(() => {
-    const all = (users.data ?? []) as UserRow[];
+    const all = (users.data ?? []) as any[];
     return {
       total: all.length,
       actifs: all.filter((u) => u.statut === "actif").length,
       bloques: all.filter((u) => u.statut !== "actif").length,
     };
   }, [users.data]);
+
 
   return (
     <div className="space-y-4">
