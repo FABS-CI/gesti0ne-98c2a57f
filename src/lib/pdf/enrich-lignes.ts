@@ -161,7 +161,7 @@ export type DocClientInfo = Pick<
 export async function loadClientDocInfo(
   clientId: string | null | undefined,
 ): Promise<DocClientInfo> {
-  if (!clientId) return {};
+  if (!clientId) return {} as DocClientInfo;
   const { data } = await supabase
     .from("clients")
     .select(
