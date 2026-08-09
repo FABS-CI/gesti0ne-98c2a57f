@@ -131,7 +131,7 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
         <img src={logoDataUrl} alt="FABS-CI" style={{ height: "18mm", width: "auto" }} />
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: "20pt", fontWeight: 900, letterSpacing: "0.1em" }}>ÉTIQUETAGE</div>
-          <div style={{ fontSize: "9pt", color: "#555" }}>Fiche carton — FABS-CI Éditions</div>
+          <div style={{ fontSize: "10pt", color: "#555", marginTop: "1mm" }}>Fiche carton — FABS-CI Éditions</div>
         </div>
       </div>
 
@@ -153,7 +153,7 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
         <InfoRow label="N° Commande" value={data.commande ?? "—"} />
         <InfoRow label="Client" value={data.client ?? "—"} strong />
         <div style={{ padding: "3mm 0", borderBottom: "1px solid #ddd" }}>
-          <div style={{ color: "#555", fontSize: "9pt" }}>Responsable Achat / Contact</div>
+          <div style={{ color: "#555", fontSize: "10pt", marginBottom: "1mm" }}>Responsable Achat / Contact</div>
           <div style={{ fontWeight: 800, fontSize: "12pt" }}>
             {data.representant ?? "—"}{telephone ? ` · ${telephone}` : ""}
           </div>
