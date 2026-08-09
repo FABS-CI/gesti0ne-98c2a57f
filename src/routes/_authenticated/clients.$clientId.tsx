@@ -244,7 +244,16 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
           <Kpi label="Paiements" value={String(counts.paiements)} />
           <Kpi label="Livraisons" value={String(counts.livraisons)} />
           <Kpi label="Proformas" value={String(counts.proformas)} />
-          <Kpi label="Avoirs" value={String(counts.avoirs)} />
+          <Kpi
+            label="Avoirs"
+            value={String(counts.avoirs)}
+            className="cursor-pointer hover:bg-accent transition-colors"
+            onClick={() => {
+              const tabs = document.querySelector('[role="tablist"]');
+              const avoirTab = tabs?.querySelector('[value="avoirs"]') as HTMLElement;
+              avoirTab?.click();
+            }}
+          />
         </div>
       </Section>
 

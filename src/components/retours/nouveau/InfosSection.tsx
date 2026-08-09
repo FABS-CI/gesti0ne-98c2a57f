@@ -35,9 +35,13 @@ export function InfosSection({ form, depots }: Props) {
           <Label>Type de retour *</Label>
           <Select
             value={typeRetour ?? "physique"}
-            onValueChange={(v) =>
-              form.setValue("type_retour", v as "physique" | "avoir", { shouldValidate: true })
-            }
+            onValueChange={(v) => {
+              const newType = v as "physique" | "avoir";
+              form.setValue("type_retour", newType, { shouldValidate: true });
+              if (newType === "avoir") {
+                form.setValue("depot_id", "");
+              }
+            }}
           >
             <SelectTrigger>
               <SelectValue />
