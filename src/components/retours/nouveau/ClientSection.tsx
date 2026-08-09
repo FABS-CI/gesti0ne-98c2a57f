@@ -24,6 +24,7 @@ export function ClientSection({ form, applyClient }: Props) {
             form.setValue("client_id", id ?? "", { shouldValidate: true });
             applyClient(client);
           }}
+          disabled={!!form.watch("client_id") && form.formState.isSubmitSuccessful === false && (form.getValues("client_id")?.length ?? 0) > 0 && !!new URLSearchParams(window.location.search).get('clientId')}
         />
       </div>
       {form.formState.errors.client_id && (
