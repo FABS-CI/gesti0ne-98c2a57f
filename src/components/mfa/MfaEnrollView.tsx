@@ -128,7 +128,7 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
             </Button>
           </div>
 
-          <Button variant="default" className="w-full h-12 text-lg font-bold mt-4" onClick={() => navigate({ to: "/" })}>
+          <Button variant="default" className="w-full h-12 text-lg font-bold mt-4" onClick={() => onSuccess ? onSuccess() : navigate({ to: "/" })}>
             J'AI ENREGISTRÉ MES CODES
           </Button>
         </CardContent>
@@ -145,6 +145,14 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-8">
+        {targetUserId && (
+          <Alert className="bg-blue-50 border-blue-200">
+            <AlertCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800 text-sm font-medium">
+              Configuration du MFA pour un autre utilisateur. L'utilisateur devra scanner ce code.
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="space-y-6">
           <div className="space-y-4">
             <h3 className="font-bold flex items-center gap-2 text-lg">
