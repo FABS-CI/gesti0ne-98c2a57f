@@ -26,7 +26,7 @@ import {
   type DocType as SettingsDocType,
 } from "@/lib/document-settings-api";
 import { shouldShowQr } from "@/lib/pdf/docTypeConfig";
-import { generateUnifiedCommercialPDF, generateUnifiedStatementPDF } from "./unified-generator";
+import { generateUnifiedCommercialPDF, generateUnifiedStatementPDF, generateUnifiedAchatPDF } from "./unified-generator";
 
 // Raccourcit une référence longue (ex. "BL-2026-0703-160245-7188" -> "BL-7188",
 // "CLI-70c43f16-..." -> "CLI-70C43F16") pour une meilleure lisibilité dans les

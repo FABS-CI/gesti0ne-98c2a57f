@@ -618,12 +618,15 @@ export class BaseDocument {
       curY -= 20;
     };
 
-    const brutLabel = this.data.type === "Bon de Réception" ? "Montant brut" : "Montant brut HT";
+    const isBR = this.data.type === "Bon de Réception";
+    const brutLabel = isBR ? "Montant brut" : "Montant brut HT";
     row(brutLabel, formatFCFA(this.totals.sousTotal));
     
     if (this.totals.remiseLignes) {
-      const pct = this.totals.remiseLignesPct ? ` (${this.totals.remiseLignesPct.toFixed(2)} %)` : "";
-      row(`Remise sur lignes${pct}`, `- ${formatFCFA(this.totals.remiseLignes)}`);
+      // Pour le BR, on n'affiche pas forcément le pourcentage moyen s'il y en a plusieurs,
+      // on suit la demande de distinction claire.
+      const labelRemise = isBR ? "Montant remise" : "Remise sur lignes";
+      row(labelRemise, `- ${formatFCFA(this.totals.remiseLignes)}`);
     }
     
     if (this.totals.remiseGlobale) {

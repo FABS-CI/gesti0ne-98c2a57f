@@ -23,18 +23,33 @@ type RawLigne = {
 };
 
 function toDocLignes(rows: RawLigne[]): DocLigne[] {
-  return rows.map((r) => ({
-    codeArticle: r.reference_produit ?? r.produits?.reference ?? undefined,
-    reference: r.designation ?? undefined,
-    cycle: (r.produits?.categorie ?? "").toUpperCase() || undefined,
-    niveau: r.produits?.niveau ?? undefined,
-    matiere: r.produits?.matiere ?? undefined,
-    qte: Number(r.quantite ?? 0),
-    prixUnitaire: Number(r.prix_unitaire ?? 0),
-    montant: Number(r.total_ligne ?? (r.quantite ?? 0) * (r.prix_unitaire ?? 0)),
-    remisePct: r.remise_pct != null ? Number(r.remise_pct) : undefined,
-    remiseMontant: r.montant_remise != null ? Number(r.montant_remise) : undefined,
-  }));
+  return rows.map((r) => {
+    const qte = Number(r.quantite ?? 0);
+    const pu = Number(r.prix_unitaire ?? 0);
+    const remisePct = r.remise_pct != null ? Number(r.remise_pct) : 0;
+    
+    // Si remise_pct est à 50, on applique 0.5
+    const montantRemise = r.montant_remise != null 
+      ? Number(r.montant_remise) 
+      : (qte * pu * remisePct) / 100;
+      
+    const net = r.total_ligne != null
+      ? Number(r.total_ligne)
+      : (qte * pu) - montantRemise;
+
+    return {
+      codeArticle: r.reference_produit ?? r.produits?.reference ?? undefined,
+      reference: r.designation ?? undefined,
+      cycle: (r.produits?.categorie ?? "").toUpperCase() || undefined,
+      niveau: r.produits?.niveau ?? undefined,
+      matiere: r.produits?.matiere ?? undefined,
+      qte: qte,
+      prixUnitaire: pu,
+      montant: net,
+      remisePct: remisePct,
+      remiseMontant: montantRemise,
+    };
+  });
 }
 
 /**
@@ -289,22 +304,49 @@ export function resolveDiscountMode(totals: DocTotals): DiscountMode {
 export async function loadClientInfoForAchat(achatId: string): Promise<DocClientInfo> {
   const { data } = await supabase
     .from("achats")
-    .select("fournisseur_id")
+    .select("fournisseur_id, reference_fournisseur")
     .eq("achat_id", achatId)
     .maybeSingle();
   if (!data?.fournisseur_id) return {};
   const { data: fournisseur } = await supabase
     .from("fournisseurs")
-    .select("nom, telephone, email, adresse, ville")
+    .select("nom, reference, representant, telephone, email, adresse, ville")
     .eq("fournisseur_id", data.fournisseur_id)
     .maybeSingle();
   if (!fournisseur) return {};
   return {
     clientNom: fournisseur.nom || "",
+    codeClient: fournisseur.reference,
+    representant: fournisseur.representant,
     clientTel: fournisseur.telephone,
     emailClient: fournisseur.email,
     adresseClient: fournisseur.adresse,
     villeClient: fournisseur.ville,
+    modePaiement: data.reference_fournisseur ? `Réf. Fournisseur: ${data.reference_fournisseur}` : undefined,
+  };
+}
+
+export async function loadAchatTotals(achatId: string): Promise<DocTotals> {
+  const { data } = await supabase
+    .from("achats")
+    .select("montant_brut, total_remises_lignes, remise_globale_pct, remise_globale_montant, montant_ht_net, montant_ttc, montant")
+    .eq("achat_id", achatId)
+    .maybeSingle();
+  if (!data) return {};
+  
+  const brut = Number(data.montant_brut ?? data.montant ?? 0);
+  const remiseLigneTotal = Number(data.total_remises_lignes ?? 0);
+  const remiseGlobale = Number(data.remise_globale_montant ?? 0);
+  const remiseGlobalePct = Number(data.remise_globale_pct ?? 0);
+  const net = Number(data.montant_ht_net ?? data.montant_ttc ?? data.montant ?? (brut - remiseLigneTotal - remiseGlobale));
+
+  return {
+    totalVente: brut,
+    remiseLigneTotal: remiseLigneTotal,
+    remiseGlobalePct: remiseGlobalePct,
+    remiseGlobale: remiseGlobale,
+    montantHT: net,
+    totalTTC: net,
   };
 }
 
