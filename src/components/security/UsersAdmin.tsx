@@ -394,6 +394,21 @@ export function UsersAdmin() {
                       )}
                     </TableCell>
                     <TableCell>
+                      {u.role_codes.includes("super_admin") ? (
+                        <Badge variant="secondary" className="bg-slate-100 text-slate-500 border-slate-200">
+                          ⚪ EXEMPTÉ
+                        </Badge>
+                      ) : u.mfa_enrolled_at ? (
+                        <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
+                          🟢 Activé
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
+                          🟠 Non configuré
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <Badge variant={STATUT_META[u.statut].variant}>
                         {STATUT_META[u.statut].label}
                       </Badge>
@@ -401,6 +416,7 @@ export function UsersAdmin() {
                     <TableCell className="text-xs text-muted-foreground">
                       {formatDate(u.derniere_connexion)}
                     </TableCell>
+
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
