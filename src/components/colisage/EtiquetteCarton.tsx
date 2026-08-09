@@ -23,7 +23,7 @@ export type EtiquettePayload = {
   ville_destination?: string | null;
   gare_responsable?: string | null;
   gare_telephone?: string | null;
-  produits: { designation: string | null; quantite: number }[];
+  produits: { designation: string | null; quantite: number; cover_path?: string | null }[];
 };
 
 export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
