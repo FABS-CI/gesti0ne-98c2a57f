@@ -431,7 +431,16 @@ export function UsersAdmin() {
                           <DropdownMenuItem onClick={() => setPwdTarget(u)}>
                             <KeyRound className="mr-2 h-4 w-4" /> Réinitialiser le mot de passe
                           </DropdownMenuItem>
+                          {u.mfa_enrolled_at && !u.role_codes.includes("super_admin") && (
+                            <DropdownMenuItem 
+                              className="text-orange-600"
+                              onClick={() => setMfaResetTarget(u)}
+                            >
+                              <ShieldOff className="mr-2 h-4 w-4" /> Réinitialiser le MFA
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuSeparator />
+
                           {u.statut !== "actif" ? (
                             <DropdownMenuItem
                               onClick={() =>
