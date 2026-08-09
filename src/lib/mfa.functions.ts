@@ -97,7 +97,7 @@ export const mfaEnrollStart = createServerFn({ method: "POST" })
 export const mfaEnrollConfirm = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw) => z.object({ 
-    code: z.string().regex(/^\d{6}$/),
+    code: z.string().length(6),
     targetUserId: z.string().uuid().optional()
   }).parse(raw))
   .handler(async ({ data, context }) => {
