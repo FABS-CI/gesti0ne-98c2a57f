@@ -50,53 +50,53 @@ export function printEtiquettes(
     padding: 15mm;
   }
   .single-label-page .etiquette-carton {
-    width: 180mm !important;
-    height: 260mm !important;
-    border: 1px solid #eee;
+    width: 190mm !important;
+    height: 270mm !important;
   }
 
   /* Cas 2 étiquettes par page (Moitié A4) */
   .double-label-page {
     display: flex;
     flex-direction: column;
+    height: 297mm;
   }
   .label-half {
     height: 148.5mm;
     width: 210mm;
-    padding: 10mm 15mm;
+    padding: 10mm;
     position: relative;
-    border-bottom: 0.2mm dashed #ccc;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
   }
-  .label-half:last-child { border-bottom: none; }
   
   .label-half .etiquette-carton {
-    width: 180mm !important;
+    width: 190mm !important;
     height: 128mm !important;
-    transform: scale(0.95); /* Légère réduction pour tenir proprement */
   }
 
   /* Repères de découpe et ciseaux pour le mode double */
   .crop-marks-v {
     position: absolute;
     top: 148.5mm;
-    left: 0;
-    right: 0;
-    border-top: 0.2mm dashed #666;
+    left: 10mm;
+    right: 10mm;
+    border-top: 0.5mm dashed #000;
     z-index: 100;
   }
   .cut-icon {
     position: absolute;
-    left: 10mm;
+    left: 50%;
     top: 148.5mm;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
     background: white;
-    padding: 2px;
-    font-size: 16pt;
+    padding: 0 10px;
+    font-size: 14pt;
+    font-weight: bold;
     z-index: 101;
   }
+  .cut-icon::after { content: " ✂ DÉCOUPE ✂ "; }
 
   img { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .preview-bar { position: fixed; top: 0; left: 0; right: 0; padding: 8px 12px;

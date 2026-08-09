@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import fabsLogoUrl from "@/assets/fabs-logo.png";
+import { supabase } from "@/integrations/supabase/client";
 
 export type EtiquettePayload = {
   commande: string | null;
@@ -23,15 +24,15 @@ export type EtiquettePayload = {
   ville_destination?: string | null;
   gare_responsable?: string | null;
   gare_telephone?: string | null;
-  produits: { designation: string | null; quantite: number }[];
+  produits: { designation: string | null; quantite: number; cover_path?: string | null }[];
 };
 
 export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
   const [qr, setQr] = useState<string>("");
   const [logoDataUrl, setLogoDataUrl] = useState<string>(fabsLogoUrl);
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+
   useEffect(() => {
-    // Convertit le logo en dataURL pour qu'il s'affiche dans la fenêtre
-    // d'impression (nouveau document sans accès aux assets Vite hashés).
     fetch(fabsLogoUrl)
       .then((r) => r.blob())
       .then(
@@ -46,15 +47,12 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
       .then(setLogoDataUrl)
       .catch(() => undefined);
   }, []);
+
   useEffect(() => {
-    // Base URL publique : FORCÉE sur le domaine publié pour que le QR soit
-    // toujours scannable sans authentification, même si l'étiquette est
-    // imprimée depuis la preview Lovable (protégée par auth-bridge).
     const envBase = (import.meta.env.VITE_PUBLIC_URL as string | undefined)?.replace(/\/$/, "");
     const origin =
       envBase ||
       (typeof window !== "undefined" ? window.location.origin : "https://gesti-0ne.lovable.app");
-    // URL publique du carton (aucune auth). Fallback JSON si colis pas persisté.
     const url = data.colis_id
       ? `${origin}/carton/${data.colis_id}`
       : JSON.stringify({
@@ -66,27 +64,47 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
       .then(({ default: QRCode }) =>
         QRCode.toDataURL(url, {
           margin: 1,
-          width: 150, // Taille réduite pour accélération
-          errorCorrectionLevel: "M", // Équilibre vitesse/fiabilité
+          width: 150,
+          errorCorrectionLevel: "M",
         }),
       )
       .then(setQr)
       .catch(() => setQr(""));
   }, [data]);
 
-  const destination =
-    data.mode_acheminement === "expedition"
-      ? `${data.ville_destination ?? ""}${data.gare_depart ? ` (Gare ${data.gare_depart})` : ""}`
-      : [data.adresse, data.ville].filter(Boolean).join(", ") || data.ville || "";
+  useEffect(() => {
+    const loadImages = async () => {
+      const urls: Record<string, string> = {};
+      for (const p of data.produits) {
+        if (p.cover_path && !urls[p.cover_path]) {
+          try {
+            const { data: imgData } = supabase.storage
+              .from("produits")
+              .getPublicUrl(p.cover_path);
+            if (imgData?.publicUrl) {
+              const res = await fetch(imgData.publicUrl);
+              const blob = await res.blob();
+              const dataUrl = await new Promise<string>((resolve) => {
+                const fr = new FileReader();
+                fr.onload = () => resolve(String(fr.result));
+                fr.readAsDataURL(blob);
+              });
+              urls[p.cover_path] = dataUrl;
+            }
+          } catch (e) {
+            console.error("Erreur chargement image produit:", e);
+          }
+        }
+      }
+      setImageUrls(urls);
+    };
+    loadImages();
+  }, [data.produits]);
 
   const isExpedition = data.mode_acheminement === "expedition";
-  const telephone = isExpedition
-    ? data.gare_telephone || data.telephone
-    : data.telephone;
-
+  const telephone = isExpedition ? data.gare_telephone || data.telephone : data.telephone;
   const modeLabel = isExpedition ? "EXPÉDITION" : "LIVRAISON DIRECTE";
 
-  // Sticker plein A4 : sobre, sans logo/en-tête/pied ERP, informations en gras.
   return (
     <div
       className="etiquette-carton bg-white text-black break-inside-avoid flex flex-col"
@@ -95,159 +113,89 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
         width: "100%",
         minHeight: "100%",
         fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+        padding: "8mm",
+        border: "1px solid #eee"
       }}
     >
-      {/* En-tête : logo FABS + titre ETIQUETAGE */}
+      {/* En-tête */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: "6mm",
           borderBottom: "2px solid #000",
           paddingBottom: "4mm",
           marginBottom: "6mm",
         }}
       >
-        <img
-          src={logoDataUrl}
-          alt="FABS-CI"
-          style={{ height: "20mm", width: "auto", objectFit: "contain" }}
-        />
+        <img src={logoDataUrl} alt="FABS-CI" style={{ height: "18mm", width: "auto" }} />
         <div style={{ textAlign: "right" }}>
-          <div
-            style={{
-              fontSize: "22pt",
-              fontWeight: 900,
-              letterSpacing: "0.2em",
-              lineHeight: 1,
-            }}
-          >
-            ÉTIQUETAGE
-          </div>
-          <div style={{ fontSize: "9pt", color: "#555", marginTop: "1.5mm" }}>
-            Fiche carton — FABS-CI Éditions
-          </div>
+          <div style={{ fontSize: "20pt", fontWeight: 900, letterSpacing: "0.1em" }}>ÉTIQUETAGE</div>
+          <div style={{ fontSize: "10pt", color: "#555", marginTop: "1mm" }}>Fiche carton — FABS-CI Éditions</div>
         </div>
       </div>
 
-      {/* Bandeau Carton X / Y — très visible */}
-      <div
-        className="text-center"
-        style={{ border: "3px solid #000", padding: "8mm 4mm", marginBottom: "8mm" }}
-      >
+      {/* Carton X / Y */}
+      <div className="text-center" style={{ border: "2.5px solid #000", padding: "5mm", marginBottom: "6mm" }}>
         <div style={{ fontSize: "14pt", fontWeight: 700, letterSpacing: "0.15em" }}>CARTON</div>
-        <div style={{ fontSize: "48pt", fontWeight: 900, lineHeight: 1 }}>
+        <div style={{ fontSize: "40pt", fontWeight: 900, lineHeight: 1 }}>
           {data.numero_carton} / {data.nb_cartons}
         </div>
       </div>
 
-      {/* Bloc informations principales */}
-      <div style={{ fontSize: "13pt", lineHeight: 1.6 }}>
-        {/* Mode de livraison — encadré orange très visible */}
-        <div
-          style={{
-            background: "linear-gradient(90deg, #1D4ED8 0%, #2563EB 50%, #3B82F6 100%)",
-            color: "#FFFFFF",
-            padding: "6mm 5mm",
-            marginBottom: "5mm",
-            border: "2px solid #0B2E7A",
-            textAlign: "center",
-            fontWeight: 900,
-            fontSize: "18pt",
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            boxShadow: "0 2mm 4mm rgba(29,78,216,0.25)",
-          }}
-        >
+      {/* Infos principales */}
+      <div style={{ fontSize: "12pt", lineHeight: 1.5 }}>
+        <div style={{ background: "#1B2A57", color: "#fff", padding: "4mm", marginBottom: "5mm", textAlign: "center", fontWeight: 900, fontSize: "16pt" }}>
           MODE DE LIVRAISON : {modeLabel}
         </div>
-        <InfoRow label="N° Bon de Livraison" value={data.bl} strong />
-        {data.colis_id && (
-          <InfoRow label="N° Colisage" value={data.colis_id.slice(0, 8).toUpperCase()} mono />
-        )}
-        <InfoRow label="N° Commande" value={data.commande ?? "—"} strong />
+        <InfoRow label="N° BL" value={data.bl} />
+        {data.colis_id && <InfoRow label="N° Colisage" value={data.colis_id.slice(0, 8).toUpperCase()} />}
+        <InfoRow label="N° Commande" value={data.commande ?? "—"} />
         <InfoRow label="Client" value={data.client ?? "—"} strong />
-        <div style={{ padding: "4mm 0", borderBottom: "1px solid #ddd" }}>
-          <div style={{ color: "#333", fontSize: "10pt", marginBottom: "1mm" }}>Responsable Achat</div>
-          <div style={{ fontWeight: 800, fontSize: "14pt" }}>
-            {data.representant ?? "—"}
-            {telephone ? ` · ${telephone}` : ""}
+        <div style={{ padding: "3mm 0", borderBottom: "1px solid #ddd" }}>
+          <div style={{ color: "#555", fontSize: "10pt", marginBottom: "1mm" }}>Responsable Achat / Contact</div>
+          <div style={{ fontWeight: 800, fontSize: "12pt" }}>
+            {data.representant ?? "—"}{telephone ? ` · ${telephone}` : ""}
           </div>
-          <div style={{ marginTop: "2mm", fontSize: "14pt", fontWeight: 700, textTransform: "uppercase" }}>
+          <div style={{ marginTop: "1mm", fontSize: "12pt", fontWeight: 700, textTransform: "uppercase" }}>
             {data.ville || "—"}
           </div>
         </div>
       </div>
 
-      {/* QR code central et imposant */}
-      <div
-        className="flex flex-col items-center justify-center"
-        style={{ marginTop: "auto", paddingTop: "10mm", textAlign: "center" }}
-      >
-        {qr ? (
-          <img
-            src={qr}
-            alt="QR carton"
-            style={{
-              width: "28mm",
-              height: "28mm",
-              display: "block",
-              margin: "0 auto",
-              imageRendering: "pixelated",
-            }}
-          />
-        ) : (
-          <div style={{ width: "28mm", height: "28mm", background: "#eee", margin: "0 auto" }} />
-        )}
-        <div
-          style={{
-            fontSize: "10pt",
-            marginTop: "3mm",
-            color: "#333",
-            textAlign: "center",
-          }}
-        >
-          Scanner pour consulter les informations du carton
+      {/* Section Produits */}
+        <div style={{ marginTop: "4mm", flex: 1 }}>
+        <div style={{ fontSize: "12pt", fontWeight: 700, borderBottom: "1.5px solid #000", paddingBottom: "1.5mm", marginBottom: "3mm" }}>
+          PRODUITS & QUANTITÉS
         </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4mm" }}>
+          {data.produits.map((p, i) => (
+            <div key={i} style={{ display: "flex", gap: "6mm", alignItems: "start" }}>
+              {p.cover_path && imageUrls[p.cover_path] && (
+                <img src={imageUrls[p.cover_path]} alt="" style={{ width: "22mm", height: "28mm", objectFit: "contain", border: "1px solid #ddd" }} />
+              )}
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "12pt", fontWeight: 700 }}>{p.designation}</div>
+                <div style={{ fontSize: "16pt", fontWeight: 900, marginTop: "1mm" }}>QUANTITÉ : {p.quantite} EXEMPLAIRES</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* QR Code */}
+      <div style={{ marginTop: "auto", paddingTop: "5mm", textAlign: "center" }}>
+        {qr && <img src={qr} alt="QR" style={{ width: "25mm", height: "25mm", margin: "0 auto" }} />}
       </div>
     </div>
   );
 }
 
-function InfoRow({
-  label,
-  value,
-  strong,
-  mono,
-  uppercase,
-}: {
-  label: string;
-  value: string;
-  strong?: boolean;
-  mono?: boolean;
-  uppercase?: boolean;
-}) {
+function InfoRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "40mm 1fr",
-        gap: "4mm",
-        borderBottom: "1px solid #ddd",
-        padding: "2mm 0",
-      }}
-    >
-      <div style={{ color: "#333" }}>{label}</div>
-      <div
-        style={{
-          fontWeight: strong ? 800 : 500,
-          fontFamily: mono ? "ui-monospace, monospace" : undefined,
-          textTransform: uppercase ? "uppercase" : undefined,
-        }}
-      >
-        {value}
-      </div>
+    <div style={{ display: "grid", gridTemplateColumns: "35mm 1fr", gap: "2mm", borderBottom: "1px solid #ddd", padding: "1.5mm 0" }}>
+      <div style={{ color: "#555" }}>{label}</div>
+      <div style={{ fontWeight: strong ? 800 : 600 }}>{value}</div>
     </div>
   );
 }

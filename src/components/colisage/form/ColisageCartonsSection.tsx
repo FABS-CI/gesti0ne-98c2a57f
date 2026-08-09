@@ -177,7 +177,7 @@ export function ColisageCartonsSection({
                       min={0}
                       max={restant ?? undefined}
                       placeholder="Qté"
-                      value={li.quantite}
+                      value={li.quantite ?? ""}
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === "") {

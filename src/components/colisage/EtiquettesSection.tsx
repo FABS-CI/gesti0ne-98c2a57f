@@ -40,7 +40,7 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
       finalHtml += `
         <div class="a4-page double-label-page">
           <div class="label-half">${item1Html}</div>
-          ${e2 ? `<div class="crop-marks-v"></div><div class="cut-icon">✂️</div>` : ""}
+          ${e2 ? `<div class="crop-marks-v"></div><div class="cut-icon"></div>` : ""}
           <div class="label-half">${item2Html}</div>
         </div>
       `;
