@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowLeft, Mail, MessageCircle, Pencil, PlusCircle, Wallet } from "lucide-react";
+import { ArrowLeft, Mail, MessageCircle, Pencil, PlusCircle, RotateCcw, Wallet, ReceiptText } from "lucide-react";
 
 import { TYPE_COLOR } from "@/lib/company";
 import { formatFCFA } from "@/lib/format";
@@ -153,6 +153,23 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
           >
             <Wallet className="mr-2 h-4 w-4" /> Imputer un paiement
           </Button>
+          <Button
+            variant="secondary"
+            className="bg-purple-600 hover:bg-purple-700 text-white"
+            onClick={() =>
+              navigate({ to: "/retours/nouveau", search: { clientId: client.client_id, type_retour: "avoir" } })
+            }
+          >
+            <ReceiptText className="mr-2 h-4 w-4" /> Avoir
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              navigate({ to: "/retours/nouveau", search: { clientId: client.client_id, type_retour: "physique" } })
+            }
+          >
+            <RotateCcw className="mr-2 h-4 w-4" /> Retour
+          </Button>
           <Badge style={{ backgroundColor: type?.bg ?? "#CFD8DC", color: type?.color ?? "#0A2540" }}>
             {type?.label ?? client.type_client}
           </Badge>
@@ -227,7 +244,16 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
           <Kpi label="Paiements" value={String(counts.paiements)} />
           <Kpi label="Livraisons" value={String(counts.livraisons)} />
           <Kpi label="Proformas" value={String(counts.proformas)} />
-          <Kpi label="Avoirs" value={String(counts.avoirs)} />
+          <Kpi
+            label="Avoirs"
+            value={String(counts.avoirs)}
+            className="cursor-pointer hover:bg-accent transition-colors"
+            onClick={() => {
+              const tabs = document.querySelector('[role="tablist"]');
+              const avoirTab = tabs?.querySelector('[value="avoirs"]') as HTMLElement;
+              avoirTab?.click();
+            }}
+          />
         </div>
       </Section>
 

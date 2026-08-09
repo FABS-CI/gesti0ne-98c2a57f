@@ -1,9 +1,11 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, RotateCcw, Save } from "lucide-react";
+import { ArrowLeft, Loader2, RotateCcw, Save, ReceiptText } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 import { Button } from "@/components/ui/button";
 import { type Client } from "@/lib/clients-api";
@@ -23,6 +25,10 @@ import { DraftRestoreBanner } from "@/components/ui/draft-restore-banner";
 import { friendlyError } from "@/lib/friendly-error";
 
 export const Route = createFileRoute("/_authenticated/retours/nouveau")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    clientId: (search.clientId as string) || undefined,
+    type_retour: (search.type_retour as "physique" | "avoir") || undefined,
+  }),
   component: RetourNouveauPage,
   errorComponent: RouteError,
   notFoundComponent: RouteNotFound,
@@ -30,6 +36,7 @@ export const Route = createFileRoute("/_authenticated/retours/nouveau")({
 
 function RetourNouveauPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch() as { clientId?: string; type_retour?: "physique" | "avoir" };
   const qc = useQueryClient();
   const { has, isLoading: permLoading } = usePermissions();
   const canManage = has("retours.creer");
@@ -38,10 +45,10 @@ function RetourNouveauPage() {
     resolver: zodResolver(retourFormSchema),
     defaultValues: {
       date_retour: new Date().toISOString().slice(0, 10),
-      client_id: "",
+      client_id: search.clientId || "",
       facture_id: "",
       livraison_id: "",
-      type_retour: "physique",
+      type_retour: search.type_retour || "physique",
       etablissement: "",
       representant_nom: "",
       telephone: "",
@@ -54,6 +61,27 @@ function RetourNouveauPage() {
       lignes: [],
     },
   });
+
+  const { data: clientInitial } = useQuery({
+    queryKey: ["client", search.clientId],
+    queryFn: async () => {
+      if (!search.clientId) return null;
+      const { data, error } = await supabase
+        .from("clients")
+        .select("*")
+        .eq("client_id", search.clientId)
+        .single();
+      if (error) throw error;
+      return data as Client;
+    },
+    enabled: !!search.clientId,
+  });
+
+  useEffect(() => {
+    if (clientInitial) {
+      applyClient(clientInitial);
+    }
+  }, [clientInitial]);
 
   const fa = useFieldArray({ control: form.control, name: "lignes" });
 
@@ -162,11 +190,19 @@ function RetourNouveauPage() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <RotateCcw className="h-6 w-6 text-primary" />
+          {form.watch("type_retour") === "avoir" ? (
+            <ReceiptText className="h-6 w-6 text-purple-600" />
+          ) : (
+            <RotateCcw className="h-6 w-6 text-primary" />
+          )}
           <div>
-            <h1 className="text-2xl font-bold">Nouveau Retour</h1>
+            <h1 className="text-2xl font-bold">
+              {form.watch("type_retour") === "avoir" ? "Nouvel Avoir" : "Nouveau Retour"}
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Enregistrement d'un retour produits client
+              {form.watch("type_retour") === "avoir"
+                ? "Génération d'un avoir financier pour le client"
+                : "Enregistrement d'un retour produits client"}
             </p>
           </div>
         </div>

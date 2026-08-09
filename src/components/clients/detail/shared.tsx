@@ -41,15 +41,22 @@ export function Kpi({
   value,
   accent,
   color,
+  className,
+  onClick,
 }: {
   label: string;
   value: React.ReactNode;
   accent?: string;
   color?: string;
+  className?: string;
+  onClick?: () => void;
 }) {
   const bar = color ?? "hsl(var(--primary))";
   return (
-    <Card className="relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md">
+    <Card 
+      className={`relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md ${className || ""}`}
+      onClick={onClick}
+    >
       <span
         aria-hidden
         className="absolute inset-y-0 left-0 w-1"

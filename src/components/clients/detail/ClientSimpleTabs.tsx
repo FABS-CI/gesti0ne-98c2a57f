@@ -117,9 +117,15 @@ export function ClientBLTab({
 }
 
 // ---- Avoirs ----
-const AvoirRow = React.memo(function AvoirRow({ a }: { a: ClientRelations["avoirs"][number] }) {
+const AvoirRow = React.memo(function AvoirRow({
+  a,
+  onNavigate,
+}: {
+  a: ClientRelations["avoirs"][number];
+  onNavigate: (id: string) => void;
+}) {
   return (
-    <TableRow>
+    <TableRow className="cursor-pointer hover:bg-muted/50" onClick={() => onNavigate(a.retour_id)}>
       <TableCell className="font-mono text-xs">{a.reference}</TableCell>
       <TableCell>{frDate(a.date_retour)}</TableCell>
       <TableCell className="text-sm text-muted-foreground">{a.motif || "—"}</TableCell>
@@ -132,6 +138,7 @@ const AvoirRow = React.memo(function AvoirRow({ a }: { a: ClientRelations["avoir
 });
 
 export function ClientAvoirsTab({ avoirs }: { avoirs: ClientRelations["avoirs"] }) {
+  const navigate = useNavigate();
   return (
     <div className="rounded-lg border bg-card">
       <Table>
@@ -148,7 +155,13 @@ export function ClientAvoirsTab({ avoirs }: { avoirs: ClientRelations["avoirs"] 
           {!avoirs.length ? (
             <EmptyRow cols={5} label="Aucun avoir / retour" />
           ) : (
-            avoirs.map((a) => <AvoirRow key={a.retour_id} a={a} />)
+            avoirs.map((a) => (
+              <AvoirRow
+                key={a.retour_id}
+                a={a}
+                onNavigate={(id) => navigate({ to: "/retours/$retourId", params: { retourId: id } })}
+              />
+            ))
           )}
         </TableBody>
       </Table>
