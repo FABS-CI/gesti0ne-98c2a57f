@@ -85,7 +85,14 @@ function sumLignes(lignes: DocLigne[] | undefined): number {
 export function verifyDocument(type: DocKind, data: DocBase): VerifyResult {
   const issues: VerifyIssue[] = [];
   const ref = LAYOUT_REFERENCE[type];
-  const qr = buildQrPayload(data);
+  const qrRaw = buildQrPayload(data);
+  let qr: Record<string, unknown> = {};
+  
+  try {
+    qr = JSON.parse(qrRaw);
+  } catch (e) {
+    issues.push({ champ: "qr", attendu: "JSON valide", recu: qrRaw });
+  }
 
   // 1. Référence du document
   if (!data.reference || !/^[A-Z0-9-]+$/i.test(data.reference)) {
@@ -124,22 +131,22 @@ export function verifyDocument(type: DocKind, data: DocBase): VerifyResult {
     }
   }
 
-  if (ref.qr) {
+  if (ref.qr && qr) {
     // Champs requis du QR JSON
-    const requiredString: Array<keyof typeof qr> = ["ref", "client", "date"];
+    const requiredString = ["ref", "cli", "date"];
     for (const k of requiredString) {
       const v = qr[k];
       if (typeof v !== "string" || v.trim() === "") {
-        issues.push({ champ: `qr.${String(k)}`, attendu: "valeur non vide", recu: v });
+        issues.push({ champ: `qr.${k}`, attendu: "valeur non vide", recu: v });
       }
     }
-    if (typeof qr.total !== "number" || Number.isNaN(qr.total)) {
-      issues.push({ champ: "qr.total", attendu: "nombre", recu: qr.total });
+    if (typeof qr.tot !== "number" || Number.isNaN(qr.tot)) {
+      issues.push({ champ: "qr.total", attendu: "nombre", recu: qr.tot });
     }
     // Cohérence du total avec les données source
     const expectedTotal = Math.round(Number(data.totalVente ?? data.montantHT ?? 0));
-    if (qr.total !== expectedTotal) {
-      issues.push({ champ: "qr.total", attendu: expectedTotal, recu: qr.total });
+    if (qr.tot !== expectedTotal) {
+      issues.push({ champ: "qr.total", attendu: expectedTotal, recu: qr.tot });
     }
   }
 
