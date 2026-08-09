@@ -138,7 +138,7 @@ export function ColisageCartonsSection({
                   return (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) > 0;
                 });
                 return (
-                  <div key={lj} className="grid grid-cols-[1fr,110px,auto] gap-2">
+                  <div key={lj} className="grid grid-cols-1 sm:grid-cols-[1fr,120px,auto] gap-2">
                     <Select
                       value={li.produit_id}
                       onValueChange={(v) => updateLigne(ci, lj, { produit_id: v })}
@@ -178,6 +178,7 @@ export function ColisageCartonsSection({
                       max={restant ?? undefined}
                       placeholder="Qté"
                       value={li.quantite ?? ""}
+                      className="h-10 text-right"
                       onChange={(e) => {
                         const val = e.target.value;
                         if (val === "") {

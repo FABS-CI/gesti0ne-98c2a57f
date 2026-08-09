@@ -73,7 +73,7 @@ export function ColisageExpeditionFields(props: {
         <Label>
           Gare de départ
         </Label>
-        <Input value={gareDepart} onChange={(e) => setGareDepart(e.target.value)} />
+        <Input value={gareDepart} onChange={(e) => setGareDepart(e.target.value)} className="h-10" />
         <FieldError msg={errors.gareDepart} />
       </div>
       <div>
@@ -94,7 +94,7 @@ export function ColisageExpeditionFields(props: {
         </Label>
         <div className="flex gap-2">
           <div className="flex-1">
-            <Input value={gareResp} onChange={(e) => setGareResp(e.target.value)} />
+            <Input value={gareResp} onChange={(e) => setGareResp(e.target.value)} className="h-10" />
           </div>
           <Button
             type="button"
@@ -112,7 +112,7 @@ export function ColisageExpeditionFields(props: {
         <Label>
           Téléphone du responsable
         </Label>
-        <Input value={gareTel} onChange={(e) => setGareTel(e.target.value)} />
+        <Input value={gareTel} onChange={(e) => setGareTel(e.target.value)} className="h-10" />
         <FieldError msg={errors.gareTel} />
       </div>
 
