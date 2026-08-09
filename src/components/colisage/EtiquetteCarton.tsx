@@ -136,17 +136,17 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
       </div>
 
       {/* Carton X / Y */}
-      <div className="text-center" style={{ border: "2px solid #000", padding: "4mm", marginBottom: "6mm" }}>
-        <div style={{ fontSize: "12pt", fontWeight: 700 }}>CARTON</div>
-        <div style={{ fontSize: "36pt", fontWeight: 900 }}>
+      <div className="text-center" style={{ border: "2.5px solid #000", padding: "5mm", marginBottom: "6mm" }}>
+        <div style={{ fontSize: "14pt", fontWeight: 700, letterSpacing: "0.15em" }}>CARTON</div>
+        <div style={{ fontSize: "40pt", fontWeight: 900, lineHeight: 1 }}>
           {data.numero_carton} / {data.nb_cartons}
         </div>
       </div>
 
       {/* Infos principales */}
-      <div style={{ fontSize: "11pt", lineHeight: 1.4 }}>
-        <div style={{ background: "#1D4ED8", color: "#fff", padding: "3mm", marginBottom: "4mm", textAlign: "center", fontWeight: 900, fontSize: "14pt" }}>
-          MODE : {modeLabel}
+      <div style={{ fontSize: "12pt", lineHeight: 1.5 }}>
+        <div style={{ background: "#1B2A57", color: "#fff", padding: "4mm", marginBottom: "5mm", textAlign: "center", fontWeight: 900, fontSize: "16pt" }}>
+          MODE DE LIVRAISON : {modeLabel}
         </div>
         <InfoRow label="N° BL" value={data.bl} />
         {data.colis_id && <InfoRow label="N° Colisage" value={data.colis_id.slice(0, 8).toUpperCase()} />}
@@ -164,19 +164,19 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
       </div>
 
       {/* Section Produits */}
-      <div style={{ marginTop: "5mm", flex: 1 }}>
-        <div style={{ fontSize: "10pt", fontWeight: 700, borderBottom: "1px solid #000", paddingBottom: "1mm", marginBottom: "2mm" }}>
+        <div style={{ marginTop: "4mm", flex: 1 }}>
+        <div style={{ fontSize: "12pt", fontWeight: 700, borderBottom: "1.5px solid #000", paddingBottom: "1.5mm", marginBottom: "3mm" }}>
           PRODUITS & QUANTITÉS
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "3mm" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4mm" }}>
           {data.produits.map((p, i) => (
-            <div key={i} style={{ display: "flex", gap: "4mm", alignItems: "start" }}>
+            <div key={i} style={{ display: "flex", gap: "6mm", alignItems: "start" }}>
               {p.cover_path && imageUrls[p.cover_path] && (
-                <img src={imageUrls[p.cover_path]} alt="" style={{ width: "20mm", height: "25mm", objectFit: "contain", border: "1px solid #eee" }} />
+                <img src={imageUrls[p.cover_path]} alt="" style={{ width: "22mm", height: "28mm", objectFit: "contain", border: "1px solid #ddd" }} />
               )}
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "11pt", fontWeight: 700 }}>{p.designation}</div>
-                <div style={{ fontSize: "14pt", fontWeight: 900 }}>QUANTITÉ : {p.quantite} EXEMPLAIRES</div>
+                <div style={{ fontSize: "12pt", fontWeight: 700 }}>{p.designation}</div>
+                <div style={{ fontSize: "16pt", fontWeight: 900, marginTop: "1mm" }}>QUANTITÉ : {p.quantite} EXEMPLAIRES</div>
               </div>
             </div>
           ))}
