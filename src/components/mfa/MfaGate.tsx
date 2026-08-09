@@ -38,18 +38,19 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
           loading: false,
           enrolled: r.enrolled,
           valid: r.sessionValid,
-          exempt: !!(r as { exempt?: boolean }).exempt,
+          exempt: !!r.isSuperAdmin,
         });
       })
       .catch(
         () =>
           alive &&
-          setState({ loading: false, enrolled: false, valid: true, exempt: true }),
+          setState({ loading: false, enrolled: false, valid: true, exempt: false }),
       );
     return () => {
       alive = false;
     };
   }, [status, path]);
+
 
   // If not enrolled and not already on enroll page → redirect
   useEffect(() => {
