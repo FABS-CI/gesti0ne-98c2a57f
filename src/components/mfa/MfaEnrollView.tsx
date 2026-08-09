@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { mfaEnrollStart, mfaEnrollConfirm } from "@/lib/mfa.functions";
 
 
-export function MfaEnrollView() {
+export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: string, onSuccess?: () => void }) {
   const start = useServerFn(mfaEnrollStart);
   const confirm = useServerFn(mfaEnrollConfirm);
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ export function MfaEnrollView() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    start()
+    start({ data: { targetUserId } })
       .then(async (r) => {
         setOtpauth(r.otpauthUrl);
         setSecret(r.secret);
@@ -44,7 +44,7 @@ export function MfaEnrollView() {
         setStep("scan");
       })
       .catch((e) => setError(String(e?.message ?? e)));
-  }, [start]);
+  }, [start, targetUserId]);
 
   const backupText = useMemo(() => backup.join("\n"), [backup]);
 
@@ -52,7 +52,7 @@ export function MfaEnrollView() {
     setBusy(true);
     setError(null);
     try {
-      const r = await confirm({ data: { code } });
+      const r = await confirm({ data: { code, targetUserId } });
       setBackup(r.backupCodes);
       setStep("done");
       toast.success("MFA activé");
