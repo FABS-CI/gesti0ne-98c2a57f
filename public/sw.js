@@ -1,7 +1,5 @@
-const CACHE_NAME = 'gesti-one-v1';
+const CACHE_NAME = 'gesti-one-v2';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
   '/manifest.webmanifest',
   '/favicon.png',
   '/icon-192x192.png',
@@ -10,9 +8,7 @@ const ASSETS_TO_CACHE = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
   self.skipWaiting();
 });
@@ -28,34 +24,50 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Ressources sûres à mettre en cache (immuables / statiques)
+function isCacheableAsset(url) {
+  return /\.(png|jpg|jpeg|svg|webp|gif|ico|woff2?|ttf)$/i.test(new URL(url).pathname)
+    || new URL(url).pathname === '/manifest.webmanifest';
+}
+
 self.addEventListener('fetch', (event) => {
-  // Ignorer les requêtes non-GET et les schémas non supportés (chrome-extension, etc.)
-  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
+  const req = event.request;
+  if (req.method !== 'GET' || !req.url.startsWith('http')) return;
+  if (req.url.includes('/api/') || req.url.includes('supabase.co')) return;
+
+  // Images / polices : cache d'abord
+  if (isCacheableAsset(req.url)) {
+    event.respondWith(
+      caches.match(req).then((cached) =>
+        cached ||
+        fetch(req).then((res) => {
+          if (res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then((c) => c.put(req, clone));
+          }
+          return res;
+        }),
+      ),
+    );
     return;
   }
 
+  // Code applicatif (JS/CSS) et navigations : réseau d'abord, cache en secours
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      // Retourne le cache s'il existe, sinon fait la requête réseau
-      return response || fetch(event.request).then((fetchResponse) => {
-        // Ne pas mettre en cache les réponses d'API ou d'auth (Supabase)
-        if (event.request.url.includes('/api/') || event.request.url.includes('supabase.co')) {
-          return fetchResponse;
+    fetch(req)
+      .then((res) => {
+        if (res.status === 200 && req.mode === 'navigate') {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(req, clone));
         }
-
-        return caches.open(CACHE_NAME).then((cache) => {
-          // On ne clone que les succès pour éviter de polluer le cache
-          if (fetchResponse.status === 200) {
-            cache.put(event.request, fetchResponse.clone());
-          }
-          return fetchResponse;
-        });
-      });
-    }).catch(() => {
-      // Fallback offline pour les navigations
-      if (event.request.mode === 'navigate') {
-        return caches.match('/');
-      }
-    })
+        return res;
+      })
+      .catch(() =>
+        caches.match(req).then((cached) => {
+          if (cached) return cached;
+          if (req.mode === 'navigate') return caches.match('/');
+          return Response.error();
+        }),
+      ),
   );
 });
