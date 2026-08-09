@@ -277,6 +277,8 @@ export type DocBase = {
   nomReceptionnaireClient?: string | null;
   /** Statut du document (Payée, Impayée, Annulée, Brouillon…). */
   statut?: DocStatut | null;
+  /** Observations ou notes libres affichées en bas de document. */
+  notes?: string | null;
 };
 
 /** Statut affiché en en-tête du document (badge coloré + tampon). */
@@ -1900,6 +1902,23 @@ async function buildTableDoc(
 
   y = drawInfosTransaction(ctx, data, y, opts.partyLabel);
   y = await drawTableau(ctx, TITRES[type], cols, data.lignes ?? [], y, opts.groupByCycle ?? false);
+
+  if (data.notes && data.notes.trim()) {
+    if (y - 40 < BODY_BOTTOM_Y) {
+      y = await addContinuationPage(ctx, TITRES[type]);
+    }
+    text(ctx, "OBSERVATIONS :", MARGIN.x, y, { size: 9, bold: true, color: ctx.theme.primary });
+    y -= 12;
+    const lines = wrapText(ctx, data.notes, CONTENT_W, { size: 9 });
+    for (const line of lines) {
+      if (y < BODY_BOTTOM_Y) {
+        y = await addContinuationPage(ctx, TITRES[type]);
+      }
+      text(ctx, line, MARGIN.x, y, { size: 9 });
+      y -= 12;
+    }
+    y -= 4;
+  }
 
   // V10 : encadré 6 lignes pour les documents de vente, totaux génériques sinon
   const useV10 = type === "FC" || type === "PF" || type === "AV" || type === "BC" || type === "BL";

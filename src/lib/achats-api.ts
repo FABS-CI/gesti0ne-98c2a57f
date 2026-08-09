@@ -193,12 +193,16 @@ export async function getAchat(id: string) {
 }
 
 export async function getAchatLignes(achatId: string) {
+  // We use standard join here; PostgREST will use the FK achat_lignes_produit_id_fkey
   const { data, error } = await supabase
     .from("achat_lignes")
-    .select("*, produits(cover_path, cover_thumb_path)")
+    .select("*, produits(reference, categorie, niveau, matiere, cover_path, cover_thumb_path)")
     .eq("achat_id", achatId)
     .order("created_at", { ascending: true });
-  if (error) throw error;
+  if (error) {
+    console.error("Error fetching achat_lignes with produits:", error);
+    throw error;
+  }
   return (data ?? []) as unknown as AchatLigne[];
 }
 
@@ -206,9 +210,12 @@ export async function listAchatLignesByAchats(achatIds: string[]) {
   if (achatIds.length === 0) return {} as Record<string, AchatLigne[]>;
   const { data, error } = await supabase
     .from("achat_lignes")
-    .select("*, produits(cover_path, cover_thumb_path)")
+    .select("*, produits(reference, categorie, niveau, matiere, cover_path, cover_thumb_path)")
     .in("achat_id", achatIds);
-  if (error) throw error;
+  if (error) {
+    console.error("Error listing achat_lignes by achats:", error);
+    throw error;
+  }
   const map: Record<string, AchatLigne[]> = {};
   (data ?? []).forEach((l) => {
     const k = l.achat_id;

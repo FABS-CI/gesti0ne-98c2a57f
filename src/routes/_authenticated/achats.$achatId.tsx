@@ -59,6 +59,8 @@ function AchatDetailPage() {
   const buildBlob = async () => {
     if (!achat) throw new Error("Approvisionnement introuvable");
     return generateApprovisionnementPDF({
+      id: achat.achat_id,
+      br_id: achat.achat_id,
       reference: achat.reference,
       date: achat.date_achat,
       clientNom: achat.fournisseurs?.raison_sociale ?? "—",
@@ -68,8 +70,9 @@ function AchatDetailPage() {
       adresseClient: achat.fournisseurs?.adresse ?? undefined,
       villeClient: achat.fournisseurs?.ville ?? undefined,
       representant: achat.fournisseurs?.representant ?? undefined,
+      modePaiement: achat.reference_fournisseur ? `Réf. Fournisseur: ${achat.reference_fournisseur}` : undefined,
       lignes: lignes.map((l) => ({
-        codeArticle: l.reference_produit ?? undefined,
+        codeArticle: l.reference_produit || (l as any).produits?.reference || undefined,
         reference: l.designation,
         qte: Number(l.quantite),
         prixUnitaire: Number(l.prix_unitaire),
@@ -79,6 +82,7 @@ function AchatDetailPage() {
       totalVente: Number(achat.montant),
       montantHT: Number(achat.montant),
       totalTTC: Number(achat.montant),
+      notes: achat.notes ?? undefined,
     });
   };
   const cacheKey = pdfCacheKey("BA", achat?.reference ?? achatId, achat?.updated_at);
