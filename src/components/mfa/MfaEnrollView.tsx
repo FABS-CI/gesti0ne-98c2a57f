@@ -109,7 +109,7 @@ export function MfaEnrollView({ targetUserId, targetUserLabel, onSuccess }: { ta
 
   if (step === "done") {
     return (
-      <Card className="max-w-xl mx-auto shadow-lg border-green-200 h-[80vh] sm:h-[650px] flex flex-col overflow-hidden">
+      <Card className="max-w-xl mx-auto shadow-lg border-green-200 h-auto sm:max-h-[85vh] flex flex-col overflow-hidden">
         <CardHeader className="bg-green-50/50 border-b shrink-0 py-4">
           <CardTitle className="text-green-800 flex items-center gap-2 text-lg">
             <ShieldCheck className="h-6 w-6 shrink-0" />
@@ -176,7 +176,7 @@ export function MfaEnrollView({ targetUserId, targetUserLabel, onSuccess }: { ta
   }
 
   return (
-    <Card className="max-w-xl mx-auto shadow-md border-primary/20 h-[80vh] sm:h-[650px] flex flex-col overflow-hidden">
+    <Card className="max-w-xl mx-auto shadow-md border-primary/20 h-auto sm:max-h-[85vh] flex flex-col overflow-hidden">
       <CardHeader className="bg-primary/5 border-b shrink-0 py-4">
         <CardTitle className="flex items-center gap-2 text-primary text-lg">
           <Lock className="h-5 w-5 shrink-0" />
