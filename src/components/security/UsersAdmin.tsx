@@ -711,17 +711,33 @@ export function UsersAdmin() {
       <AlertDialog open={!!mfaResetTarget} onOpenChange={(open) => !open && setMfaResetTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Réinitialiser le MFA ?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Êtes-vous certain de vouloir réinitialiser le MFA de l'utilisateur{" "}
-              <strong>{mfaResetTarget?.nom_complet || mfaResetTarget?.email}</strong> ?
-              <br /><br />
-              • Cette action réinitialisera uniquement le MFA.<br />
-              • Le compte, le rôle et les données métier ne seront pas modifiés.<br />
-              • L'utilisateur devra configurer à nouveau son MFA lors de sa prochaine connexion.<br />
-              • Cette action sera enregistrée dans le journal d'audit.
+            <AlertDialogTitle className="flex items-center gap-2 text-orange-600">
+              <ShieldOff className="h-5 w-5" />
+              RÉINITIALISER LE MFA ?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4 pt-2 text-slate-700">
+              <p>
+                Êtes-vous certain de vouloir réinitialiser le MFA de l'utilisateur{" "}
+                <span className="font-bold text-slate-900">{mfaResetTarget?.nom_complet || mfaResetTarget?.email}</span> ?
+              </p>
+              
+              <div className="bg-orange-50 p-3 rounded-md border border-orange-100 text-xs space-y-2">
+                <p className="flex items-start gap-2">
+                  <span className="mt-0.5">•</span>
+                  <span><strong>ACTION IRRÉVERSIBLE :</strong> L'utilisateur devra obligatoirement reconfigurer son MFA (QR Code) pour accéder à nouveau au système.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="mt-0.5">•</span>
+                  <span><strong>SÉCURITÉ :</strong> Utilisez cette option uniquement si l'utilisateur a perdu son téléphone ET ses codes de secours.</span>
+                </p>
+                <p className="flex items-start gap-2 font-medium text-orange-800">
+                  <AlertCircle className="h-3 w-3 mt-0.5" />
+                  <span>Cette opération est tracée dans le journal d'audit de sécurité.</span>
+                </p>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter>
             <AlertDialogCancel>Annuler</AlertDialogCancel>
             <AlertDialogAction
