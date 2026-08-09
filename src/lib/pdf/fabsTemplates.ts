@@ -84,6 +84,12 @@ export type DocBase = {
   nomReceptionnaireClient?: string | null;
   statut?: DocStatut | null;
   notes?: string | null;
+  montant?: number;
+  factureReference?: string;
+  factureMontantTotal?: number | null;
+  factureMontantPayeAvant?: number | null;
+  observations?: string | null;
+  devise?: string;
 };
 
 export type EtatCompteLigne = {
