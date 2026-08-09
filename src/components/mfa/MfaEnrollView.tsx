@@ -68,12 +68,16 @@ export function MfaEnrollView({ targetUserId, onSuccess }: { targetUserId?: stri
       setBackup(r.backupCodes);
       setStep("done");
       toast.success("MFA activé");
-    } catch (e) {
-      setError(String((e as Error).message ?? e));
+    } catch (e: any) {
+      console.error("MFA Confirm Error:", e);
+      // Extraire le message d'erreur réel s'il s'agit d'une erreur TanStack ServerFn
+      const errorMsg = e?.message || (typeof e === 'string' ? e : "Code de vérification incorrect");
+      setError(errorMsg);
     } finally {
       setBusy(false);
     }
   }
+
 
   function downloadCodes() {
     const blob = new Blob(
