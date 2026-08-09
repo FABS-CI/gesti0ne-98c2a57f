@@ -30,19 +30,11 @@ function genBackupCode(): string {
 }
 
 function hashToken(token: string): string {
-  // Deterministic non-crypto session token derivation (used as an ID only).
   let h = 0;
   for (let i = 0; i < token.length; i++) h = (h * 31 + token.charCodeAt(i)) | 0;
   return `s_${Math.abs(h).toString(36)}_${token.length}`;
 }
 
-/**
- * Clé stable identifiant la session utilisateur Supabase.
- * On utilise `claims.session_id` (présent dans le JWT Supabase) car il reste
- * identique à travers les refresh d'access token — contrairement au bearer
- * qui change ~toutes les heures et invalidait à tort la validation MFA.
- * Fallback sur un hash du bearer pour les JWT anciens sans session_id.
- */
 function sessionKey(claims: Record<string, unknown>, bearerFallback: string): string {
   const sid = claims.session_id;
   if (typeof sid === "string" && sid.length > 0) return `sid_${sid}`;
@@ -62,7 +54,7 @@ export const mfaEnrollStart = createServerFn({ method: "POST" })
     const email = (claims.email as string | undefined) ?? userId;
     const secret = new Secret({ size: 20 }).base32;
     const totp = buildTotp(secret, email);
-    // Upsert inactive secret pending confirmation
+    
     const { error } = await supabase
       .from("two_fa_secrets")
       .upsert(
@@ -85,25 +77,26 @@ export const mfaEnrollConfirm = createServerFn({ method: "POST" })
       .select("secret_chiffre, active")
       .eq("user_id", userId)
       .maybeSingle();
+    
     if (error) throw new Error(error.message);
     if (!row) throw new Error("Enrôlement non initié");
+    
     const totp = buildTotp(row.secret_chiffre, email);
     const delta = totp.validate({ token: data.code, window: 1 });
     if (delta === null) throw new Error("Code invalide");
 
-    // Activate & set enrolled_at
     const upd = await supabase
       .from("two_fa_secrets")
       .update({ active: true })
       .eq("user_id", userId);
     if (upd.error) throw new Error(upd.error.message);
+    
     const profUpd = await supabase
       .from("profiles")
       .update({ mfa_enrolled_at: new Date().toISOString() })
       .eq("id", userId);
     if (profUpd.error) throw new Error(profUpd.error.message);
 
-    // Generate backup codes
     const plain: string[] = Array.from({ length: BACKUP_COUNT }, genBackupCode);
     await supabase.from("mfa_backup_codes").delete().eq("user_id", userId);
     const rows = await Promise.all(
@@ -112,7 +105,6 @@ export const mfaEnrollConfirm = createServerFn({ method: "POST" })
     const ins = await supabase.from("mfa_backup_codes").insert(rows);
     if (ins.error) throw new Error(ins.error.message);
 
-    // Validate current session
     await supabase
       .from("mfa_session_validations")
       .insert({ user_id: userId, session_token: sessionKey(claims, bearerRaw()) });
@@ -168,6 +160,7 @@ export const mfaVerify = createServerFn({ method: "POST" })
       .select("secret_chiffre, active")
       .eq("user_id", userId)
       .maybeSingle();
+    
     if (!row || !row.active) throw new Error("MFA non activé");
     const email = (claims.email as string | undefined) ?? userId;
     const totp = buildTotp(row.secret_chiffre, email);
@@ -183,6 +176,120 @@ export const mfaVerify = createServerFn({ method: "POST" })
       session_token: sessionKey(claims, bearerRaw()),
       user_agent: ua,
     });
+    return { ok: true };
+  });
+
+/** Consomme un code de secours. */
+export const mfaVerifyBackupCode = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((raw) => z.object({ code: z.string().min(6).max(20) }).parse(raw))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId, claims } = context;
+    await ensureNotLocked(supabase as SB, userId);
+    const { data: rows, error } = await supabase
+      .from("mfa_backup_codes")
+      .select("id, code_hash")
+      .eq("user_id", userId)
+      .is("used_at", null);
+    
+    if (error) throw new Error(error.message);
+    const cleaned = data.code.trim().toUpperCase();
+    for (const r of rows ?? []) {
+      if (await bcrypt.compare(cleaned, r.code_hash)) {
+        await supabase
+          .from("mfa_backup_codes")
+          .update({ used_at: new Date().toISOString() })
+          .eq("id", r.id);
+        await resetFails(supabase, userId);
+        await supabase
+          .from("mfa_session_validations")
+          .insert({ user_id: userId, session_token: sessionKey(claims, bearerRaw()) });
+        return { ok: true, remaining: (rows?.length ?? 1) - 1 };
+      }
+    }
+    await recordFail(supabase, userId);
+    throw new Error("Code de secours invalide");
+  });
+
+/** Réinitialise le MFA d'un utilisateur (Admin seulement). */
+export const mfaResetUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ targetUserId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    
+    // Check if current user is super_admin
+    const { data: superAdminFlag } = await supabase.rpc("has_role_compat", {
+      _user_id: userId,
+      _role: "super_admin",
+    });
+    if (!superAdminFlag) throw new Error("Permission refusée");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const db = supabaseAdmin;
+
+    // Remove MFA secrets, codes, attempts, and validations
+    await Promise.all([
+      db.from("two_fa_secrets").delete().eq("user_id", data.targetUserId),
+      db.from("mfa_backup_codes").delete().eq("user_id", data.targetUserId),
+      db.from("mfa_otp_attempts").delete().eq("user_id", data.targetUserId),
+      db.from("mfa_session_validations").delete().eq("user_id", data.targetUserId),
+      db.from("profiles").update({ mfa_enrolled_at: null }).eq("id", data.targetUserId),
+    ]);
+
+    // Audit the action
+    await db.from("rbac2_audit").insert({
+      actor_id: userId,
+      action: "mfa.reset",
+      target_type: "user",
+      target_id: data.targetUserId,
+      after: { mfa_reset: true },
+    });
+
+    return { ok: true };
+  });
+
+/** État MFA de l'utilisateur courant. */
+export const mfaStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId, claims } = context;
+    const { data: superAdminFlag } = await supabase.rpc("has_role_compat", {
+      _user_id: userId,
+      _role: "super_admin",
+    });
+    const isSuperAdmin = !!superAdminFlag;
+    
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("mfa_enrolled_at, mfa_required")
+      .eq("id", userId)
+      .maybeSingle();
+    
+    const enrolled = !!prof?.mfa_enrolled_at;
+    const required = !!prof?.mfa_required;
+    let sessionValid = false;
+    
+    if (enrolled) {
+      const key = sessionKey(claims, bearerRaw());
+      const { data: sess } = await supabase
+        .from("mfa_session_validations")
+        .select("id, expires_at, revoked_at")
+        .eq("user_id", userId)
+        .eq("session_token", key)
+        .is("revoked_at", null)
+        .order("validated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (sess && (!sess.expires_at || new Date(sess.expires_at) > new Date())) {
+        sessionValid = true;
+      }
+    }
+
+    return { enrolled, required, sessionValid, isSuperAdmin };
+  });
+
     return { ok: true };
   });
 
