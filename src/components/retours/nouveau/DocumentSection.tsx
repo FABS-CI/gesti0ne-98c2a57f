@@ -86,7 +86,7 @@ export function DocumentSection({ form, fa }: Props) {
       </p>
       <div className="flex items-center gap-2">
         <div className="flex-1">
-          <Label className="mb-1 block">Facture</Label>
+          <Label className="mb-1 block text-destructive-foreground">Facture d'origine obligatoire *</Label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
