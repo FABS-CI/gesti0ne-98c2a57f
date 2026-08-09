@@ -9,8 +9,11 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
+  RefreshCcw,
   Search,
   ShieldCheck,
+  ShieldAlert,
+  ShieldOff,
   UserCheck,
   UserX,
 } from "lucide-react";
@@ -23,6 +26,7 @@ import {
   secSetUserStatut,
   secUpdateUser,
 } from "@/lib/security-users.functions";
+import { mfaResetUser } from "@/lib/mfa.functions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,6 +65,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Statut = "actif" | "suspendu" | "verrouille";
 
@@ -82,7 +96,9 @@ type UserRow = {
   derniere_connexion: string | null;
   role_codes: string[];
   depot_ids: string[];
+  mfa_enrolled_at: string | null;
 };
+
 
 const NONE = "__none__";
 
