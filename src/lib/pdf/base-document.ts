@@ -660,10 +660,12 @@ export class BaseDocument {
     row(brutLabel, formatFCFA(this.totals.sousTotal));
     
     if (this.totals.remiseLignes) {
-      // Pour le BR, on n'affiche pas forcément le pourcentage moyen s'il y en a plusieurs,
-      // on suit la demande de distinction claire.
       const labelRemise = isBR ? "Montant remise" : "Remise sur lignes";
-      row(labelRemise, `- ${formatFCFA(this.totals.remiseLignes)}`);
+      if (isBR && this.totals.remiseLignesPct) {
+        row(`Remise (${this.totals.remiseLignesPct.toFixed(2)} %)`, `- ${formatFCFA(this.totals.remiseLignes)}`);
+      } else {
+        row(labelRemise, `- ${formatFCFA(this.totals.remiseLignes)}`);
+      }
     }
     
     if (this.totals.remiseGlobale) {
