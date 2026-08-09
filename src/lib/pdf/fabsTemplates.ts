@@ -90,9 +90,10 @@ export type EtatCompteLigne = {
   date: string;
   reference: string;
   libelle: string;
-  debit: number;
-  credit: number;
-  solde: number;
+  debit?: number;
+  credit?: number;
+  solde?: number;
+  type?: string;
 };
 
 export type EtatCompteAgeing = {
