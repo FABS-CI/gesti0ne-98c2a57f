@@ -9,11 +9,17 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
+  RefreshCcw,
   Search,
   ShieldCheck,
+  ShieldAlert,
+  ShieldOff,
   UserCheck,
   UserX,
+  ShieldQuestion,
+  AlertCircle
 } from "lucide-react";
+
 
 import {
   secCreateUser,
@@ -23,6 +29,7 @@ import {
   secSetUserStatut,
   secUpdateUser,
 } from "@/lib/security-users.functions";
+import { mfaResetUser } from "@/lib/mfa.functions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,6 +68,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Statut = "actif" | "suspendu" | "verrouille";
 
@@ -82,7 +99,9 @@ type UserRow = {
   derniere_connexion: string | null;
   role_codes: string[];
   depot_ids: string[];
+  mfa_enrolled_at: string | null;
 };
+
 
 const NONE = "__none__";
 
@@ -134,6 +153,8 @@ export function UsersAdmin() {
   const setStatut = useServerFn(secSetUserStatut);
   const resetPwd = useServerFn(secResetPassword);
 
+  const mfaReset = useServerFn(mfaResetUser);
+
   const users = useQuery({ queryKey: ["sec", "users"], queryFn: () => listUsers({ data: {} }) });
   const refs = useQuery({ queryKey: ["sec", "refs"], queryFn: () => listRefs({ data: {} }) });
 
@@ -143,17 +164,18 @@ export function UsersAdmin() {
   const [form, setForm] = useState<typeof emptyForm | null>(null);
   const [pwdTarget, setPwdTarget] = useState<UserRow | null>(null);
   const [pwdValue, setPwdValue] = useState("");
+  const [mfaResetTarget, setMfaResetTarget] = useState<UserRow | null>(null);
 
   const rows = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return ((users.data ?? []) as UserRow[]).filter((u) => {
+    return ((users.data ?? []) as any[]).filter((u) => {
       if (statutFilter !== "tous" && u.statut !== statutFilter) return false;
       if (roleFilter !== "tous" && !u.role_codes.includes(roleFilter)) return false;
       if (!q) return true;
       return [u.nom_complet, u.email, u.matricule, u.fonction]
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(q));
-    });
+    }) as UserRow[];
   }, [users.data, search, statutFilter, roleFilter]);
 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["sec", "users"] });
@@ -205,6 +227,16 @@ export function UsersAdmin() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const mfaResetMutation = useMutation({
+    mutationFn: (userId: string) => mfaReset({ data: { targetUserId: userId } }),
+    onSuccess: () => {
+      toast.success("MFA réinitialisé avec succès");
+      setMfaResetTarget(null);
+      invalidate();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const services = refs.data?.services ?? [];
   const departements = refs.data?.departements ?? [];
   const depots = refs.data?.depots ?? [];
@@ -233,13 +265,14 @@ export function UsersAdmin() {
     });
 
   const counters = useMemo(() => {
-    const all = (users.data ?? []) as UserRow[];
+    const all = (users.data ?? []) as any[];
     return {
       total: all.length,
       actifs: all.filter((u) => u.statut === "actif").length,
       bloques: all.filter((u) => u.statut !== "actif").length,
     };
   }, [users.data]);
+
 
   return (
     <div className="space-y-4">
@@ -304,22 +337,24 @@ export function UsersAdmin() {
                   <TableHead>Matricule</TableHead>
                   <TableHead>Service</TableHead>
                   <TableHead>Rôles</TableHead>
-                  <TableHead>Dépôts</TableHead>
+                   <TableHead>Dépôts</TableHead>
+                  <TableHead>MFA</TableHead>
                   <TableHead>Statut</TableHead>
                   <TableHead>Dernière connexion</TableHead>
                   <TableHead className="w-10" />
+
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {users.isLoading &&
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i}>
-                      <TableCell colSpan={8}><Skeleton className="h-8 w-full" /></TableCell>
+                      <TableCell colSpan={9}><Skeleton className="h-8 w-full" /></TableCell>
                     </TableRow>
                   ))}
                 {!users.isLoading && rows.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
+                    <TableCell colSpan={9} className="py-8 text-center text-muted-foreground">
                       Aucun utilisateur ne correspond aux filtres.
                     </TableCell>
                   </TableRow>
@@ -362,6 +397,21 @@ export function UsersAdmin() {
                       )}
                     </TableCell>
                     <TableCell>
+                      {u.role_codes.includes("super_admin") ? (
+                        <Badge variant="secondary" className="bg-slate-100 text-slate-500 border-slate-200">
+                          ⚪ EXEMPTÉ
+                        </Badge>
+                      ) : u.mfa_enrolled_at ? (
+                        <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
+                          🟢 Activé
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
+                          🟠 Non configuré
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <Badge variant={STATUT_META[u.statut].variant}>
                         {STATUT_META[u.statut].label}
                       </Badge>
@@ -369,6 +419,7 @@ export function UsersAdmin() {
                     <TableCell className="text-xs text-muted-foreground">
                       {formatDate(u.derniere_connexion)}
                     </TableCell>
+
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -383,7 +434,16 @@ export function UsersAdmin() {
                           <DropdownMenuItem onClick={() => setPwdTarget(u)}>
                             <KeyRound className="mr-2 h-4 w-4" /> Réinitialiser le mot de passe
                           </DropdownMenuItem>
+                          {u.mfa_enrolled_at && !u.role_codes.includes("super_admin") && (
+                            <DropdownMenuItem 
+                              className="text-orange-600"
+                              onClick={() => setMfaResetTarget(u)}
+                            >
+                              <ShieldOff className="mr-2 h-4 w-4" /> Réinitialiser le MFA
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuSeparator />
+
                           {u.statut !== "actif" ? (
                             <DropdownMenuItem
                               onClick={() =>
@@ -647,6 +707,50 @@ export function UsersAdmin() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!mfaResetTarget} onOpenChange={(open) => !open && setMfaResetTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-orange-600">
+              <ShieldOff className="h-5 w-5" />
+              RÉINITIALISER LE MFA ?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4 pt-2 text-slate-700">
+              <p>
+                Êtes-vous certain de vouloir réinitialiser le MFA de l'utilisateur{" "}
+                <span className="font-bold text-slate-900">{mfaResetTarget?.nom_complet || mfaResetTarget?.email}</span> ?
+              </p>
+              
+              <div className="bg-orange-50 p-3 rounded-md border border-orange-100 text-xs space-y-2">
+                <p className="flex items-start gap-2">
+                  <span className="mt-0.5">•</span>
+                  <span><strong>ACTION IRRÉVERSIBLE :</strong> L'utilisateur devra obligatoirement reconfigurer son MFA (QR Code) pour accéder à nouveau au système.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="mt-0.5">•</span>
+                  <span><strong>SÉCURITÉ :</strong> Utilisez cette option uniquement si l'utilisateur a perdu son téléphone ET ses codes de secours.</span>
+                </p>
+                <p className="flex items-start gap-2 font-medium text-orange-800">
+                  <AlertCircle className="h-3 w-3 mt-0.5" />
+                  <span>Cette opération est tracée dans le journal d'audit de sécurité.</span>
+                </p>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-orange-600 hover:bg-orange-700"
+              onClick={() => mfaResetMutation.mutate(mfaResetTarget!.id)}
+              disabled={mfaResetMutation.isPending}
+            >
+              {mfaResetMutation.isPending ? "Réinitialisation..." : "Confirmer la réinitialisation"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
+
