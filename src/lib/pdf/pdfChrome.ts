@@ -176,12 +176,12 @@ export function drawHeader(doc: jsPDF, titre: string, t: PdfTemplate = getActive
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.setTextColor(...PDF_COLORS.black);
-  doc.text(sanitizePdfText(COMPANY.nom), textX, HEADER.top);
+  doc.text(sanitizePdfText("supprime EDITIONS FABS-CI Une innovation pour une ecole de qualite sur LISTE DES PRODUITS"), textX, HEADER.top);
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.setTextColor(85, 85, 85);
-  doc.text(sanitizePdfText(COMPANY.slogan), textX, HEADER.top + 4.2);
+  // doc.text(sanitizePdfText(COMPANY.slogan), textX, HEADER.top + 4.2);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9.5);
