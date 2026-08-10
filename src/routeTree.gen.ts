@@ -124,6 +124,7 @@ import { Route as AuthenticatedColisageIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedClientsIndexRouteImport } from './routes/_authenticated/clients.index'
 import { Route as AuthenticatedAchatsIndexRouteImport } from './routes/_authenticated/achats.index'
 import { Route as AuthenticatedAbsencesIndexRouteImport } from './routes/_authenticated/absences.index'
+import { Route as ApiPublicPerformanceAuditRouteImport } from './routes/api/public/performance-audit'
 import { Route as AuthenticatedUtilisateursProductionRouteImport } from './routes/_authenticated/utilisateurs.production'
 import { Route as AuthenticatedUtilisateursNouveauRouteImport } from './routes/_authenticated/utilisateurs.nouveau'
 import { Route as AuthenticatedTransfertsNouveauRouteImport } from './routes/_authenticated/transferts.nouveau'
@@ -861,6 +862,12 @@ const AuthenticatedAbsencesIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAbsencesRoute,
   } as any)
+const ApiPublicPerformanceAuditRoute =
+  ApiPublicPerformanceAuditRouteImport.update({
+    id: '/api/public/performance-audit',
+    path: '/api/public/performance-audit',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedUtilisateursProductionRoute =
   AuthenticatedUtilisateursProductionRouteImport.update({
     id: '/utilisateurs/production',
@@ -1540,6 +1547,7 @@ export interface FileRoutesByFullPath {
   '/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
   '/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
   '/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
+  '/api/public/performance-audit': typeof ApiPublicPerformanceAuditRoute
   '/absences/': typeof AuthenticatedAbsencesIndexRoute
   '/achats/': typeof AuthenticatedAchatsIndexRoute
   '/clients/': typeof AuthenticatedClientsIndexRoute
@@ -1722,6 +1730,7 @@ export interface FileRoutesByTo {
   '/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
   '/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
   '/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
+  '/api/public/performance-audit': typeof ApiPublicPerformanceAuditRoute
   '/absences': typeof AuthenticatedAbsencesIndexRoute
   '/achats': typeof AuthenticatedAchatsIndexRoute
   '/clients': typeof AuthenticatedClientsIndexRoute
@@ -1928,6 +1937,7 @@ export interface FileRoutesById {
   '/_authenticated/transferts/nouveau': typeof AuthenticatedTransfertsNouveauRoute
   '/_authenticated/utilisateurs/nouveau': typeof AuthenticatedUtilisateursNouveauRoute
   '/_authenticated/utilisateurs/production': typeof AuthenticatedUtilisateursProductionRoute
+  '/api/public/performance-audit': typeof ApiPublicPerformanceAuditRoute
   '/_authenticated/absences/': typeof AuthenticatedAbsencesIndexRoute
   '/_authenticated/achats/': typeof AuthenticatedAchatsIndexRoute
   '/_authenticated/clients/': typeof AuthenticatedClientsIndexRoute
@@ -2134,6 +2144,7 @@ export interface FileRouteTypes {
     | '/transferts/nouveau'
     | '/utilisateurs/nouveau'
     | '/utilisateurs/production'
+    | '/api/public/performance-audit'
     | '/absences/'
     | '/achats/'
     | '/clients/'
@@ -2316,6 +2327,7 @@ export interface FileRouteTypes {
     | '/transferts/nouveau'
     | '/utilisateurs/nouveau'
     | '/utilisateurs/production'
+    | '/api/public/performance-audit'
     | '/absences'
     | '/achats'
     | '/clients'
@@ -2521,6 +2533,7 @@ export interface FileRouteTypes {
     | '/_authenticated/transferts/nouveau'
     | '/_authenticated/utilisateurs/nouveau'
     | '/_authenticated/utilisateurs/production'
+    | '/api/public/performance-audit'
     | '/_authenticated/absences/'
     | '/_authenticated/achats/'
     | '/_authenticated/clients/'
@@ -2580,6 +2593,7 @@ export interface RootRouteChildren {
   CartonColisIdRoute: typeof CartonColisIdRoute
   VerifyUuidRoute: typeof VerifyUuidRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicPerformanceAuditRoute: typeof ApiPublicPerformanceAuditRoute
   ApiPublicBackupCronRoute: typeof ApiPublicBackupCronRoute
   ApiPublicHooksAlertRoute: typeof ApiPublicHooksAlertRoute
   ApiPublicHooksGlobalBackupRoute: typeof ApiPublicHooksGlobalBackupRoute
@@ -3393,6 +3407,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/absences/'
       preLoaderRoute: typeof AuthenticatedAbsencesIndexRouteImport
       parentRoute: typeof AuthenticatedAbsencesRoute
+    }
+    '/api/public/performance-audit': {
+      id: '/api/public/performance-audit'
+      path: '/api/public/performance-audit'
+      fullPath: '/api/public/performance-audit'
+      preLoaderRoute: typeof ApiPublicPerformanceAuditRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/utilisateurs/production': {
       id: '/_authenticated/utilisateurs/production'
@@ -4788,6 +4809,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartonColisIdRoute: CartonColisIdRoute,
   VerifyUuidRoute: VerifyUuidRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicPerformanceAuditRoute: ApiPublicPerformanceAuditRoute,
   ApiPublicBackupCronRoute: ApiPublicBackupCronRoute,
   ApiPublicHooksAlertRoute: ApiPublicHooksAlertRoute,
   ApiPublicHooksGlobalBackupRoute: ApiPublicHooksGlobalBackupRoute,
