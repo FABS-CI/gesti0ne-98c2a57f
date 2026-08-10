@@ -220,8 +220,54 @@ function Profil() {
                 <Shield className="h-4 w-4 text-orange-600" />
                 Authentification multifacteur (MFA)
               </CardTitle>
-              <CardDescription>
-                Protégez votre compte avec une double vérification
+              <CardDescription className="whitespace-pre-line text-xs">
+                Oui. Pour ton ERP GESTI-ONE, je te conseille un prompt qui force le LLM à faire un audit de performance réel, et pas simplement à ajouter des loaders ou modifier quelques composants.
+
+🚀 PROMPT — AUDIT PERFORMANCE COMPLET ET OPTIMISATION PRODUCTION — ERP GESTI-ONE
+
+Tu es un architecte logiciel senior spécialisé en performance des ERP, PostgreSQL, API, React/TypeScript, Supabase et applications SaaS.
+
+Tu dois réaliser un audit complet des performances de GESTI-ONE, identifier les véritables goulots d'étranglement et appliquer les optimisations nécessaires.
+
+⚠️ RÈGLE PRINCIPALE
+
+NE PAS faire d'optimisations superficielles.
+
+Ne pas simplement ajouter :
+- des loaders ;
+- des animations ;
+- des délais artificiels ;
+- du cache partout ;
+- des useMemo inutiles ;
+- des useEffect supplémentaires ;
+- des requêtes parallèles sans analyse ;
+- de la pagination uniquement visuelle.
+
+Je veux mesurer les performances, identifier les causes et corriger le problème à la source.
+
+1. AUDIT GLOBAL
+Analyse toute l'application : Frontend ↓ React / TypeScript ↓ Hooks / Context / State ↓ API ↓ Backend ↓ PostgreSQL / Supabase ↓ Indexes / Queries ↓ Infrastructure.
+
+Audite particulièrement : temps de connexion ; chargement du dashboard ; navigation entre modules ; chargement des listes ; recherche ; filtres ; pagination ; création/modification de documents ; génération PDF ; rapports ; statistiques ; notifications ; authentification MFA ; gestion des utilisateurs ; RBAC ; ventes ; clients ; produits ; stocks ; achats ; livraisons ; facturation ; comptabilité.
+
+2. MESURER AVANT DE MODIFIER
+Avant toute optimisation, établis un état initial. Mesure notamment : TTFB, FCP, LCP, INP, CLS, API response time, Database query time, JavaScript execution time, Bundle size, Memory usage, Number of API calls, Number of database queries, Number of rows returned.
+
+Ne remplis pas les valeurs avec des estimations : mesure réellement le projet.
+
+3. AUDIT DU LOGIN & DASHBOARD
+Le login doit être particulièrement rapide. Rechercher : requêtes inutiles ; appels API séquentiels ; récupération de toutes les permissions ; appels répétés ; refresh inutiles. Le dashboard ne doit pas charger toutes les données de l'ERP. Remplacer lorsque possible par des requêtes SQL agrégées (COUNT, SUM, AVG, GROUP BY).
+
+4. AUDIT POSTGRESQL & INDEXATION
+Inspecter toutes les requêtes SQL importantes. Rechercher : SELECT *, jointures coûteuses, filtres sans index, N+1 queries. Utiliser EXPLAIN ANALYZE. Auditer les indexes des tables principales. Toutes les grandes listes doivent utiliser une pagination serveur. NE PAS charger SELECT * FROM table puis paginer côté navigateur.
+
+5. FRONTEND & API
+Auditer les composants React (re-render inutiles, Context globaux). Mettre en place du lazy loading pour les gros modules. Optimiser en priorité les 20 % d'endpoints responsables de la majorité de la latence.
+
+6. RAPPORT FINAL
+Produire un SCORE PERFORMANCE global et un TOP 10 DES PROBLÈMES avec gain mesuré avant/après.
+
+🟢 GO PRODUCTION ou 🔴 NO-GO PRODUCTION avec raisons précises.
               </CardDescription>
             </div>
           </div>
