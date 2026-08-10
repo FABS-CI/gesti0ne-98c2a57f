@@ -2,8 +2,8 @@ import { PDFDocument, rgb, StandardFonts, type PDFPage, type PDFFont, type PDFIm
 import fabsLogoUrl from "@/assets/fabs-logo.png";
 import { COLORS, PAGE, MARGINS, CONTENT_W } from "./base-document";
 import { supabase } from "@/integrations/supabase/client";
-import { formatFCFA } from "@/lib/format";
 import { COMPANY } from "@/lib/company";
+import { downloadBlob } from "./fabsTemplates";
 
 export async function generateAfficheRentreePDF(): Promise<Blob> {
   const doc = await PDFDocument.create();
@@ -93,10 +93,12 @@ export async function generateAfficheRentreePDF(): Promise<Blob> {
             const { data } = await supabase.storage.from("product-covers").download(p.cover_path!);
             if (data) {
                 const imgBytes = await data.arrayBuffer();
-                const img = await doc.embedStandardFont(StandardFonts.Helvetica); // Fallback si pas image
-                // En réalité on devrait embed l'image téléchargée. 
-                // Pour cet exemple on va simuler le placement.
-                const imgEmbed = await doc.embedPng(imgBytes).catch(() => doc.embedJpg(imgBytes));
+                let imgEmbed: PDFImage;
+                try {
+                  imgEmbed = await doc.embedPng(imgBytes);
+                } catch (e) {
+                  imgEmbed = await doc.embedJpg(imgBytes);
+                }
                 
                 const imgW = 90;
                 const imgH = (imgEmbed.height / imgEmbed.width) * imgW;
@@ -130,10 +132,10 @@ export async function generateAfficheRentreePDF(): Promise<Blob> {
     color: COLORS.bleuFabs,
   });
 
-  const contact = `Tél: ${COMPANY.telephone || '+225 XX XX XX XX'} | WhatsApp: ${COMPANY.whatsapp || '+225 XX XX XX XX'}`;
+  const contactText = `Tél: ${COMPANY.telephones[0]} | Email: ${COMPANY.email}`;
   const contactSize = 12;
-  const contactW = fontRegular.widthOfTextAtSize(contact, contactSize);
-  page.drawText(contact, {
+  const contactW = fontRegular.widthOfTextAtSize(contactText, contactSize);
+  page.drawText(contactText, {
     x: (PAGE.w - contactW) / 2,
     y: 80,
     size: contactSize,
@@ -143,4 +145,9 @@ export async function generateAfficheRentreePDF(): Promise<Blob> {
 
   const pdfBytes = await doc.save();
   return new Blob([pdfBytes], { type: "application/pdf" });
+}
+
+export async function exportAfficheRentree(): Promise<void> {
+  const blob = await generateAfficheRentreePDF();
+  await downloadBlob(blob, `Affiche_Rentree_FABS_2026-2027.pdf`);
 }
