@@ -237,7 +237,7 @@ function Profil() {
                   </Badge>
                 ) : mfa?.enrolled ? (
                   <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
-                    🟢 Activé
+                    🟢 Configuré
                   </Badge>
                 ) : (
                   <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">

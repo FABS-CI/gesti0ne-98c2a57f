@@ -405,7 +405,7 @@ export function UsersAdmin() {
                         </Badge>
                       ) : u.mfa_enrolled_at ? (
                         <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
-                          🟢 Activé
+                          🟢 Configuré
                         </Badge>
                       ) : (
                         <>
