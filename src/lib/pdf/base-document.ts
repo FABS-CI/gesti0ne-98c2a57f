@@ -264,6 +264,7 @@ export class BaseDocument {
     const footerTextSize = 8;
     
     // Col 1 : Société
+    const isListeProduits = this.data.type === "LISTE DES PRODUITS";
     if (!isListeProduits) {
       this.page.drawText("EDITIONS FABS-CI", { x: MARGINS.x, y: yBot, size: footerTextSize + 1, font: this.fonts.bold });
       this.page.drawText("BP 673 Bingerville - Côte d'Ivoire", { x: MARGINS.x, y: yBot - 10, size: footerTextSize, font: this.fonts.regular });
