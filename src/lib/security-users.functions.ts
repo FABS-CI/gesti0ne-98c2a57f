@@ -32,7 +32,11 @@ async function audit(
   before: unknown,
   after: unknown,
 ) {
+  // RÈGLE ABSOLUE : Pas d'audit pour les actions du Super Admin
   const db = await admin();
+  const { data: isSA } = await db.rpc("is_global_scope", { _user_id: actorId });
+  if (isSA) return;
+
   await db.from("rbac2_audit").insert({
     actor_id: actorId,
     action,
