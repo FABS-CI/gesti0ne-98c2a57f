@@ -39,12 +39,10 @@ export function MfaEnrollView({ targetUserId, targetUserLabel, onSuccess }: { ta
     let active = true;
     setError(null);
     setStep("loading");
-    
-    console.log("DEBUG: MFA Start for", targetUserId);
+
     start({ data: { targetUserId } })
       .then(async (r) => {
         if (!active) return;
-        console.log("DEBUG: MFA Start Success", r.secret);
         setOtpauth(r.otpauthUrl);
         setSecret(r.secret);
         setQr(await QRCode.toDataURL(r.otpauthUrl, { width: 240, margin: 1 }));
@@ -52,10 +50,10 @@ export function MfaEnrollView({ targetUserId, targetUserLabel, onSuccess }: { ta
       })
       .catch((e) => {
         if (!active) return;
-        console.error("DEBUG: MFA Start Error:", e);
         setError(String(e?.message ?? "Erreur lors de la génération du MFA"));
         setStep("scan");
       });
+
 
     return () => { active = false; };
   }, [start, targetUserId]);

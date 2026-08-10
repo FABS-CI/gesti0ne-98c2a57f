@@ -31,7 +31,7 @@ export function PWAInstallPrompt() {
       || document.referrer.includes('android-app://');
 
     if (isStandalone) {
-      console.log('App is already in standalone mode');
+      console.debug('App is already in standalone mode');
       return;
     }
 
@@ -52,7 +52,7 @@ export function PWAInstallPrompt() {
       setPlatform('ios');
       // Show iOS prompt after a short delay
       const timer = setTimeout(() => {
-        console.log('Triggering iOS install prompt');
+        console.debug('Triggering iOS install prompt');
         setShowPrompt(true);
       }, 3000);
       return () => clearTimeout(timer);
@@ -63,7 +63,7 @@ export function PWAInstallPrompt() {
     }
 
     const handler = (e: Event) => {
-      console.log('beforeinstallprompt event captured');
+      console.debug('beforeinstallprompt event captured');
       e.preventDefault();
       setInstallEvent(e as BeforeInstallPromptEvent);
       setShowPrompt(true);

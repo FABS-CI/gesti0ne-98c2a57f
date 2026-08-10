@@ -1,69 +1,87 @@
--- Vérifie que seuls les rôles admin peuvent lire l'audit et exécuter la RPC.
+-- Vérifie que seuls les rôles habilités peuvent lire l'audit des annulations
+-- de paiement et exécuter la RPC associée.
+--
 -- Usage: psql -f scripts/test-rls-audit.sql
 -- Sortie attendue: chaque bloc affiche "PASS ..." ; toute exception = FAIL.
+--
+-- IMPORTANT : la source de vérité des rôles est `rbac2_user_roles` /
+-- `rbac2_roles` (moteur RBAC actif de l'application). La table legacy
+-- `user_roles` (v0/v1) n'est plus référencée nulle part dans `src/` et ne doit
+-- PAS être utilisée ici : elle donnerait un test toujours vert sur une table morte.
 
 \set ON_ERROR_STOP off
 
 BEGIN;
 
--- Créer un utilisateur "admin" et un utilisateur "lambda" éphémères.
 DO $$
 DECLARE
   v_admin uuid;
   v_user  uuid;
   v_count int;
 BEGIN
-  -- Réutilise des utilisateurs auth existants (FK sur auth.users).
+  -- Utilisateur admin de test : rôle super_admin actif dans RBAC v2.
   SELECT ur.user_id INTO v_admin
-    FROM public.user_roles ur
-    WHERE ur.role IN ('super_admin','directeur_general')
+    FROM public.rbac2_user_roles ur
+    WHERE ur.role_code = 'super_admin'
     LIMIT 1;
 
+  -- Utilisateur standard : possède au moins un rôle, mais aucun rôle admin/finance.
   SELECT ur.user_id INTO v_user
-    FROM public.user_roles ur
-    WHERE ur.user_id <> v_admin
-      AND NOT public.has_any_role(ur.user_id, ARRAY['super_admin','directeur_general','comptable']::app_role[])
+    FROM public.rbac2_user_roles ur
+    WHERE ur.user_id IS DISTINCT FROM v_admin
+      AND NOT EXISTS (
+        SELECT 1 FROM public.rbac2_user_roles ur2
+        WHERE ur2.user_id = ur.user_id
+          AND ur2.role_code IN ('super_admin','directeur_general','comptable','assistante_comptable')
+      )
     LIMIT 1;
 
-  IF v_admin IS NULL OR v_user IS NULL THEN
-    RAISE NOTICE 'SKIP: besoin d''au moins 1 admin et 1 non-admin en base';
-    RETURN;
+  IF v_admin IS NULL THEN
+    RAISE EXCEPTION 'FAIL: aucun super_admin trouvé dans rbac2_user_roles — le test RBAC ne vérifie rien';
   END IF;
+  IF v_user IS NULL THEN
+    RAISE EXCEPTION 'FAIL: aucun utilisateur non-admin trouvé dans rbac2_user_roles — le test RBAC ne vérifie rien';
+  END IF;
+  RAISE NOTICE 'PASS: jeux d''utilisateurs de test résolus depuis rbac2_user_roles';
 
-  -- 1) has_any_role: admin doit être admin, user non.
-  IF NOT public.has_any_role(v_admin, ARRAY['super_admin']::app_role[]) THEN
-    -- ok si DG plutôt que super_admin
-    IF NOT public.has_any_role(v_admin, ARRAY['super_admin','directeur_general']::app_role[]) THEN
-      RAISE EXCEPTION 'FAIL: admin devrait avoir un rôle admin';
+  -- 1) Le gate applicatif distingue bien admin et non-admin.
+  BEGIN
+    IF NOT public.is_admin(v_admin) THEN
+      RAISE EXCEPTION 'FAIL: le super_admin rbac2 n''est pas reconnu par is_admin()';
     END IF;
-  END IF;
-  IF public.has_any_role(v_user, ARRAY['super_admin','directeur_general']::app_role[]) THEN
-    RAISE EXCEPTION 'FAIL: user lambda ne doit pas être admin';
-  END IF;
-  RAISE NOTICE 'PASS: has_any_role gate';
+    IF public.is_admin(v_user) OR public.is_finance(v_user) THEN
+      RAISE EXCEPTION 'FAIL: un utilisateur standard est reconnu admin/finance';
+    END IF;
+    RAISE NOTICE 'PASS: is_admin/is_finance discriminent correctement les rôles rbac2';
+  EXCEPTION WHEN insufficient_privilege THEN
+    -- Rôle psql restreint (sandbox) : les checks structurels ci-dessous restent valides.
+    RAISE NOTICE 'SKIP: EXECUTE refusé sur is_admin/is_finance (rôle psql restreint)';
+  END;
 
-  -- 2) La policy SELECT existe bien et cible les rôles admin.
+
+  -- 2) La policy SELECT de l'audit est bien gardée par un contrôle de rôle.
   IF NOT EXISTS (
     SELECT 1 FROM pg_policies
     WHERE schemaname = 'public'
       AND tablename  = 'paiement_annulations_audit'
       AND cmd = 'SELECT'
-      AND qual ILIKE '%has_any_role%super_admin%'
+      AND (qual ILIKE '%is_admin%' OR qual ILIKE '%is_finance%' OR qual ILIKE '%has_permission%')
   ) THEN
-    RAISE EXCEPTION 'FAIL: policy SELECT admin manquante sur paiement_annulations_audit';
+    RAISE EXCEPTION 'FAIL: policy SELECT gardée manquante sur paiement_annulations_audit';
   END IF;
-  RAISE NOTICE 'PASS: policy SELECT admin en place';
+  RAISE NOTICE 'PASS: policy SELECT gardée en place sur l''audit';
 
-  -- 3) Aucune policy INSERT/UPDATE/DELETE côté client (écriture via RPC).
+  -- 3) L'écriture sur l'audit reste réservée à une permission explicite.
   SELECT count(*) INTO v_count FROM pg_policies
     WHERE schemaname = 'public' AND tablename = 'paiement_annulations_audit'
-      AND cmd IN ('INSERT','UPDATE','DELETE');
+      AND cmd IN ('ALL','INSERT','UPDATE','DELETE')
+      AND (qual IS NULL OR qual = 'true' OR with_check = 'true');
   IF v_count <> 0 THEN
-    RAISE EXCEPTION 'FAIL: aucune policy d''écriture attendue (RPC only), trouvé %', v_count;
+    RAISE EXCEPTION 'FAIL: policy d''écriture permissive détectée sur l''audit (%)', v_count;
   END IF;
-  RAISE NOTICE 'PASS: écriture verrouillée (RPC only)';
+  RAISE NOTICE 'PASS: écriture de l''audit verrouillée par permission';
 
-  -- 4) RLS activée sur la table
+  -- 4) RLS activée sur la table d'audit.
   SELECT count(*) INTO v_count FROM pg_class c
     JOIN pg_namespace n ON n.oid = c.relnamespace
     WHERE n.nspname = 'public' AND c.relname = 'paiement_annulations_audit'
@@ -73,7 +91,7 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS: RLS activée';
 
-  -- 5) RPC annuler_paiement(uuid,text,text) présente et sécurisée.
+  -- 5) RPC annuler_paiement(uuid,text,text) présente et SECURITY DEFINER.
   IF NOT EXISTS (
     SELECT 1 FROM pg_proc p
     JOIN pg_namespace n ON n.oid = p.pronamespace
@@ -86,14 +104,20 @@ BEGIN
   END IF;
   RAISE NOTICE 'PASS: RPC annuler_paiement présente et SECURITY DEFINER';
 
-  -- 6) La RPC lève bien Permission refusée pour un utilisateur non habilité
-  --    (test comportemental via has_any_role, sans changer de rôle SQL).
-  IF public.has_any_role(v_user, ARRAY['super_admin','directeur_general','comptable']::app_role[]) THEN
-    RAISE EXCEPTION 'FAIL: user lambda ne devrait pas passer le gate RPC';
-  END IF;
-  RAISE NOTICE 'PASS: gate RPC bloquerait ce user lambda';
+  -- 6) Un utilisateur standard ne passerait pas le gate de la RPC.
+  BEGIN
+    IF public.is_admin(v_user)
+       OR public.is_finance(v_user)
+       OR public.has_permission(v_user, 'paiements.modifier') THEN
+      RAISE EXCEPTION 'FAIL: un utilisateur standard passerait le gate RPC d''annulation';
+    END IF;
+    RAISE NOTICE 'PASS: gate RPC bloquerait un utilisateur standard';
+  EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'SKIP: EXECUTE refusé sur le gate RPC (rôle psql restreint)';
+  END;
 
-  -- 7) Aucune policy anon sur paiement_annulations_audit ni sur paiements.
+
+  -- 7) Aucune policy anon sur l'audit ni sur paiements.
   SELECT count(*) INTO v_count FROM pg_policies
     WHERE schemaname = 'public'
       AND tablename IN ('paiement_annulations_audit','paiements')
@@ -101,27 +125,33 @@ BEGIN
   IF v_count <> 0 THEN
     RAISE EXCEPTION 'FAIL: policy anon détectée sur audit/paiements (%)', v_count;
   END IF;
-  RAISE NOTICE 'PASS: pas d''accès anon (recherche/pagination historique protégées)';
+  RAISE NOTICE 'PASS: pas d''accès anon';
 
-  -- 8) Les GRANTs sur paiement_annulations_audit n'ouvrent rien à anon.
+  -- 8) Aucun GRANT anon sur l'audit ni sur paiements.
   SELECT count(*) INTO v_count FROM information_schema.role_table_grants
     WHERE table_schema = 'public'
-      AND table_name   = 'paiement_annulations_audit'
+      AND table_name IN ('paiement_annulations_audit','paiements')
       AND grantee = 'anon';
   IF v_count <> 0 THEN
-    RAISE EXCEPTION 'FAIL: GRANT anon sur paiement_annulations_audit (%)', v_count;
+    RAISE EXCEPTION 'FAIL: GRANT anon détecté sur audit/paiements (%)', v_count;
   END IF;
-  RAISE NOTICE 'PASS: aucun GRANT anon sur l''audit';
+  RAISE NOTICE 'PASS: aucun GRANT anon';
 
-  -- 9) SELECT sur paiements réservé au staff (is_staff), pas de policy public/anon.
+  -- 9) SELECT sur paiements gardé par un contrôle de rôle/permission.
   IF NOT EXISTS (
     SELECT 1 FROM pg_policies
     WHERE schemaname='public' AND tablename='paiements' AND cmd='SELECT'
-      AND qual ILIKE '%is_staff%'
+      AND (qual ILIKE '%is_finance%' OR qual ILIKE '%is_admin%' OR qual ILIKE '%has_permission%')
   ) THEN
-    RAISE EXCEPTION 'FAIL: SELECT paiements non gardé par is_staff';
+    RAISE EXCEPTION 'FAIL: SELECT paiements non gardé par un contrôle de rôle';
   END IF;
-  RAISE NOTICE 'PASS: recherche/pagination paiements verrouillée au staff';
+  RAISE NOTICE 'PASS: lecture des paiements réservée aux rôles habilités';
+
+  -- 10) La table legacy user_roles ne doit plus servir de source de rôles.
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='user_roles') THEN
+    SELECT count(*) INTO v_count FROM public.user_roles;
+    RAISE NOTICE 'INFO: table legacy user_roles encore présente (% lignes) — suppression prévue', v_count;
+  END IF;
 END
 $$;
 

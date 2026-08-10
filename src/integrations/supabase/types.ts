@@ -4184,8 +4184,10 @@ export type Database = {
           matricule: string | null
           mfa_enrolled_at: string | null
           mfa_required: boolean
+          must_change_password: boolean
           nom: string | null
           nom_complet: string | null
+          password_compromised_at: string | null
           prenom: string | null
           route_restrictions: string[]
           service_id: string | null
@@ -4209,8 +4211,10 @@ export type Database = {
           matricule?: string | null
           mfa_enrolled_at?: string | null
           mfa_required?: boolean
+          must_change_password?: boolean
           nom?: string | null
           nom_complet?: string | null
+          password_compromised_at?: string | null
           prenom?: string | null
           route_restrictions?: string[]
           service_id?: string | null
@@ -4234,8 +4238,10 @@ export type Database = {
           matricule?: string | null
           mfa_enrolled_at?: string | null
           mfa_required?: boolean
+          must_change_password?: boolean
           nom?: string | null
           nom_complet?: string | null
+          password_compromised_at?: string | null
           prenom?: string | null
           route_restrictions?: string[]
           service_id?: string | null
