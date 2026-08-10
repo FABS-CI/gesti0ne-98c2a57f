@@ -10,6 +10,7 @@ export type Notification = {
   created_at: string;
   updated_at: string;
   user_id?: string | null;
+  is_super_admin?: boolean | null;
   role_cible?: string | null;
   module?: string | null;
   document_type?: string | null;
@@ -243,6 +244,11 @@ export async function genererAlertes(): Promise<{
   if (toInsert.length === 0) return { created: 0, skipped: candidates.length };
 
   const today = new Date().toISOString().slice(0, 10);
+  
+  // RÈGLE ABSOLUE : Vérification Super Admin avant insertion
+  const { isSuperAdminAction } = await import("@/lib/auth/super-admin-check");
+  if (await isSuperAdminAction()) return { created: 0, skipped: candidates.length };
+
   const rows = toInsert.map((c) => ({
     titre: c.titre,
     message: c.message,
