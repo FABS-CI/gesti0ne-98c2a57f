@@ -191,12 +191,14 @@ export function drawHeader(doc: jsPDF, titre: string, t: PdfTemplate = getActive
     doc.text(sanitizePdfText(COMPANY.slogan), textX, HEADER.top + 4.2);
   }
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9.5);
-  doc.setTextColor(...PDF_COLORS.black);
-  doc.text(`Adresse :  BP 693`, textX, HEADER.top + 9.8);
-  doc.text(`Phone : ${COMPANY.telephones[0]?.replace(/\s/g, "") ?? ""}`, textX, HEADER.top + 14.5);
-  doc.text(`Email : ${COMPANY.email}`, textX, HEADER.top + 19.2);
+  if (!isListeProduits) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(...PDF_COLORS.black);
+    doc.text(`Adresse :  BP 693`, textX, HEADER.top + 9.8);
+    doc.text(`Phone : ${COMPANY.telephones[0]?.replace(/\s/g, "") ?? ""}`, textX, HEADER.top + 14.5);
+    doc.text(`Email : ${COMPANY.email}`, textX, HEADER.top + 19.2);
+  }
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
