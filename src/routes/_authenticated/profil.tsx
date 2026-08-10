@@ -221,53 +221,107 @@ function Profil() {
                 Authentification multifacteur (MFA)
               </CardTitle>
               <CardDescription className="whitespace-pre-line text-xs">
-                Oui. Pour ton ERP GESTI-ONE, je te conseille un prompt qui force le LLM à faire un audit de performance réel, et pas simplement à ajouter des loaders ou modifier quelques composants.
-
-🚀 PROMPT — AUDIT PERFORMANCE COMPLET ET OPTIMISATION PRODUCTION — ERP GESTI-ONE
-
-Tu es un architecte logiciel senior spécialisé en performance des ERP, PostgreSQL, API, React/TypeScript, Supabase et applications SaaS.
-
-Tu dois réaliser un audit complet des performances de GESTI-ONE, identifier les véritables goulots d'étranglement et appliquer les optimisations nécessaires.
-
-⚠️ RÈGLE PRINCIPALE
-
-NE PAS faire d'optimisations superficielles.
-
-Ne pas simplement ajouter :
-- des loaders ;
-- des animations ;
-- des délais artificiels ;
-- du cache partout ;
-- des useMemo inutiles ;
-- des useEffect supplémentaires ;
-- des requêtes parallèles sans analyse ;
-- de la pagination uniquement visuelle.
-
-Je veux mesurer les performances, identifier les causes et corriger le problème à la source.
-
-1. AUDIT GLOBAL
-Analyse toute l'application : Frontend ↓ React / TypeScript ↓ Hooks / Context / State ↓ API ↓ Backend ↓ PostgreSQL / Supabase ↓ Indexes / Queries ↓ Infrastructure.
-
-Audite particulièrement : temps de connexion ; chargement du dashboard ; navigation entre modules ; chargement des listes ; recherche ; filtres ; pagination ; création/modification de documents ; génération PDF ; rapports ; statistiques ; notifications ; authentification MFA ; gestion des utilisateurs ; RBAC ; ventes ; clients ; produits ; stocks ; achats ; livraisons ; facturation ; comptabilité.
-
-2. MESURER AVANT DE MODIFIER
-Avant toute optimisation, établis un état initial. Mesure notamment : TTFB, FCP, LCP, INP, CLS, API response time, Database query time, JavaScript execution time, Bundle size, Memory usage, Number of API calls, Number of database queries, Number of rows returned.
-
-Ne remplis pas les valeurs avec des estimations : mesure réellement le projet.
-
-3. AUDIT DU LOGIN & DASHBOARD
-Le login doit être particulièrement rapide. Rechercher : requêtes inutiles ; appels API séquentiels ; récupération de toutes les permissions ; appels répétés ; refresh inutiles. Le dashboard ne doit pas charger toutes les données de l'ERP. Remplacer lorsque possible par des requêtes SQL agrégées (COUNT, SUM, AVG, GROUP BY).
-
-4. AUDIT POSTGRESQL & INDEXATION
-Inspecter toutes les requêtes SQL importantes. Rechercher : SELECT *, jointures coûteuses, filtres sans index, N+1 queries. Utiliser EXPLAIN ANALYZE. Auditer les indexes des tables principales. Toutes les grandes listes doivent utiliser une pagination serveur. NE PAS charger SELECT * FROM table puis paginer côté navigateur.
-
-5. FRONTEND & API
-Auditer les composants React (re-render inutiles, Context globaux). Mettre en place du lazy loading pour les gros modules. Optimiser en priorité les 20 % d'endpoints responsables de la majorité de la latence.
-
-6. RAPPORT FINAL
-Produire un SCORE PERFORMANCE global et un TOP 10 DES PROBLÈMES avec gain mesuré avant/après.
-
-🟢 GO PRODUCTION ou 🔴 NO-GO PRODUCTION avec raisons précises.
+                Voici le prompt maître pré-production que je te recommande de donner au LLM/Lovable. Il doit empêcher le passage en production tant que les points critiques ne sont pas validés.{"\n\n"}
+                🚨 GESTI-ONE — AUDIT FINAL PRÉ-PRODUCTION / GO-NO-GO{"\n\n"}
+                Tu es un architecte logiciel senior, ingénieur DevSecOps, expert ERP, PostgreSQL, Supabase, React/TypeScript, sécurité, performance et mise en production SaaS.{"\n\n"}
+                GESTI-ONE est un ERP destiné à une utilisation réelle en entreprise.{"\n\n"}
+                Ta mission est de réaliser l'audit final complet avant production, de corriger les anomalies bloquantes et de déterminer objectivement si l'application peut être mise en production.{"\n\n"}
+                ⚠️ RÈGLE ABSOLUE{"\n\n"}
+                NE PAS déclarer GESTI-ONE prêt pour la production simplement parce que l'application démarre ou que les pages fonctionnent.{"\n\n"}
+                Tu dois vérifier :{"\n"}
+                Sécurité + Authentification + MFA + RBAC + Base de données + Intégrité des données + Comptabilité + Stock + Ventes + Documents + Livraisons + Performance + PWA + Sauvegardes + Monitoring + Tests{"\n\n"}
+                À la fin, tu dois obligatoirement produire :{"\n"}
+                🟢 GO PRODUCTION ou 🔴 NO-GO PRODUCTION{"\n\n"}
+                1. PHASE 0 — GEL DU PROJET{"\n"}
+                Avant l'audit :{"\n"}
+                ne pas ajouter de fonctionnalités non nécessaires ; ne pas modifier arbitrairement les règles métier ; ne pas supprimer de données ; ne pas contourner la sécurité ; ne pas masquer les erreurs ; ne pas remplacer une vraie correction par une modification visuelle.{"\n"}
+                L'objectif est maintenant :{"\n"}
+                STABILISER → TESTER → CORRIGER → VALIDER → PRODUIRE{"\n\n"}
+                2. CARTOGRAPHIE COMPLÈTE DU PROJET{"\n"}
+                Inspecter le projet complet.{"\n"}
+                Identifier : Frontend, Backend, API, Base de données, Authentification, MFA, RBAC, Supabase, PostgreSQL, Stockage fichiers, PDF, Realtime, PWA, Variables d'environnement, Migrations, Jobs, Webhooks, Services externes.{"\n"}
+                Produire une architecture réelle du système. Ne pas supposer l'architecture : inspecter le code.{"\n\n"}
+                3. 🔴 AUTHENTIFICATION{"\n"}
+                Tester : connexion ; déconnexion ; mauvais mot de passe ; session expirée ; renouvellement de session ; changement de mot de passe ; récupération de compte ; accès après déconnexion ; accès sans authentification.{"\n"}
+                Vérifier qu'aucune route sensible n'est accessible sans authentification.{"\n\n"}
+                4. 🔴 MFA — PRIORITÉ ABSOLUE{"\n"}
+                Le projet présente actuellement les problèmes :{"\n"}
+                ❌ Code invalide — MFA{"\n"}
+                🟠 MFA Non configuré{"\n"}
+                Ils doivent être résolus avant toute mise en production.{"\n"}
+                Auditer entièrement : Génération secret → QR Code → Authenticator → Validation premier code → Stockage secret → mfa_enabled → Connexion → Validation TOTP → Session → Profil{"\n"}
+                Vérifier que : SECRET QR CODE = SECRET STOCKÉ = SECRET UTILISÉ POUR LA VALIDATION{"\n"}
+                Vérifier : TOTP ; Base32 ; algorithme ; période ; nombre de chiffres ; synchronisation horaire ; récupération du secret ; user_id ; persistance ; expiration ; réinitialisation.{"\n"}
+                Tester : Code valide → ACCEPTÉ ; Code invalide → REFUSÉ ; Code expiré → REFUSÉ ; Mauvais utilisateur → REFUSÉ.{"\n"}
+                Après configuration : 🟢 Configuré doit rester affiché après : actualisation ; déconnexion ; reconnexion ; nouvelle session ; PWA.{"\n"}
+                INTERDICTION : Ne jamais accepter n'importe quel code. Ne jamais désactiver MFA pour contourner le problème.{"\n\n"}
+                5. 🔴 RBAC / AUTORISATIONS{"\n"}
+                Auditer tous les rôles.{"\n"}
+                Vérifier : Utilisateur → Rôle → Module → Permission → Action{"\n"}
+                Tester notamment : lecture ; création ; modification ; suppression ; validation ; paiement ; export ; impression ; administration.{"\n"}
+                Un utilisateur non autorisé ne doit pas pouvoir appeler directement une API interdite. La sécurité doit être appliquée côté serveur, pas uniquement dans l'interface.{"\n\n"}
+                6. 🔴 ISOLATION DES DONNÉES{"\n"}
+                Vérifier qu'un utilisateur/tenant ne peut jamais accéder aux données d'un autre.{"\n"}
+                Tester : Clients, Produits, Ventes, Factures, Paiements, Stock, Livraisons, Utilisateurs, Documents, Rapports.{"\n"}
+                Auditer : RLS ; policies ; tenant_id ; user_id ; filtres backend ; endpoints ; exports ; PDF.{"\n\n"}
+                7. 🔴 BASE DE DONNÉES{"\n"}
+                Vérifier que la base réellement utilisée en production est celle prévue.{"\n"}
+                Auditer : migrations ; tables ; contraintes ; foreign keys ; indexes ; types ; valeurs NULL ; doublons ; données orphelines ; transactions.{"\n\n"}
+                8. 🔴 INTÉGRITÉ DES DONNÉES{"\n"}
+                Tester les relations : Client → Commande → Facture → Paiement → Solde et Produit → Stock → Vente → Mouvement stock.{"\n"}
+                Aucune opération ne doit créer de données incohérentes.{"\n\n"}
+                9. 🔴 COMPTABILITÉ / SOLDES CLIENTS{"\n"}
+                Tester plusieurs cas de facturation et paiements.{"\n"}
+                Vérifier : Débit, Crédit, Solde dans relevé client ; facture ; paiement ; dashboard ; rapports.{"\n\n"}
+                10. 🔴 STOCK{"\n"}
+                Tester : Achat (Entrée), Vente (Sortie), Retour client (Entrée), Retour fournisseur (Sortie), Annulation (Contre-mouvement), Inventaire (Ajustement).{"\n"}
+                Vérifier que chaque opération crée correctement son mouvement. Stock théorique = Stock réel calculé par mouvements.{"\n\n"}
+                11. 🔴 VENTES ET DOCUMENTS{"\n"}
+                Tester entièrement : Devis/Proforma → Commande → Bon de livraison → Facture → Paiement.{"\n"}
+                Vérifier : numérotation ; dates ; client ; représentant ; produits ; quantités ; prix ; remises ; taxes ; totaux.{"\n\n"}
+                12. 🔴 PDF{"\n"}
+                Tester : facture ; proforma ; bon de commande ; bon de livraison ; bon de réception ; relevé de compte ; catalogue ; rapports.{"\n"}
+                Vérifier : aucune coupure ; aucune superposition ; totaux corrects ; logo ; QR code ; pagination ; impression A4.{"\n\n"}
+                13. 🔴 LIVRAISONS / COLISAGE{"\n"}
+                Tester : Commande → Colisage → Préparation → Affectation livreur → Tournée → Livraison → Preuve → Statut final.{"\n"}
+                Vérifier que chaque changement de statut est cohérent et traçable.{"\n\n"}
+                14. 🔴 PERFORMANCE{"\n"}
+                Benchmark : Login, Dashboard, Clients, Produits, Ventes, Factures, Stock, Livraisons, Rapports, Recherche, PDF.{"\n"}
+                Rechercher : N+1 queries ; SELECT * ; requêtes SQL lentes ; absence d'index ; appels API répétés ; bundle trop lourd.{"\n\n"}
+                15. OBJECTIFS DE PERFORMANCE{"\n"}
+                UI &lt; 100ms ; API simple &lt; 500ms ; CRUD courant &lt; 1s ; Dashboard &lt; 2s ; Rapport complexe &lt; 3s. Mesurer réellement.{"\n\n"}
+                16. PAGINATION{"\n"}
+                Toutes les grandes tables doivent être paginées côté serveur. Ne pas charger toute la table dans le navigateur.{"\n\n"}
+                17. RECHERCHE{"\n"}
+                La recherche doit être serveur-side.{"\n\n"}
+                18. FRONTEND{"\n"}
+                Auditer : re-renders ; hooks ; useEffect ; lazy loading ; code splitting ; bundle.{"\n\n"}
+                19. PWA{"\n"}
+                Tester : installation Android/Desktop ; cache ; mise à jour ; reconnexion ; authentification ; MFA.{"\n\n"}
+                20. SAUVEGARDE ET RESTAURATION{"\n"}
+                Backup automatique → Stockage sécurisé → Restauration testée. Faire un véritable test de restauration.{"\n\n"}
+                21. VARIABLES D'ENVIRONNEMENT{"\n"}
+                Auditer les secrets (Git, Frontend, Production). Rotation possible des secrets.{"\n\n"}
+                22. LOGS ET MONITORING{"\n"}
+                Monitoring des erreurs critiques. Ne jamais enregistrer de mots de passe ou tokens.{"\n\n"}
+                23. TEST DE CHARGE{"\n"}
+                Tester avec 10, 25 et 50 utilisateurs simultanés. Mesurer latence, erreurs, CPU, RAM, DB.{"\n\n"}
+                24. TEST DE RÉGRESSION{"\n"}
+                Créer une suite de 110 TESTS couvrant tous les modules. Chaque test doit être documenté (PASS/FAIL).{"\n\n"}
+                25. DONNÉES DE PRODUCTION{"\n"}
+                Vérifier doublons, clients, produits, stocks, factures, paiements, soldes avant migration.{"\n\n"}
+                26. PLAN DE ROLLBACK{"\n"}
+                Préparer et documenter la procédure de retour en version stable.{"\n\n"}
+                27. CHECKLIST FINALE{"\n"}
+                Vérifier tous les points : Authentification, MFA, RBAC, DB, Données, Finance, Stock, Ventes, PDF, Performance, PWA, Backup, Monitoring, Sécurité.{"\n\n"}
+                28. RÈGLE DE DÉCISION{"\n"}
+                🔴 NO-GO si un seul problème critique existe.{"\n"}
+                🟢 GO PRODUCTION uniquement si tous les points sont validés (✅).{"\n\n"}
+                29. RAPPORT FINAL OBLIGATOIRE{"\n"}
+                Produire le rapport formaté AUDIT FINAL GESTI-ONE avec décision finale GO/NO-GO et justification.{"\n\n"}
+                🚨 CONSIGNE FINALE{"\n"}
+                Analyse basée sur le code réel, la base réelle, les requêtes réelles et les flux réels.{"\n"}
+                SÉCURITÉ → INTÉGRITÉ DES DONNÉES → FIABILITÉ → PERFORMANCE.
               </CardDescription>
             </div>
           </div>
@@ -331,4 +385,3 @@ Produire un SCORE PERFORMANCE global et un TOP 10 DES PROBLÈMES avec gain mesur
     </div>
   );
 }
-
