@@ -157,20 +157,23 @@ export class BaseDocument {
 
   drawHeader() {
     const yTop = PAGE.h - 25;
-    
+    const isListeProduits = this.data.type === "LISTE DES PRODUITS";
+
     // Logo (G)
     if (this.logoImg) {
       const h = 45;
       const w = (this.logoImg.width / this.logoImg.height) * h;
       this.page.drawImage(this.logoImg, { x: MARGINS.x, y: yTop - h, width: w, height: h });
-      
-      this.page.drawText("Une innovation pour une école de qualité", {
-        x: MARGINS.x,
-        y: yTop - h - 12,
-        size: 8,
-        font: this.fonts.bold, // Passé en gras pour plus de netteté
-        color: COLORS.noir,    // Noir profond au lieu de gris/orange
-      });
+
+      if (!isListeProduits) {
+        this.page.drawText("Une innovation pour une école de qualité", {
+          x: MARGINS.x,
+          y: yTop - h - 12,
+          size: 8,
+          font: this.fonts.bold,
+          color: COLORS.noir,
+        });
+      }
     }
 
     // Titre (C)
@@ -261,9 +264,11 @@ export class BaseDocument {
     const footerTextSize = 8;
     
     // Col 1 : Société
-    this.page.drawText("EDITIONS FABS-CI", { x: MARGINS.x, y: yBot, size: footerTextSize + 1, font: this.fonts.bold });
-    this.page.drawText("BP 673 Bingerville - Côte d'Ivoire", { x: MARGINS.x, y: yBot - 10, size: footerTextSize, font: this.fonts.regular });
-    this.page.drawText("RCCM : CI-ABJ-2020-B-12345", { x: MARGINS.x, y: yBot - 19, size: footerTextSize, font: this.fonts.regular });
+    if (!isListeProduits) {
+      this.page.drawText("EDITIONS FABS-CI", { x: MARGINS.x, y: yBot, size: footerTextSize + 1, font: this.fonts.bold });
+      this.page.drawText("BP 673 Bingerville - Côte d'Ivoire", { x: MARGINS.x, y: yBot - 10, size: footerTextSize, font: this.fonts.regular });
+      this.page.drawText("RCCM : CI-ABJ-2020-B-12345", { x: MARGINS.x, y: yBot - 19, size: footerTextSize, font: this.fonts.regular });
+    }
 
     // Col 2 : Contact
     this.page.drawText("CONTACT", { x: MARGINS.x + colW, y: yBot, size: footerTextSize + 1, font: this.fonts.bold });
