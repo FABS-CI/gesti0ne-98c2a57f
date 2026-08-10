@@ -137,12 +137,12 @@ export const mfaEnrollConfirm = createServerFn({ method: "POST" })
       .eq("user_id", targetId);
     if (upd.error) throw new Error(upd.error.message);
     
-    // Correction critique : Mise à jour de mfa_enabled pour assurer la persistance et la visibilité
+    // Correction critique : Mise à jour de mfa_enrolled_at pour assurer la persistance et la visibilité
+    // Note : mfa_enabled n'existe pas en colonne, on se base sur mfa_enrolled_at IS NOT NULL
     const profUpd = await supabase
       .from("profiles")
       .update({ 
-        mfa_enrolled_at: new Date().toISOString(),
-        mfa_enabled: true 
+        mfa_enrolled_at: new Date().toISOString()
       })
       .eq("id", targetId);
     if (profUpd.error) throw new Error(profUpd.error.message);
@@ -290,7 +290,7 @@ export const mfaResetUser = createServerFn({ method: "POST" })
       db.from("mfa_backup_codes").delete().eq("user_id", data.targetUserId),
       db.from("mfa_otp_attempts").delete().eq("user_id", data.targetUserId),
       db.from("mfa_session_validations").delete().eq("user_id", data.targetUserId),
-      db.from("profiles").update({ mfa_enrolled_at: null, mfa_enabled: false }).eq("id", data.targetUserId),
+      db.from("profiles").update({ mfa_enrolled_at: null }).eq("id", data.targetUserId),
     ]);
 
     // Audit the action
@@ -318,11 +318,11 @@ export const mfaStatus = createServerFn({ method: "POST" })
     
     const { data: prof } = await supabase
       .from("profiles")
-      .select("mfa_enrolled_at, mfa_required, mfa_enabled")
+      .select("mfa_enrolled_at, mfa_required")
       .eq("id", userId)
       .maybeSingle();
     
-    const enrolled = !!(prof?.mfa_enrolled_at || prof?.mfa_enabled);
+    const enrolled = !!prof?.mfa_enrolled_at;
     const required = !!prof?.mfa_required;
     let sessionValid = false;
     
