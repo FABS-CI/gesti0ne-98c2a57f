@@ -2,9 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { friendlyError } from '@/lib/friendly-error';
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download, Plus, Image as ImageIcon } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { exportAfficheRentree } from "@/lib/pdf/affiche-rentree";
 
 import {
   type Produit,
@@ -206,21 +205,6 @@ function ProduitsPage() {
             <p className="text-sm text-muted-foreground">{total} produit(s)</p>
           </div>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={async () => {
-                try {
-                  toast.loading("Génération de l'affiche...", { id: "affiche-rentree" });
-                  await exportAfficheRentree();
-                  toast.success("Affiche générée !", { id: "affiche-rentree" });
-                } catch (e) {
-                  toast.error("Erreur génération affiche", { id: "affiche-rentree" });
-                }
-              }}
-              className="bg-primary/5 hover:bg-primary/10 border-primary/20 text-primary font-semibold"
-            >
-              <ImageIcon className="mr-2 h-4 w-4" /> Affiche Rentrée 2026
-            </Button>
             <Button variant="outline" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" /> Export PDF
             </Button>
