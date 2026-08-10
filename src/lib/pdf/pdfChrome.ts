@@ -207,10 +207,12 @@ export function drawHeader(doc: jsPDF, titre: string, t: PdfTemplate = getActive
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(...titleColor);
-  doc.text(sanitizePdfText(titre), right, HEADER.top + 19, {
-    align: "right",
-    maxWidth: pageW * 0.42,
-  });
+  if (!isListeProduits) {
+    doc.text(sanitizePdfText(titre), right, HEADER.top + 19, {
+      align: "right",
+      maxWidth: pageW * 0.42,
+    });
+  }
 
   doc.setDrawColor(156, 163, 175);
   doc.setLineWidth(0.25);
