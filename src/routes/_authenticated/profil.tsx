@@ -242,7 +242,7 @@ function Profil() {
                 7️⃣ TEST STOCK (Mouvements entrées/sorties)
                 8️⃣ TEST PDF (Génération/Pagination/QR)
                 9️⃣ LOGS ET MONITORING (Surveillance ERROR/500)
-                🔟 OUVERTURE AUX UTILISATEURS (Validation pilote -> Groupes)
+                🔟 OUVERTURE AUX UTILISATEURS (Validation pilote {"->"} Groupes)
 
                 📊 RAPPORT POST-DÉPLOIEMENT (Archivé dans profil)
                 VERDICT : 🟢 PRODUCTION STABLE
