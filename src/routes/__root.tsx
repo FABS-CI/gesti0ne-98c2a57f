@@ -194,7 +194,7 @@ function RootComponent() {
           });
         });
       }).catch(registrationError => {
-        console.log('SW registration failed: ', registrationError);
+        console.debug('SW registration failed: ', registrationError);
       });
     }
 
