@@ -144,7 +144,7 @@ export async function generateAfficheRentreePDF(): Promise<Blob> {
   });
 
   const pdfBytes = await doc.save();
-  return new Blob([pdfBytes], { type: "application/pdf" });
+  return new Blob([pdfBytes.buffer], { type: "application/pdf" });
 }
 
 export async function exportAfficheRentree(): Promise<void> {
