@@ -23,7 +23,11 @@ function getSessionId(): string | undefined {
  * résolution, fuseau, session, corrélation), puis envoie au serverFn.
  * Ne bloque jamais l'UI ; les erreurs sont avalées.
  */
-export function audit(input: AuditEventInput) {
+export async function audit(input: AuditEventInput) {
+  // RÈGLE ABSOLUE : Court-circuit immédiat pour le Super Admin côté client
+  const { isSuperAdminAction } = await import("@/lib/auth/super-admin-check");
+  if (await isSuperAdminAction()) return;
+
   const enriched: AuditEventInput = { ...input };
   if (typeof window !== "undefined") {
     try {

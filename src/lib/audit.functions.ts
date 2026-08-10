@@ -91,6 +91,15 @@ export const logAuditEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((raw) => InputSchema.parse(raw))
   .handler(async ({ data, context }) => {
+    // RÈGLE ABSOLUE : Le Super Administrateur est exempté d'audit.
+    // On vérifie le rôle avant toute chose pour éviter l'enregistrement indirect.
+    const isSuperAdmin = context.claims?.user_role === "super_admin" || 
+                        context.claims?.role === "super_admin";
+    
+    if (isSuperAdmin) {
+      return { id: "skipped_super_admin" };
+    }
+
     let ua: string | undefined;
     let cfCountry: string | undefined;
     let cfCity: string | undefined;
