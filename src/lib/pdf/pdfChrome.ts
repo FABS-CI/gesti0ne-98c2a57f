@@ -176,24 +176,29 @@ export function drawHeader(doc: jsPDF, titre: string, t: PdfTemplate = getActive
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.setTextColor(...PDF_COLORS.black);
-  const headerText = titre.includes("LISTE DES PRODUITS")
-    ? "supprime EDITIONS FABS-CI Une innovation pour une ecole de qualite sur LISTE DES PRODUITS"
+  const isListeProduits = titre.includes("LISTE DES PRODUITS");
+  const headerText = isListeProduits
+    ? ""
     : sanitizePdfText(COMPANY.nom);
-  doc.text(headerText, textX, HEADER.top);
+  if (headerText) {
+    doc.text(headerText, textX, HEADER.top);
+  }
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.setTextColor(85, 85, 85);
-  if (!titre.includes("LISTE DES PRODUITS")) {
+  if (!isListeProduits) {
     doc.text(sanitizePdfText(COMPANY.slogan), textX, HEADER.top + 4.2);
   }
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9.5);
-  doc.setTextColor(...PDF_COLORS.black);
-  doc.text(`Adresse :  BP 693`, textX, HEADER.top + 9.8);
-  doc.text(`Phone : ${COMPANY.telephones[0]?.replace(/\s/g, "") ?? ""}`, textX, HEADER.top + 14.5);
-  doc.text(`Email : ${COMPANY.email}`, textX, HEADER.top + 19.2);
+  if (!isListeProduits) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(...PDF_COLORS.black);
+    doc.text(`Adresse :  BP 693`, textX, HEADER.top + 9.8);
+    doc.text(`Phone : ${COMPANY.telephones[0]?.replace(/\s/g, "") ?? ""}`, textX, HEADER.top + 14.5);
+    doc.text(`Email : ${COMPANY.email}`, textX, HEADER.top + 19.2);
+  }
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
@@ -204,10 +209,12 @@ export function drawHeader(doc: jsPDF, titre: string, t: PdfTemplate = getActive
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(...titleColor);
-  doc.text(sanitizePdfText(titre), right, HEADER.top + 19, {
-    align: "right",
-    maxWidth: pageW * 0.42,
-  });
+  if (!isListeProduits) {
+    doc.text(sanitizePdfText(titre), right, HEADER.top + 19, {
+      align: "right",
+      maxWidth: pageW * 0.42,
+    });
+  }
 
   doc.setDrawColor(156, 163, 175);
   doc.setLineWidth(0.25);
