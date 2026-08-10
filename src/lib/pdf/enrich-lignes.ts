@@ -28,14 +28,15 @@ function toDocLignes(rows: RawLigne[]): DocLigne[] {
     const pu = Number(r.prix_unitaire ?? 0);
     const remisePct = r.remise_pct != null ? Number(r.remise_pct) : 0;
     
-    // Si remise_pct est à 50, on applique 0.5
+    // Audit point 8 & 10: Strict math consistency
+    const montantBrutLigne = qte * pu;
     const montantRemise = r.montant_remise != null 
       ? Number(r.montant_remise) 
-      : (qte * pu * remisePct) / 100;
+      : Math.round((montantBrutLigne * remisePct) / 100);
       
     const net = r.total_ligne != null
       ? Number(r.total_ligne)
-      : (qte * pu) - montantRemise;
+      : montantBrutLigne - montantRemise;
 
     return {
       codeArticle: r.reference_produit ?? r.produits?.reference ?? undefined,
