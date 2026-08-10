@@ -238,7 +238,7 @@ function Profil() {
                 3️⃣ MIGRATIONS DATABASE (Vérification schéma/indexes)
                 4️⃣ SMOKE TEST PRODUCTION (Accessibilité/Navigation)
                 5️⃣ AUTHENTIFICATION + MFA (Validation TOTP/Persistance)
-                6️⃣ TEST MÉTIER COMPLET (Vente -> Facture -> Paiement)
+                6️⃣ TEST MÉTIER COMPLET (Vente {"->"} Facture {"->"} Paiement)
                 7️⃣ TEST STOCK (Mouvements entrées/sorties)
                 8️⃣ TEST PDF (Génération/Pagination/QR)
                 9️⃣ LOGS ET MONITORING (Surveillance ERROR/500)
