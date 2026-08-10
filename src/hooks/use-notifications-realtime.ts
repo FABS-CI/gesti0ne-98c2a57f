@@ -37,9 +37,9 @@ export function useNotificationsRealtime() {
           };
 
           // RÈGLE ABSOLUE : Pas de notification pour les actions du Super Admin.
-          // Le déclencheur initial de l'événement est vérifié côté serveur, 
-          // mais on filtre aussi ici pour la cohérence globale.
-          if (n.metadata?.is_super_admin === true) return;
+          // Note: On utilise un cast temporaire car le type Notification sera mis à jour
+          // avec la colonne is_super_admin dans le schéma.
+          if ((n as any).is_super_admin === true) return;
 
           // Ciblage: la policy RLS filtre déjà, mais on double-check côté client
           // (la souscription pourrait recevoir des broadcasts avant filtre).

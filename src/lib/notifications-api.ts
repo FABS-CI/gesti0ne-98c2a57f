@@ -10,6 +10,7 @@ export type Notification = {
   created_at: string;
   updated_at: string;
   user_id?: string | null;
+  is_super_admin?: boolean | null;
   role_cible?: string | null;
   module?: string | null;
   document_type?: string | null;
