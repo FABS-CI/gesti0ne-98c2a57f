@@ -138,7 +138,7 @@ export const mfaEnrollConfirm = createServerFn({ method: "POST" })
     if (upd.error) throw new Error(upd.error.message);
     
     // Correction critique : Mise à jour de mfa_enrolled_at pour assurer la persistance et la visibilité
-    // Note : mfa_enabled n'existe pas en colonne, on se base sur mfa_enrolled_at IS NOT NULL
+    // Audit point 3: ensure mfa_enrolled_at is updated on profile
     const profUpd = await supabase
       .from("profiles")
       .update({ 
