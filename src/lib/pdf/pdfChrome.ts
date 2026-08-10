@@ -187,7 +187,7 @@ export function drawHeader(doc: jsPDF, titre: string, t: PdfTemplate = getActive
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.setTextColor(85, 85, 85);
-  if (!titre.includes("LISTE DES PRODUITS")) {
+  if (!isListeProduits) {
     doc.text(sanitizePdfText(COMPANY.slogan), textX, HEADER.top + 4.2);
   }
 
