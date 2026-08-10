@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { friendlyError } from '@/lib/friendly-error';
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download, Plus } from "lucide-react";
+import { Download, Plus, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { exportAfficheRentree } from "@/lib/pdf/affiche-rentree";
 
 import {
   type Produit,
