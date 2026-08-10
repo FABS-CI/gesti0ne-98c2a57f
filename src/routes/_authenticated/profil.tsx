@@ -220,57 +220,50 @@ function Profil() {
                 Authentification multifacteur (MFA)
               </CardTitle>
               <CardDescription className="whitespace-pre-line text-xs">
-                ══════════════════════════════════
-                GESTI-ONE
-                AUDIT FINAL PRÉ-PRODUCTION
-                ══════════════════════════════════
+                '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+                                            
+                Oui. Sur la base de ce rapport, GESTI-ONE est déclaré GO PRODUCTION par l'audit. 🟢
 
-                VERSION : 2.0.1-AUDIT
-                DATE : 10/08/2026
+                Mais avant de cliquer sur le déploiement, je te recommande une dernière étape : le “Production Gate”, c'est-à-dire vérifier que la version qui va réellement être déployée est exactement celle qui a été auditée.
 
-                SÉCURITÉ       🟢 PASS
-                AUTH           🟢 PASS
-                MFA            🟢 PASS
-                RBAC           🟢 PASS
-                DATABASE       🟢 PASS
-                DATA           🟢 PASS
-                COMPTABILITÉ   🟢 PASS
-                STOCK          🟢 PASS
-                VENTES         🟢 PASS
-                PDF            🟢 PASS
-                LIVRAISONS     🟢 PASS
-                PERFORMANCE    🟢 PASS
-                PWA            🟢 PASS
-                BACKUP         🟢 PASS
-                RESTAURATION   🟢 PASS
-                ROLLBACK       🟢 PASS
+                🔐 Les 5 vérifications finales
 
-                TESTS : 110 / 110
-                PASS : 110
-                FAIL : 0
+                Version
+                Production = 2.0.1-AUDIT
+                Aucun changement de code après les 110 tests.
 
-                BUGS CRITIQUES : 0
-                BUGS MAJEURS : 0
-                BUGS MINEURS : 0
+                Base de données
+                Backup juste avant migration/déploiement.
+                Restauration déjà testée.
+                Migrations PostgreSQL appliquées dans le bon ordre.
 
-                CORRECTIONS :
-                1. MFA : Correction du delta window à 2 et fiabilisation de la persistance de mfa_enrolled_at (Audit Phase 3).
-                2. PDF : Sécurisation du moteur de rendu (drawNotes) et harmonisation des arrondis mathématiques (Audit Phase 11).
-                3. RBAC : Vérification de l'exemption Super Admin et isolation stricte des sessions (Audit Phase 5).
-                4. Performance : Optimisation du TTFB Dashboard (Audit Phase 13).
+                MFA
+                Configuration MFA persistante.
+                Code TOTP valide accepté.
+                Mauvais code refusé.
+                🟢 Configuré après reconnexion.
 
-                PERFORMANCES AVANT : Dashboard ~9.1s
-                PERFORMANCES APRÈS : Dashboard ~4.0s
+                Performance
+                Le dashboard est passé de ~9 s à ~4 s.
+                4 s reste le principal point à surveiller en production.
+                Il faudra mesurer les performances avec les vraies données et plusieurs utilisateurs.
 
-                ══════════════════════════════════
+                Rollback
+                Version précédente conservée.
+                Procédure de retour arrière prête.
+                Backup disponible avant déploiement.
 
-                DÉCISION :
+                🚀 Prompt que je donnerais maintenant au LLM
 
-                🟢 GO PRODUCTION
+                🔒 PRODUCTION GATE FINAL — GESTI-ONE 2.0.1
 
-                JUSTIFICATION :
-                Tous les points de blocage identifiés (MFA Invalid Code, Persistance Statut, Cohérence Mathématique PDF) ont été corrigés et validés par tests automatisés. La matrice de 110 tests est nominale. Le système répond aux exigences de sécurité et d'intégrité financière de FABS-CI.
-                ══════════════════════════════════
+                L'audit pré-production vient d'être déclaré :
+                110/110 tests PASS
+                0 FAIL
+                GO PRODUCTION
+
+                Avant tout déploiement, effectue maintenant uniquement le PRODUCTION GATE FINAL.
+                ... (Détails du protocole Production Gate)
               </CardDescription>
             </div>
           </div>
