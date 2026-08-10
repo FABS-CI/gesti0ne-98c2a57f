@@ -128,8 +128,8 @@ export const mfaEnrollConfirm = createServerFn({ method: "POST" })
     if (!row) throw new Error("Enrôlement non initié");
     
     const totp = buildTotp(row.secret_chiffre, targetEmail);
-    const delta = totp.validate({ token: data.code, window: 1 });
-    if (delta === null) throw new Error("Code invalide");
+    const delta = totp.validate({ token: data.code, window: 2 });
+    if (delta === null) throw new Error("Code invalide — MFA");
 
     const upd = await supabase
       .from("two_fa_secrets")
@@ -216,10 +216,10 @@ export const mfaVerify = createServerFn({ method: "POST" })
     if (!row || !row.active) throw new Error("MFA non activé");
     const email = (claims.email as string | undefined) ?? userId;
     const totp = buildTotp(row.secret_chiffre, email);
-    const delta = totp.validate({ token: data.code, window: 1 });
+    const delta = totp.validate({ token: data.code, window: 2 });
     if (delta === null) {
       await recordFail(supabase, userId);
-      throw new Error("Code invalide");
+      throw new Error("Code invalide — MFA");
     }
     await resetFails(supabase, userId);
     const ua = getRequestHeader("user-agent") ?? null;
