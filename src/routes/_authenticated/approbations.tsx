@@ -799,10 +799,16 @@ function DecisionDialog({
         comment ? ` — ${comment}` : ""
       }]`;
 
+      console.log("APPROVE RETURN PAYLOAD:", {
+        p_approbation_id: row.id,
+        p_decision: isApprove ? "approuve" : "rejete",
+        p_commentaire: comment || null,
+      });
+
       const { error } = await supabase.rpc("approbation_decider", {
         p_approbation_id: row.id,
         p_decision: isApprove ? "approuve" : "rejete",
-        p_commentaire: comment || decisionNote,
+        p_commentaire: comment || null,
       });
       if (error) throw error;
 
