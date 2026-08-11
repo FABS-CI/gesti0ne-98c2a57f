@@ -29,7 +29,7 @@ export class ReceiptDocument extends BaseDocument {
     super(docBase, {} as any);
     this.receiptData = {
       ...receiptData,
-      isReprint: new Date(receiptData.paymentDate).toDateString() !== new Date().toDateString()
+      isReprint: new Date(receiptData.paymentDate).toDateString() !== new Date().toDateString() || receiptData.isReprint
     };
   }
 

@@ -46,7 +46,7 @@ export async function exportListePDF(opts: ExportListeOptions): Promise<void> {
     cursorY += 4;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    const text = opts.filtres.join("  •  ");
+    const text = opts.filtres.join("  -  ");
     const split = doc.splitTextToSize(text, pageWidth - marginX * 2);
     doc.text(split, marginX, cursorY);
     cursorY += split.length * 3.6 + 2;
