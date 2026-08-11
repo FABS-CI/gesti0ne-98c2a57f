@@ -235,7 +235,7 @@ function Profil() {
                 🟢 Mapping client et facture consolidé
                 🟢 Compatibilité PDF (Suppression Unicode ✓ / WinAnsi)
                 🟢 Bon de retour (PDF dédié & isolation architecture)
-                🟢 Approbation retour (Correction format JSON & logs)
+                🟢 Approbation retour (Correction format JSON & logs de diagnostic avancés)
                 
 
                 📊 RAPPORT POST-DÉPLOIEMENT
