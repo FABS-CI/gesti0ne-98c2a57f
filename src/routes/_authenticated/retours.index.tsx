@@ -273,7 +273,7 @@ function RetoursListPage() {
             action={
               !hasActiveFilters ? (
                 <Can permission="retours.creer">
-                  <Button size="sm" onClick={() => navigate({ to: "/retours/nouveau", search: { clientId: undefined, type_retour: "physique" } })}>
+                  <Button size="sm" onClick={() => navigate({ to: "/retours/nouveau", search: { clientId: undefined, type_retour: "physique" } as any })}>
                     <Plus className="mr-2 h-4 w-4" /> Nouveau retour
                   </Button>
                 </Can>
