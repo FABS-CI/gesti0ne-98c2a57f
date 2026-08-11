@@ -2,6 +2,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { getDepotDefautId } from "@/lib/parametres-api";
 import { assertPermission } from "@/lib/rbac-api";
 
+/** Options de validation comptable. */
+export type ValidationComptaOption =
+  | "diminuer_solde"
+  | "creer_avoir"
+  | "preparer_remboursement"
+  | "aucun_impact";
+
 /** Statuts officiels (valeurs stockées en base). */
 export const STATUTS_RETOUR = [
   { value: "demande_creee", label: "En attente validation", color: "#6366F1" },
