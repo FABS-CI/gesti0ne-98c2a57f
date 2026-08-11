@@ -319,13 +319,14 @@ function RetourDetailPage() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/30">
-                  <TableHead>Désignation</TableHead>
-                  <TableHead>Référence</TableHead>
-                  <TableHead className="text-right w-24">Qté demandée</TableHead>
-                  <TableHead className="text-right w-24">Qté reçue</TableHead>
-                  <TableHead className="w-32">État</TableHead>
-                  <TableHead>Motif</TableHead>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="w-[5%] font-bold">N°</TableHead>
+                  <TableHead className="w-[12%] font-bold">Référence</TableHead>
+                  <TableHead className="w-[35%] font-bold">Désignation</TableHead>
+                  <TableHead className="w-[10%] text-right font-bold">Qté Dem.</TableHead>
+                  <TableHead className="w-[10%] text-right font-bold">Qté Reçue</TableHead>
+                  <TableHead className="w-[13%] font-bold">État</TableHead>
+                  <TableHead className="w-[15%] font-bold">Motif</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

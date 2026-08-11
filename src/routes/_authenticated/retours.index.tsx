@@ -286,17 +286,15 @@ function RetoursListPage() {
               <ResponsiveTable stickyFirstCol>
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>N°</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Client (Établissement)</TableHead>
-                      <TableHead>Représentant</TableHead>
-                      <TableHead>Ville</TableHead>
-                      <TableHead className="text-right">Produits</TableHead>
-                      <TableHead className="text-right">Qté</TableHead>
-                      <TableHead>Enregistré par</TableHead>
-                      <TableHead>Statut</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                    <TableRow className="bg-muted/50">
+                      <TableHead className="w-[8%] font-bold">N°</TableHead>
+                      <TableHead className="w-[10%] font-bold">Date</TableHead>
+                      <TableHead className="w-[25%] font-bold">Client (Établissement)</TableHead>
+                      <TableHead className="w-[15%] font-bold">Représentant</TableHead>
+                      <TableHead className="w-[10%] font-bold">Ville</TableHead>
+                      <TableHead className="w-[7%] text-right font-bold">Qté</TableHead>
+                      <TableHead className="w-[15%] font-bold text-center">Statut</TableHead>
+                      <TableHead className="w-[10%] text-right font-bold">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
