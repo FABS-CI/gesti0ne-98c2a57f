@@ -73,8 +73,12 @@ export async function listClients(params: ListClientsParams = {}) {
   }
 
   let query = supabase.from("clients").select("*", { count: "exact" });
-
-  if (q) query = query.or(`nom.ilike.%${q}%,reference.ilike.%${q}%,representant.ilike.%${q}%`);
+  if (q) {
+    const like = `%${q}%`;
+    query = query.or(
+      `nom.ilike.${like},reference.ilike.${like},representant.ilike.${like},phone_normalized.ilike.${like}`
+    );
+  }
   if (type_client) query = query.eq("type_client", type_client);
   if (ville) query = query.ilike("ville", `%${ville}%`);
   if (actif != null) query = query.eq("actif", actif);
