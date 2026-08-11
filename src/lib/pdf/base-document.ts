@@ -166,7 +166,9 @@ export class BaseDocument {
     const paye = (this.data as any).paye ?? 0;
 
     // Réutilisation de la logique de statut si disponible, sinon calcul basé sur les montants
-    const existingStatut = this.data.statut?.label?.toUpperCase();
+    const existingStatut = typeof this.data.statut === 'string' 
+      ? this.data.statut.toUpperCase() 
+      : this.data.statut?.label?.toUpperCase();
 
     if (existingStatut === "PAYÉE" || existingStatut === "FACTURE SOLDÉE" || (solde <= 0 && total > 0)) {
       text = "FACTURE SOLDÉE";
@@ -190,7 +192,7 @@ export class BaseDocument {
       font: this.fonts.bold,
       color: COLORS.orangeFabs,
       opacity: 0.15,
-      rotate: { type: 'degrees', angle: 45 },
+      rotate: { type: 'degrees' as const, angle: 45 },
     });
   }
 
