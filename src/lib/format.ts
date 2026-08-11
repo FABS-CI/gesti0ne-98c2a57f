@@ -2,9 +2,10 @@ import { format as dateFnsFormat } from "date-fns";
 
 export function formatFCFA(amount: number | null | undefined, withSuffix = true): string {
   if (amount == null || isNaN(Number(amount))) return "—";
-  const formatted = Number(amount)
-    .toLocaleString("fr-FR", { maximumFractionDigits: 0 })
-    .replace(/[\u00A0\u202F,]/g, " ");
+  const n = Math.round(Number(amount));
+  // Formatage manuel pour garantir l'espace comme séparateur des milliers
+  // et éviter les comportements imprévisibles de toLocaleString selon l'env.
+  const formatted = n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   return withSuffix ? `${formatted} FCFA` : formatted;
 }
 
