@@ -799,30 +799,13 @@ function DecisionDialog({
         comment ? ` — ${comment}` : ""
       }]`;
 
-      // --- DEBUG OBLIGATOIRE ---
-      console.log("=== APPROVAL DEBUG ===");
-      console.log("APPROBATION ID (UUID):", row.id);
-      console.log("DECISION (TEXT):", isApprove ? "approuve" : "rejete");
-      console.log("COMMENTAIRE (TEXT):", comment || null);
-      
-      const { data: debugResult, error } = await supabase.rpc("approbation_decider", {
+      const { data: result, error } = await supabase.rpc("approbation_decider", {
         p_approbation_id: row.id,
         p_decision: isApprove ? "approuve" : "rejete",
         p_commentaire: comment || null,
       });
 
-      if (error) {
-        console.error("RPC ERROR DETAILS:", {
-          code: error.code,
-          message: error.message,
-          details: error.details,
-          hint: error.hint
-        });
-        throw error;
-      }
-      
-      console.log("RPC SUCCESS RESULT:", debugResult);
-      // --- END DEBUG ---
+      if (error) throw error;
 
       toast.success(
         `Demande ${isApprove ? "approuvée" : "rejetée"} — impact appliqué au module ${row.module ?? typeKey}`,
