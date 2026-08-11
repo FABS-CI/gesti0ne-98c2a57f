@@ -1,43 +1,20 @@
-# Bilan de Production — ERP FABS-CI
+# Plan de correction : Erreur d'approbation (Enum app_role)
 
-## Objectifs Atteints
+L'erreur "invalid input value for enum app_role: 'admin'" lors de l'approbation d'un retour (RET-20260811-9f4f28) est due à un conflit entre l'ancienne validation de rôle (enum `app_role`) et le nouveau moteur RBAC (`rbac2_user_roles`) au sein de la fonction SQL `approbation_decider`.
 
-- **RBAC v2 (moteur actif)** : sécurité granulaire multi-dépôts opérationnelle.
-- **Flux métier** : Commandes, Proformas, Factures et Retours sécurisés.
-- **Logistique** : Tournées, Colisage et Stocks synchronisés en temps réel.
-- **Documentaire** : Charte orange FABS-CI, mentions (FCFA), et signatures intégrées.
-- **Sauvegarde** : Export ZIP et procédure de restauration validée.
+## Étapes de correction
 
-## Lots Finalisés
+1. **Migration SQL** :
+   - Modifier `public.approbation_decider` pour utiliser `public.has_role_compat` au lieu de `public.has_role`.
+   - `has_role_compat` accepte `text` au lieu de l'enum `app_role`, ce qui résout le conflit de type et utilise la table `rbac2_user_roles`.
 
-- **Lot 1-3** : Intégrité, Idempotence et Formulaires full-page.
-- **Lot 4** : Finitions PDF (Orange, signatures, pagination).
-- **Lot 5** : Filtres Approvisionnement combinables.
-- **Lot 6** : Proforma (badges) et Notifications Temps Réel.
-- **Lot 7** : Runbook de restauration complète.
+2. **Vérification Frontend** :
+   - S'assurer que le payload envoyé par `src/routes/_authenticated/approbations.tsx` est correct (déjà vérifié via logs : UUID, 'approuve', null).
 
----
+3. **Nettoyage Debug** :
+   - Retirer les logs `=== APPROVAL DEBUG ===` une fois la correction validée.
 
-## État réel des couches RBAC (à jour)
+## Détails Techniques
 
-| Couche | Statut | Détail |
-| --- | --- | --- |
-| `user_roles` (v0/v1) | **MORT — supprimable** | 0 référence dans `src/`. Conserver la table le temps d'archiver l'historique des comptes seedés, puis `DROP`. |
-| `rbac2_*` (`rbac2_user_roles`, `rbac2_roles`, `rbac2_role_perms`, `rbac2_audit`, …) | **MOTEUR ACTIF — NE PAS SUPPRIMER** | Utilisé dans >10 fichiers, dont le contrôle `super_admin` de `src/routes/auth.tsx`, `users.functions.ts`, `security-roles.functions.ts`, `security-users.functions.ts`, `users-admin.functions.ts`. Sa suppression casserait la connexion et l'administration. |
-| `rbac3_*` / `rbac3_scope` | **Couche additionnelle** | Scoping complémentaire, utilisé principalement par `ScopesTabV3.tsx`. Pas encore le moteur principal. |
-
-**Règle :** `rbac2_*` reste la source de vérité des rôles tant que `rbac3` n'a pas
-repris l'intégralité de la charge (authentification, gestion des utilisateurs, audit).
-Toute suppression de `rbac2_*` avant cette bascule est interdite.
-
-## Sécurité des migrations
-
-Aucun mot de passe en clair dans une migration SQL, même temporaire.
-Pour du seed : mot de passe aléatoire non commité + `must_change_password`
-et invitation par e-mail. Voir `docs/securite-migrations.md`.
-
-## Prochaines Étapes Logiques (Post-MVP)
-
-1. **Suppression Définitive** : nettoyage de la table legacy `user_roles` uniquement.
-2. **Performance** : indexation des colonnes de recherche `reference`.
-3. **Analytique** : tableaux de bord financiers.
+- **Source du bug** : Appel à `public.has_role(v_uid, 'admin')` dans `approbation_decider`.
+- **Solution** : Remplacer par `public.has_role_compat(v_uid, 'admin')`.
