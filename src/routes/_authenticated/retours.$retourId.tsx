@@ -741,22 +741,28 @@ function ValidationComptaDialog({
                   <SelectValue placeholder="Choisir une action…" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="solde" disabled={!optionsAvailable.solde}>
+                  <SelectItem value="diminuer_solde" disabled={!optionsAvailable.diminuer_solde}>
                     <div className="flex flex-col">
                       <span>Créditer le solde client</span>
                       <span className="text-[10px] text-muted-foreground">Impacte directement la balance du compte</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="avoir" disabled={!optionsAvailable.avoir}>
+                  <SelectItem value="creer_avoir" disabled={!optionsAvailable.creer_avoir}>
                     <div className="flex flex-col">
                       <span>Émettre un avoir financier</span>
                       <span className="text-[10px] text-muted-foreground">Génère un document d'avoir utilisable plus tard</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="remboursement" disabled={!optionsAvailable.remboursement}>
+                  <SelectItem value="preparer_remboursement" disabled={!optionsAvailable.preparer_remboursement}>
                     <div className="flex flex-col">
                       <span>Remboursement direct</span>
                       <span className="text-[10px] text-muted-foreground">Sortie de caisse ou virement bancaire</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="aucun_impact" disabled={!optionsAvailable.aucun_impact}>
+                    <div className="flex flex-col">
+                      <span>Aucun impact financier</span>
+                      <span className="text-[10px] text-muted-foreground">Clôturer sans écriture comptable</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
