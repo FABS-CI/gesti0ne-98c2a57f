@@ -27,7 +27,10 @@ export class ReceiptDocument extends BaseDocument {
   constructor(docBase: any, receiptData: ReceiptData) {
     // Totals are not used directly in ReceiptDocument (custom layout)
     super(docBase, {} as any);
-    this.receiptData = receiptData;
+    this.receiptData = {
+      ...receiptData,
+      isReprint: new Date(receiptData.paymentDate).toDateString() !== new Date().toDateString()
+    };
   }
 
   async drawContent() {

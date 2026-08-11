@@ -226,11 +226,12 @@ function Profil() {
 
                 STATUT
                 La version GESTI-ONE 2.0.1-AUDIT est la version stable de référence.
-                La version GESTI-ONE 2.0.2 est PRÊT POUR VALIDATION.
+                La version GESTI-ONE 2.0.2 est PRÊT POUR VALIDATION (REÇUS HISTORIQUES).
                 
                 ÉVOLUTION 2.0.2
                 🟢 Recherche client par téléphone (Global + Module)
                 🟢 Reçu de paiement (PDF dédié & logique solde)
+                🟢 Réédition historique des reçus (Migration auto)
                 🟢 Normalisation intelligente des numéros
                 🟢 Indexation SQL pour performance
                 🟢 Tests de non-régression validés

@@ -136,7 +136,7 @@ export async function generateUnifiedStatementPDF(data: any): Promise<Blob> {
  * Génère un reçu de paiement avec le nouveau moteur ReceiptDocument
  */
 export async function generateUnifiedReceiptPDF(data: DataBase): Promise<Blob> {
-  const docBase = {
+  const docBase: any = {
     id: data.id || "receipt-id",
     type: "Reçu de Paiement",
     reference: data.reference,
@@ -148,7 +148,8 @@ export async function generateUnifiedReceiptPDF(data: DataBase): Promise<Blob> {
       representant: data.representant || "",
       telephone: data.clientTel || "",
       code: data.codeClient || "",
-    }
+    },
+    balanceBefore: (data as any).balanceBefore, // Transmit historical balance if present
   };
 
   const receiptData: ReceiptData = {
