@@ -186,7 +186,7 @@ function RetoursListPage() {
             Exporter PDF
           </Button>
           <Can permission="retours.creer">
-            <Button onClick={() => navigate({ to: "/retours/nouveau", search: { clientId: undefined, type_retour: "physique" } })}>
+            <Button onClick={() => navigate({ to: "/retours/nouveau", search: { clientId: undefined, type_retour: "physique" } as any })}>
               <Plus className="h-4 w-4 mr-2" />
               Nouveau retour
             </Button>
