@@ -132,7 +132,7 @@ function RetourNouveauPage() {
       }),
     onSuccess: (_data, values) => {
       void draft.markConverted();
-      toast.success("Demande de retour créée — en attente validation");
+      toast.success("Demande de retour créée — En attente validation");
       invalidateRetour(qc, { clientId: values.client_id });
       navigate({ to: "/retours" });
     },
