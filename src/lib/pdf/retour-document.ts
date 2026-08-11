@@ -12,19 +12,19 @@ export class RetourDocument extends BaseDocument {
     const colonnes = [
       { label: "N°", key: "num", width: 25 },
       { label: "Code", key: "code", width: 70 },
-      { label: "Désignation", key: "designation", width: 230 },
-      { label: "Quantité retournée", key: "qte", width: 80 },
-      { label: "Motif", key: "motif", width: 80 },
-      { label: "Observation", key: "obs", width: CONTENT_W - 485 },
+      { label: "Désignation", key: "designation", width: 210 },
+      { label: "Qté Dem.", key: "qte_dem", width: 55 },
+      { label: "Qté Rec.", key: "qte_rec", width: 55 },
+      { label: "Motif", key: "motif", width: 110 },
     ];
     
     const lignes = (this.data as any).lignes?.map((l: any, i: number) => ({
       num: i + 1,
       code: l.codeArticle ?? l.code ?? "",
       designation: l.designation ?? l.reference ?? "",
-      qte: l.qteRetournee ?? l.qte ?? 0,
+      qte_dem: l.qteDemandee ?? l.qte ?? 0,
+      qte_rec: l.qteRetournee ?? l.qteRecue ?? 0,
       motif: l.motif ?? "",
-      obs: l.observation ?? "",
     })) || [];
 
     y = this.drawTable(y, colonnes, lignes);

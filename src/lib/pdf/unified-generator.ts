@@ -204,8 +204,10 @@ export async function generateUnifiedRetourPDF(data: DataBase): Promise<Blob> {
       code: data.codeClient || "",
     },
     demandeur: (data as any).demandeurNom || (data as any).created_by_nom || "—",
-    approuvePar: (data as any).approuvePar || (data as any).valide_compta_par_nom || "—",
-    dateApprobation: (data as any).dateApprobation || (data as any).valide_compta_at ? new Date((data as any).valide_compta_at).toLocaleDateString('fr-FR') : "—",
+    approuvePar: (data as any).valide_compta_par_nom || (data as any).approuvePar || "—",
+    dateApprobation: (data as any).valide_compta_at 
+      ? new Date((data as any).valide_compta_at).toLocaleDateString('fr-FR') 
+      : (data as any).dateApprobation || "—",
     lignes: data.lignes || []
   };
 
