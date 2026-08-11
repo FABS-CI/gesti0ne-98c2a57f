@@ -159,16 +159,17 @@ export async function generateUnifiedReceiptPDF(data: DataBase): Promise<Blob> {
     customerRep: data.representant || undefined,
     customerPhone: data.clientTel || undefined,
     invoiceNumber: data.factureReference || "—",
-    invoiceTotal: data.factureMontantTotal || 0,
-    balanceBefore: data.factureMontantPayeAvant !== undefined && data.factureMontantTotal !== undefined
-      ? data.factureMontantTotal - (data.factureMontantPayeAvant || 0)
-      : (data.totalTTC || 0), // Fallback if data is missing
-    amountPaid: data.totalTTC || 0,
+    invoiceTotal: Number(data.factureMontantTotal ?? 0),
+    balanceBefore: data.factureMontantPayeAvant !== null && data.factureMontantTotal !== null
+      ? Number(data.factureMontantTotal) - Number(data.factureMontantPayeAvant)
+      : Number(data.totalTTC || 0), // Fallback if data is missing
+    amountPaid: Number(data.totalTTC || 0),
     balanceAfter: 0, // Calculated below
     paymentMethod: data.modePaiement || "Espèces",
     paymentReference: (data as any).num_transaction || (data as any).paymentReference || undefined,
     notes: data.notes || undefined,
   };
+
 
   // Re-calculate balance after based on balance before and amount paid
   receiptData.balanceAfter = Math.max(0, receiptData.balanceBefore - receiptData.amountPaid);

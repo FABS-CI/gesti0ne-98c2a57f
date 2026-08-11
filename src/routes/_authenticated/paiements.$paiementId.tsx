@@ -128,34 +128,45 @@ function PaiementDetailPage() {
             variant="outline"
             size="sm"
             onClick={async () => {
-              const { generateUnifiedCommercialPDF } = await import("@/lib/pdf/unified-generator");
-              const { fileNameFor } = await import("@/lib/pdf/fabsTemplates");
+              const { generateRecuPaiementPDF, downloadBlob, fileNameFor } = await import("@/lib/pdf/fabsTemplates");
+              const { getRecuContext, MODE_PAIEMENT_LABEL } = await import("@/lib/paiements-api");
               
-              const blob = await generateUnifiedCommercialPDF("Facture", {
-                id: paiement.paiement_id,
-                reference: paiement.reference,
-                date: paiement.date_paiement,
-                clientNom: paiement.client_nom,
-                totalTTC: Number(paiement.montant),
-                lignes: [
-                  {
-                    num: 1,
-                    code: "PAY",
-                    designation: `Règlement ${paiement.mode_paiement} - Réf: ${paiement.reference}`,
-                    qte: 1,
-                    pu: Number(paiement.montant),
-                    total: Number(paiement.montant),
-                  }
-                ],
-              });
+              try {
+                const ctx = await getRecuContext(paiement.paiement_id);
+                const montant = Number(ctx.paiement.montant);
+                const totalFacture = ctx.facture?.montant_total ?? null;
+                const dejaPayeAvant =
+                  ctx.facture != null
+                    ? Math.max(0, ctx.facture.montant_paye - montant)
+                    : null;
 
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = fileNameFor(paiement.reference, paiement.client_nom || "Client");
-              a.click();
-              URL.revokeObjectURL(url);
+                const blob = await generateRecuPaiementPDF({
+                  id: ctx.paiement.paiement_id,
+                  reference: ctx.paiement.reference,
+                  date: ctx.paiement.date_paiement,
+                  clientNom: ctx.client?.nom ?? ctx.paiement.client_nom,
+                  codeClient: ctx.client?.reference ?? null,
+                  clientTel: ctx.client?.telephone ?? null,
+                  adresseClient: ctx.client?.adresse ?? null,
+                  villeClient: ctx.client?.ville ?? null,
+                  representant: ctx.client?.representant ?? null,
+                  modePaiement:
+                    MODE_PAIEMENT_LABEL[ctx.paiement.mode_paiement] ??
+                    ctx.paiement.mode_paiement,
+                  totalTTC: montant,
+                  factureReference: ctx.facture?.reference ?? undefined,
+                  factureMontantTotal: totalFacture,
+                  factureMontantPayeAvant: dejaPayeAvant,
+                  observations: ctx.paiement.notes,
+                  devise: "FCFA",
+                } as any);
+
+                downloadBlob(blob, fileNameFor(paiement.reference, paiement.client_nom));
+              } catch (e) {
+                toast.error(friendlyError(e, "Erreur PDF"));
+              }
             }}
+
           >
             <Printer className="mr-2 h-4 w-4" /> Imprimer Reçu
           </Button>
