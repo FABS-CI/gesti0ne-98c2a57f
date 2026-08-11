@@ -35,7 +35,9 @@ async function search(q: string): Promise<Hit[]> {
     supabase
       .from("clients")
       .select("client_id, nom, ville, representant, telephone")
-      .or(`nom.ilike.${like},representant.ilike.${like},ville.ilike.${like},telephone.ilike.${like}`)
+      .or(
+        `nom.ilike.${like},representant.ilike.${like},ville.ilike.${like},telephone.ilike.${like},phone_normalized.ilike.${like}`
+      )
       .limit(10),
     supabase
       .from("produits")

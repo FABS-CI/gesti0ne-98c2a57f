@@ -866,6 +866,7 @@ export type Database = {
           nom: string
           notes: string | null
           pays: string | null
+          phone_normalized: string | null
           plafond_credit: number | null
           quartier: string | null
           reference: string | null
@@ -897,6 +898,7 @@ export type Database = {
           nom: string
           notes?: string | null
           pays?: string | null
+          phone_normalized?: string | null
           plafond_credit?: number | null
           quartier?: string | null
           reference?: string | null
@@ -928,6 +930,7 @@ export type Database = {
           nom?: string
           notes?: string | null
           pays?: string | null
+          phone_normalized?: string | null
           plafond_credit?: number | null
           quartier?: string | null
           reference?: string | null
@@ -7976,6 +7979,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      normalize_phone: { Args: { phone: string }; Returns: string }
       payer_achat: { Args: { _achat_id: string }; Returns: undefined }
       preview_cloture_exercice: {
         Args: { _exercice_id: string }

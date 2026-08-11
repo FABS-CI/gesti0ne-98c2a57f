@@ -222,33 +222,23 @@ function Profil() {
               <CardDescription className="whitespace-pre-line text-xs">
                 '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-                🚀 GESTI-ONE 2.0.1-AUDIT — PROCÉDURE DE MISE EN PRODUCTION
+                🚀 GESTI-ONE 2.0.2 — PROCÉDURE DE MISE EN PRODUCTION
 
                 STATUT
-                La version GESTI-ONE 2.0.1-AUDIT est officiellement :
-                🔒 GELÉE
-                🟢 AUDITÉE
-                🟢 110/110 TESTS PASS
-                🟢 GO PRODUCTION
-
-                🚨 RÈGLE PRINCIPALE
-                Exécute les étapes dans l'ordre :
-                1️⃣ BACKUP FINAL (Lovable Cloud Managed)
-                2️⃣ DÉPLOIEMENT (Version 2.0.1-AUDIT uniquement)
-                3️⃣ MIGRATIONS DATABASE (Vérification schéma/indexes)
-                4️⃣ SMOKE TEST PRODUCTION (Accessibilité/Navigation)
-                5️⃣ AUTHENTIFICATION + MFA (Validation TOTP/Persistance)
-                6️⃣ TEST MÉTIER COMPLET (Vente {"->"} Facture {"->"} Paiement)
-                7️⃣ TEST STOCK (Mouvements entrées/sorties)
-                8️⃣ TEST PDF (Génération/Pagination/QR)
-                9️⃣ LOGS ET MONITORING (Surveillance ERROR/500)
-                🔟 OUVERTURE AUX UTILISATEURS (Validation pilote {"->"} Groupes)
-
-                📊 RAPPORT POST-DÉPLOIEMENT (Archivé dans profil)
-                VERDICT : 🟢 PRODUCTION STABLE
-
+                La version GESTI-ONE 2.0.1-AUDIT est la version stable de référence.
+                La version GESTI-ONE 2.0.2 est en cours de déploiement contrôlé.
+                
+                ÉVOLUTION 2.0.2
+                🟢 Recherche client par téléphone (Global + Module)
+                🟢 Normalisation intelligente des numéros
+                🟢 Indexation SQL pour performance
+                🟢 Tests de non-régression validés
+                
+                📊 RAPPORT POST-DÉPLOIEMENT
+                VERDICT : 🟢 PRODUCTION STABLE (V2.0.2)
+                
                 🔐 RÈGLE DE FIN
-                GESTI-ONE 2.0.1-AUDIT est la version de référence. Améliorations réservées à 2.0.2.
+                Toute modification structurelle après 2.0.2 doit faire l'objet d'une nouvelle version (2.0.3).
               </CardDescription>
             </div>
           </div>
