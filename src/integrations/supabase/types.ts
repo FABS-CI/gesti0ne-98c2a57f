@@ -3651,6 +3651,7 @@ export type Database = {
           lien: string | null
           lu: boolean
           message: string | null
+          metadata: Json | null
           module: string | null
           notification_id: string
           priorite: string | null
@@ -3669,6 +3670,7 @@ export type Database = {
           lien?: string | null
           lu?: boolean
           message?: string | null
+          metadata?: Json | null
           module?: string | null
           notification_id?: string
           priorite?: string | null
@@ -3687,6 +3689,7 @@ export type Database = {
           lien?: string | null
           lu?: boolean
           message?: string | null
+          metadata?: Json | null
           module?: string | null
           notification_id?: string
           priorite?: string | null
