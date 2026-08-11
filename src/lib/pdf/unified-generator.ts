@@ -1,8 +1,10 @@
 import { CommercialDocument } from "./commercial-document";
 import { StatementDocument } from "./statement-document";
+import { ReceiptDocument, type ReceiptData } from "./receipt-document";
 import { resolveDiscountMode, type DocTotals as DataTotals } from "./enrich-lignes";
 import type { DocBase as DataBase } from "./fabsTemplates";
 import { numberToLetters } from "./number-to-letters";
+
 
 /**
  * Adaptateur pour brancher le nouveau moteur BaseDocument sur les fonctions legacy
@@ -127,5 +129,52 @@ export async function generateUnifiedStatementPDF(data: any): Promise<Blob> {
   const doc = new StatementDocument(docBase, {} as any);
   await doc.init();
   await doc.drawContent(data);
+  return await doc.getBlob();
+}
+
+/**
+ * Génère un reçu de paiement avec le nouveau moteur ReceiptDocument
+ */
+export async function generateUnifiedReceiptPDF(data: DataBase): Promise<Blob> {
+  const docBase = {
+    id: data.id || "receipt-id",
+    type: "Reçu de Paiement",
+    reference: data.reference,
+    date: data.date,
+    client: {
+      nom: data.clientNom || "",
+      ville: data.villeClient || "",
+      adresse: data.adresseClient || "",
+      representant: data.representant || "",
+      telephone: data.clientTel || "",
+      code: data.codeClient || "",
+    }
+  };
+
+  const receiptData: ReceiptData = {
+    paymentNumber: data.reference,
+    paymentDate: data.date,
+    customerName: data.clientNom || "",
+    customerCity: data.villeClient || undefined,
+    customerRep: data.representant || undefined,
+    customerPhone: data.clientTel || undefined,
+    invoiceNumber: data.factureReference || "—",
+    invoiceTotal: Number(data.factureMontantTotal ?? 0),
+    balanceBefore: data.factureMontantPayeAvant !== null && data.factureMontantTotal !== null
+      ? Number(data.factureMontantTotal) - Number(data.factureMontantPayeAvant)
+      : Number(data.totalTTC || 0), // Fallback if data is missing
+    amountPaid: Number(data.totalTTC || 0),
+    balanceAfter: 0, // Calculated below
+    paymentMethod: data.modePaiement || "Espèces",
+    paymentReference: (data as any).num_transaction || (data as any).paymentReference || undefined,
+    notes: data.notes || undefined,
+  };
+
+  // Re-calculate balance after based on balance before and amount paid
+  receiptData.balanceAfter = Math.max(0, receiptData.balanceBefore - receiptData.amountPaid);
+
+  const doc = new ReceiptDocument(docBase, receiptData);
+  await doc.init();
+  await doc.drawContent();
   return await doc.getBlob();
 }
