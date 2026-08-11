@@ -8,7 +8,7 @@ import {
   type RGB,
 } from "pdf-lib";
 import fabsLogoUrl from "@/assets/fabs-logo.png";
-import { generateUnifiedCommercialPDF, generateUnifiedStatementPDF, generateUnifiedAchatPDF } from "./unified-generator";
+import { generateUnifiedCommercialPDF, generateUnifiedStatementPDF, generateUnifiedAchatPDF, generateUnifiedReceiptPDF } from "./unified-generator";
 
 // ----------------------------------------------------------------------------
 // Types partagés par les différents générateurs (exportés pour compatibilité)
@@ -206,8 +206,9 @@ export async function generateApprovisionnementPDF(data: DocBase): Promise<Blob>
 }
 
 export async function generateRecuPaiementPDF(data: DocBase): Promise<Blob> {
-  return generateUnifiedCommercialPDF("Facture", data); // Stub à affiner si besoin d'un layout reçu spécifique
+  return generateUnifiedReceiptPDF(data);
 }
+
 
 // Stubs pour les PDF d'incidents (à implémenter si nécessaire dans unified-generator)
 export async function generateIncidentPDF(data: IncidentPdfData): Promise<Blob> {
