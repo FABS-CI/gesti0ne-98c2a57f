@@ -137,7 +137,7 @@ export async function buildRetourDocBaseFrom(retour: RetourWithLignes): Promise<
       cycle: m?.cycle,
       niveau: m?.niveau,
       matiere: m?.matiere,
-      qteRetournee: qte,
+      qteRetournee: Number(l.quantite_recue ?? l.quantite_demandee ?? l.quantite ?? 0),
       motif: l.motif ?? undefined,
       prixUnitaire: pu || undefined,
       remisePct: remisePct || undefined,
@@ -170,5 +170,9 @@ export async function buildRetourDocBaseFrom(retour: RetourWithLignes): Promise<
       retour.statut === "annule"
         ? { label: "Annulé", color: "#DC2626" }
         : { label: "Accepté", color: "#10B981" },
+    demandeurNom: retour.created_by_nom,
+    valide_compta_par_nom: retour.valide_compta_par_nom,
+    valide_compta_at: retour.valide_compta_at,
+    observations: retour.observations,
   };
 }

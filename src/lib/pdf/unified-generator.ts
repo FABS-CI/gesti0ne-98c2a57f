@@ -1,6 +1,7 @@
 import { CommercialDocument } from "./commercial-document";
 import { StatementDocument } from "./statement-document";
 import { ReceiptDocument, type ReceiptData } from "./receipt-document";
+import { RetourDocument } from "./retour-document";
 import { resolveDiscountMode, type DocTotals as DataTotals } from "./enrich-lignes";
 import type { DocBase as DataBase } from "./fabsTemplates";
 import { numberToLetters } from "./number-to-letters";
@@ -13,6 +14,10 @@ export async function generateUnifiedCommercialPDF(
   type: "Facture" | "Proforma" | "Commande" | "Bon de Livraison" | "Avoir" | "Spécimens" | "Bon de Retour",
   data: DataBase
 ): Promise<Blob> {
+  if (type === "Bon de Retour") {
+    return generateUnifiedRetourPDF(data);
+  }
+
   const docBase = {
     id: (data as any).id || (data as any).facture_id || (data as any).commande_id || (data as any).proforma_id || (data as any).bl_id || (data as any).br_id || "verification-only",
     type: type,
@@ -175,6 +180,36 @@ export async function generateUnifiedReceiptPDF(data: DataBase): Promise<Blob> {
   receiptData.balanceAfter = Math.max(0, receiptData.balanceBefore - receiptData.amountPaid);
 
   const doc = new ReceiptDocument(docBase, receiptData);
+  await doc.init();
+  await doc.drawContent();
+  return await doc.getBlob();
+}
+
+/**
+ * Génère un bon de retour avec le nouveau moteur RetourDocument
+ */
+export async function generateUnifiedRetourPDF(data: DataBase): Promise<Blob> {
+  const docBase: any = {
+    id: data.id || "retour-id",
+    type: "Bon de Retour",
+    reference: data.reference,
+    date: data.date,
+    notes: data.notes || data.observations,
+    client: {
+      nom: data.clientNom || "",
+      ville: data.villeClient || "",
+      adresse: data.adresseClient || "",
+      representant: data.representant || "",
+      telephone: data.clientTel || "",
+      code: data.codeClient || "",
+    },
+    demandeur: (data as any).demandeurNom || (data as any).created_by_nom || "—",
+    approuvePar: (data as any).approuvePar || (data as any).valide_compta_par_nom || "—",
+    dateApprobation: (data as any).dateApprobation || (data as any).valide_compta_at ? new Date((data as any).valide_compta_at).toLocaleDateString('fr-FR') : "—",
+    lignes: data.lignes || []
+  };
+
+  const doc = new RetourDocument(docBase, {} as any);
   await doc.init();
   await doc.drawContent();
   return await doc.getBlob();
