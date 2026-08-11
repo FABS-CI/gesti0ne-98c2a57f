@@ -13,6 +13,7 @@ import {
   type AdvancedFilters,
 } from "@/components/search/AdvancedSearchBar";
 import { exportListePDF } from "@/lib/pdf/exportListe";
+import { formatFCFA } from "@/lib/format";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
