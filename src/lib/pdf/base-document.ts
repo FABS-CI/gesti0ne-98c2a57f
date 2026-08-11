@@ -128,6 +128,7 @@ export class BaseDocument {
   drawChrome() {
     this.drawFrame();
     this.drawWatermark();
+    this.drawStatusWatermark();
     this.drawHeader();
     this.drawFooter();
   }
@@ -152,6 +153,44 @@ export class BaseDocument {
       width: size,
       height: size,
       opacity: 0.05,
+    });
+  }
+
+  drawStatusWatermark() {
+    if (this.data.type !== "Facture") return;
+
+    // Détermination du libellé selon la logique existante transmise par le système
+    let text = "";
+    const solde = (this.data as any).soldeDu ?? 0;
+    const total = this.totals.totalAPayer ?? 0;
+    const paye = (this.data as any).paye ?? 0;
+
+    // Réutilisation de la logique de statut si disponible, sinon calcul basé sur les montants
+    const existingStatut = this.data.statut?.label?.toUpperCase();
+
+    if (existingStatut === "PAYÉE" || existingStatut === "FACTURE SOLDÉE" || (solde <= 0 && total > 0)) {
+      text = "FACTURE SOLDÉE";
+    } else if (paye > 0 && solde > 0) {
+      text = "FACTURE PARTIELLEMENT PAYÉE";
+    } else if (solde >= total && total > 0) {
+      text = "FACTURE IMPAYÉE";
+    }
+
+    if (!text) return;
+
+    const fontSize = 50;
+    const textWidth = this.fonts.bold.widthOfTextAtSize(text, fontSize);
+    const centerX = PAGE.w / 2;
+    const centerY = PAGE.h / 2;
+
+    this.page.drawText(text, {
+      x: centerX - (textWidth / 2) * Math.cos(45 * Math.PI / 180),
+      y: centerY - (textWidth / 2) * Math.sin(45 * Math.PI / 180),
+      size: fontSize,
+      font: this.fonts.bold,
+      color: COLORS.orangeFabs,
+      opacity: 0.15,
+      rotate: { type: 'degrees', angle: 45 },
     });
   }
 
