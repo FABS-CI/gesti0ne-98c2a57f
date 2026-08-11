@@ -18,6 +18,7 @@ export type Notification = {
   document_reference?: string | null;
   lien?: string | null;
   priorite?: string | null;
+  metadata?: any;
 };
 
 export type TypeNotif = "info" | "succes" | "alerte" | "erreur";
