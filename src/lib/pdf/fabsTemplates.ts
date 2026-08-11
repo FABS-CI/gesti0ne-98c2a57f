@@ -91,6 +91,9 @@ export type DocBase = {
   observations?: string | null;
   devise?: string;
   balanceBefore?: number | null;
+  demandeurNom?: string | null;
+  valide_compta_par_nom?: string | null;
+  valide_compta_at?: string | null;
 };
 
 export type EtatCompteLigne = {

@@ -1,6 +1,5 @@
 
 import { BaseDocument, COLORS, MARGINS, PAGE, CONTENT_W } from "./base-document";
-import { formatFCFA } from "@/lib/format";
 
 export class RetourDocument extends BaseDocument {
   async drawContent() {
