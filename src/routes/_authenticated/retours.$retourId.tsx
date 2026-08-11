@@ -78,10 +78,8 @@ function frDate(d: string | null | undefined) {
 
 const WORKFLOW_STEPS = [
   { key: "demande_creee", label: "Demande" },
-  { key: "attente_reception", label: "Attente magasin" },
-  { key: "receptionne", label: "Réceptionné" },
-  { key: "attente_validation_compta", label: "Attente compta" },
-  { key: "valide_compta", label: "Validé" },
+  { key: "attente_reception", label: "Magasin" },
+  { key: "attente_validation_compta", label: "Compta" },
   { key: "cloture", label: "Clôturé" },
 ] as const;
 
