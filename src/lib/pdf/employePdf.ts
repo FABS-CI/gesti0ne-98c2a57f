@@ -1,5 +1,5 @@
 import type jsPDF from "jspdf";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDateTime } from "@/lib/format";
 import { PDF_COLORS, PDF_TABLE, getActiveTemplate } from "@/lib/pdf/pdfConfig";
 import {
   drawHeader,
@@ -106,7 +106,7 @@ export async function generateEmployeFichePDF(emp: Employe): Promise<void> {
     d.setFontSize(8);
     d.setTextColor(...PDF_COLORS.muted);
     d.text(
-      `Généré le ${new Date().toLocaleString("fr-FR")}`,
+      `Généré le ${formatDateTime(new Date())}`,
       d.internal.pageSize.getWidth() - 14,
       36,
       {

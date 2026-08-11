@@ -152,9 +152,14 @@ function centerText(
 
 function formatDateTime() {
   const now = new Date();
+  const d = now.getDate().toString().padStart(2, '0');
+  const m = (now.getMonth() + 1).toString().padStart(2, '0');
+  const y = now.getFullYear();
+  const hh = now.getHours().toString().padStart(2, '0');
+  const mm = now.getMinutes().toString().padStart(2, '0');
   return {
-    date: now.toLocaleDateString("fr-FR"),
-    time: now.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }),
+    date: `${d}/${m}/${y}`,
+    time: `${hh}:${mm}`,
   };
 }
 

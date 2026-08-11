@@ -1,3 +1,5 @@
+import { formatFCFA } from "@/lib/format";
+
 // Calcul partagé (route "États de compte clients" + PDF builder) pour garantir
 // que le tableau et le PDF affichent EXACTEMENT les mêmes Débit, Crédit et Solde
 // pour un client donné et une période donnée.
@@ -196,8 +198,8 @@ export function computeSoldeClient(input: RawInputs): SoldeResultat {
   const emptyExplanation = isEmpty
     ? [
         "Aucun mouvement valide sur la période.",
-        `Solde d'ouverture (report à-nouveau) = ${soldeOuvertureRow.toLocaleString("fr-FR")} + report antérieur ${reportAnterieur.toLocaleString("fr-FR")} = ${soldeOuverture.toLocaleString("fr-FR")}.`,
-        `Total impayé (FCFA) = Solde d'ouverture + Débits (0) − Crédits (0) = ${solde.toLocaleString("fr-FR")} FCFA.`,
+        `Solde d'ouverture (report à-nouveau) = ${formatFCFA(soldeOuvertureRow, false)} + report antérieur ${formatFCFA(reportAnterieur, false)} = ${formatFCFA(soldeOuverture, false)}.`,
+        `Total impayé (FCFA) = Solde d'ouverture + Débits (0) − Crédits (0) = ${formatFCFA(solde)}.`,
         "Filtres appliqués : paiements/avoirs avec statut = « valide » uniquement, dans les bornes de l'exercice consulté.",
       ].join(" ")
     : undefined;

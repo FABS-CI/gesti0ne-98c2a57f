@@ -1,5 +1,5 @@
 import type jsPDF from "jspdf";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDateTime } from "@/lib/format";
 import {
   PDF_COLORS,
   PDF_MARGINS,
@@ -73,7 +73,7 @@ export async function generateJournalComptablePDF(
   if (filtres?.lettrage && filtres.lettrage !== "all")
     parts.push(filtres.lettrage === "lettre" ? "Lettrés" : "Non lettrés");
   const sousTitre = parts.length ? parts.join(" · ") : "Toutes les écritures";
-  const generatedAt = `Généré le ${new Date().toLocaleString("fr-FR")}`;
+  const generatedAt = `Généré le ${formatDateTime(new Date())}`;
 
   let totalDebit = 0;
   let totalCredit = 0;
@@ -176,7 +176,7 @@ export async function generateBalancePDF(
   if (filtres?.dateFrom) parts.push(`Du ${filtres.dateFrom}`);
   if (filtres?.dateTo) parts.push(`Au ${filtres.dateTo}`);
   const sousTitre = parts.length ? parts.join(" · ") : "Toutes périodes";
-  const generatedAt = `Généré le ${new Date().toLocaleString("fr-FR")}`;
+  const generatedAt = `Généré le ${formatDateTime(new Date())}`;
 
   const totalD = rows.reduce((s, r) => s + r.debit, 0);
   const totalC = rows.reduce((s, r) => s + r.credit, 0);
@@ -256,7 +256,7 @@ export async function generateGrandLivrePDF(
   if (filtres?.dateTo) parts.push(`Au ${filtres.dateTo}`);
   if (filtres?.compte && filtres.compte !== "all") parts.push(`Compte ${filtres.compte}`);
   const sousTitre = parts.length ? parts.join(" · ") : "Tous les comptes";
-  const generatedAt = `Généré le ${new Date().toLocaleString("fr-FR")}`;
+  const generatedAt = `Généré le ${formatDateTime(new Date())}`;
 
   const body = lignes.map((l) => [
     l.compte,

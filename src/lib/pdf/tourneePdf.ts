@@ -17,6 +17,7 @@
  * caisse (les anciens appels dans l'UI ne cassent pas).
  */
 import { supabase } from "@/integrations/supabase/client";
+import { formatFCFA } from "@/lib/format";
 import {
   drawHeader,
   drawFooter,
@@ -70,14 +71,9 @@ function drawInfoBlock(
 
 /**
  * Formate un montant en FCFA avec séparateur des milliers par espace simple.
- * `Number#toLocaleString("fr-FR")` insère un caractère « narrow no-break space »
- * (\u202f) que la police helvetica de jsPDF rend sous forme d'un `/` parasite
- * (« 15 /000 »). On normalise donc en espace ASCII avant impression.
  */
 export function fmtMontant(v: number): string {
-  return Math.round(v)
-    .toLocaleString("fr-FR")
-    .replace(/[\u00a0\u202f]/g, " ");
+  return formatFCFA(v, false);
 }
 
 function drawSignatures(doc: import("jspdf").jsPDF, y: number, labels: string[], marginX = 14) {

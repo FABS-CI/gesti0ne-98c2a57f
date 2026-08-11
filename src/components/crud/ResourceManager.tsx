@@ -13,6 +13,7 @@ import {
   type AdvancedFilters,
 } from "@/components/search/AdvancedSearchBar";
 import { exportListePDF } from "@/lib/pdf/exportListe";
+import { formatFCFA } from "@/lib/format";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -301,7 +302,7 @@ export function ResourceManager({ config }: { config: ResourceConfig }) {
       lignes: rows.map((r) =>
         config.columns.map((c) => {
           const v = r[c.name];
-          if (c.type === "money") return Number(v ?? 0).toLocaleString("fr-FR");
+          if (c.type === "money") return formatFCFA(Number(v ?? 0), false);
           if (c.type === "badge") return optionMeta(c.options, v)?.label ?? v ?? "";
           return v ?? "";
         }),
