@@ -168,11 +168,12 @@ export class BaseDocument {
 
     // Réutilisation de la logique de statut si disponible, sinon calcul basé sur les montants
     let existingStatut = "";
-    if (this.data.statut) {
-      if (typeof this.data.statut === 'string') {
-        existingStatut = this.data.statut.toUpperCase();
-      } else if (this.data.statut.label) {
-        existingStatut = this.data.statut.label.toUpperCase();
+    const s = this.data.statut as any;
+    if (s) {
+      if (typeof s === 'string') {
+        existingStatut = s.toUpperCase();
+      } else if (s.label) {
+        existingStatut = s.label.toUpperCase();
       }
     }
 
