@@ -814,6 +814,8 @@ function DecisionDialog({
       qc.invalidateQueries({ queryKey: ["paiements"] });
       qc.invalidateQueries({ queryKey: ["commandes"] });
       qc.invalidateQueries({ queryKey: ["couts_logistiques"] });
+      qc.invalidateQueries({ queryKey: ["retours"] });
+      qc.invalidateQueries({ queryKey: ["retour"] });
       onClose();
     } catch (e) {
       toast.error(friendlyError(e));
