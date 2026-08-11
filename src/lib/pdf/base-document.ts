@@ -177,7 +177,8 @@ export class BaseDocument {
     }
 
     // Titre (C)
-    const displayType = this.data.type === "Commande" ? "BON DE COMMANDE" : this.data.type.toUpperCase();
+    let displayType = this.data.type === "Commande" ? "BON DE COMMANDE" : this.data.type.toUpperCase();
+    if (this.data.type === "Reçu de Paiement") displayType = "REÇU DE PAIEMENT";
     const titleSize = 28;
     const titleW = this.fonts.bold.widthOfTextAtSize(displayType, titleSize);
     this.page.drawText(displayType, {

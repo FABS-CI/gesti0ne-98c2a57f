@@ -244,9 +244,19 @@ export class ReceiptDocument extends BaseDocument {
     this.page.drawText("LA COMPTABILITÉ", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 15, size: 9, font: this.fonts.bold });
   }
 
-  // Surcharge Header to ensure "REÇU DE PAIEMENT"
+  // Surcharge Header pour assurer "REÇU DE PAIEMENT"
   drawHeader() {
     super.drawHeader();
-    // Titles are handled in BaseDocument but we force displayType to be correct
+    
+    const yTop = PAGE.h - 25;
+    const sepY = yTop - 70;
+    
+    // Bandeau orange sous l'en-tête (Spécificité FABS-CI)
+    this.page.drawLine({
+      start: { x: MARGINS.x, y: sepY },
+      end: { x: PAGE.w - MARGINS.x, y: sepY },
+      thickness: 1.5,
+      color: COLORS.orangeFabs,
+    });
   }
 }
