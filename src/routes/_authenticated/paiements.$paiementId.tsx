@@ -135,10 +135,9 @@ function PaiementDetailPage() {
                 const ctx = await getRecuContext(paiement.paiement_id);
                 const montant = Number(ctx.paiement.montant);
                 const totalFacture = ctx.facture?.montant_total ?? null;
-                const dejaPayeAvant =
-                  ctx.facture != null
-                    ? Math.max(0, ctx.facture.montant_paye - montant)
-                    : null;
+                
+                const balanceBefore = ctx.balanceBefore ?? (ctx.facture != null ? Number(ctx.facture.montant_total) - (Number(ctx.facture.montant_paye) - montant) : null);
+                const dejaPayeAvant = totalFacture !== null && balanceBefore !== null ? totalFacture - balanceBefore : null;
 
                 const blob = await generateRecuPaiementPDF({
                   id: ctx.paiement.paiement_id,
@@ -157,6 +156,7 @@ function PaiementDetailPage() {
                   factureReference: ctx.facture?.reference ?? undefined,
                   factureMontantTotal: totalFacture,
                   factureMontantPayeAvant: dejaPayeAvant,
+                  balanceBefore: balanceBefore,
                   observations: ctx.paiement.notes,
                   devise: "FCFA",
                 } as any);

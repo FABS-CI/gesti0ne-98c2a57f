@@ -18,6 +18,7 @@ export type ReceiptData = {
   paymentMethod: string;
   paymentReference?: string;
   notes?: string;
+  isReprint?: boolean;
 };
 
 export class ReceiptDocument extends BaseDocument {
@@ -49,6 +50,15 @@ export class ReceiptDocument extends BaseDocument {
   }
 
   drawReceiptClient(y: number): number {
+    if (this.receiptData.isReprint) {
+      this.page.drawText(`Réimprimé le : ${new Date().toLocaleDateString("fr-FR")}`, {
+        x: PAGE.w - MARGINS.x - 100,
+        y: y + 25,
+        size: 7,
+        font: this.fonts.italic,
+        color: COLORS.grisTexte
+      });
+    }
     const boxH = 90;
     const boxW = CONTENT_W;
     
