@@ -336,11 +336,12 @@ function PaiementsPage() {
                               const ctx = await getRecuContext(p.paiement_id);
                               const montant = Number(ctx.paiement.montant);
                               const totalFacture = ctx.facture?.montant_total ?? null;
-                              const dejaPayeAvant =
-                                ctx.facture != null
-                                  ? Math.max(0, ctx.facture.montant_paye - montant)
-                                  : null;
+                              
+                              const balanceBefore = ctx.balanceBefore ?? (ctx.facture != null ? Number(ctx.facture.montant_total) - (Number(ctx.facture.montant_paye) - montant) : null);
+                              const dejaPayeAvant = totalFacture !== null && balanceBefore !== null ? totalFacture - balanceBefore : null;
+
                               const blob = await generateRecuPaiementPDF({
+                                id: ctx.paiement.paiement_id,
                                 reference: ctx.paiement.reference,
                                 date: ctx.paiement.date_paiement,
                                 clientNom: ctx.client?.nom ?? ctx.paiement.client_nom,
@@ -352,13 +353,14 @@ function PaiementsPage() {
                                 modePaiement:
                                   MODE_PAIEMENT_LABEL[ctx.paiement.mode_paiement] ??
                                   ctx.paiement.mode_paiement,
-                                montant,
+                                totalTTC: montant,
                                 factureReference: ctx.facture?.reference ?? undefined,
                                 factureMontantTotal: totalFacture,
                                 factureMontantPayeAvant: dejaPayeAvant,
+                                balanceBefore: balanceBefore,
                                 observations: ctx.paiement.notes,
                                 devise: "FCFA",
-                              });
+                              } as any);
                               downloadBlob(blob, fileNameFor(p.reference, p.client_nom));
                             } catch (e) {
                               toast.error(friendlyError(e, "Erreur PDF"));

@@ -252,7 +252,7 @@ export type RecuContext = {
 };
 
 /** Charge toutes les infos réelles nécessaires au reçu PDF. */
-export async function getRecuContext(paiementId: string): Promise<RecuContext> {
+export async function getRecuContext(paiementId: string): Promise<RecuContext & { balanceBefore?: number }> {
   const { data: p, error } = await supabase
     .from("paiements")
     .select("*")
@@ -263,6 +263,7 @@ export async function getRecuContext(paiementId: string): Promise<RecuContext> {
 
   let facture: RecuContext["facture"] = null;
   let client: RecuContext["client"] = null;
+  let balanceBefore: number | undefined;
 
   if (paiement.facture_id) {
     const { data: f } = await supabase
@@ -270,12 +271,26 @@ export async function getRecuContext(paiementId: string): Promise<RecuContext> {
       .select("reference, montant_total, montant_paye, client_id, client_nom")
       .eq("facture_id", paiement.facture_id)
       .maybeSingle();
+    
     if (f) {
       facture = {
         reference: f.reference,
         montant_total: Number(f.montant_total ?? 0),
         montant_paye: Number(f.montant_paye ?? 0),
       };
+
+      // Calcul historique du solde pour les anciens reçus
+      // Solde avant = Total Facture - Somme des paiements VALIDÉS strictement antérieurs à celui-ci
+      const { data: previousPayments } = await supabase
+        .from("paiements")
+        .select("montant")
+        .eq("facture_id", paiement.facture_id)
+        .eq("statut", "valide")
+        .or(`date_paiement.lt.${paiement.date_paiement},and(date_paiement.eq.${paiement.date_paiement},created_at.lt.${paiement.created_at})`);
+      
+      const sumPrevious = (previousPayments ?? []).reduce((acc, curr) => acc + Number(curr.montant), 0);
+      balanceBefore = Number(f.montant_total) - sumPrevious;
+
       if (f.client_id) {
         const { data: c } = await supabase
           .from("clients")
@@ -315,5 +330,5 @@ export async function getRecuContext(paiementId: string): Promise<RecuContext> {
     }
   }
 
-  return { paiement, facture, client };
+  return { paiement, facture, client, balanceBefore };
 }

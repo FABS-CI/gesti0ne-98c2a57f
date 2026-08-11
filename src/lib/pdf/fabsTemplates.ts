@@ -90,6 +90,7 @@ export type DocBase = {
   factureMontantPayeAvant?: number | null;
   observations?: string | null;
   devise?: string;
+  balanceBefore?: number | null;
 };
 
 export type EtatCompteLigne = {
