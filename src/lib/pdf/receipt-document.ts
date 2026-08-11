@@ -29,7 +29,7 @@ export class ReceiptDocument extends BaseDocument {
     super(docBase, {} as any);
     this.receiptData = {
       ...receiptData,
-      isReprint: new Date(receiptData.paymentDate).toDateString() !== new Date().toDateString()
+      isReprint: new Date(receiptData.paymentDate).toDateString() !== new Date().toDateString() || receiptData.isReprint
     };
   }
 
@@ -185,7 +185,7 @@ export class ReceiptDocument extends BaseDocument {
 
   drawStatusAndLetters(y: number): number {
     const isSolded = this.receiptData.balanceAfter <= 0;
-    const statusText = isSolded ? "✓ FACTURE SOLDÉE" : "✓ PAIEMENT PARTIEL";
+    const statusText = isSolded ? "PAIEMENT COMPLET" : "PAIEMENT PARTIEL";
     
     this.page.drawText("STATUT", { x: MARGINS.x, y: y, size: 9, font: this.fonts.bold, color: COLORS.bleuFabs });
     y -= 15;

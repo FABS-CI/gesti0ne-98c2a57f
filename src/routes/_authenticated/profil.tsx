@@ -225,7 +225,7 @@ function Profil() {
                 🚀 GESTI-ONE 2.0.2 — PROCÉDURE DE MISE EN PRODUCTION (RÉVISION ARCHITECTURE REÇUS)
 
                 STATUT
-                La version GESTI-ONE 2.0.2 est PRÊT POUR VALIDATION (REÇU PAIEMENT ARCHITECTURE).
+                La version GESTI-ONE 2.0.2 est PRÊT POUR VALIDATION (REÇU PAIEMENT PDF COMPATIBLE).
                 
                 ÉVOLUTION 2.0.2
                 🟢 Recherche client par téléphone (Global + Module)
@@ -233,7 +233,9 @@ function Profil() {
                 🟢 Suppression des éléments de facture dans les reçus
                 🟢 Logiciel de solde historique reconstitué
                 🟢 Mapping client et facture consolidé
+                🟢 Compatibilité PDF (Suppression Unicode ✓ / WinAnsi)
                 
+
                 📊 RAPPORT POST-DÉPLOIEMENT
                 VERDICT : 🟢 PRÊT POUR VALIDATION (V2.0.2)
 
