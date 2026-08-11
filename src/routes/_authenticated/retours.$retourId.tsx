@@ -156,11 +156,11 @@ function RetourDetailPage() {
   const canReceptionner =
     retour.statut === "attente_reception" && (isSuperAdmin || has("retours.receptionner"));
   const canValiderCompta =
-    retour.statut === "attente_validation_compta" && (isSuperAdmin || has("retours.valider_compta"));
+    (retour.statut === "attente_validation_compta" || retour.statut === "receptionne") && (isSuperAdmin || has("retours.valider_compta"));
   const canRefuserMagasin =
     retour.statut === "attente_reception" && (isSuperAdmin || has("retours.refuser_magasin"));
   const canRefuserCompta =
-    retour.statut === "attente_validation_compta" && (isSuperAdmin || has("retours.refuser_compta"));
+    (retour.statut === "attente_validation_compta" || retour.statut === "receptionne") && (isSuperAdmin || has("retours.refuser_compta"));
   const canForcerCloture = isSuperAdmin && retour.statut !== "cloture";
 
   return (
