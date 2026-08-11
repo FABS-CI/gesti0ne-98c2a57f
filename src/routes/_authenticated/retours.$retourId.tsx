@@ -78,10 +78,8 @@ function frDate(d: string | null | undefined) {
 
 const WORKFLOW_STEPS = [
   { key: "demande_creee", label: "Demande" },
-  { key: "attente_reception", label: "Attente magasin" },
-  { key: "receptionne", label: "Réceptionné" },
-  { key: "attente_validation_compta", label: "Attente compta" },
-  { key: "valide_compta", label: "Validé" },
+  { key: "attente_reception", label: "Magasin" },
+  { key: "attente_validation_compta", label: "Compta" },
   { key: "cloture", label: "Clôturé" },
 ] as const;
 
@@ -158,11 +156,11 @@ function RetourDetailPage() {
   const canReceptionner =
     retour.statut === "attente_reception" && (isSuperAdmin || has("retours.receptionner"));
   const canValiderCompta =
-    retour.statut === "attente_validation_compta" && (isSuperAdmin || has("retours.valider_compta"));
+    (retour.statut === "attente_validation_compta" || retour.statut === "receptionne") && (isSuperAdmin || has("retours.valider_compta"));
   const canRefuserMagasin =
     retour.statut === "attente_reception" && (isSuperAdmin || has("retours.refuser_magasin"));
   const canRefuserCompta =
-    retour.statut === "attente_validation_compta" && (isSuperAdmin || has("retours.refuser_compta"));
+    (retour.statut === "attente_validation_compta" || retour.statut === "receptionne") && (isSuperAdmin || has("retours.refuser_compta"));
   const canForcerCloture = isSuperAdmin && retour.statut !== "cloture";
 
   return (
@@ -660,7 +658,7 @@ function ValidationComptaDialog({
     queryKey: ["retour-simulation", retourId],
     queryFn: () => getRetourSimulation(retourId),
   });
-  const [option, setOption] = useState<ValidationComptaOption>("solde");
+  const [option, setOption] = useState<any>("diminuer_solde");
   const [commentaire, setCommentaire] = useState("");
 
   const mutation = useMutation({
@@ -682,15 +680,16 @@ function ValidationComptaDialog({
   const optionsAvailable = useMemo(() => {
     const s = (simulation ?? {}) as SimulationFinanciere;
     const avail = {
-      solde: true,
-      avoir: true,
-      remboursement: s.remboursement_possible !== false,
+      diminuer_solde: true,
+      creer_avoir: true,
+      preparer_remboursement: s.remboursement_possible !== false,
+      aucun_impact: true
     };
     
     // Auto-sélection intelligente si non encore défini
     if (s.montant_total && !option) {
-       if (s.impact_solde && s.impact_solde > 0) setOption("solde");
-       else setOption("avoir");
+       if (s.impact_solde && s.impact_solde > 0) setOption("diminuer_solde");
+       else setOption("creer_avoir");
     }
     
     return avail;
@@ -742,22 +741,28 @@ function ValidationComptaDialog({
                   <SelectValue placeholder="Choisir une action…" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="solde" disabled={!optionsAvailable.solde}>
+                  <SelectItem value="diminuer_solde" disabled={!optionsAvailable.diminuer_solde}>
                     <div className="flex flex-col">
                       <span>Créditer le solde client</span>
                       <span className="text-[10px] text-muted-foreground">Impacte directement la balance du compte</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="avoir" disabled={!optionsAvailable.avoir}>
+                  <SelectItem value="creer_avoir" disabled={!optionsAvailable.creer_avoir}>
                     <div className="flex flex-col">
                       <span>Émettre un avoir financier</span>
                       <span className="text-[10px] text-muted-foreground">Génère un document d'avoir utilisable plus tard</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="remboursement" disabled={!optionsAvailable.remboursement}>
+                  <SelectItem value="preparer_remboursement" disabled={!optionsAvailable.preparer_remboursement}>
                     <div className="flex flex-col">
                       <span>Remboursement direct</span>
                       <span className="text-[10px] text-muted-foreground">Sortie de caisse ou virement bancaire</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="aucun_impact" disabled={!optionsAvailable.aucun_impact}>
+                    <div className="flex flex-col">
+                      <span>Aucun impact financier</span>
+                      <span className="text-[10px] text-muted-foreground">Clôturer sans écriture comptable</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
