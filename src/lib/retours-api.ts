@@ -4,13 +4,13 @@ import { assertPermission } from "@/lib/rbac-api";
 
 /** Statuts officiels (valeurs stockées en base). */
 export const STATUTS_RETOUR = [
-  { value: "demande_creee", label: "Brouillon", color: "#6366F1" },
+  { value: "demande_creee", label: "En attente validation", color: "#6366F1" },
   { value: "attente_reception", label: "En attente magasin", color: "#F97316" },
   { value: "receptionne", label: "Réceptionné", color: "#0EA5E9" },
   { value: "attente_validation_compta", label: "En attente compta", color: "#F59E0B" },
-  { value: "valide_compta", label: "Validé", color: "#10B981" },
+  { value: "valide_compta", label: "Validé compta", color: "#10B981" },
   { value: "cloture", label: "Clôturé", color: "#047857" },
-  { value: "refus_magasin", label: "Refusé (magasin)", color: "#EF4444" },
+  { value: "refus_magasin", label: "Refusé", color: "#EF4444" },
   { value: "refus_compta", label: "Refusé (compta)", color: "#DC2626" },
   { value: "annule", label: "Annulé", color: "#6B7280" },
 ] as const;
