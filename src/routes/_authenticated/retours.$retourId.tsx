@@ -680,15 +680,16 @@ function ValidationComptaDialog({
   const optionsAvailable = useMemo(() => {
     const s = (simulation ?? {}) as SimulationFinanciere;
     const avail = {
-      solde: true,
-      avoir: true,
-      remboursement: s.remboursement_possible !== false,
+      diminuer_solde: true,
+      creer_avoir: true,
+      preparer_remboursement: s.remboursement_possible !== false,
+      aucun_impact: true
     };
     
     // Auto-sélection intelligente si non encore défini
     if (s.montant_total && !option) {
-       if (s.impact_solde && s.impact_solde > 0) setOption("solde");
-       else setOption("avoir");
+       if (s.impact_solde && s.impact_solde > 0) setOption("diminuer_solde");
+       else setOption("creer_avoir");
     }
     
     return avail;
