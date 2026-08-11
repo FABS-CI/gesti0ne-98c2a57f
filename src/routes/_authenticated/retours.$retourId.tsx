@@ -658,7 +658,7 @@ function ValidationComptaDialog({
     queryKey: ["retour-simulation", retourId],
     queryFn: () => getRetourSimulation(retourId),
   });
-  const [option, setOption] = useState<ValidationComptaOption>("solde");
+  const [option, setOption] = useState<any>("diminuer_solde");
   const [commentaire, setCommentaire] = useState("");
 
   const mutation = useMutation({
