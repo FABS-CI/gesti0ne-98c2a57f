@@ -330,27 +330,30 @@ function RetourDetailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {retour.lignes.map((l) => (
-                  <TableRow key={l.ligne_id}>
-                    <TableCell className="font-medium select-all">{l.designation}</TableCell>
-                    <TableCell className="font-mono text-xs select-all">
-                      {l.reference_produit ?? "—"}
+                {retour.lignes.map((l, i) => (
+                  <TableRow key={l.ligne_id} className="text-sm">
+                    <TableCell className="text-muted-foreground font-medium">{i + 1}</TableCell>
+                    <TableCell className="font-mono text-[11px] truncate max-w-[100px]" title={l.reference_produit || ""}>
+                      {l.reference_produit || "—"}
                     </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {l.quantite_demandee ?? l.quantite}
+                    <TableCell className="font-medium break-words max-w-[250px] py-3">
+                      {l.designation}
                     </TableCell>
-                    <TableCell className="text-right tabular-nums font-semibold">
+                    <TableCell className="text-right font-semibold">{l.quantite_demandee ?? l.quantite}</TableCell>
+                    <TableCell className="text-right font-semibold text-primary">
                       {l.quantite_recue ?? "—"}
                     </TableCell>
-                    <TableCell className="text-xs">
+                    <TableCell>
                       {l.etat_reception ? (
-                        <Badge variant="outline" className="font-normal capitalize">
-                          {l.etat_reception}
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 capitalize font-normal">
+                          {l.etat_reception.replace("_", " ")}
                         </Badge>
-                      ) : "—"}
+                      ) : (
+                        "—"
+                      )}
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {l.motif ?? "—"}
+                    <TableCell className="text-xs text-muted-foreground break-words max-w-[120px]">
+                      {l.motif || "—"}
                     </TableCell>
                   </TableRow>
                 ))}

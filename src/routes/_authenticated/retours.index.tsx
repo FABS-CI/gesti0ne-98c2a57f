@@ -301,30 +301,34 @@ function RetoursListPage() {
                     {paginated.map((r) => {
                       const st = STATUT_RETOUR_LABEL[r.statut];
                       return (
-                        <TableRow key={r.retour_id}>
-                          <TableCell className="font-mono text-xs">
-                            {r.numero ?? r.reference}
-                          </TableCell>
-                          <TableCell>{frDate(r.date_retour)}</TableCell>
-                          <TableCell className="font-medium">
-                            {r.etablissement ?? r.client_nom ?? "—"}
-                          </TableCell>
-                          <TableCell>{r.representant_nom ?? "—"}</TableCell>
-                          <TableCell>{r.ville ?? "—"}</TableCell>
-                          <TableCell className="text-right">{r.nb_produits}</TableCell>
-                          <TableCell className="text-right font-medium">
-                            {r.total_quantite}
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {r.created_by_nom ?? "—"}
-                          </TableCell>
-                          <TableCell>
-                            {st && (
-                              <Badge style={{ backgroundColor: st.color }} className="text-white">
-                                {st.label}
-                              </Badge>
-                            )}
-                          </TableCell>
+                    <TableRow key={r.retour_id} className="hover:bg-muted/30 transition-colors">
+                      <TableCell className="font-mono font-medium text-[10px] md:text-xs whitespace-nowrap">
+                        {r.numero || r.reference}
+                      </TableCell>
+                      <TableCell className="text-xs whitespace-nowrap">
+                        {new Date(r.date_retour).toLocaleDateString("fr-FR")}
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium text-sm leading-tight break-words max-w-[200px]">
+                          {r.etablissement || r.client_nom}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm truncate max-w-[120px]" title={r.representant_nom || ""}>
+                        {r.representant_nom || "—"}
+                      </TableCell>
+                      <TableCell className="text-sm truncate max-w-[100px]">{r.ville || "—"}</TableCell>
+                      <TableCell className="text-right font-semibold text-sm">{r.total_quantite || 0}</TableCell>
+                      <TableCell className="text-center">
+                        {st && (
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] px-2 py-0 h-5 whitespace-nowrap inline-flex text-white border-none"
+                            style={{ backgroundColor: st.color }}
+                          >
+                            {st.label}
+                          </Badge>
+                        )}
+                      </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-1">
                               <Button aria-label="Consulter" asChild variant="ghost" size="icon" title="Consulter">
