@@ -170,7 +170,6 @@ export async function generateUnifiedReceiptPDF(data: DataBase): Promise<Blob> {
     notes: data.notes || undefined,
   };
 
-
   // Re-calculate balance after based on balance before and amount paid
   receiptData.balanceAfter = Math.max(0, receiptData.balanceBefore - receiptData.amountPaid);
 
@@ -179,4 +178,3 @@ export async function generateUnifiedReceiptPDF(data: DataBase): Promise<Blob> {
   await doc.drawContent();
   return await doc.getBlob();
 }
-
