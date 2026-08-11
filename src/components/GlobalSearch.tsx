@@ -32,9 +32,12 @@ async function search(q: string): Promise<Hit[]> {
 
   // Coalesce clients + représentants in a single query
   const [clientsAll, produits, factures, bls, commandes, proformas] = await Promise.all([
+    supabase
       .from("clients")
       .select("client_id, nom, ville, representant, telephone")
-      .or(`nom.ilike.${like},representant.ilike.${like},ville.ilike.${like},telephone.ilike.${like},phone_normalized.ilike.${like}`)
+      .or(
+        `nom.ilike.${like},representant.ilike.${like},ville.ilike.${like},telephone.ilike.${like},phone_normalized.ilike.${like}`
+      )
       .limit(10),
     supabase
       .from("produits")
