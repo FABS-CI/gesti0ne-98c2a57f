@@ -162,7 +162,7 @@ export async function generateUnifiedReceiptPDF(data: DataBase): Promise<Blob> {
     invoiceTotal: Number(data.factureMontantTotal ?? 0),
     balanceBefore: data.factureMontantPayeAvant !== null && data.factureMontantTotal !== null
       ? Number(data.factureMontantTotal) - Number(data.factureMontantPayeAvant)
-      : Number(data.totalTTC || 0), // Fallback if data is missing
+      : Number(data.balanceBefore || data.totalTTC || 0), // Use balanceBefore if provided (historical context)
     amountPaid: Number(data.totalTTC || 0),
     balanceAfter: 0, // Calculated below
     paymentMethod: data.modePaiement || "Espèces",
