@@ -177,11 +177,11 @@ export class BaseDocument {
       }
     }
 
-    if (existingStatut === "PAYÉE" || existingStatut === "FACTURE SOLDÉE" || (solde <= 0 && total > 0)) {
+    if (existingStatut === "PAYÉE" || existingStatut === "FACTURE SOLDÉE" || existingStatut === "SOLDÉE" || (solde <= 0 && total > 0)) {
       text = "FACTURE SOLDÉE";
-    } else if (paye > 0 && solde > 0) {
+    } else if ((paye > 0 && solde > 0) || existingStatut === "PARTIELLE") {
       text = "FACTURE PARTIELLEMENT PAYÉE";
-    } else if (solde >= total && total > 0) {
+    } else if ((solde >= total && total > 0) || existingStatut === "IMPAYÉE") {
       text = "FACTURE IMPAYÉE";
     }
 
