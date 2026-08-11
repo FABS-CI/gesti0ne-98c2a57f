@@ -433,7 +433,7 @@ export async function getRetourSimulation(retour_id: string): Promise<Simulation
   return (data ?? {}) as SimulationFinanciere;
 }
 
-export type ValidationComptaOption = "solde" | "avoir" | "remboursement";
+
 
 export async function validerRetourCompta(args: {
   retour_id: string;
