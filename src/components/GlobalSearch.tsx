@@ -27,46 +27,28 @@ type Hit = {
 
 async function search(q: string): Promise<Hit[]> {
   const term = q.trim();
-  if (term.length < 3) return [];
-  const like = `%${term}%`;
+  if (term.length < 2) return [];
 
-  // Coalesce clients + représentants in a single query
-  const [clientsAll, produits, factures, bls, commandes, proformas] = await Promise.all([
-    supabase
-      .from("clients")
-      .select("client_id, nom, ville, representant, telephone")
-      .or(
-        `nom.ilike.${like},representant.ilike.${like},ville.ilike.${like},telephone.ilike.${like},phone_normalized.ilike.${like}`
-      )
-      .limit(10),
-    supabase
-      .from("produits")
-      .select("produit_id, titre, reference")
-      .or(`titre.ilike.${like},reference.ilike.${like},isbn.ilike.${like}`)
-      .order("niveau_ordre", { ascending: true })
-      .order("titre", { ascending: true })
-      .limit(8),
-    supabase
-      .from("factures")
-      .select("facture_id, reference, client_nom, montant_total")
-      .or(`reference.ilike.${like},client_nom.ilike.${like}`)
-      .limit(8),
-    supabase
-      .from("bons_livraison")
-      .select("bl_id, reference, signataire, transporteur, client_nom")
-      .or(`reference.ilike.${like},signataire.ilike.${like},transporteur.ilike.${like},client_nom.ilike.${like}`)
-      .limit(8),
-    supabase
-      .from("commandes")
-      .select("commande_id, reference, client_nom, montant_total")
-      .or(`reference.ilike.${like},client_nom.ilike.${like}`)
-      .limit(5),
-    supabase
-      .from("proformas")
-      .select("proforma_id, reference, client_nom, montant_total")
-      .or(`reference.ilike.${like},client_nom.ilike.${like}`)
-      .limit(5),
-  ]);
+  const { data, error } = await supabase.rpc("global_search", { _q: term });
+  if (error) {
+    console.error("GlobalSearch error:", error);
+    return [];
+  }
+
+  return (data as any[]).map((h) => ({
+    ...h,
+    icon:
+      h.group === "Clients"
+        ? Users
+        : h.group === "Représentants" || h.group === "Utilisateurs"
+        ? UserCircle
+        : h.group === "Produits"
+        ? Package
+        : h.group === "Bons de livraison"
+        ? Truck
+        : FileText,
+  }));
+}
 
   const hits: Hit[] = [];
   const termLower = term.toLowerCase();
