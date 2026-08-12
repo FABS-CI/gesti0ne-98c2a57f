@@ -95,7 +95,7 @@ export class RetourDocument extends BaseDocument {
     });
 
     this.page.drawText("IDENTIFICATION CLIENT", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
-    this.page.drawText((this.data.clientNom || "CLIENT INCONNU").toUpperCase(), { x: MARGINS.x + 10, y: y - 30, size: 11, font: this.fonts.bold, color: COLORS.bleuFabs });
+    this.page.drawText(String(this.data.clientNom || "CLIENT INCONNU").toUpperCase(), { x: MARGINS.x + 10, y: y - 30, size: 11, font: this.fonts.bold, color: COLORS.bleuFabs });
     
     const leftCol: any[] = [
       { l: "Code Client", v: (this.data as any).codeClient || "—" },
