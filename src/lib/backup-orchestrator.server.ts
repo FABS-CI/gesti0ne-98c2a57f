@@ -46,6 +46,8 @@ export async function orchestrateBackup(opts: {
     const { bytes, stats } = await buildGlobalArchive(supabaseAdmin, {
       trigger: opts.trigger,
       author: opts.author,
+      projectId: opts.projectId,
+      projectName: opts.projectName,
     });
 
     // 3. Sauvegarde LOCALE (Sandboxed filesystem)
