@@ -63,7 +63,8 @@ export class StatementDocument extends BaseDocument {
       { l: "Téléphone", v: this.data.client.telephone || "—" },
       { l: "Adresse", v: this.data.client.adresse || "—" },
       { l: "Email", v: this.data.client.email || "—" },
-      { l: "NCC / NIF", v: this.data.client.ncc || "—" },
+      { l: "NCC / NIF", v: (this.data.client as any).ncc || "—" },
+
     ];
 
     kv.forEach((item, i) => {

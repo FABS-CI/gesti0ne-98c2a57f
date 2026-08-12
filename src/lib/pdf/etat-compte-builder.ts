@@ -206,7 +206,8 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
 
   return generateEtatCompteClientPDF({
     reference: ref,
-    client: clientBlock,
+    client: clientBlock as any,
     lignes,
   });
+
 }
