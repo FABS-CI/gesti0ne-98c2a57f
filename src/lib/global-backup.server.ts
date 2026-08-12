@@ -92,7 +92,12 @@ async function listAllObjects(supabaseAdmin: any, bucketId: string, prefix = "")
  */
 export async function buildGlobalArchive(
   supabaseAdmin: any,
-  opts: { trigger: "manuel" | "planifie"; author?: string | null } = { trigger: "manuel" },
+  opts: { 
+    trigger: "manuel" | "planifie"; 
+    author?: string | null;
+    projectId?: string;
+    projectName?: string;
+  } = { trigger: "manuel" },
 ): Promise<{ bytes: Uint8Array; stats: Omit<GlobalBackupResult, "drive"> }> {
   const JSZip = (await import("jszip")).default;
   const zip = new JSZip();
@@ -245,11 +250,14 @@ export async function buildGlobalArchive(
     compressionOptions: { level: 6 },
   })) as Uint8Array;
 
-  const stamp = startedAt.toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const startedAtStr = startedAt.toISOString().replace(/[-:T]/g, "").slice(0, 14);
+  const slug = opts.projectId ? (opts.projectName || "projet").toLowerCase().replace(/[^a-z0-9]/g, "_") : "global";
+  const fileName = `backup_${slug}_${startedAtStr}.zip`;
+  
   return {
     bytes,
     stats: {
-      fileName: `fabsci_sauvegarde_globale_${stamp}.zip`,
+      fileName,
       size: bytes.byteLength,
       sha256: await sha256Hex(bytes),
       tables_count: tableStats.length,

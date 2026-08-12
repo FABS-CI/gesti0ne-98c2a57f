@@ -570,15 +570,23 @@ export type Database = {
           destination_url: string | null
           duree_ms: number | null
           error: string | null
+          error_message: string | null
           fichier_nom: string | null
           finished_at: string | null
           nb_enregistrements: number | null
           nb_tables: number | null
+          project_id: string | null
+          project_name: string | null
+          run_id: string | null
           scope: Json | null
+          scope_type: Database["public"]["Enums"]["backup_scope_type"] | null
           sha256: string | null
           started_at: string
           statut: string
           taille_octets: number | null
+          trigger_type:
+            | Database["public"]["Enums"]["backup_trigger_type"]
+            | null
           type: string
           updated_at: string
           user_email: string | null
@@ -594,15 +602,23 @@ export type Database = {
           destination_url?: string | null
           duree_ms?: number | null
           error?: string | null
+          error_message?: string | null
           fichier_nom?: string | null
           finished_at?: string | null
           nb_enregistrements?: number | null
           nb_tables?: number | null
+          project_id?: string | null
+          project_name?: string | null
+          run_id?: string | null
           scope?: Json | null
+          scope_type?: Database["public"]["Enums"]["backup_scope_type"] | null
           sha256?: string | null
           started_at?: string
           statut?: string
           taille_octets?: number | null
+          trigger_type?:
+            | Database["public"]["Enums"]["backup_trigger_type"]
+            | null
           type?: string
           updated_at?: string
           user_email?: string | null
@@ -618,17 +634,100 @@ export type Database = {
           destination_url?: string | null
           duree_ms?: number | null
           error?: string | null
+          error_message?: string | null
+          fichier_nom?: string | null
+          finished_at?: string | null
+          nb_enregistrements?: number | null
+          nb_tables?: number | null
+          project_id?: string | null
+          project_name?: string | null
+          run_id?: string | null
+          scope?: Json | null
+          scope_type?: Database["public"]["Enums"]["backup_scope_type"] | null
+          sha256?: string | null
+          started_at?: string
+          statut?: string
+          taille_octets?: number | null
+          trigger_type?:
+            | Database["public"]["Enums"]["backup_trigger_type"]
+            | null
+          type?: string
+          updated_at?: string
+          user_email?: string | null
+          verifie?: boolean | null
+          verifie_at?: string | null
+          verifie_methode?: string | null
+        }
+        Relationships: []
+      }
+      backups_security_backup: {
+        Row: {
+          backup_id: string | null
+          created_at: string | null
+          destination: string | null
+          destination_ref: string | null
+          destination_url: string | null
+          duree_ms: number | null
+          error: string | null
+          fichier_nom: string | null
+          finished_at: string | null
+          nb_enregistrements: number | null
+          nb_tables: number | null
+          scope: Json | null
+          sha256: string | null
+          started_at: string | null
+          statut: string | null
+          taille_octets: number | null
+          type: string | null
+          updated_at: string | null
+          user_email: string | null
+          verifie: boolean | null
+          verifie_at: string | null
+          verifie_methode: string | null
+        }
+        Insert: {
+          backup_id?: string | null
+          created_at?: string | null
+          destination?: string | null
+          destination_ref?: string | null
+          destination_url?: string | null
+          duree_ms?: number | null
+          error?: string | null
           fichier_nom?: string | null
           finished_at?: string | null
           nb_enregistrements?: number | null
           nb_tables?: number | null
           scope?: Json | null
           sha256?: string | null
-          started_at?: string
-          statut?: string
+          started_at?: string | null
+          statut?: string | null
           taille_octets?: number | null
-          type?: string
-          updated_at?: string
+          type?: string | null
+          updated_at?: string | null
+          user_email?: string | null
+          verifie?: boolean | null
+          verifie_at?: string | null
+          verifie_methode?: string | null
+        }
+        Update: {
+          backup_id?: string | null
+          created_at?: string | null
+          destination?: string | null
+          destination_ref?: string | null
+          destination_url?: string | null
+          duree_ms?: number | null
+          error?: string | null
+          fichier_nom?: string | null
+          finished_at?: string | null
+          nb_enregistrements?: number | null
+          nb_tables?: number | null
+          scope?: Json | null
+          sha256?: string | null
+          started_at?: string | null
+          statut?: string | null
+          taille_octets?: number | null
+          type?: string | null
+          updated_at?: string | null
           user_email?: string | null
           verifie?: boolean | null
           verifie_at?: string | null
@@ -7710,6 +7809,7 @@ export type Database = {
           total_ligne: number
         }[]
       }
+      get_next_backup_run: { Args: never; Returns: string }
       get_slo_metrics: { Args: never; Returns: Json }
       has_any_role: {
         Args: {
@@ -8453,6 +8553,8 @@ export type Database = {
         | "assistante"
         | "service_logistique"
         | "assistante_comptable"
+      backup_scope_type: "GLOBAL" | "PROJECT"
+      backup_trigger_type: "AUTOMATIC" | "MANUAL"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -8592,6 +8694,8 @@ export const Constants = {
         "service_logistique",
         "assistante_comptable",
       ],
+      backup_scope_type: ["GLOBAL", "PROJECT"],
+      backup_trigger_type: ["AUTOMATIC", "MANUAL"],
     },
   },
 } as const

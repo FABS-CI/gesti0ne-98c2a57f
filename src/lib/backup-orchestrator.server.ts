@@ -10,8 +10,15 @@ export async function orchestrateBackup(opts: {
   trigger: "manuel" | "planifie";
   author: string;
   userId: string;
+  projectId?: string;
+  projectName?: string;
+  scope?: "GLOBAL" | "PROJECT";
+  runId?: string;
 }) {
   const t0 = Date.now();
+  const runId = opts.runId || `RUN-${new Date().toISOString().replace(/[-:T]/g, "").slice(0, 14)}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+  const triggerType = opts.trigger === "planifie" ? "AUTOMATIC" : "MANUAL";
+  const scopeType = opts.scope || (opts.projectId ? "PROJECT" : "GLOBAL");
   
   // 1. Initialisation du log
   const { data: row } = await (supabaseAdmin.from("backups") as any)
@@ -19,9 +26,15 @@ export async function orchestrateBackup(opts: {
       user_id: opts.userId,
       user_email: opts.author,
       type: "globale_zip",
-      destination: "google_drive", // Valeur valide de l'enum
+      destination: "google_drive",
       statut: "en_cours",
-      message: `Sauvegarde ${opts.trigger} démarrée...`,
+      trigger_type: triggerType,
+      scope_type: scopeType,
+      project_id: opts.projectId || null,
+      project_name: opts.projectName || (scopeType === "GLOBAL" ? "Tous les projets" : null),
+      run_id: runId,
+      message: `Sauvegarde ${opts.trigger} (${scopeType}) démarrée...`,
+      started_at: new Date().toISOString(),
     })
     .select("backup_id")
     .single();
@@ -33,6 +46,8 @@ export async function orchestrateBackup(opts: {
     const { bytes, stats } = await buildGlobalArchive(supabaseAdmin, {
       trigger: opts.trigger,
       author: opts.author,
+      projectId: opts.projectId,
+      projectName: opts.projectName,
     });
 
     // 3. Sauvegarde LOCALE (Sandboxed filesystem)
@@ -72,6 +87,7 @@ export async function orchestrateBackup(opts: {
         .update({
           statut: "succes",
           finished_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
           duree_ms: Date.now() - t0,
           taille_octets: stats.size,
           nb_tables: stats.tables_count,
@@ -96,7 +112,9 @@ export async function orchestrateBackup(opts: {
         .update({
           statut: "echec",
           finished_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
           duree_ms: Date.now() - t0,
+          error_message: (error as Error).message,
           message: (error as Error).message
         })
         .eq("backup_id", backupId);
