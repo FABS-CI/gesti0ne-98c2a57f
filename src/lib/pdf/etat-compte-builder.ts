@@ -70,6 +70,8 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
         .select("reference, date_retour, montant, statut, facture_id")
         .eq("client_id", args.clientId)
         .neq("statut", "annule")
+        .neq("statut", "refus_magasin")
+        .neq("statut", "refus_compta")
         .order("date_retour", { ascending: true }),
     ]);
 
@@ -84,7 +86,7 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
     (f) => !["annule", "annulee", "avoir"].includes((f.statut ?? "").toLowerCase()),
   );
   const retoursCompte = ((avoirs ?? []) as RetourCompteRow[]).filter((r) =>
-    ["valide", "accepte", "valide_compta"].includes((r.statut ?? "").toLowerCase()),
+    ["valide", "accepte", "valide_compta", "cloture", "receptionne"].includes((r.statut ?? "").toLowerCase()),
   );
   const retoursParFacture = new Map<string, number>();
   const factureRefParRetour = new Map<string, string>();
