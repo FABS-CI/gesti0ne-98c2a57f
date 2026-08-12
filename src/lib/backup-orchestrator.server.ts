@@ -87,6 +87,7 @@ export async function orchestrateBackup(opts: {
         .update({
           statut: "succes",
           finished_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
           duree_ms: Date.now() - t0,
           taille_octets: stats.size,
           nb_tables: stats.tables_count,
