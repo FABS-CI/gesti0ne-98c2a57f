@@ -62,7 +62,7 @@ export class RetourDocument extends BaseDocument {
     // Documents d'origine
     if ((this.data as any).origin) {
       const orig = (this.data as any).origin;
-      const texts = [];
+      const texts: string[] = [];
       if (orig.cmd) texts.push(`CMD: ${orig.cmd.ref} (${this.formatDate(orig.cmd.date)})`);
       if (orig.fac) texts.push(`FAC: ${orig.fac.ref} (${this.formatDate(orig.fac.date)})`);
       if (orig.bl) texts.push(`BL: ${orig.bl.ref} (${this.formatDate(orig.bl.date)})`);
