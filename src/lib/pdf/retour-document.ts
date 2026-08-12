@@ -169,7 +169,7 @@ export class RetourDocument extends BaseDocument {
       { label: "Dépôt / État", key: "info", width: 87 },
     ];
 
-    const lignes = (this.data as any).lignes?.map((l: any) => ({
+    const lignes = ((this.data as any).lignes || []).map((l: any) => ({
       code: l.codeArticle || "—",
       designation: l.reference || "—",
       qte_dem: l.qteDemandee || 0,
@@ -178,7 +178,7 @@ export class RetourDocument extends BaseDocument {
       remPct: l.remisePct || 0,
       net: l.montant || 0,
       info: `${l.motif || "N/R"}\n[${String(l.etat_produit || "À contrôler").toUpperCase()}]`
-    })) || [];
+    }));
 
     return this.drawTable(y, colonnes, lignes);
   }
