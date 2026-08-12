@@ -94,6 +94,21 @@ export type DocBase = {
   demandeurNom?: string | null;
   valide_compta_par_nom?: string | null;
   valide_compta_at?: string | null;
+  receptionne_par_nom?: string | null;
+  receptionne_at?: string | null;
+  origin?: {
+    cmd: { ref: string; date: string } | null;
+    fac: { ref: string; date: string } | null;
+    bl: { ref: string; date: string } | null;
+  } | null;
+  depot?: {
+    nom: string;
+    code: string;
+    adresse?: string | null;
+    ville?: string | null;
+    responsable?: string | null;
+    telephone?: string | null;
+  } | null;
 };
 
 export type EtatCompteLigne = {

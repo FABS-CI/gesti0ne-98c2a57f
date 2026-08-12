@@ -41,6 +41,14 @@ export type DocBase = {
   commercial?: string;
   statut?: string;
   notes?: string;
+  observations?: string;
+  clientNom?: string | null;
+  clientTel?: string | null;
+  representant?: string | null;
+  demandeurNom?: string | null;
+  valide_compta_par_nom?: string | null;
+  valide_compta_at?: string | null;
+  lignes?: any[];
   client: {
     nom: string;
     ville?: string;

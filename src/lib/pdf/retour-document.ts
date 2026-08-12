@@ -97,13 +97,13 @@ export class RetourDocument extends BaseDocument {
     this.page.drawText("IDENTIFICATION CLIENT", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
     this.page.drawText((this.data.clientNom || "CLIENT INCONNU").toUpperCase(), { x: MARGINS.x + 10, y: y - 30, size: 11, font: this.fonts.bold, color: COLORS.bleuFabs });
     
-    const leftCol = [
+    const leftCol: any[] = [
       { l: "Code Client", v: (this.data as any).codeClient || "—" },
       { l: "Adresse", v: (this.data as any).adresseClient || "—" },
       { l: "Ville", v: (this.data as any).villeClient || "—" },
       { l: "NCC/NIF", v: (this.data as any).ncc || "—" },
     ];
-    const rightCol = [
+    const rightCol: any[] = [
       { l: "Représentant", v: this.data.representant || "—" },
       { l: "Tél. Principal", v: this.data.clientTel || "—" },
       { l: "Tél. Secondaire", v: (this.data as any).representantTel || "—" },
