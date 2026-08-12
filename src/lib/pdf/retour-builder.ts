@@ -148,32 +148,57 @@ export async function buildRetourDocBaseFrom(retour: RetourWithLignes): Promise<
   });
 
   // Priorité aux infos saisies sur le retour, fallback sur la fiche client
-  return {
-    reference: retour.numero ?? retour.reference,
+  const base: any = {
+    reference: retour.numero || retour.reference,
     date: retour.date_retour,
-    clientNom: retour.etablissement ?? retour.client_nom ?? clientInfo.clientNom ?? null,
-    clientTel: retour.telephone ?? clientInfo.clientTel ?? null,
-    representant: retour.representant_nom ?? clientInfo.representant ?? null,
-    representantTel: clientInfo.representantTel ?? null,
+    clientNom: retour.etablissement || retour.client_nom || clientInfo.clientNom || null,
+    clientTel: retour.telephone || clientInfo.clientTel || null,
+    representant: retour.representant_nom || clientInfo.representant || null,
+    representantTel: clientInfo.representantTel || null,
     codeClient: clientInfo.codeClient ?? null,
-    adresseClient: retour.adresse ?? clientInfo.adresseClient ?? null,
-    villeClient: retour.ville ?? clientInfo.villeClient ?? null,
-    communeClient: clientInfo.communeClient ?? null,
-    paysClient: clientInfo.paysClient ?? null,
-    emailClient: clientInfo.emailClient ?? null,
-    ncc: clientInfo.ncc ?? null,
+    adresseClient: retour.adresse || clientInfo.adresseClient || null,
+    villeClient: retour.ville || clientInfo.villeClient || null,
+    communeClient: clientInfo.communeClient || null,
+    paysClient: clientInfo.paysClient || null,
+    emailClient: clientInfo.emailClient || null,
+    ncc: clientInfo.ncc || null,
     lignes,
-    totalVente: totalBrut || undefined,
-    remiseLigneTotal: remiseLigneTotal || undefined,
-    montantHT: totalHT || undefined,
-    totalTTC: totalHT || undefined,
-    statut:
-      retour.statut === "annule"
-        ? { label: "Annulé", color: "#DC2626" }
-        : { label: "Accepté", color: "#10B981" },
+    totalVente: totalBrut || 0,
+    remiseLigneTotal: remiseLigneTotal || 0,
+    montantHT: totalHT || 0,
+    totalTTC: totalHT || 0,
+    statut: retour.statut,
+    observations: retour.observations || retour.notes,
     demandeurNom: retour.created_by_nom,
     valide_compta_par_nom: retour.valide_compta_par_nom,
     valide_compta_at: retour.valide_compta_at,
-    observations: retour.observations,
+    receptionne_par_nom: retour.receptionne_par_nom,
+    receptionne_at: retour.receptionne_at,
   };
+
+  // Enrichissement Documents d'origine
+  if (retour.commande_id || retour.facture_id || retour.livraison_id) {
+    const [cmd, fac, bl] = await Promise.all([
+      retour.commande_id ? supabase.from("commandes").select("reference, date_commande").eq("commande_id", retour.commande_id).maybeSingle() : Promise.resolve({ data: null }),
+      retour.facture_id ? supabase.from("factures").select("reference, date_facture").eq("facture_id", retour.facture_id).maybeSingle() : Promise.resolve({ data: null }),
+      retour.livraison_id ? supabase.from("bons_livraison").select("reference, created_at").eq("bl_id", retour.livraison_id).maybeSingle() : Promise.resolve({ data: null }),
+    ]);
+    base.origin = {
+      cmd: cmd.data ? { ref: cmd.data.reference, date: cmd.data.date_commande } : null,
+      fac: fac.data ? { ref: fac.data.reference, date: fac.data.date_facture } : null,
+      bl: bl.data ? { ref: bl.data.reference, date: bl.data.created_at } : null,
+    };
+  }
+
+  // Enrichissement Dépôt
+  if (retour.depot_id) {
+    const { data: depot } = await supabase
+      .from("depots")
+      .select("nom, code, adresse, ville, responsable, telephone")
+      .eq("depot_id", retour.depot_id)
+      .maybeSingle();
+    base.depot = depot || null;
+  }
+
+  return base;
 }
