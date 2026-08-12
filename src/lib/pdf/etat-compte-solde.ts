@@ -79,7 +79,7 @@ export type SoldeResultat = {
 };
 
 const avoirEstValide = (statut?: string | null) =>
-  !statut || statut === "valide" || statut === "accepte";
+  !statut || statut === "valide" || statut === "accepte" || statut === "valide_compta";
 
 const inRange = (iso: string, debut?: string | null, fin?: string | null) => {
   if (!iso) return false;

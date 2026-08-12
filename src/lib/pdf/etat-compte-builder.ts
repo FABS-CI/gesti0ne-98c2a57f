@@ -84,7 +84,7 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
     (f) => !["annule", "annulee", "avoir"].includes((f.statut ?? "").toLowerCase()),
   );
   const retoursCompte = ((avoirs ?? []) as RetourCompteRow[]).filter((r) =>
-    ["valide", "accepte"].includes((r.statut ?? "").toLowerCase()),
+    ["valide", "accepte", "valide_compta"].includes((r.statut ?? "").toLowerCase()),
   );
   const retoursParFacture = new Map<string, number>();
   const factureRefParRetour = new Map<string, string>();
