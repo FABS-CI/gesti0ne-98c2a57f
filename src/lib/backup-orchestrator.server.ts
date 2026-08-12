@@ -112,7 +112,10 @@ export async function orchestrateBackup(opts: {
         .update({
           statut: "echec",
           finished_at: new Date().toISOString(),
+          completed_at: new Date().toISOString(),
           duree_ms: Date.now() - t0,
+          statut: "echec",
+          error_message: (error as Error).message,
           message: (error as Error).message
         })
         .eq("backup_id", backupId);

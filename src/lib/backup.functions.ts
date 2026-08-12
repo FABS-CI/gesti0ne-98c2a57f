@@ -9,7 +9,12 @@ import { z } from "zod";
 export const runFullBackup = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => 
-    z.object({ trigger: z.enum(["manuel", "planifie"]).default("manuel") }).parse(data)
+    z.object({ 
+      trigger: z.enum(["manuel", "planifie"]).default("manuel"),
+      projectId: z.string().optional(),
+      projectName: z.string().optional(),
+      scope: z.enum(["GLOBAL", "PROJECT"]).optional()
+    }).parse(data)
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId, claims } = context;
@@ -27,7 +32,10 @@ export const runFullBackup = createServerFn({ method: "POST" })
     return orchestrateBackup({
       trigger: data.trigger,
       author: email,
-      userId: userId
+      userId: userId,
+      projectId: data.projectId,
+      projectName: data.projectName,
+      scope: data.scope
     });
   });
 

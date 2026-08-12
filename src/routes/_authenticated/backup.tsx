@@ -46,16 +46,22 @@ type BackupRow = {
   backup_id: string;
   created_at: string;
   finished_at: string | null;
+  completed_at: string | null;
   user_email: string | null;
   type: string;
   destination: string;
   statut: string;
+  trigger_type: "AUTOMATIC" | "MANUAL";
+  scope_type: "GLOBAL" | "PROJECT";
+  project_id: string | null;
+  project_name: string | null;
   taille_octets: number | null;
   duree_ms: number | null;
   nb_tables: number | null;
   nb_enregistrements: number | null;
   fichier_nom: string | null;
   message: string | null;
+  error_message: string | null;
   sha256: string | null;
   destination_url: string | null;
 };
@@ -73,6 +79,15 @@ function BackupPage() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [history, setHistory] = useState<BackupRow[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [stats, setStats] = useState<{ next_run_at: string | null; count: number }>({ 
+    next_run_at: null, 
+    count: 0 
+  });
+  const [filters, setFilters] = useState({
+    project: "all",
+    type: "all",
+    status: "all"
+  });
   
   const startBackup = useServerFn(runFullBackup);
   const startRestore = useServerFn(runFullRestore);
