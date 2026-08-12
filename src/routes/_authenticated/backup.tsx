@@ -16,6 +16,10 @@ import {
   RotateCcw,
   ShieldAlert,
   AlertTriangle,
+  ExternalLink,
+  Activity,
+  Filter,
+  Database
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
