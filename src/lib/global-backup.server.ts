@@ -92,7 +92,12 @@ async function listAllObjects(supabaseAdmin: any, bucketId: string, prefix = "")
  */
 export async function buildGlobalArchive(
   supabaseAdmin: any,
-  opts: { trigger: "manuel" | "planifie"; author?: string | null } = { trigger: "manuel" },
+  opts: { 
+    trigger: "manuel" | "planifie"; 
+    author?: string | null;
+    projectId?: string;
+    projectName?: string;
+  } = { trigger: "manuel" },
 ): Promise<{ bytes: Uint8Array; stats: Omit<GlobalBackupResult, "drive"> }> {
   const JSZip = (await import("jszip")).default;
   const zip = new JSZip();
