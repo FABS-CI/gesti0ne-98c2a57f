@@ -34,21 +34,53 @@ type RetourCompteRow = {
 };
 
 export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Promise<Blob> {
-  // --- Client complet
+  // --- Récupération des données enrichies du client
+  // On cherche d'abord dans le référentiel client
   const { data: cli } = await supabase
     .from("clients")
-    .select("reference, nom, adresse, ville, telephone, email, representant")
+    .select("reference, nom, adresse, ville, telephone, email, representant, nif, bp")
     .eq("client_id", args.clientId)
     .maybeSingle();
 
+  // On cherche également les informations les plus récentes dans les documents liés (BC, Factures, BL)
+  const [lastBC, lastFacture, lastBL] = await Promise.all([
+    supabase
+      .from("commandes")
+      .select("telephone, representant_nom, adresse, ville")
+      .eq("client_id", args.clientId)
+      .not("telephone", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("factures")
+      .select("reference, date_facture") // On pourrait avoir d'autres champs si on étend la table
+      .eq("client_id", args.clientId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("bons_livraison")
+      .select("telephone, adresse, ville")
+      .eq("client_id", args.clientId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+  ]);
+
+  // Priorité au référentiel, puis documents si vide
   const clientBlock = {
     code: cli?.reference ?? null,
     nom: cli?.nom ?? args.clientNom,
-    adresse: [cli?.adresse, cli?.ville].filter(Boolean).join(" — ") || null,
-    telephone: cli?.telephone ?? args.clientTel ?? null,
+    adresse: cli?.adresse || lastBC.data?.adresse || lastBL.data?.adresse || null,
+    ville: cli?.ville || lastBC.data?.ville || lastBL.data?.ville || null,
+    telephone: cli?.telephone || lastBC.data?.telephone || lastBL.data?.telephone || args.clientTel || null,
     email: cli?.email ?? null,
-    representant: cli?.representant ?? args.representant ?? null,
+    representant: cli?.representant || lastBC.data?.representant_nom || args.representant || null,
+    ncc: cli?.nif ?? null,
+    bp: cli?.bp ?? null,
   };
+
 
   // Le relevé présente tout l'historique réel, sans report ni solde d'ouverture.
   const [{ data: factures }, { data: paiements }, { data: avoirs }] =
