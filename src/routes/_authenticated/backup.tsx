@@ -203,19 +203,31 @@ function BackupPage() {
             Gestion intégrale de la sécurité de vos données (Données + Fichiers + Comptes).
           </p>
         </div>
-        <Button 
-          size="lg" 
-          onClick={handleBackup} 
-          disabled={running}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg"
-        >
-          {running ? (
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          ) : (
-            <Play className="mr-2 h-5 w-5 fill-current" />
-          )}
-          SAUVEGARDER MAINTENANT
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            size="lg" 
+            onClick={() => handleBackup("PROJECT", "ERPSI")} 
+            disabled={running}
+            className="font-bold"
+          >
+            {running ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
+            BACKUP ERPSI
+          </Button>
+          <Button 
+            size="lg" 
+            onClick={() => handleBackup("GLOBAL")} 
+            disabled={running}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg"
+          >
+            {running ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : (
+              <Play className="mr-2 h-5 w-5 fill-current" />
+            )}
+            SAUVEGARDE GLOBALE
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
