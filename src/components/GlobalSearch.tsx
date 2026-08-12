@@ -17,7 +17,7 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 type Hit = {
   id: string;
-  group: "Clients" | "Représentants" | "Produits" | "Factures" | "Bons de livraison" | "Bons de commande" | "Proformas";
+  group: string;
   label: string;
   sub?: string;
   to: string;
@@ -50,99 +50,6 @@ async function search(q: string): Promise<Hit[]> {
   }));
 }
 
-  const hits: Hit[] = [];
-  const termLower = term.toLowerCase();
-
-  for (const c of clientsAll.data ?? []) {
-    const nomMatch = c.nom?.toLowerCase().includes(termLower);
-    if (nomMatch) {
-      hits.push({
-        id: `c-${c.client_id}`,
-        group: "Clients",
-        label: c.nom,
-        sub: [c.ville, c.representant, c.telephone].filter(Boolean).join(" · "),
-        to: "/clients/$clientId",
-        params: { clientId: c.client_id },
-        icon: Users,
-      });
-    }
-    const repMatch = c.representant?.toLowerCase().includes(termLower);
-    if (repMatch && !nomMatch) {
-      hits.push({
-        id: `r-${c.client_id}`,
-        group: "Représentants",
-        label: c.representant ?? "",
-        sub: `Client : ${c.nom}`,
-        to: "/clients/$clientId",
-        params: { clientId: c.client_id },
-        icon: UserCircle,
-      });
-    }
-  }
-
-  for (const p of produits.data ?? [])
-    hits.push({
-      id: `p-${p.produit_id}`,
-      group: "Produits",
-      label: p.titre,
-      sub: p.reference,
-      to: "/produits/$produitId",
-      params: { produitId: p.produit_id },
-      icon: Package,
-    });
-
-  for (const f of factures.data ?? [])
-    hits.push({
-      id: `f-${f.facture_id}`,
-      group: "Factures",
-      label: f.reference,
-      sub: [f.client_nom, f.montant_total ? `${f.montant_total} F` : null]
-        .filter(Boolean)
-        .join(" · "),
-      to: "/factures/$factureId",
-      params: { factureId: f.facture_id },
-      icon: FileText,
-    });
-
-  for (const b of bls.data ?? [])
-    hits.push({
-      id: `b-${b.bl_id}`,
-      group: "Bons de livraison",
-      label: b.reference,
-      sub: [b.client_nom, b.signataire, b.transporteur].filter(Boolean).join(" · "),
-      to: "/bons-livraison",
-      icon: Truck,
-    });
-
-  for (const cmd of commandes.data ?? [])
-    hits.push({
-      id: `cmd-${cmd.commande_id}`,
-      group: "Bons de commande",
-      label: cmd.reference,
-      sub: [cmd.client_nom, cmd.montant_total ? `${cmd.montant_total} F` : null]
-        .filter(Boolean)
-        .join(" · "),
-      to: "/commandes/$commandeId",
-      params: { commandeId: cmd.commande_id },
-      icon: FileText,
-    });
-
-  for (const pro of proformas.data ?? [])
-    hits.push({
-      id: `pro-${pro.proforma_id}`,
-      group: "Proformas",
-      label: pro.reference,
-      sub: [pro.client_nom, pro.montant_total ? `${pro.montant_total} F` : null]
-        .filter(Boolean)
-        .join(" · "),
-      to: "/proformas/$proformaId",
-      params: { proformaId: pro.proforma_id },
-      icon: FileText,
-    });
-
-  return hits;
-}
-
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
@@ -163,7 +70,7 @@ export function GlobalSearch() {
   const { data: hits = [], isFetching } = useQuery({
     queryKey: ["global-search", debounced],
     queryFn: () => search(debounced),
-    enabled: debounced.trim().length >= 3,
+    enabled: debounced.trim().length >= 2,
     staleTime: 60_000,
     gcTime: 5 * 60_000,
   });
@@ -206,8 +113,8 @@ export function GlobalSearch() {
           placeholder="Rechercher : Client, CMD-2026..., FAC-2026..., téléphone, ville..."
         />
         <CommandList>
-          {debounced.trim().length < 3 ? (
-            <CommandEmpty>Tapez au moins 3 caractères…</CommandEmpty>
+          {debounced.trim().length < 2 ? (
+            <CommandEmpty>Tapez au moins 2 caractères…</CommandEmpty>
           ) : isFetching && hits.length === 0 ? (
             <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" /> Recherche…
