@@ -36,7 +36,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useServerFn } from "@tanstack/react-start";
-import { runFullBackup, runFullRestore } from "@/lib/backup.functions";
+import { startBackup, runFullRestore } from "@/lib/backup.functions";
 import { friendlyError } from "@/lib/friendly-error";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
