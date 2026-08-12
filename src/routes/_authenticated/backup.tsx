@@ -107,24 +107,42 @@ function BackupPage() {
     })();
   }, []);
 
-  async function loadHistory() {
+  async function loadData() {
     setLoadingHistory(true);
-    const { data, error } = await supabase
-      .from("backups")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(20);
-    setLoadingHistory(false);
-    if (error) {
+    try {
+      // 1. Charger l'historique avec filtres
+      let query = supabase.from("backups").select("*");
+      
+      if (filters.project !== "all") query = query.eq("project_name", filters.project);
+      if (filters.type !== "all") query = query.eq("scope_type", filters.type);
+      if (filters.status !== "all") query = query.eq("statut", filters.status === "Réussie" ? "succes" : "echec");
+
+      const { data: historyData, error: historyError } = await query
+        .order("created_at", { ascending: false })
+        .limit(50);
+      
+      if (historyError) throw historyError;
+      setHistory((historyData ?? []) as BackupRow[]);
+
+      // 2. Charger les stats dynamiques
+      const { data: nextRun } = await supabase.rpc("get_next_backup_run");
+      const { count } = await supabase.from("backups").select("*", { count: 'exact', head: true });
+      
+      setStats({
+        next_run_at: nextRun as string,
+        count: count ?? 0
+      });
+
+    } catch (error) {
       toast.error(friendlyError(error));
-      return;
+    } finally {
+      setLoadingHistory(false);
     }
-    setHistory((data ?? []) as BackupRow[]);
   }
 
   useEffect(() => {
-    if (isAdmin) loadHistory();
-  }, [isAdmin]);
+    if (isAdmin) loadData();
+  }, [isAdmin, filters]);
 
   async function handleBackup() {
     setRunning(true);
