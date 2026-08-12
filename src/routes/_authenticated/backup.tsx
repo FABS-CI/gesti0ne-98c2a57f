@@ -148,11 +148,17 @@ function BackupPage() {
     if (isAdmin) loadData();
   }, [isAdmin, filters]);
 
-  async function handleBackup() {
+  async function handleBackup(scope: "GLOBAL" | "PROJECT" = "GLOBAL", projectName?: string) {
     setRunning(true);
     try {
-      await startBackup({ data: { trigger: "manuel" } });
-      toast.success("Sauvegarde intégrale réussie (Local + Cloud)");
+      await startBackup({ 
+        data: { 
+          trigger: "manuel",
+          scope,
+          projectName: projectName || (scope === "GLOBAL" ? "Tous les projets" : undefined)
+        } 
+      });
+      toast.success(`Sauvegarde ${scope === "GLOBAL" ? "intégrale" : "projet"} réussie`);
       loadData();
     } catch (e) {
       toast.error(friendlyError(e));
