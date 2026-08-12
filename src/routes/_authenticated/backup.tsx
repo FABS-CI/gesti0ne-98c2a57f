@@ -411,13 +411,13 @@ function BackupPage() {
                             disabled={row.statut !== "succes" || !!restoring}
                             title="Restaurer"
                           >
-                          {restoring === row.backup_id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <RotateCcw className="h-4 w-4 mr-1" />
-                          )}
-                          Restaurer
-                        </Button>
+                            {restoring === row.backup_id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <RotateCcw className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
