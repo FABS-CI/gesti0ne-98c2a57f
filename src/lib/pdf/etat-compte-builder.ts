@@ -84,7 +84,7 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
     (f) => !["annule", "annulee", "avoir"].includes((f.statut ?? "").toLowerCase()),
   );
   const retoursCompte = ((avoirs ?? []) as RetourCompteRow[]).filter((r) =>
-    ["valide", "accepte"].includes((r.statut ?? "").toLowerCase()),
+    ["valide", "accepte", "valide_compta"].includes((r.statut ?? "").toLowerCase()),
   );
   const retoursParFacture = new Map<string, number>();
   const factureRefParRetour = new Map<string, string>();
@@ -109,7 +109,7 @@ export async function buildEtatCompteClientPDF(args: EtatCompteClientArgs): Prom
   // retour séparément au crédit, sans compter l'avoir deux fois.
   const facturesReleve = facturesCompte.map((f) => ({
     ...f,
-    montant_total: Number(f.montant_total ?? 0) + (retoursParFacture.get(f.facture_id) ?? 0),
+    montant_total: Number(f.montant_total ?? 0), // On ne reconstitue plus, on affiche les montants réels
   }));
   const avoirsReleve = retoursCompte.map((r) => ({
     ...r,

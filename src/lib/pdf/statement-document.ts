@@ -112,7 +112,7 @@ export class StatementDocument extends BaseDocument {
 
     row("Total Débit", totalDebit);
     row("Total Crédit", totalCredit);
-    row("SOLDE DÉBITEUR (Impayé)", solde, true);
+    row(solde >= 0 ? "SOLDE DÉBITEUR (Impayé)" : "SOLDE CRÉDITEUR", Math.abs(solde), true);
 
     return curY - 20;
   }

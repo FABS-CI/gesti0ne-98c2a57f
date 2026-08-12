@@ -79,7 +79,7 @@ export type SoldeResultat = {
 };
 
 const avoirEstValide = (statut?: string | null) =>
-  !statut || statut === "valide" || statut === "accepte";
+  !statut || statut === "valide" || statut === "accepte" || statut === "valide_compta";
 
 const inRange = (iso: string, debut?: string | null, fin?: string | null) => {
   if (!iso) return false;
@@ -199,7 +199,7 @@ export function computeSoldeClient(input: RawInputs): SoldeResultat {
     ? [
         "Aucun mouvement valide sur la période.",
         `Solde d'ouverture (report à-nouveau) = ${formatFCFA(soldeOuvertureRow, false)} + report antérieur ${formatFCFA(reportAnterieur, false)} = ${formatFCFA(soldeOuverture, false)}.`,
-        `Total impayé (FCFA) = Solde d'ouverture + Débits (0) − Crédits (0) = ${formatFCFA(solde)}.`,
+        `Total impayé (FCFA) = Solde d'ouverture + Débits (0) − Crédits (0) = ${formatFCFA(Math.abs(solde))}.`,
         "Filtres appliqués : paiements/avoirs avec statut = « valide » uniquement, dans les bornes de l'exercice consulté.",
       ].join(" ")
     : undefined;
