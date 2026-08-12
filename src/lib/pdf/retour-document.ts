@@ -1,53 +1,89 @@
 
 import { BaseDocument, COLORS, MARGINS, PAGE, CONTENT_W } from "./base-document";
+import { formatFCFA } from "@/lib/format";
+import { STATUT_RETOUR_LABEL } from "@/lib/retours-api";
 
 export class RetourDocument extends BaseDocument {
   async drawContent() {
     let y = PAGE.h - 110;
     
-    // 1. Infos Client (sans QR car RET ne doit pas en avoir selon docTypeConfig)
+    // 1. Synthèse Statut & Documents d'Origine
+    y = await this.drawHeaderEnrichment(y);
+    
+    // 2. Infos Client
     y = await this.drawClientSection(y);
     
-    // 2. Tableau des articles retournés
-    const colonnes = [
-      { label: "N°", key: "num", width: 25 },
-      { label: "Code", key: "code", width: 70 },
-      { label: "Désignation", key: "designation", width: 210 },
-      { label: "Qté Dem.", key: "qte_dem", width: 55 },
-      { label: "Qté Rec.", key: "qte_rec", width: 55 },
-      { label: "Motif", key: "motif", width: 110 },
-    ];
+    // 3. Infos Dépôt & Logistique
+    y = await this.drawDepotSection(y);
     
-    const lignes = (this.data as any).lignes?.map((l: any, i: number) => ({
-      num: i + 1,
-      code: l.codeArticle ?? l.code ?? "",
-      designation: l.designation ?? l.reference ?? "",
-      qte_dem: l.qteDemandee ?? l.qte ?? 0,
-      qte_rec: l.qteRetournee ?? l.qteRecue ?? 0,
-      motif: l.motif ?? "",
-    })) || [];
-
-    y = this.drawTable(y, colonnes, lignes);
+    // 4. Tableau des articles retournés (Version enrichie)
+    y = this.drawEnrichedTable(y);
     
-    if (y < 150) {
+    // 5. Synthèses & Observations
+    if (y < 250) {
       this.addNewPage();
       y = PAGE.h - 110;
     }
+    
+    y = this.drawSyntheses(y);
 
-    // 3. Motif du retour global & Observations si présentes
-    if (this.data.notes) {
-      y = this.drawSectionTitle(y, "MOTIF ET OBSERVATIONS");
-      y = this.drawLongText(y, this.data.notes, 10);
-      y -= 10;
+    if (this.data.observations) {
+      y = this.drawSectionTitle(y, "MOTIFS & OBSERVATIONS");
+      y = this.drawLongText(y, this.data.observations, 9);
+      y -= 15;
     }
     
-    // 4. Validation (Demandé par / Approuvé par)
-    this.drawValidationSignatures(y);
+    // 6. Validation multi-niveaux
+    this.drawValidationGrid(y);
+  }
+
+  async drawHeaderEnrichment(y: number): Promise<number> {
+    const label = (STATUT_RETOUR_LABEL[this.data.statut as string] || { label: this.data.statut || "EN ATTENTE", color: "#6B7280" }).label;
+    
+    // Statut Badge
+    const badgeW = 100;
+    this.page.drawRectangle({
+      x: MARGINS.x,
+      y: y - 20,
+      width: badgeW,
+      height: 18,
+      color: COLORS.grisClair,
+      borderColor: COLORS.bleuFabs,
+      borderWidth: 0.5
+    });
+    this.page.drawText(label.toUpperCase(), {
+      x: MARGINS.x + 5,
+      y: y - 13,
+      size: 8,
+      font: this.fonts.bold,
+      color: COLORS.bleuFabs
+    });
+
+    // Documents d'origine
+    if ((this.data as any).origin) {
+      const orig = (this.data as any).origin;
+      const texts: string[] = [];
+      if (orig.cmd) texts.push(`CMD: ${orig.cmd.ref} (${this.formatDate(orig.cmd.date)})`);
+      if (orig.fac) texts.push(`FAC: ${orig.fac.ref} (${this.formatDate(orig.fac.date)})`);
+      if (orig.bl) texts.push(`BL: ${orig.bl.ref} (${this.formatDate(orig.bl.date)})`);
+      
+      if (texts.length > 0) {
+        this.page.drawText("DOCUMENTS D'ORIGINE : " + texts.join(" | "), {
+          x: MARGINS.x + badgeW + 20,
+          y: y - 13,
+          size: 8,
+          font: this.fonts.italic,
+          color: COLORS.grisTexte
+        });
+      }
+    }
+
+    return y - 35;
   }
 
   async drawClientSection(y: number): Promise<number> {
-    const boxH = 80;
-    const boxW = CONTENT_W; // Pleine largeur pour le retour
+    const boxH = 95;
+    const boxW = CONTENT_W;
     
     this.page.drawRectangle({
       x: MARGINS.x,
@@ -58,82 +94,174 @@ export class RetourDocument extends BaseDocument {
       opacity: 0.5,
     });
 
-    this.page.drawText("RETOUR DE", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
-    this.page.drawText((this.data.client.nom || "CLIENT INCONNU").toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 12, font: this.fonts.bold, color: COLORS.bleuFabs });
+    this.page.drawText("IDENTIFICATION CLIENT", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
+    this.page.drawText(String(this.data.clientNom || "CLIENT INCONNU").toUpperCase(), { x: MARGINS.x + 10, y: y - 30, size: 11, font: this.fonts.bold, color: COLORS.bleuFabs });
     
-    const kv = [
-      { l: "Ville", v: this.data.client.ville ?? "—" },
-      { l: "Représentant", v: this.data.client.representant ?? "—" },
-      { l: "Téléphone", v: this.data.client.telephone ?? "—" },
+    const leftCol: any[] = [
+      { l: "Code Client", v: (this.data as any).codeClient || "—" },
+      { l: "Adresse", v: (this.data as any).adresseClient || "—" },
+      { l: "Ville", v: (this.data as any).villeClient || "—" },
+      { l: "NCC/NIF", v: (this.data as any).ncc || "—" },
     ];
-    kv.forEach((item, i) => {
-      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: y - 48 - i * 11, size: 8, font: this.fonts.regular });
-      this.page.drawText(item.v, { x: MARGINS.x + 80, y: y - 48 - i * 11, size: 8, font: this.fonts.bold });
+    const rightCol: any[] = [
+      { l: "Représentant", v: this.data.representant || "—" },
+      { l: "Tél. Principal", v: this.data.clientTel || "—" },
+      { l: "Tél. Secondaire", v: (this.data as any).representantTel || "—" },
+      { l: "Email", v: (this.data as any).emailClient || "—" },
+    ];
+
+    leftCol.forEach((item, i) => {
+      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: y - 45 - i * 11, size: 8, font: this.fonts.regular });
+      this.page.drawText(String(item.v), { x: MARGINS.x + 80, y: y - 45 - i * 11, size: 8, font: this.fonts.bold });
+    });
+
+    rightCol.forEach((item, i) => {
+      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 280, y: y - 45 - i * 11, size: 8, font: this.fonts.regular });
+      this.page.drawText(String(item.v), { x: MARGINS.x + 360, y: y - 45 - i * 11, size: 8, font: this.fonts.bold });
+    });
+
+    return y - boxH - 15;
+  }
+
+  async drawDepotSection(y: number): Promise<number> {
+    const depot = (this.data as any).depot;
+    if (!depot) return y;
+
+    const boxH = 65;
+    this.page.drawRectangle({
+      x: MARGINS.x,
+      y: y - boxH,
+      width: CONTENT_W,
+      height: boxH,
+      borderColor: COLORS.bleuFabs,
+      borderWidth: 0.5,
+      opacity: 0.1
+    });
+
+    this.page.drawText("DÉPÔT DE RÉCEPTION", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
+    
+    const info = [
+      { l: "Dépôt", v: `${depot.nom} (${depot.code})` },
+      { l: "Responsable", v: depot.responsable || "—" },
+      { l: "Téléphone", v: depot.telephone || "—" },
+      { l: "Localisation", v: `${depot.adresse || ""} ${depot.ville || ""}`.trim() || "—" }
+    ];
+
+    info.forEach((item, i) => {
+      const xPos = MARGINS.x + 10 + (i % 2) * 250;
+      const yPos = y - 30 - Math.floor(i / 2) * 12;
+      this.page.drawText(`${item.l} :`, { x: xPos, y: yPos, size: 8, font: this.fonts.regular });
+      this.page.drawText(item.v, { x: xPos + 70, y: yPos, size: 8, font: this.fonts.bold });
+    });
+
+    return y - boxH - 15;
+  }
+
+  drawEnrichedTable(y: number): number {
+    const colonnes = [
+      { label: "Code", key: "code", width: 55 },
+      { label: "Désignation", key: "designation", width: 140 },
+      { label: "Qté Dem.", key: "qte_dem", width: 45 },
+      { label: "Qté Rec.", key: "qte_rec", width: 45 },
+      { label: "P.U. HT", key: "pu", width: 55 },
+      { label: "Rem %", key: "remPct", width: 35 },
+      { label: "Net HT", key: "net", width: 65 },
+      { label: "Dépôt / État", key: "info", width: 87 },
+    ];
+
+    const lignes = ((this.data as any).lignes || []).map((l: any) => ({
+      code: l.codeArticle || "—",
+      designation: l.reference || "—",
+      qte_dem: l.qteDemandee || 0,
+      qte_rec: l.qteRetournee || 0,
+      pu: l.prixUnitaire || 0,
+      remPct: l.remisePct || 0,
+      net: l.montant || 0,
+      info: `${l.motif || "N/R"}\n[${String(l.etat_produit || "À contrôler").toUpperCase()}]`
+    }));
+
+    return this.drawTable(y, colonnes, lignes);
+  }
+
+  drawSyntheses(y: number): number {
+    const boxW = (CONTENT_W - 15) / 2;
+    const boxH = 85;
+
+    // 1. Synthèse Stock
+    this.page.drawRectangle({ x: MARGINS.x, y: y - boxH, width: boxW, height: boxH, borderColor: COLORS.grisLigne, borderWidth: 0.5 });
+    this.page.drawText("SYNTHÈSE STOCK", { x: MARGINS.x + 5, y: y - 12, size: 8, font: this.fonts.bold, color: COLORS.bleuFabs });
+    
+    const stockItems = [
+      { l: "Unités demandées", v: (this.data as any).totalQteDem || this.data.lignes?.reduce((a, b) => a + (b as any).qteDemandee, 0) || 0 },
+      { l: "Unités reçues", v: (this.data as any).totalQteRec || this.data.lignes?.reduce((a, b) => a + (b as any).qteRetournee, 0) || 0 },
+      { l: "Unités acceptées", v: (this.data as any).totalQteRec || 0 }, // Simplifié pour FABS V10
+      { l: "Unités refusées", v: 0 },
+    ];
+    stockItems.forEach((item, i) => {
+      this.page.drawText(item.l, { x: MARGINS.x + 5, y: y - 28 - i * 12, size: 8, font: this.fonts.regular });
+      this.page.drawText(String(item.v), { x: MARGINS.x + boxW - 30, y: y - 28 - i * 12, size: 8, font: this.fonts.bold });
+    });
+
+    // 2. Synthèse Financière
+    const finX = MARGINS.x + boxW + 15;
+    this.page.drawRectangle({ x: finX, y: y - boxH, width: boxW, height: boxH, color: COLORS.bleuFabs, opacity: 0.05 });
+    this.page.drawText("SYNTHÈSE FINANCIÈRE (FCFA)", { x: finX + 5, y: y - 12, size: 8, font: this.fonts.bold, color: COLORS.bleuFabs });
+    
+    const finItems = [
+      { l: "Total Brut HT", v: (this.data as any).totalVente || 0 },
+      { l: "Total Remises", v: (this.data as any).remiseLigneTotal || 0 },
+      { l: "TOTAL NET HT", v: (this.data as any).montantHT || 0, isBold: true },
+      { l: "TOTAL TTC", v: (this.data as any).totalTTC || 0, isBold: true },
+    ];
+    finItems.forEach((item, i) => {
+      this.page.drawText(item.l, { x: finX + 5, y: y - 28 - i * 12, size: 8, font: item.isBold ? this.fonts.bold : this.fonts.regular });
+      const val = formatFCFA(item.v, false);
+      const valW = this.fonts.bold.widthOfTextAtSize(val, 8);
+      this.page.drawText(val, { x: finX + boxW - valW - 5, y: y - 28 - i * 12, size: 8, font: this.fonts.bold });
     });
 
     return y - boxH - 20;
   }
 
-  drawValidationSignatures(y: number) {
-    const boxW = (CONTENT_W - 20) / 2;
-    const boxH = 100;
-    const curY = Math.max(y - 40, 160);
+  drawValidationGrid(y: number) {
+    const boxW = (CONTENT_W - 20) / 3;
+    const boxH = 80;
+    const curY = Math.max(y - 30, 140);
     
-    const demandeur = (this.data as any).demandeur || "—";
-    const approuvePar = (this.data as any).approuvePar || "—";
-    const dateApprobation = (this.data as any).dateApprobation || "—";
+    const steps = [
+      { l: "CRÉÉ / DEMANDÉ PAR", v: this.data.demandeurNom || "—", date: this.data.date },
+      { l: "RÉCEPTIONNÉ (MAGASIN)", v: (this.data as any).receptionne_par_nom || "—", date: (this.data as any).receptionne_at },
+      { l: "APPROUVÉ (COMPTA)", v: this.data.valide_compta_par_nom || "—", date: this.data.valide_compta_at },
+    ];
 
-    // Demandeur
-    this.page.drawText("VALIDATION", { x: MARGINS.x, y: curY + 15, size: 9, font: this.fonts.bold, color: COLORS.bleuFabs });
-
-    // Bloc Demandeur
-    this.page.drawRectangle({
-      x: MARGINS.x,
-      y: curY - boxH,
-      width: boxW,
-      height: boxH,
-      borderColor: COLORS.grisLigne,
-      borderWidth: 0.5,
+    steps.forEach((s, i) => {
+      const x = MARGINS.x + i * (boxW + 10);
+      this.page.drawRectangle({ x, y: curY - boxH, width: boxW, height: boxH, borderColor: COLORS.grisLigne, borderWidth: 0.5 });
+      this.page.drawText(s.l, { x: x + 5, y: curY - 12, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
+      this.page.drawText(s.v, { x: x + 5, y: curY - 25, size: 8, font: this.fonts.regular });
+      if (s.date) {
+        this.page.drawText(`Le ${this.formatDate(s.date)}`, { x: x + 5, y: curY - 35, size: 7, font: this.fonts.italic, color: COLORS.grisTexte });
+      }
+      this.page.drawText("Signature :", { x: x + 5, y: curY - 70, size: 6, font: this.fonts.regular });
     });
-    this.page.drawText("DEMANDÉ PAR", { x: MARGINS.x + 5, y: curY - 15, size: 8, font: this.fonts.bold });
-    this.page.drawText(demandeur, { x: MARGINS.x + 5, y: curY - 30, size: 8, font: this.fonts.regular });
-    this.page.drawText("Signature :", { x: MARGINS.x + 5, y: curY - 80, size: 7, font: this.fonts.italic });
+  }
 
-    // Bloc Approbation
-    this.page.drawRectangle({
-      x: PAGE.w - MARGINS.x - boxW,
-      y: curY - boxH,
-      width: boxW,
-      height: boxH,
-      borderColor: COLORS.grisLigne,
-      borderWidth: 0.5,
-    });
-    this.page.drawText("APPROUVÉ PAR", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 15, size: 8, font: this.fonts.bold });
-    this.page.drawText(approuvePar, { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 30, size: 8, font: this.fonts.regular });
-    this.page.drawText(`Date : ${dateApprobation}`, { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 45, size: 7, font: this.fonts.regular });
-    this.page.drawText("Signature & Cachet :", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 80, size: 7, font: this.fonts.italic });
+  formatDate(d: string | null | undefined): string {
+    if (!d) return "—";
+    const date = new Date(d);
+    if (isNaN(date.getTime())) return d;
+    return date.toLocaleDateString("fr-FR");
   }
 
   drawSectionTitle(y: number, title: string): number {
-    this.page.drawText(title, {
-      x: MARGINS.x,
-      y: y - 10,
-      size: 9,
-      font: this.fonts.bold,
-      color: COLORS.bleuFabs
-    });
-    return y - 25;
+    this.page.drawText(title, { x: MARGINS.x, y: y - 10, size: 8, font: this.fonts.bold, color: COLORS.bleuFabs });
+    return y - 22;
   }
 
   drawLongText(y: number, text: string, size: number): number {
     const lines = this.wrapText(text, CONTENT_W, size);
     lines.forEach(line => {
-      this.page.drawText(line, {
-        x: MARGINS.x,
-        y: y,
-        size: size,
-        font: this.fonts.regular
-      });
+      this.page.drawText(line, { x: MARGINS.x, y, size, font: this.fonts.regular });
       y -= (size * 1.2);
     });
     return y;
