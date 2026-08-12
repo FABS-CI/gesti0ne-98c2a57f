@@ -390,21 +390,27 @@ function BackupPage() {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right space-x-2">
-                        {row.destination_url && (
-                          <Button variant="ghost" size="sm" asChild>
-                            <a href={row.destination_url} target="_blank" rel="noopener noreferrer">
-                              <Download className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        )}
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => handleRestore(row)}
-                          disabled={row.statut !== "succes" || !!restoring}
-                          className="hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200"
-                        >
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          {row.destination_url && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-primary"
+                              onClick={() => window.open(row.destination_url!, "_blank")}
+                              title="Voir sur Google Drive"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button 
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-amber-600"
+                            onClick={() => handleRestore(row)}
+                            disabled={row.statut !== "succes" || !!restoring}
+                            title="Restaurer"
+                          >
                           {restoring === row.backup_id ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
