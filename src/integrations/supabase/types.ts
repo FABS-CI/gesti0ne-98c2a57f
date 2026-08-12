@@ -2189,6 +2189,7 @@ export type Database = {
           numero_securite_sociale: string | null
           observations: string | null
           pays: string | null
+          phone_normalized: string | null
           photo_url: string | null
           poste: string | null
           prenoms: string | null
@@ -2246,6 +2247,7 @@ export type Database = {
           numero_securite_sociale?: string | null
           observations?: string | null
           pays?: string | null
+          phone_normalized?: string | null
           photo_url?: string | null
           poste?: string | null
           prenoms?: string | null
@@ -2303,6 +2305,7 @@ export type Database = {
           numero_securite_sociale?: string | null
           observations?: string | null
           pays?: string | null
+          phone_normalized?: string | null
           photo_url?: string | null
           poste?: string | null
           prenoms?: string | null
@@ -4293,6 +4296,7 @@ export type Database = {
           nom: string | null
           nom_complet: string | null
           password_compromised_at: string | null
+          phone_normalized: string | null
           prenom: string | null
           route_restrictions: string[]
           service_id: string | null
@@ -4320,6 +4324,7 @@ export type Database = {
           nom?: string | null
           nom_complet?: string | null
           password_compromised_at?: string | null
+          phone_normalized?: string | null
           prenom?: string | null
           route_restrictions?: string[]
           service_id?: string | null
@@ -4347,6 +4352,7 @@ export type Database = {
           nom?: string | null
           nom_complet?: string | null
           password_compromised_at?: string | null
+          phone_normalized?: string | null
           prenom?: string | null
           route_restrictions?: string[]
           service_id?: string | null
@@ -7815,6 +7821,7 @@ export type Database = {
       }
       get_next_backup_run: { Args: never; Returns: string }
       get_slo_metrics: { Args: never; Returns: Json }
+      global_search: { Args: { _q: string }; Returns: Json }
       has_any_role: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
