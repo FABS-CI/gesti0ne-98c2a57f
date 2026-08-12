@@ -10,8 +10,15 @@ export async function orchestrateBackup(opts: {
   trigger: "manuel" | "planifie";
   author: string;
   userId: string;
+  projectId?: string;
+  projectName?: string;
+  scope?: "GLOBAL" | "PROJECT";
+  runId?: string;
 }) {
   const t0 = Date.now();
+  const runId = opts.runId || `RUN-${new Date().toISOString().replace(/[-:T]/g, "").slice(0, 14)}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+  const triggerType = opts.trigger === "planifie" ? "AUTOMATIC" : "MANUAL";
+  const scopeType = opts.scope || (opts.projectId ? "PROJECT" : "GLOBAL");
   
   // 1. Initialisation du log
   const { data: row } = await (supabaseAdmin.from("backups") as any)
