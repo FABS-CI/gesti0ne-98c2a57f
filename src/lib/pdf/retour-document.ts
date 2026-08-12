@@ -38,7 +38,7 @@ export class RetourDocument extends BaseDocument {
   }
 
   async drawHeaderEnrichment(y: number): Promise<number> {
-    const st = STATUT_RETOUR_LABEL[this.data.statut as string] || { label: this.data.statut, color: "#6B7280" };
+    const label = (STATUT_RETOUR_LABEL[this.data.statut as string] || { label: this.data.statut || "EN ATTENTE", color: "#6B7280" }).label;
     
     // Statut Badge
     const badgeW = 100;
@@ -51,7 +51,7 @@ export class RetourDocument extends BaseDocument {
       borderColor: COLORS.bleuFabs,
       borderWidth: 0.5
     });
-    this.page.drawText(st.label.toUpperCase(), {
+    this.page.drawText(label.toUpperCase(), {
       x: MARGINS.x + 5,
       y: y - 13,
       size: 8,
@@ -177,7 +177,7 @@ export class RetourDocument extends BaseDocument {
       pu: l.prixUnitaire || 0,
       remPct: l.remisePct || 0,
       net: l.montant || 0,
-      info: `${l.motif || "N/R"}\n[${(l.etat_produit || "À contrôler").toUpperCase()}]`
+      info: `${l.motif || "N/R"}\n[${String(l.etat_produit || "À contrôler").toUpperCase()}]`
     })) || [];
 
     return this.drawTable(y, colonnes, lignes);
