@@ -151,7 +151,7 @@ function BackupPage() {
   async function handleBackup(scope: "GLOBAL" | "PROJECT" = "GLOBAL", projectName?: string) {
     setRunning(true);
     try {
-      await startBackup({ 
+      await runFullBackup({ 
         data: { 
           trigger: "manuel",
           scope,
