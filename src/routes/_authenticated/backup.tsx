@@ -149,7 +149,7 @@ function BackupPage() {
     try {
       await startBackup({ data: { trigger: "manuel" } });
       toast.success("Sauvegarde intégrale réussie (Local + Cloud)");
-      loadHistory();
+      loadData();
     } catch (e) {
       toast.error(friendlyError(e));
     } finally {
@@ -208,30 +208,17 @@ function BackupPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-green-500/20 bg-green-50/30 dark:bg-green-950/10">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="border-primary/20 bg-primary/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Cloud className="h-4 w-4 text-green-600" />
-              Destination Cloud
+              <Clock className="h-4 w-4 text-primary" />
+              Sauvegarde Automatique
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-700">Google Drive</div>
-            <p className="text-xs text-muted-foreground mt-1">Sauvegardes archivées sur le Drive sécurisé.</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-blue-500/20 bg-blue-50/30 dark:bg-blue-950/10">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <HardDrive className="h-4 w-4 text-blue-600" />
-              Destination Locale
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-700">Serveur ERP</div>
-            <p className="text-xs text-muted-foreground mt-1">Copie rapide stockée sur le système de fichiers.</p>
+            <div className="text-2xl font-bold">Toutes les 3h</div>
+            <p className="text-xs text-muted-foreground mt-1">Fréquence de planification</p>
           </CardContent>
         </Card>
 
@@ -239,14 +226,83 @@ function BackupPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Clock className="h-4 w-4 text-orange-600" />
-              Automatisation
+              Prochaine Exécution
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-700">Toutes les 3h</div>
-            <p className="text-xs text-muted-foreground mt-1">Prochaine exécution automatique planifiée.</p>
+            <div className="text-xl font-bold text-orange-700">
+              {stats.next_run_at ? new Date(stats.next_run_at).toLocaleString("fr-FR", { hour: '2-digit', minute: '2-digit' }) : "—"}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Calcul dynamique</p>
           </CardContent>
         </Card>
+
+        <Card className="border-green-500/20 bg-green-50/30 dark:bg-green-950/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              Dernière Sauvegarde
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-green-700">
+              {history[0] ? new Date(history[0].created_at).toLocaleString("fr-FR", { hour: '2-digit', minute: '2-digit' }) : "—"}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">{history[0]?.statut === 'succes' ? 'Réussie' : '—'}</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-blue-500/20 bg-blue-50/30 dark:bg-blue-950/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <History className="h-4 w-4 text-blue-600" />
+              Sauvegardes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-700">{stats.count}</div>
+            <p className="text-xs text-muted-foreground mt-1">Historique total</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-4 bg-muted/30 p-4 rounded-lg border">
+        <div className="flex flex-col gap-1.5 min-w-[150px]">
+          <label className="text-xs font-medium px-1">Projet</label>
+          <select 
+            className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
+            value={filters.project}
+            onChange={(e) => setFilters(f => ({ ...f, project: e.target.value }))}
+          >
+            <option value="all">Tous les projets</option>
+            <option value="ERPSI">ERPSI</option>
+            <option value="AVODA">AVODA</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-1.5 min-w-[150px]">
+          <label className="text-xs font-medium px-1">Type</label>
+          <select 
+            className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
+            value={filters.type}
+            onChange={(e) => setFilters(f => ({ ...f, type: e.target.value }))}
+          >
+            <option value="all">Tous</option>
+            <option value="PROJECT">Projet</option>
+            <option value="GLOBAL">Globale</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-1.5 min-w-[150px]">
+          <label className="text-xs font-medium px-1">Statut</label>
+          <select 
+            className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
+            value={filters.status}
+            onChange={(e) => setFilters(f => ({ ...f, status: e.target.value }))}
+          >
+            <option value="all">Tous</option>
+            <option value="Réussie">Réussie</option>
+            <option value="Échec">Échec</option>
+          </select>
+        </div>
       </div>
 
       <Card>
@@ -263,11 +319,13 @@ function BackupPage() {
           <div className="rounded-md border overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/50">
+                <TableRow className="bg-muted/50 text-xs uppercase">
                   <TableHead>Date / Heure</TableHead>
+                  <TableHead>Projet</TableHead>
                   <TableHead>Fichier</TableHead>
                   <TableHead>Taille</TableHead>
                   <TableHead>Contenu</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead>Statut</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -275,13 +333,13 @@ function BackupPage() {
               <TableBody>
                 {loadingHistory ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={8} className="h-24 text-center">
                       <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
                     </TableCell>
                   </TableRow>
                 ) : history.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
                       Aucun historique disponible.
                     </TableCell>
                   </TableRow>
@@ -289,34 +347,42 @@ function BackupPage() {
                   history.map((row) => (
                     <TableRow key={row.backup_id} className="group">
                       <TableCell className="font-medium whitespace-nowrap">
-                        {new Date(row.created_at).toLocaleString("fr-FR")}
+                        {new Date(row.created_at).toLocaleString("fr-FR", { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </TableCell>
-                      <TableCell className="max-w-[200px] truncate" title={row.fichier_nom || ""}>
+                      <TableCell className="font-semibold text-primary">
+                        {row.project_name || "Tous les projets"}
+                      </TableCell>
+                      <TableCell className="max-w-[150px] truncate text-xs" title={row.fichier_nom || ""}>
                         {row.fichier_nom || "—"}
                       </TableCell>
-                      <TableCell className="whitespace-nowrap">
+                      <TableCell className="whitespace-nowrap text-xs">
                         {formatSize(row.taille_octets)}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
-                        {row.nb_tables || 0} tables / {row.nb_enregistrements || 0} lignes
+                        {row.scope_type === 'GLOBAL' ? 'Sauvegarde complète' : 'Données projet'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-[10px] uppercase font-bold">
+                          {row.scope_type === 'GLOBAL' ? 'Globale' : 'Projet'}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1.5">
                           {row.statut === "succes" ? (
-                            <>
-                              <CheckCircle2 className="h-4 w-4 text-green-600" />
-                              <Badge variant="outline" className="text-green-700 bg-green-50 border-green-200">Succès</Badge>
-                            </>
+                            <div className="flex items-center gap-1 text-green-600" title="Réussie">
+                              <CheckCircle2 className="h-4 w-4" />
+                              <span className="text-[10px] font-bold uppercase">OK</span>
+                            </div>
                           ) : row.statut === "echec" ? (
-                            <>
-                              <XCircle className="h-4 w-4 text-destructive" />
-                              <Badge variant="destructive">Échec</Badge>
-                            </>
+                            <div className="flex items-center gap-1 text-destructive" title={row.error_message || "Erreur"}>
+                              <XCircle className="h-4 w-4" />
+                              <span className="text-[10px] font-bold uppercase">Fail</span>
+                            </div>
                           ) : (
-                            <>
-                              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                              <Badge variant="secondary">En cours</Badge>
-                            </>
+                            <div className="flex items-center gap-1 text-primary">
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              <span className="text-[10px] font-bold uppercase">...</span>
+                            </div>
                           )}
                         </div>
                       </TableCell>
@@ -383,7 +449,7 @@ function BackupPage() {
                     try {
                       const res = await startRestore({ data: { base64, fileName: file.name } });
                       toast.success(`Import réussi : ${res.tables.length} tables restaurées.`);
-                      loadHistory();
+                      loadData();
                     } catch (err) {
                       toast.error(friendlyError(err));
                     } finally {
