@@ -26,9 +26,15 @@ export async function orchestrateBackup(opts: {
       user_id: opts.userId,
       user_email: opts.author,
       type: "globale_zip",
-      destination: "google_drive", // Valeur valide de l'enum
+      destination: "google_drive",
       statut: "en_cours",
-      message: `Sauvegarde ${opts.trigger} démarrée...`,
+      trigger_type: triggerType,
+      scope_type: scopeType,
+      project_id: opts.projectId || null,
+      project_name: opts.projectName || (scopeType === "GLOBAL" ? "Tous les projets" : null),
+      run_id: runId,
+      message: `Sauvegarde ${opts.trigger} (${scopeType}) démarrée...`,
+      started_at: new Date().toISOString(),
     })
     .select("backup_id")
     .single();
