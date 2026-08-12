@@ -7044,6 +7044,10 @@ export type Database = {
         Args: { _action: string; _details?: Json; _retour_id: string }
         Returns: undefined
       }
+      _retour_recalc_totaux: {
+        Args: { p_retour_id: string }
+        Returns: undefined
+      }
       affecter_colis_tournee: {
         Args: { _colis_ids: string[]; _tournee_id: string }
         Returns: Json
