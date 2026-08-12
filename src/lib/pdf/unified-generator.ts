@@ -128,7 +128,11 @@ export async function generateUnifiedStatementPDF(data: any): Promise<Blob> {
       telephone: data.client?.telephone || "",
       representant: data.client?.representant || "",
       ville: data.client?.ville || "",
+      adresse: data.client?.adresse || "",
+      email: data.client?.email || "",
+      ncc: data.client?.ncc || "",
     }
+
   };
 
   const doc = new StatementDocument(docBase, {} as any);

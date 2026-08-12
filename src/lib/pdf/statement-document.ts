@@ -39,7 +39,7 @@ export class StatementDocument extends BaseDocument {
   }
 
   async drawClientInfo(y: number, data: any): Promise<number> {
-    const boxH = 90;
+    const boxH = 110;
     const boxW = (CONTENT_W - 15) / 2;
     
     // Bloc Client
@@ -57,17 +57,22 @@ export class StatementDocument extends BaseDocument {
     this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 12, font: this.fonts.bold, color: bleuFabs });
     
     const kv = [
-      { l: "Code", v: this.data.client.code || "—" },
+      { l: "Code client", v: this.data.client.code || "—" },
+      { l: "Ville", v: this.data.client.ville || "—" },
       { l: "Représentant", v: this.data.client.representant || "—" },
       { l: "Téléphone", v: this.data.client.telephone || "—" },
-      { l: "Ville", v: this.data.client.ville || "—" },
+      { l: "Adresse", v: this.data.client.adresse || "—" },
+      { l: "Email", v: this.data.client.email || "—" },
+      { l: "NCC / NIF", v: (this.data.client as any).ncc || "—" },
+
     ];
 
     kv.forEach((item, i) => {
-      const rowY = y - 48 - i * 11;
-      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: rowY, size: 8, font: this.fonts.regular });
-      this.page.drawText(item.v, { x: MARGINS.x + 80, y: rowY, size: 8, font: this.fonts.bold });
+      const rowY = y - 48 - i * 8.5;
+      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: rowY, size: 7, font: this.fonts.regular });
+      this.page.drawText(String(item.v), { x: MARGINS.x + 80, y: rowY, size: 7, font: this.fonts.bold });
     });
+
 
     // Bloc Période
     const perX = MARGINS.x + boxW + 15;
