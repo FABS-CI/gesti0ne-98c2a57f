@@ -29,7 +29,6 @@ import { invalidateColisage } from "@/lib/cache-invalidation";
 import { keyForLigne, detectMode, type ZonesDirectes } from "@/lib/colisage-helpers";
 import { ColisageModeSection } from "./form/ColisageModeSection";
 import {
-  ColisageLivraisonFields,
   ColisageExpeditionFields,
 } from "./form/ColisageAcheminementFields";
 import { ColisageCartonsSection } from "./form/ColisageCartonsSection";
@@ -237,7 +236,6 @@ export function ColisageForm({
       toast.success("Colisage généré");
       invalidateColisage(qc, { blId, clientId: bl.client_id ?? undefined });
       
-      // Déclenche le callback de succès (pour l'impression auto dans le parent)
       if (onSuccess) {
         onSuccess(createdColis);
       }
@@ -303,7 +301,6 @@ export function ColisageForm({
       gare_telephone: mode === "expedition" ? gareTel || null : null,
     };
     const cartonsPayload: CartonManuel[] = cartons.map((c, idx) => {
-      // Regroupement par produit_id pour éviter la contrainte colis_lignes_unique_produit_par_colis
       const groupedLignes = new Map<string, number>();
       c.lignes
         .filter((li) => li.produit_id && parseInt(li.quantite || "0", 10) > 0)
