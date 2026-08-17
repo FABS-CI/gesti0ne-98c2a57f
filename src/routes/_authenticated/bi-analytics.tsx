@@ -94,10 +94,7 @@ function BiAnalytics() {
 
       const totalRecettes = cashflow.reduce((s, m) => s + m.recettes, 0);
       const totalDepenses = cashflow.reduce((s, m) => s + m.depenses, 0);
-      const valeurStock = ((produits.data ?? []) as Prd[]).reduce(
-        (s, p) => s + Number(p.stock) * Number(p.prix_vente ?? 0),
-        0,
-      );
+      const valeurStock = 0; // Désactivé (stock statique)
 
       return {
         cashflow,
