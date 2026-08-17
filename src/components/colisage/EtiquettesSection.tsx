@@ -51,7 +51,7 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between print:hidden">
-        <CardTitle>MONTREUNAPPERCUDESETTIQUETTEE</CardTitle>
+        <CardTitle>Étiquettes générées</CardTitle>
         <div className="flex gap-2">
           <Button
             variant="default"
