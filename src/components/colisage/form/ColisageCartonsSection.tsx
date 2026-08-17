@@ -135,6 +135,9 @@ export function ColisageCartonsSection({
                 const optionsDisponibles = lignesCommande.filter((l) => {
                   const k = keyForLigne(l);
                   if (k === li.produit_id) return true;
+                  // Restauration de la logique : on affiche tout si le BL est déjà terminé (mode modification)
+                  // ou s'il reste des unités à coliser.
+                  if (blStatut === "colisage_termine") return true;
                   return (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) > 0;
                 });
                 return (
