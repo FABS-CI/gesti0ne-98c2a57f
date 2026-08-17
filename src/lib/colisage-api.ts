@@ -115,6 +115,9 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
       .from("commande_lignes")
       .select("ligne_id, produit_id, designation, reference_produit, quantite, produits:produit_id(cover_path)")
       .eq("commande_id", data.commande_id);
+    
+    console.log("[COLISAGE] Fetching lines for cmd:", data.commande_id, "found:", ls?.length, "err:", lsError);
+
 
     if (lsError) {
       console.error("[COLISAGE] Error fetching lines:", lsError);
