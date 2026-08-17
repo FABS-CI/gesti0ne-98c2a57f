@@ -343,7 +343,6 @@ export function ColisageForm({
         icon={PackageCheck}
         title={hasColis ? "Modifier le colisage" : "Créer le colisage"}
         color="#3B82F6"
-        description={hasColis ? "Le contenu enregistré a été chargé. Vous pouvez ajuster la répartition." : undefined}
       />
       <CardContent className="pl-5 sm:pl-6">
         <fieldset disabled={!modifiable} className="contents">
