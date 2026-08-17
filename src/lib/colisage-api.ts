@@ -111,10 +111,18 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
   let lignes: BLDetail["lignes"] = [];
   let facture_reference: string | null = null;
   if (data.commande_id) {
+    console.log("[DEBUG] Fetching lines for commande_id:", data.commande_id);
     const { data: ls, error: lsError } = await supabase
       .from("commande_lignes")
       .select("ligne_id, produit_id, designation, reference_produit, quantite, produits:produit_id(cover_path)")
       .eq("commande_id", data.commande_id);
+
+    if (lsError) {
+      console.error("[DEBUG] Error fetching lines:", lsError);
+    } else {
+      console.log("[DEBUG] Found lines count:", ls?.length);
+      console.log("[DEBUG] Lines sample:", ls?.slice(0, 2));
+    }
 
     const { data: fact } = await supabase
       .from("factures")
