@@ -25,15 +25,17 @@ export function useProduitDetail(produitId: string) {
     queryKey: ["produit-ventes", produitId],
     queryFn: () => getProduitVentes(produitId),
   });
+  const stockCourant = (stocksDepotsQ.data ?? []).reduce((s, sd) => s + Number(sd.quantite || 0), 0);
+
   const statsQ = useQuery({
-    queryKey: ["produit-stats", produitId, produit?.prix_achat, produit?.stock],
-    queryFn: () => getProduitStats(produitId, produit!.prix_achat, produit!.stock),
-    enabled: !!produit,
+    queryKey: ["produit-stats", produitId, produit?.prix_achat, stockCourant],
+    queryFn: () => getProduitStats(produitId, produit!.prix_achat, stockCourant),
+    enabled: !!produit && stocksDepotsQ.isSuccess,
   });
   const historyQ = useQuery({
-    queryKey: ["produit-history", produitId, produit?.stock],
-    queryFn: () => getStockHistory(produitId, produit!.stock, 90),
-    enabled: !!produit,
+    queryKey: ["produit-history", produitId, stockCourant],
+    queryFn: () => getStockHistory(produitId, stockCourant, 90),
+    enabled: !!produit && stocksDepotsQ.isSuccess,
   });
   const stocksDepotsQ = useQuery({
     queryKey: ["produit-stocks-depots", produitId],
