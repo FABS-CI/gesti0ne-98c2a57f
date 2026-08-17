@@ -454,6 +454,7 @@ export function ColisageForm({
           removeLigne={removeLigne}
           updateLigne={updateLigne}
           updateCarton={updateCarton}
+          blStatut={bl.statut}
         />
       </CardContent>
     </Card>

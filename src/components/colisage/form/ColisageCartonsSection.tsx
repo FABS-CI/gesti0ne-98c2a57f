@@ -44,6 +44,7 @@ export function ColisageCartonsSection({
   removeLigne,
   updateLigne,
   updateCarton,
+  blStatut,
 }: {
   cartons: CartonState[];
   ecarts: Ecart[];
@@ -61,6 +62,7 @@ export function ColisageCartonsSection({
     patch: Partial<{ produit_id: string; quantite: string }>,
   ) => void;
   updateCarton: (ci: number, patch: Partial<CartonState>) => void;
+  blStatut?: string;
 }) {
   return (
     <div className="mt-6 space-y-4">
@@ -135,6 +137,9 @@ export function ColisageCartonsSection({
                 const optionsDisponibles = lignesCommande.filter((l) => {
                   const k = keyForLigne(l);
                   if (k === li.produit_id) return true;
+                  // Restauration de la logique : on affiche tout si le BL est déjà terminé (mode modification)
+                  // ou s'il reste des unités à coliser.
+                  if (blStatut === "colisage_termine") return true;
                   return (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) > 0;
                 });
                 return (
@@ -155,6 +160,7 @@ export function ColisageCartonsSection({
                           optionsDisponibles
                             .filter((l) => {
                               const k = keyForLigne(l);
+                              if (blStatut === "colisage_termine") return true;
                               const dispoTotal = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
                               const dispoLigne = k === li.produit_id ? dispoTotal + currentQte : dispoTotal;
                               return dispoLigne > 0;
