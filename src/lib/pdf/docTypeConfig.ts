@@ -29,8 +29,6 @@ const QR_BY_TYPE: Record<string, boolean> = {
   SP: false,  // Alias Spécimens
   BP: false,  // Bulletin de paie (interne)
   IN: false,  // Déclaration d'incident (interne)
-  ACH: false, // Achats (Bon de Réception)
-  BR: false,  // Alias Bon de Réception
 };
 
 export function shouldShowQr(prefix: string): boolean {
