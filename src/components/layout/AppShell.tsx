@@ -101,8 +101,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             <AppSidebar />
           </div>
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="app-shell-header sticky top-0 z-30 flex h-16 items-center gap-2 border-b bg-card/80 backdrop-blur-md px-3 pt-[var(--safe-area-top)] sm:px-4">
-              <SidebarTrigger className="hover:bg-accent h-9 w-9 shrink-0" />
+            <header className="app-shell-header sticky top-0 z-30 flex h-16 items-center gap-2 border-b bg-card/60 backdrop-blur-xl px-3 pt-[var(--safe-area-top)] sm:px-4">
+              <SidebarTrigger className="hover:bg-accent h-9 w-9 shrink-0 rounded-full" />
               <Topbar />
             </header>
             <div className="app-shell-banner">
@@ -110,7 +110,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <SystemAlertsBanner />
             </div>
             <main
-              className="app-shell-main min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-3 pb-[calc(6rem+var(--keyboard-height,0px)+var(--safe-area-bottom))] sm:p-4 md:pb-[calc(1rem+var(--keyboard-height,0px)+var(--safe-area-bottom))] lg:p-6"
+              className="app-shell-main min-w-0 flex-1 overflow-x-hidden overflow-y-auto p-3 pb-[calc(6rem+var(--keyboard-height,0px)+var(--safe-area-bottom))] sm:p-5 md:pb-[calc(1rem+var(--keyboard-height,0px)+var(--safe-area-bottom))] lg:p-8"
               style={moduleThemeVars}
             >
               {blocked ? (

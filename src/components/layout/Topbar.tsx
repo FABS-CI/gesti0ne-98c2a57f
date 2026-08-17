@@ -67,8 +67,8 @@ function TopbarImpl() {
 
   return (
     <div className="flex flex-1 items-center gap-2 sm:gap-3">
-      <div className="flex-1 max-w-xl">
-        <Suspense fallback={<div className="h-9 w-full" />}>
+      <div className="flex-1 max-w-xl transition-all duration-300 focus-within:max-w-2xl">
+        <Suspense fallback={<div className="h-10 w-full animate-pulse rounded-full bg-muted" />}>
           <GlobalSearch />
         </Suspense>
       </div>

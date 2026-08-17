@@ -50,7 +50,7 @@ function AppSidebarImpl() {
       <SidebarBrandHeader accentGrad={activeGroupCfg?.grad ?? null} />
       <SidebarContent
         className="px-3 py-4"
-        style={{ background: "#111827", borderRight: "1px solid rgba(255,255,255,0.06)" }}
+        style={{ background: "var(--sidebar)", borderRight: "1px solid var(--sidebar-border)" }}
       >
         <ul className="space-y-1.5">
           {visibleGroups.map((g) => (
