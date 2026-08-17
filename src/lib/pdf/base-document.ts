@@ -498,6 +498,151 @@ export class BaseDocument {
           const txtW = this.fonts.regular.widthOfTextAtSize(lineText, fontSize);
           
           let alignX = curX + colHPadding;
+          if (col.key !== 'num' && col.key !== 'qte' && col.key !== 'remisePct' && col.key !== 'designation' && col.key !== 'code') {
+            alignX = curX + col.width - txtW - colHPadding;
+          }
+
+          this.page.drawText(lineText, {
+            x: alignX,
+            y: curY - 14 - lineIdx * lineH,
+            size: fontSize,
+            font: this.fonts.regular,
+            color: COLORS.noir,
+          });
+        });
+        curX += col.width;
+      });
+
+      curY -= rowH;
+    });
+
+    return curY;
+  }
+
+  // --- Helpers ---
+
+  wrapText(text: string, width: number, fontSize: number): string[] {
+    const words = text.split(/\s+/);
+    const lines: string[] = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const testLine = currentLine + " " + word;
+      const testW = this.fonts.regular.widthOfTextAtSize(testLine, fontSize);
+      if (testW < width) {
+        currentLine = testLine;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+    return lines;
+  }
+
+  drawTotals(y: number): number {
+    const boxW = 200;
+    const x = PAGE.w - MARGINS.x - boxW;
+    let curY = y - 10;
+
+    const rows = [
+      { label: "SOUS-TOTAL HT", value: this.totals.sousTotal },
+    ];
+
+    if (this.totals.remiseLignes && this.totals.remiseLignes > 0) {
+      rows.push({ label: "REMISE SUR LIGNES", value: -this.totals.remiseLignes });
+    }
+    if (this.totals.remiseGlobale && this.totals.remiseGlobale > 0) {
+      rows.push({ label: "REMISE GLOBALE", value: -this.totals.remiseGlobale });
+    }
+    if (this.totals.tva && this.totals.tva > 0) {
+      rows.push({ label: "TVA", value: this.totals.tva });
+    }
+    if (this.totals.frais && this.totals.frais > 0) {
+      rows.push({ label: "FRAIS", value: this.totals.frais });
+    }
+
+    rows.forEach(row => {
+      this.page.drawText(row.label, { x, y: curY, size: 9, font: this.fonts.regular });
+      const val = formatFCFA(row.value);
+      const valW = this.fonts.bold.widthOfTextAtSize(val, 9);
+      this.page.drawText(val, {
+        x: PAGE.w - MARGINS.x - valW,
+        y: curY,
+        size: 9,
+        font: this.fonts.bold,
+        color: row.label.toLowerCase().includes('remise') ? COLORS.rougeFabs : COLORS.noir
+      });
+      curY -= 14;
+    });
+
+    // TOTAL À PAYER
+    curY -= 5;
+    this.page.drawRectangle({
+      x,
+      y: curY - 5,
+      width: boxW,
+      height: 20,
+      color: COLORS.bleuFabs,
+    });
+    this.page.drawText("TOTAL À PAYER (FCFA)", {
+      x: x + 5,
+      y: curY,
+      size: 9,
+      font: this.fonts.bold,
+      color: COLORS.blanc,
+    });
+    const totalVal = formatFCFA(this.totals.totalAPayer, false);
+    const totalW = this.fonts.bold.widthOfTextAtSize(totalVal, 10);
+    this.page.drawText(totalVal, {
+      x: PAGE.w - MARGINS.x - totalW - 5,
+      y: curY,
+      size: 10,
+      font: this.fonts.bold,
+      color: COLORS.blanc,
+    });
+
+    curY -= 25;
+    
+    // Montant en lettres
+    const letters = `Arrêté le présent document à la somme de : ${this.totals.montantLettres}`;
+    const wrapped = this.wrapText(letters, CONTENT_W, 9);
+    wrapped.forEach(line => {
+      this.page.drawText(line, { x: MARGINS.x, y: curY, size: 9, font: this.fonts.italic });
+      curY -= 12;
+    });
+
+    return curY - 10;
+  }
+
+  drawNotes(y: number): number {
+    const notes = this.data.notes || this.data.observations;
+    if (!notes) return y;
+
+    let curY = y - 10;
+    this.page.drawText("NOTES / OBSERVATIONS", {
+      x: MARGINS.x,
+      y: curY,
+      size: 8,
+      font: this.fonts.bold,
+      color: COLORS.bleuFabs
+    });
+    curY -= 15;
+
+    const wrapped = this.wrapText(notes, CONTENT_W, 9);
+    wrapped.forEach(line => {
+      if (curY < MARGINS.bottom + 20) {
+        this.addNewPage();
+        curY = PAGE.h - 120;
+      }
+      this.page.drawText(line, { x: MARGINS.x, y: curY, size: 9, font: this.fonts.regular });
+      curY -= 12;
+    });
+
+    return curY - 10;
+  }
+}
           if (col.key === 'qte' || col.key === 'num' || col.key === 'remisePct') {
             alignX = curX + (col.width - txtW) / 2;
           } else if (col.key !== 'designation' && col.key !== 'code') {
