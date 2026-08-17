@@ -99,7 +99,7 @@ export function ProduitsTable({
             </TableRow>
           ) : (
             items.map((p) => {
-              const low = p.stock <= p.seuil_alerte;
+              const low = false; // Désactivé (stock statique)
               return (
                 <TableRow
                   key={p.produit_id}

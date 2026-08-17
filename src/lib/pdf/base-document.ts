@@ -500,6 +500,9 @@ export class BaseDocument {
   }
 
   drawTotals(y: number): number {
+    const isListeProduits = this.data.type === "LISTE DES PRODUITS";
+    if (isListeProduits) return y;
+
     const boxW = 200;
     const x = PAGE.w - MARGINS.x - boxW;
     let curY = y - 10;
