@@ -160,8 +160,13 @@ const MONEY: WidgetId[] = ["ca_mois", "paiements_recus_mois"];
  * unique aller-retour renvoyant des compteurs déjà calculés.
  * Repli automatique sur les requêtes unitaires si la RPC n'est pas disponible.
  */
+/**
+ * Récupère toutes les valeurs de widgets via UNE seule RPC agrégée côté serveur.
+ * Remplace 8 requêtes par un unique aller-retour renvoyant des compteurs déjà calculés.
+ */
 export async function fetchAllWidgets(): Promise<Record<WidgetId, { value: string; sub?: string }>> {
-  const { data, error } = await supabase.rpc("dashboard_widgets_all" as never);
+  const { data, error } = await supabase.rpc("dashboard_widgets_all");
+  
   if (!error && data && typeof data === "object") {
     const raw = data as Record<string, number | string>;
     return Object.fromEntries(
@@ -171,8 +176,18 @@ export async function fetchAllWidgets(): Promise<Record<WidgetId, { value: strin
       }),
     ) as Record<WidgetId, { value: string; sub?: string }>;
   }
+
+  // Fallback avec parallélisme si la RPC échoue ou n'est pas disponible
   const entries = await Promise.all(
-    ALL_WIDGET_IDS.map(async (id) => [id, await WIDGETS[id].fetch()] as const),
+    ALL_WIDGET_IDS.map(async (id) => {
+      try {
+        const res = await WIDGETS[id].fetch();
+        return [id, res] as const;
+      } catch (e) {
+        console.error(`Widget ${id} fetch error:`, e);
+        return [id, { value: "0", sub: SUBS[id] }] as const;
+      }
+    }),
   );
   return Object.fromEntries(entries) as Record<WidgetId, { value: string; sub?: string }>;
 }
