@@ -111,23 +111,17 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
   let lignes: BLDetail["lignes"] = [];
   let facture_reference: string | null = null;
   if (data.commande_id) {
-    const { data: ls, error: lsError } = await supabase
-      .from("commande_lignes")
-      .select("ligne_id, produit_id, designation, reference_produit, quantite, produits:produit_id(cover_path)")
-      .eq("commande_id", data.commande_id);
-
-
-
-    if (lsError) {
-      console.error("[COLISAGE] Error fetching lines:", lsError);
-    }
-
-    const { data: fact } = await supabase
-      .from("factures")
-      .select("reference")
-      .eq("commande_id", data.commande_id)
-      .maybeSingle();
-
+    const [{ data: ls }, { data: fact }] = await Promise.all([
+      supabase
+        .from("commande_lignes")
+        .select("ligne_id, produit_id, designation, reference_produit, quantite, produits:produit_id(cover_path)")
+        .eq("commande_id", data.commande_id),
+      supabase
+        .from("factures")
+        .select("reference")
+        .eq("commande_id", data.commande_id)
+        .maybeSingle(),
+    ]);
     lignes = (ls ?? []).map((l) => ({
       ligne_id: l.ligne_id,
       produit_id: l.produit_id,

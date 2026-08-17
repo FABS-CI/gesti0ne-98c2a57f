@@ -132,7 +132,11 @@ export function ColisageCartonsSection({
                     (reparti.get(li.produit_id) ?? 0) +
                     currentQte
                   : null;
-                const optionsDisponibles = lignesCommande;
+                const optionsDisponibles = lignesCommande.filter((l) => {
+                  const k = keyForLigne(l);
+                  if (k === li.produit_id) return true;
+                  return (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) > 0;
+                });
                 return (
                   <div key={lj} className="grid grid-cols-1 sm:grid-cols-[1fr,120px,auto] gap-2">
                     <Select
@@ -143,24 +147,29 @@ export function ColisageCartonsSection({
                         <SelectValue placeholder="Choisir un article…" />
                       </SelectTrigger>
                       <SelectContent>
-                        {lignesCommande.length === 0 && (
+                        {optionsDisponibles.length === 0 ? (
                           <div className="px-2 py-1.5 text-xs text-muted-foreground">
-                            Aucun article dans cette commande
+                            Tous les articles ont été répartis
                           </div>
+                        ) : (
+                          optionsDisponibles
+                            .filter((l) => {
+                              const k = keyForLigne(l);
+                              const dispoTotal = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
+                              const dispoLigne = k === li.produit_id ? dispoTotal + currentQte : dispoTotal;
+                              return dispoLigne > 0;
+                            })
+                            .map((l) => {
+                              const k = keyForLigne(l);
+                              const dispoTotal = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
+                              const dispoAffiche = k === li.produit_id ? dispoTotal + currentQte : dispoTotal;
+                              return (
+                                <SelectItem key={k} value={k}>
+                                  {l.designation} — reste {dispoAffiche} / {l.quantite}
+                                </SelectItem>
+                              );
+                            })
                         )}
-                        {lignesCommande
-                          .map((l) => {
-                            const k = keyForLigne(l);
-                            const currentQteEnLigne = li.produit_id === k ? currentQte : 0;
-                            const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) + currentQteEnLigne;
-                            return { l, k, dispo };
-                          })
-                          .sort((a, b) => b.dispo - a.dispo) // Montrer les dispo > 0 en premier
-                          .map(({ l, k, dispo }) => (
-                            <SelectItem key={k} value={k} disabled={dispo <= 0}>
-                              {l.designation} — {dispo <= 0 ? "Réparti" : `reste ${dispo} / ${l.quantite}`}
-                            </SelectItem>
-                          ))}
                       </SelectContent>
                     </Select>
                     <Input
