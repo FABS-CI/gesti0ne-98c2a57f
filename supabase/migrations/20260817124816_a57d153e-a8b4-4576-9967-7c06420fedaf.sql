@@ -1,0 +1,11 @@
+GRANT SELECT ON public.commandes TO authenticated, anon;
+GRANT SELECT ON public.commande_lignes TO authenticated, anon;
+GRANT SELECT ON public.produits TO authenticated, anon;
+GRANT SELECT ON public.bons_livraison TO authenticated, anon;
+GRANT SELECT ON public.colis TO authenticated, anon;
+GRANT SELECT ON public.colis_lignes TO authenticated, anon;
+GRANT SELECT ON public.clients TO authenticated, anon;
+GRANT SELECT ON public.preparateurs_colisage TO authenticated, anon;
+GRANT USAGE ON SCHEMA public TO authenticated, anon;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated, service_role;
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO authenticated, service_role;
