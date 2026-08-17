@@ -118,12 +118,34 @@ export function ColisageCartonsSection({
             )}
           </CardHeader>
           <CardContent className="space-y-3">
-            <div>
-              <Label>Observations</Label>
-              <Input
-                value={c.observations}
-                onChange={(e) => updateCarton(ci, { observations: e.target.value })}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Format de carton</Label>
+                <Select
+                  value={c.format}
+                  onValueChange={(v) => updateCarton(ci, { format: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Format..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NC4">NC4</SelectItem>
+                    <SelectItem value="NC2">NC2</SelectItem>
+                    <SelectItem value="2C4">2C4</SelectItem>
+                    <SelectItem value="3C4">3C4</SelectItem>
+                    <SelectItem value="VRAC">VRAC</SelectItem>
+                    <SelectItem value="AUTRE">AUTRE</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Observations</Label>
+                <Input
+                  value={c.observations}
+                  onChange={(e) => updateCarton(ci, { observations: e.target.value })}
+                  placeholder="Ex: Fragile, Haut..."
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Articles du carton</Label>

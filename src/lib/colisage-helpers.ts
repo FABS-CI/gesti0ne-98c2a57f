@@ -92,6 +92,7 @@ export function buildEtiquettesPayload(
     ville_destination: c.ville_destination,
     gare_responsable: c.gare_responsable,
     gare_telephone: c.gare_telephone,
+    format_carton: c.format_carton,
     produits: (c.colis_lignes ?? []).map((l) => ({
       designation: l.designation,
       quantite: l.quantite,
