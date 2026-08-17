@@ -61,7 +61,10 @@ export function NotificationPreferencesPanel() {
     setPrefs(next);
     setSaving(true);
     const { data: auth } = await getCurrentUser();
-    if (!auth.user) return;
+    if (!auth.user) {
+      setSaving(false);
+      return;
+    }
     const { error } = await supabase
       .from("notification_preferences" as never)
       .upsert({ user_id: auth.user.id, ...next } as never);

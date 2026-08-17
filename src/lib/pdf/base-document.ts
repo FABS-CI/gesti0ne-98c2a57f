@@ -121,7 +121,7 @@ export class BaseDocument {
       const bytes = await res.arrayBuffer();
       this.logoImg = await this.doc.embedPng(bytes);
     } catch (e) {
-      console.error("Erreur chargement logo:", e);
+      // Ignored: logo missing is not critical for generation
     }
 
     this.addNewPage();
@@ -424,7 +424,7 @@ export class BaseDocument {
         if (neededH > maxRowH) maxRowH = neededH;
       });
 
-      if (curY - maxRowH < MARGINS.bottom + 50) {
+      if (curY - maxRowH < MARGINS.bottom + 20) {
         this.addNewPage();
         curY = PAGE.h - 120;
       }
@@ -488,7 +488,7 @@ export class BaseDocument {
       const word = words[i];
       const testLine = currentLine + " " + word;
       const testW = this.fonts.regular.widthOfTextAtSize(testLine, fontSize);
-      if (testW < width) {
+      if (testW <= width) {
         currentLine = testLine;
       } else {
         lines.push(currentLine);
@@ -526,7 +526,7 @@ export class BaseDocument {
 
     rows.forEach(row => {
       this.page.drawText(row.label, { x: x + 5, y: curY - 13, size: 8, font: this.fonts.regular });
-      const val = formatFCFA(row.value);
+      const val = formatFCFA(row.value, false);
       const valW = this.fonts.bold.widthOfTextAtSize(val, 9);
       this.page.drawText(val, {
         x: PAGE.w - MARGINS.x - valW - 5,
