@@ -1348,6 +1348,20 @@ export type Database = {
             referencedRelation: "commandes"
             referencedColumns: ["commande_id"]
           },
+          {
+            foreignKeyName: "commande_lignes_produit_id_fkey"
+            columns: ["produit_id"]
+            isOneToOne: false
+            referencedRelation: "produits"
+            referencedColumns: ["produit_id"]
+          },
+          {
+            foreignKeyName: "commande_lignes_produit_id_fkey"
+            columns: ["produit_id"]
+            isOneToOne: false
+            referencedRelation: "v_produits"
+            referencedColumns: ["produit_id"]
+          },
         ]
       }
       commandes: {
