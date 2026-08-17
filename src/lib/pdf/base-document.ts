@@ -121,7 +121,7 @@ export class BaseDocument {
       const bytes = await res.arrayBuffer();
       this.logoImg = await this.doc.embedPng(bytes);
     } catch (e) {
-      console.error("Erreur chargement logo:", e);
+      // Ignored: logo missing is not critical for generation
     }
 
     this.addNewPage();
@@ -424,7 +424,7 @@ export class BaseDocument {
         if (neededH > maxRowH) maxRowH = neededH;
       });
 
-      if (curY - maxRowH < MARGINS.bottom + 50) {
+      if (curY - maxRowH < MARGINS.bottom + 20) {
         this.addNewPage();
         curY = PAGE.h - 120;
       }
