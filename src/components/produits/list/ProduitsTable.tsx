@@ -163,12 +163,13 @@ export function ProduitsTable({
                   )}
                   {canSeeSensitive && (
                     <TableCell className="text-right font-medium text-emerald-600">
-                      {formatFCFA(p.stock * p.prix_vente)}
+                      {/* formatFCFA(p.stock * p.prix_vente) */}
+                      <span className="text-muted-foreground text-xs italic">Voir dépôts</span>
                     </TableCell>
                   )}
                   {canSeeSensitive && (
                     <TableCell className="text-right">
-                      <span className={low ? "font-semibold text-destructive" : ""}>{p.stock}</span>
+                      <span className="text-muted-foreground text-xs italic">Indisponible</span>
                     </TableCell>
                   )}
                   {canSeeSensitive && (
