@@ -1,4 +1,3 @@
-
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, Package, Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -40,7 +39,6 @@ function ColisageDetailPage() {
     clientInfo,
     colisExistants,
     responsablesList,
-    livreursList,
     zonesDirectes,
     annulerMut,
     supprMut,
@@ -63,8 +61,8 @@ function ColisageDetailPage() {
 
   const st = STATUT_BL_LABEL[bl.statut];
   const hasColis = (colisExistants ?? []).length > 0;
-  const modifiable =
-    (isColisageEnAttente(bl.statut) || isSuperAdmin) && bl.statut !== "colisage_termine";
+  // Modifiable si statut "en attente" OU si Super Admin, sauf si statut final "colisage_termine" (sauf Super Admin qui peut forcer via déverrouillage)
+  const modifiable = (isColisageEnAttente(bl.statut) || isSuperAdmin);
   const annulable = isColisageEnAttente(bl.statut) || isSuperAdmin;
   const suppressible = isColisageEnAttente(bl.statut) || bl.statut === "annule" || isSuperAdmin;
   const locked = !isColisageEnAttente(bl.statut) && !isSuperAdmin;
@@ -215,17 +213,17 @@ function ColisageDetailPage() {
         </CardContent>
       </Card>
 
+      {/* Rendu permanent du formulaire pour consultation ou modification */}
       <ColisageForm
         blId={blId}
         bl={bl}
-        clientInfo={clientInfo}
+        clientInfo={clientInfo!}
         zonesDirectes={zonesDirectes}
         responsablesList={responsablesList}
-        modifiable={modifiable}
+        modifiable={modifiable && bl.statut !== "colisage_termine"}
         hasColis={hasColis}
         colisExistants={colisExistants}
         onSuccess={(createdColis) => {
-          // L'impression automatique est déclenchée ici
           triggerAutoPrintEtiquettes(createdColis, bl);
         }}
       />
