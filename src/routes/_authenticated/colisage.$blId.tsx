@@ -198,28 +198,15 @@ function ColisageDetailPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  bl.lignes
-                    .map((l) => {
-                      const k = keyForLigne(l);
-                      const r = (colisExistants ?? []).reduce((acc, c) => {
-                        // This is slightly complex because we don't have the carton lines easily available here 
-                        // without another API call or deep data structure.
-                        // But wait, the bl.lignes might be updated if the status is finished.
-                        // For now, let's keep the logic simple or just show the lines if we don't have the current distribution.
-                        return acc; 
-                      }, 0);
-                      return { ...l, reste: l.quantite - r };
-                    })
-                    .filter((l) => l.reste > 0)
-                    .map((l, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="font-mono text-xs">
-                          {l.reference_produit ?? "—"}
-                        </TableCell>
-                        <TableCell>{l.designation ?? "—"}</TableCell>
-                        <TableCell className="text-right">{l.reste}</TableCell>
-                      </TableRow>
-                    ))
+                  bl.lignes.map((l, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="font-mono text-xs">
+                        {l.reference_produit ?? "—"}
+                      </TableCell>
+                      <TableCell>{l.designation ?? "—"}</TableCell>
+                      <TableCell className="text-right">{l.quantite}</TableCell>
+                    </TableRow>
+                  ))
                 )}
               </TableBody>
             </Table>
