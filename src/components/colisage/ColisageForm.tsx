@@ -421,7 +421,6 @@ export function ColisageForm({
                   </Link>
                 </p>
               )}
-
             </div>
             <div>
               <Label>Date / heure</Label>
