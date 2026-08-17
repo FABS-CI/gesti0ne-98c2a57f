@@ -82,7 +82,7 @@ export function ColisageForm({
   const [gareTel, setGareTel] = useState("");
 
   const [cartons, setCartons] = useState<CartonState[]>([
-    { poids: "", observations: "", lignes: [{ produit_id: "", quantite: "" }] },
+    { poids: "", format: "NC4", observations: "", lignes: [{ produit_id: "", quantite: "" }] },
   ]);
   const nbCartons = cartons.length;
 
@@ -141,6 +141,7 @@ export function ColisageForm({
 
         return {
           poids: (c as any).poids?.toString() || "",
+          format: c.format_carton || "NC4",
           observations: c.observations || "",
           lignes: lines.length > 0 ? lines : [{ produit_id: "", quantite: "" }],
         };
@@ -209,7 +210,7 @@ export function ColisageForm({
   const addCarton = () =>
     setCartons((p) => [
       ...p,
-      { poids: "", observations: "", lignes: [{ produit_id: "", quantite: "" }] },
+      { poids: "", format: "NC4", observations: "", lignes: [{ produit_id: "", quantite: "" }] },
     ]);
   const removeCarton = (i: number) =>
     setCartons((p) => (p.length > 1 ? p.filter((_, j) => j !== i) : p));
@@ -322,6 +323,7 @@ export function ColisageForm({
       return {
         numero: idx + 1,
         poids: c.poids ? Number(c.poids) : null,
+        format: c.format || null,
         observations: c.observations || null,
         lignes: Array.from(groupedLignes.entries()).map(([produit_id, quantite]) => {
           const cmdLigne = lignesCommande.find((x) => keyForLigne(x) === produit_id);
