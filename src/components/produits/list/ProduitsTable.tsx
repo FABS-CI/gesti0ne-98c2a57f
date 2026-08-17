@@ -42,7 +42,7 @@ export function ProduitsTable({
 }: Props) {
   const navigate = useNavigate();
   const colSpan = canSeeSensitive ? 13 : 6;
-  const totalValeurVente = 0; // Désactivé (stock statique)
+  const totalValeurVente = items.reduce((s, p) => s + (Number(p.stock) * Number(p.prix_vente)), 0);
   return (
     <div className="rounded-lg border bg-card">
       <Table>
@@ -219,7 +219,7 @@ export function ProduitsTable({
             <TableRow>
               <TableCell colSpan={8} />
               <TableCell className="text-right font-black text-blue-900 text-base">
-                {formatFCFA(items.reduce((s, p) => s + (Number(p.stock) * Number(p.prix_vente)), 0))}
+                {formatFCFA(totalValeurVente)}
               </TableCell>
               <TableCell colSpan={4} />
             </TableRow>

@@ -85,17 +85,15 @@ export async function listProduits(params: ListProduitsParams = {}) {
   });
 
   if (items.length > 0) {
-    const productIds = items.map(p => p.id);
-    const { data: purchaseData } = await supabase
-      .from("achat_lignes")
-      .select("produit_id, prix_unitaire, created_at")
-      .in("produit_id", productIds)
-      .order("created_at", { ascending: false });
+    const productIds = items.map(p => p.produit_id || p.id);
+    const { data: purchaseData } = await supabase.rpc('get_derniers_prix_achat', {
+      _produit_ids: productIds
+    });
 
     if (purchaseData) {
+      const purchaseMap = new Map((purchaseData as any[]).map(pd => [pd.produit_id, pd]));
       items.forEach((p: any) => {
-        // Take the most recent one for each product
-        const lastPurchase = purchaseData.find(pd => pd.produit_id === p.id);
+        const lastPurchase = purchaseMap.get(p.produit_id || p.id);
         p.dernier_prix_achat = lastPurchase ? [lastPurchase] : [];
       });
     }
