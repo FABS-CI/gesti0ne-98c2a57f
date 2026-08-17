@@ -118,6 +118,7 @@ export function ColisageForm({
   // — Initialisation depuis colisExistants —
   useEffect(() => {
     if (colisExistants && colisExistants.length > 0) {
+      console.log("[ColisageForm] Chargement du colisage existant:", colisExistants);
       const firstColis = colisExistants[0];
       if (firstColis.responsable_nom) setResponsable(firstColis.responsable_nom);
       if (firstColis.observations) setObservations(firstColis.observations);
@@ -130,15 +131,24 @@ export function ColisageForm({
       if (firstColis.gare_responsable) setGareResp(firstColis.gare_responsable);
       if (firstColis.gare_telephone) setGareTel(firstColis.gare_telephone);
 
-      const newCartons: CartonState[] = colisExistants.map((c) => ({
-        poids: (c as any).poids?.toString() || "",
-        observations: c.observations || "",
-        lignes: (c.colis_lignes || []).map((l) => ({
+      // Reconstruction fidèle de l'état des cartons
+      const newCartons: CartonState[] = colisExistants.map((c) => {
+        // Groupement des lignes par produit_id si nécessaire (normalement déjà fait par l'API)
+        const lines = (c.colis_lignes || []).map((l) => ({
           produit_id: l.produit_id || "",
-          quantite: l.quantite?.toString() || "",
-        })),
-      }));
-      setCartons(newCartons);
+          quantite: l.quantite?.toString() || "0",
+        }));
+
+        return {
+          poids: (c as any).poids?.toString() || "",
+          observations: c.observations || "",
+          lignes: lines.length > 0 ? lines : [{ produit_id: "", quantite: "" }],
+        };
+      });
+
+      if (newCartons.length > 0) {
+        setCartons(newCartons);
+      }
     }
   }, [colisExistants]);
 
@@ -331,7 +341,7 @@ export function ColisageForm({
     <Card className="print:hidden">
       <SectionHeader
         icon={PackageCheck}
-        title={hasColis ? "Refaire le colisage" : "Créer le colisage"}
+        title={hasColis ? "Modifier le colisage" : "Créer le colisage"}
         color="#3B82F6"
       />
       <CardContent className="pl-5 sm:pl-6">
@@ -472,13 +482,19 @@ export function ColisageForm({
             <div className="md:col-span-3 flex justify-end">
               <Button
                 type="submit"
+                className="w-full sm:w-auto min-w-[200px]"
                 disabled={mutation.isPending || !modifiable || !compositionValide}
               >
-                {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                {hasColis
-                  ? `Regénérer le colisage (${nbCartons} carton${nbCartons > 1 ? "s" : ""})`
-                  : `Valider — Colisage terminé (${nbCartons} carton${nbCartons > 1 ? "s" : ""})`}
+                {mutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enregistrement...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    {hasColis ? "Mettre à jour le colisage" : "Valider le colisage"}
+                  </>
+                )}
               </Button>
             </div>
           </form>
