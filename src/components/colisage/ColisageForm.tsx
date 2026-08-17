@@ -23,6 +23,7 @@ import {
   type ColisagePayload,
   type CartonManuel,
   type ModeAcheminement,
+  type ColisRow,
 } from "@/lib/colisage-api";
 import { invalidateColisage } from "@/lib/cache-invalidation";
 import { keyForLigne, detectMode, type ZonesDirectes } from "@/lib/colisage-helpers";
@@ -49,6 +50,7 @@ interface ColisageFormProps {
   responsablesList: Responsable[];
   modifiable: boolean;
   hasColis: boolean;
+  onSuccess?: (colis: ColisRow[]) => void;
 }
 
 export function ColisageForm({
@@ -59,6 +61,7 @@ export function ColisageForm({
   responsablesList,
   modifiable,
   hasColis,
+  onSuccess,
 }: ColisageFormProps) {
   const qc = useQueryClient();
 
@@ -201,9 +204,15 @@ export function ColisageForm({
   const mutation = useMutation({
     mutationFn: (args: { payload: ColisagePayload; cartons: CartonManuel[] }) =>
       creerColisageManuel(blId, args.payload, args.cartons),
-    onSuccess: async () => {
+    onSuccess: async (createdColis) => {
       toast.success("Colisage généré");
       invalidateColisage(qc, { blId, clientId: bl.client_id ?? undefined });
+      
+      // Déclenche le callback de succès (pour l'impression auto dans le parent)
+      if (onSuccess) {
+        onSuccess(createdColis);
+      }
+
       if (bl.client_id && clientInfo) {
         const patch: { ville?: string; commune?: string; quartier?: string } = {};
         const villeCandidate = mode === "livraison" ? villeLivraison : villeDest;

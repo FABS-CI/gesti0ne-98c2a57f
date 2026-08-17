@@ -16,6 +16,7 @@ import {
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { STATUT_BL_LABEL, isColisageEnAttente } from "@/lib/colisage-api";
 import { buildEtiquettesPayload, keyForLigne } from "@/lib/colisage-helpers";
+import { triggerAutoPrintEtiquettes } from "@/lib/colisage-print-utils";
 import { useColisageDetail } from "@/hooks/use-colisage-detail";
 import { usePermissions } from "@/hooks/use-permissions";
 import { ColisageActionButtons } from "@/components/colisage/ColisageActionButtons";
@@ -223,6 +224,10 @@ function ColisageDetailPage() {
           responsablesList={responsablesList}
           modifiable={modifiable}
           hasColis={hasColis}
+          onSuccess={(createdColis) => {
+            // L'impression automatique est déclenchée ici
+            triggerAutoPrintEtiquettes(createdColis, bl);
+          }}
         />
       )}
 
