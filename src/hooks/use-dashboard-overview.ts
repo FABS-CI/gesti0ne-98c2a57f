@@ -34,7 +34,7 @@ export function useDashboardOverview(periode: Periode, exerciceId: string | null
       const sinceIso = new Date(Date.now() - Number(periode) * 86400000)
         .toISOString()
         .slice(0, 10);
-      const [clientsStats, overview, tournees] = await Promise.all([
+      const [clientsStats, overview, tournees, alertes] = await Promise.all([
         supabase.rpc("dashboard_client_stats").single(),
         supabase.rpc("dashboard_overview_full" as never, {
           _exercice_id: exerciceId!,
@@ -44,6 +44,7 @@ export function useDashboardOverview(periode: Periode, exerciceId: string | null
           .from("tournees")
           .select("cout_total")
           .gte("date_tournee", sinceIso),
+        supabase.from("stocks_depots").select("quantite, seuil_alerte"),
       ]);
 
       const cs = (clientsStats.data ?? { total: 0, actifs: 0, solde_total: 0 }) as {
@@ -81,6 +82,13 @@ export function useDashboardOverview(periode: Periode, exerciceId: string | null
         }
       }
 
+      // Aggregate alerts from all warehouses in real-time
+      const stockAlerts = (alertes.data ?? []).filter(s => {
+        const qty = Number(s.quantite || 0);
+        const seuil = Number(s.seuil_alerte || 0);
+        return seuil > 0 && qty <= seuil;
+      });
+
       return {
         clientsTotal: clientsTotalCount,
         clientsActifs: clientsActifsCount,
@@ -100,7 +108,7 @@ export function useDashboardOverview(periode: Periode, exerciceId: string | null
         depenses: Number(ov.depenses) || 0,
         solde: Number(ov.solde) || 0,
         stockBas: ov.stockBas ?? [],
-        nbStockBas: Number(ov.nbStockBas) || 0,
+        nbStockBas: stockAlerts.length,
         nbRetards: Number(ov.nbRetards) || 0,
         montantRetard: Number(ov.montantRetard) || 0,
         fraisTournees,

@@ -1,36 +1,35 @@
-# Refactoring and Optimization Plan - ERP FABS-CI
+# Plan de Refactorisation — Étape 3 : RBAC v3 & Dettes Techniques
 
-This plan targets technical debt, data integrity, and performance bottlenecks identified during the v2.2.1 audit.
+Ce plan détaille la migration finale vers le moteur de permissions **RBAC v3** et la correction des dettes techniques identifiées lors de l'audit expert.
 
-## User Impact
-- **Accuracy**: Stock levels will be real-time and accurate across all screens.
-- **Reliability**: Faster dashboard loading and zero financial discrepancies in BI.
-- **Security**: cleaner permission management and robust session handling.
+## Changements
 
-## Technical Details
+### 🔐 Sécurité & RBAC v3
+- **Audit des Gardes UI** : Révision de `src/components/rbac/Can.tsx` pour s'assurer que les permissions v3 (ex: `commandes.creer`) sont privilégiées sur les codes v2, tout en maintenant le pont via `expandRbac3Permissions`.
+- **Nettoyage du Catalogue** : Mise à jour de `src/lib/rbac-permission-codes.ts` pour refléter la réalité du terrain et supprimer les doublons inutiles.
+- **Transparence Admin** : Vérification stricte de l'exemption de logs/notifications pour le rôle `super_admin`.
 
-### Step 1: Real-time Stock Aggregation (Data Layer)
-- **Goal**: Replace legacy `produits.stock` (static 1000) with dynamic sums from `stocks_depots`.
-- **Action**: Modify `src/lib/produits-api.ts` to join `stocks_depots` and compute sums.
-- **Action**: Update `useDashboardOverview` to use aggregated counts for "Stock Bas".
+### 📦 Données & Performance
+- **Optimisation PDF** : Standardisation du rendu des notes et des totaux dans `BaseDocument` pour éviter les chevauchements sur les documents longs.
+- **Intégrité Stock** : Finalisation du retrait des références à la colonne `produits.stock` (legacy) au profit de l'agrégation temps réel depuis `stocks_depots`.
 
-### Step 2: Financial BI Correction
-- **Goal**: Restore "Valeur du stock" and "Top produits" in BI Analytics using real data.
-- **Action**: Update `src/routes/_authenticated/bi-analytics.tsx` to calculate valuation based on `stocks_depots * prix_vente`.
+### 🛠️ UX & Modernisation
+- **Validation Interactive** : Amélioration des retours visuels lors des changements de droits (refresh temps réel).
+- **Accessibilité** : Standardisation des polices et contrastes sur les exports PDF professionnels.
 
-### Step 3: RBAC v3 Migration & Cleanup
-- **Goal**: Decommission legacy permission checks and unify on the v3 bridge.
-- **Action**: Audit all `Can` components and `hasPerm` calls to ensure they use the `rbac3-bridge.ts`.
+## Détails techniques
 
-### Step 4: PDF Engine Performance
-- **Goal**: Optimize large document generation (Account Statements, Order Lists).
-- **Action**: Implement stream-like chunking or worker-based generation for documents > 50 pages.
+### RBAC Bridge (`src/lib/rbac3-bridge.ts`)
+- Mise à jour des mappings pour inclure les nouveaux modules identifiés durant l'audit.
+- Optimisation de la fonction `expandRbac3Permissions` pour réduire la complexité cyclomatique.
 
-### Step 5: Frontend "Any" Debt Removal
-- **Goal**: Finalize Type-safety in complex forms (`CommandeForm`, `RetourForm`).
-- **Action**: Replace remaining `any` casts with strict Zod-validated types.
+### PDF Engine (`src/lib/pdf/base-document.ts`)
+- Ajustement du `threshold` de saut de page pour les blocs de signatures.
+- Correction du calcul de `maxRowH` pour les textes multi-lignes très longs.
 
-## Verification
-- Run `npm run build` to check for type regressions.
-- Verify dashboard "Stock Bas" count matches the sum of warehouse alerts.
-- Check BI Analytics "Valeur du stock" is non-zero and reflects reality.
+### Hooks & State
+- Fix du bug de reset de l'état `loading` dans `NotificationPreferencesPanel.tsx`.
+- Synchronisation du cache TanStack Query pour `rbac.permissions` avec un `staleTime` de 15min.
+
+## Questions (facultatif)
+*Aucune question bloquante à ce stade.*
