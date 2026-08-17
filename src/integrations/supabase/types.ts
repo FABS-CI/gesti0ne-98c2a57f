@@ -6859,6 +6859,21 @@ export type Database = {
         }
         Relationships: []
       }
+      rbac3_user_permissions: {
+        Row: {
+          permission_code: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rbac3_role_permissions_perm_code_fkey"
+            columns: ["permission_code"]
+            isOneToOne: false
+            referencedRelation: "rbac3_permissions"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       v_approbations_en_attente_count: {
         Row: {
           critiques: number | null
