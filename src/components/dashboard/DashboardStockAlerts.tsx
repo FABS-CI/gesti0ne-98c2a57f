@@ -24,7 +24,7 @@ export function DashboardStockAlerts({ data }: { data: DashboardOverview | undef
             {data?.stockBas.map((p, i) => (
               <li key={i} className="flex items-center justify-between py-2">
                 <span className="truncate text-sm">{p.titre}</span>
-                <Badge variant="destructive">{p.stock} restant(s)</Badge>
+                <Badge variant="destructive">Stock bas (voir dépôts)</Badge>
               </li>
             ))}
           </ul>

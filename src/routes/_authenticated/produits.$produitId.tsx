@@ -81,8 +81,8 @@ function ProduitDetailPage() {
       </div>
     );
 
-  const enAlerte = produit.stock <= produit.seuil_alerte;
-  const stockValorise = produit.stock * produit.prix_achat;
+  const enAlerte = false; // Désactivé (stock statique)
+  const stockValorise = 0; // Désactivé (stock statique)
   const historique = buildProduitHistorique({ achats, inventaires, mouvements, ventes });
 
   return (
@@ -101,7 +101,7 @@ function ProduitDetailPage() {
             </p>
           </div>
         </div>
-        <Badge variant={enAlerte ? "destructive" : "secondary"}>Stock : {produit.stock}</Badge>
+        <Badge variant="secondary">Consulter l'onglet Dépôts pour le stock</Badge>
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">

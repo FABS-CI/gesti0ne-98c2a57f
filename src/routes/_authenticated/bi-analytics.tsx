@@ -49,7 +49,7 @@ function BiAnalytics() {
       const [transactions, commandes, produits] = await Promise.all([
         supabase.from("transactions").select("type, montant, date_transaction, statut"),
         supabase.from("commandes").select("statut, montant_total"),
-        supabase.from("v_produits").select("titre, stock, prix_vente").eq("actif", true),
+        supabase.from("v_produits").select("titre, prix_vente").eq("actif", true),
       ]);
 
       type Trx = {
@@ -59,7 +59,7 @@ function BiAnalytics() {
         montant: number | null;
       };
       type Cmd = { statut: string | null };
-      type Prd = { titre: string | null; stock: number | null; prix_vente: number | null };
+      type Prd = { titre: string | null; prix_vente: number | null };
 
       const monthly: Record<number, { recettes: number; depenses: number }> = {};
       for (let i = 0; i < 12; i++) monthly[i] = { recettes: 0, depenses: 0 };
