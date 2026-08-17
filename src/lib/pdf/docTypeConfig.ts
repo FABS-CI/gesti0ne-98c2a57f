@@ -19,7 +19,8 @@ const QR_BY_TYPE: Record<string, boolean> = {
   BC: false,  // Alias Bon de commande
   BL: false,  // Bon de livraison
   RET: false, // Bon de retour
-  BR: false,  // Alias Bon de retour
+  ACH: false, // Achats (Bon de Réception)
+  BR: false,  // Alias Bon de Réception
   AVO: false, // Avoir
   AV: false,  // Alias Avoir
   RP: true,   // Reçu de paiement (Activé pour traçabilité des encaissements)
