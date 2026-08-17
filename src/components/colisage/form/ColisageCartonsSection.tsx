@@ -154,22 +154,18 @@ export function ColisageCartonsSection({
                           </div>
                         )}
                         {lignesCommande
-                          .filter((l) => {
-                            const k = keyForLigne(l);
-                            const currentQteEnLigne = li.produit_id === k ? currentQte : 0;
-                            const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) + currentQteEnLigne;
-                            return dispo > 0;
-                          })
                           .map((l) => {
                             const k = keyForLigne(l);
                             const currentQteEnLigne = li.produit_id === k ? currentQte : 0;
-                            const dispoAffiche = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) + currentQteEnLigne;
-                            return (
-                              <SelectItem key={k} value={k}>
-                                {l.designation} — reste {dispoAffiche} / {l.quantite}
-                              </SelectItem>
-                            );
-                          })}
+                            const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) + currentQteEnLigne;
+                            return { l, k, dispo };
+                          })
+                          .sort((a, b) => b.dispo - a.dispo) // Montrer les dispo > 0 en premier
+                          .map(({ l, k, dispo }) => (
+                            <SelectItem key={k} value={k} disabled={dispo <= 0}>
+                              {l.designation} — {dispo <= 0 ? "Réparti" : `reste ${dispo} / ${l.quantite}`}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <Input
