@@ -3,14 +3,17 @@ import { supabase } from "./src/integrations/supabase/client";
 
 async function checkColisageBug() {
   const blRef = 'BL-2026-00001';
+  const blId = 'dc0e89de-3c83-47d9-9a99-815f34e22d35'; // From previous SQL check
+
   
   console.log("--- START AUDIT ---");
   
   // 1. Get BL
   const { data: bl, error: blErr } = await supabase
     .from('bons_livraison')
-    .select('bl_id, reference, commande_id')
-    .eq('reference', blRef)
+    .select('bl_id, reference, commande_id, statut')
+    .eq('bl_id', blId)
+
     .single();
     
   if (blErr) {
