@@ -586,6 +586,13 @@ export class BaseDocument {
     if (!notes) return y;
 
     let curY = y - 10;
+    
+    // Check if we have enough space for the header
+    if (curY < MARGINS.bottom + 40) {
+      this.addNewPage();
+      curY = PAGE.h - 120;
+    }
+
     this.page.drawText("NOTES / OBSERVATIONS :", {
       x: MARGINS.x,
       y: curY,
@@ -610,7 +617,14 @@ export class BaseDocument {
 
   drawSignatures(y: number) {
     const boxW = 150;
-    const curY = Math.max(y - 60, 140);
+    let curY = y - 60;
+    
+    // Ensure we don't draw signatures too low
+    if (curY < MARGINS.bottom + 60) {
+      this.addNewPage();
+      curY = PAGE.h - 180;
+    }
+    
     this.page.drawRectangle({
       x: MARGINS.x,
       y: curY - 60,

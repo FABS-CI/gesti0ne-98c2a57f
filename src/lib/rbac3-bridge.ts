@@ -89,7 +89,13 @@ export const RBAC3_MODULE_TO_SOUS_MODULES: Record<string, string[]> = {
     "workflows",
     "integrations",
   ],
-  parametres: ["parametres", "exercices", "modeles_documents", "historique_envois"],
+  parametres: [
+    "parametres",
+    "exercices",
+    "modeles_documents",
+    "historique_envois",
+    "configurations",
+  ],
 };
 
 /** Actions UI (catalogue v2) couvertes par chaque action du moteur v3. */

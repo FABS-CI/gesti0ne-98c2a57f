@@ -57,7 +57,7 @@ export function Can({ permission, anyOf, allOf, fallback = null, children }: Can
     (permission ? has(permission) : true) &&
     (anyOf && anyOf.length > 0 ? hasAny(anyOf) : true) &&
     (allOf && allOf.length > 0 ? hasAll(allOf) : true) &&
-    (permission || anyOf?.length || allOf?.length ? true : false);
+    (permission || (anyOf && anyOf.length > 0) || (allOf && allOf.length > 0) ? true : false);
 
   if (!ok) return <>{fallback}</>;
   return <>{children}</>;
