@@ -273,22 +273,31 @@ export function ColisageForm({
       gare_responsable: mode === "expedition" ? gareResp || null : null,
       gare_telephone: mode === "expedition" ? gareTel || null : null,
     };
-    const cartonsPayload: CartonManuel[] = cartons.map((c, idx) => ({
-      numero: idx + 1,
-      poids: c.poids ? Number(c.poids) : null,
-      observations: c.observations || null,
-      lignes: c.lignes
+    const cartonsPayload: CartonManuel[] = cartons.map((c, idx) => {
+      // Regroupement par produit_id pour éviter la contrainte colis_lignes_unique_produit_par_colis
+      const groupedLignes = new Map<string, number>();
+      c.lignes
         .filter((li) => li.produit_id && parseInt(li.quantite || "0", 10) > 0)
-        .map((li) => {
-          const cmdLigne = lignesCommande.find((x) => keyForLigne(x) === li.produit_id);
+        .forEach((li) => {
+          const qty = parseInt(li.quantite, 10);
+          groupedLignes.set(li.produit_id, (groupedLignes.get(li.produit_id) ?? 0) + qty);
+        });
+
+      return {
+        numero: idx + 1,
+        poids: c.poids ? Number(c.poids) : null,
+        observations: c.observations || null,
+        lignes: Array.from(groupedLignes.entries()).map(([produit_id, quantite]) => {
+          const cmdLigne = lignesCommande.find((x) => keyForLigne(x) === produit_id);
           return {
-            produit_id: li.produit_id,
+            produit_id,
             designation: cmdLigne?.designation ?? null,
             reference_produit: cmdLigne?.reference_produit ?? null,
-            quantite: parseInt(li.quantite, 10),
+            quantite,
           };
         }),
-    }));
+      };
+    });
     mutation.mutate({ payload, cartons: cartonsPayload });
   };
 
