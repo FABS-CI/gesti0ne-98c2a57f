@@ -49,7 +49,7 @@ function BiAnalytics() {
       const [transactions, commandes, produits] = await Promise.all([
         supabase.from("transactions").select("type, montant, date_transaction, statut"),
         supabase.from("commandes").select("statut, montant_total"),
-        supabase.from("v_produits").select("titre, prix_vente").eq("actif", true),
+        supabase.from("v_produits").select("titre, prix_vente, stocks_depots(quantite)").eq("actif", true),
       ]);
 
       type Trx = {
@@ -59,7 +59,7 @@ function BiAnalytics() {
         montant: number | null;
       };
       type Cmd = { statut: string | null };
-      type Prd = { titre: string | null; prix_vente: number | null };
+      type Prd = { titre: string | null; prix_vente: number | null; stocks_depots: { quantite: number }[] | null };
 
       const monthly: Record<number, { recettes: number; depenses: number }> = {};
       for (let i = 0; i < 12; i++) monthly[i] = { recettes: 0, depenses: 0 };
@@ -85,16 +85,21 @@ function BiAnalytics() {
         value,
       }));
 
-      const topProduits = ((produits.data ?? []) as Prd[])
-        .map((p) => ({
+      const prds = ((produits.data ?? []) as Prd[]).map((p) => {
+        const stock = (p.stocks_depots || []).reduce((s, sd) => s + Number(sd.quantite || 0), 0);
+        return {
           titre: p.titre ?? "",
-          valeur: 0, // Désactivé (stock statique)
-        }))
+          valeur: stock * Number(p.prix_vente || 0),
+        };
+      });
+
+      const topProduits = prds
+        .sort((a, b) => b.valeur - a.valeur)
         .slice(0, 8);
 
       const totalRecettes = cashflow.reduce((s, m) => s + m.recettes, 0);
       const totalDepenses = cashflow.reduce((s, m) => s + m.depenses, 0);
-      const valeurStock = 0; // Désactivé (stock statique)
+      const valeurStock = prds.reduce((s, p) => s + p.valeur, 0);
 
       return {
         cashflow,

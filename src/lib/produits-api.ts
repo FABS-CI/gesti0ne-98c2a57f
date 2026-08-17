@@ -52,8 +52,10 @@ export type ListProduitsParams = {
 export async function listProduits(params: ListProduitsParams = {}) {
   const { q, categorie, niveau, actif, page = 1, pageSize = 20 } = params;
   
-  // 1. Fetch products from v_produits
-  let query = supabase.from("v_produits").select("*", { count: "exact" });
+  // 1. Fetch products from v_produits with their aggregated stock
+  let query = supabase
+    .from("v_produits")
+    .select("*, stocks_depots(quantite)", { count: "exact" });
 
   if (q)
     query = query.or(
@@ -73,8 +75,15 @@ export async function listProduits(params: ListProduitsParams = {}) {
   const { data, error, count } = await query;
   if (error) throw error;
 
-  // 2. Hydrate with last purchase price manually since there's no FK between view and table
-  const items = data ?? [];
+  // 1b. Calculate real stock from aggregated stocks_depots
+  const items = (data ?? []).map((p: any) => {
+    const totalStock = (p.stocks_depots || []).reduce(
+      (sum: number, s: any) => sum + Number(s.quantite || 0),
+      0,
+    );
+    return { ...p, stock: totalStock };
+  });
+
   if (items.length > 0) {
     const productIds = items.map(p => p.id);
     const { data: purchaseData } = await supabase

@@ -99,7 +99,7 @@ export function ProduitsTable({
             </TableRow>
           ) : (
             items.map((p) => {
-              const low = false; // Désactivé (stock statique)
+              const low = p.stock <= p.seuil_alerte;
               return (
                 <TableRow
                   key={p.produit_id}
@@ -163,13 +163,12 @@ export function ProduitsTable({
                   )}
                   {canSeeSensitive && (
                     <TableCell className="text-right font-medium text-emerald-600">
-                      {/* formatFCFA(p.stock * p.prix_vente) */}
-                      <span className="text-muted-foreground text-xs italic">Voir dépôts</span>
+                      {formatFCFA(p.stock * p.prix_vente)}
                     </TableCell>
                   )}
                   {canSeeSensitive && (
-                    <TableCell className="text-right">
-                      <span className="text-muted-foreground text-xs italic">Indisponible</span>
+                    <TableCell className={`text-right font-bold ${low ? "text-red-600" : ""}`}>
+                      {p.stock}
                     </TableCell>
                   )}
                   {canSeeSensitive && (
@@ -220,7 +219,7 @@ export function ProduitsTable({
             <TableRow>
               <TableCell colSpan={8} />
               <TableCell className="text-right font-black text-blue-900 text-base">
-                —
+                {formatFCFA(items.reduce((s, p) => s + (Number(p.stock) * Number(p.prix_vente)), 0))}
               </TableCell>
               <TableCell colSpan={4} />
             </TableRow>

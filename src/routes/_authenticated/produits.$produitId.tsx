@@ -81,8 +81,8 @@ function ProduitDetailPage() {
       </div>
     );
 
-  const enAlerte = false; // Désactivé (stock statique)
-  const stockValorise = 0; // Désactivé (stock statique)
+  const enAlerte = (produit.stock || 0) <= (produit.seuil_alerte || 0);
+  const stockValorise = (produit.stock || 0) * (produit.prix_vente || 0);
   const historique = buildProduitHistorique({ achats, inventaires, mouvements, ventes });
 
   return (
