@@ -132,7 +132,7 @@ export function ColisageForm({
       if (firstColis.gare_telephone) setGareTel(firstColis.gare_telephone);
 
       const newCartons: CartonState[] = colisExistants.map((c) => ({
-        poids: c.poids?.toString() || "",
+        poids: (c as any).poids?.toString() || "",
         observations: c.observations || "",
         lignes: (c.colis_lignes || []).map((l) => ({
           produit_id: l.produit_id || "",
