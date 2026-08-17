@@ -482,13 +482,19 @@ export function ColisageForm({
             <div className="md:col-span-3 flex justify-end">
               <Button
                 type="submit"
+                className="w-full sm:w-auto min-w-[200px]"
                 disabled={mutation.isPending || !modifiable || !compositionValide}
               >
-                {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                <CheckCircle2 className="mr-2 h-4 w-4" />
-                {hasColis
-                  ? `Regénérer le colisage (${nbCartons} carton${nbCartons > 1 ? "s" : ""})`
-                  : `Valider — Colisage terminé (${nbCartons} carton${nbCartons > 1 ? "s" : ""})`}
+                {mutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enregistrement...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4" />
+                    {hasColis ? "Mettre à jour le colisage" : "Valider le colisage"}
+                  </>
+                )}
               </Button>
             </div>
           </form>
