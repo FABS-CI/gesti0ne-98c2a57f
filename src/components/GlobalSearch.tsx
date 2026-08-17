@@ -88,8 +88,9 @@ export function GlobalSearch() {
   function go(h: Hit) {
     setOpen(false);
     setValue("");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    navigate({ to: h.to as any, params: h.params as any });
+    // We use @ts-ignore for dynamic routing parameters that TanStack Router cannot statically verify from the search index
+    // @ts-ignore
+    navigate({ to: h.to, params: h.params });
   }
 
   return (

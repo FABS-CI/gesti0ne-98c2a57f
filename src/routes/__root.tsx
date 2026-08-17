@@ -36,7 +36,7 @@ const PerfOverlay = lazy(() =>
 function usePerfOverlayEnabled() {
   const [enabled, setEnabled] = useState(false);
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !window.localStorage) return;
     const check = () =>
       localStorage.getItem("perfOverlay") === "1" ||
       new URLSearchParams(window.location.search).get("debug") === "perf";
