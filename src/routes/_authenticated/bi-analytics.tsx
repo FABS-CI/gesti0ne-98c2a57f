@@ -88,9 +88,8 @@ function BiAnalytics() {
       const topProduits = ((produits.data ?? []) as Prd[])
         .map((p) => ({
           titre: p.titre ?? "",
-          valeur: Number(p.stock) * Number(p.prix_vente ?? 0),
+          valeur: 0, // Désactivé (stock statique)
         }))
-        .sort((a, b) => b.valeur - a.valeur)
         .slice(0, 8);
 
       const totalRecettes = cashflow.reduce((s, m) => s + m.recettes, 0);
