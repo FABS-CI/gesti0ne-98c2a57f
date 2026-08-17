@@ -44,7 +44,7 @@ async function search(q: string): Promise<Hit[]> {
         ? UserCircle
         : h.group === "Produits"
         ? Package
-        : h.group === "Bons de livraison"
+        : h.group === "Bons de livraison" || h.group === "Cartons"
         ? Truck
         : FileText,
   }));

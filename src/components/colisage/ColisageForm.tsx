@@ -50,6 +50,7 @@ interface ColisageFormProps {
   responsablesList: Responsable[];
   modifiable: boolean;
   hasColis: boolean;
+  colisExistants?: ColisRow[];
   onSuccess?: (colis: ColisRow[]) => void;
 }
 
@@ -61,6 +62,7 @@ export function ColisageForm({
   responsablesList,
   modifiable,
   hasColis,
+  colisExistants,
   onSuccess,
 }: ColisageFormProps) {
   const qc = useQueryClient();
@@ -113,6 +115,33 @@ export function ColisageForm({
     }
     if (touched) prefilledRef.current = true;
   }, [clientInfo, villeLivraison, commune, quartier, villeDest]);
+
+  // — Initialisation depuis colisExistants —
+  useEffect(() => {
+    if (colisExistants && colisExistants.length > 0) {
+      const firstColis = colisExistants[0];
+      if (firstColis.responsable_nom) setResponsable(firstColis.responsable_nom);
+      if (firstColis.observations) setObservations(firstColis.observations);
+      if (firstColis.mode_acheminement) setMode(firstColis.mode_acheminement as ModeAcheminement);
+      if (firstColis.quartier) setQuartier(firstColis.quartier);
+      if (firstColis.commune) setCommune(firstColis.commune);
+      if (firstColis.ville_livraison) setVilleLivraison(firstColis.ville_livraison);
+      if (firstColis.gare_depart) setGareDepart(firstColis.gare_depart);
+      if (firstColis.ville_destination) setVilleDest(firstColis.ville_destination);
+      if (firstColis.gare_responsable) setGareResp(firstColis.gare_responsable);
+      if (firstColis.gare_telephone) setGareTel(firstColis.gare_telephone);
+
+      const newCartons: CartonState[] = colisExistants.map((c) => ({
+        poids: (c as any).poids?.toString() || "",
+        observations: c.observations || "",
+        lignes: (c.colis_lignes || []).map((l) => ({
+          produit_id: l.produit_id || "",
+          quantite: l.quantite?.toString() || "",
+        })),
+      }));
+      setCartons(newCartons);
+    }
+  }, [colisExistants]);
 
   // — Auto-détection du mode —
   const villeEff = villeLivraison || villeDest || clientInfo?.ville || "";

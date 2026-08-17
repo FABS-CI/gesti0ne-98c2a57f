@@ -215,21 +215,20 @@ function ColisageDetailPage() {
         </CardContent>
       </Card>
 
-      {modifiable && (
-        <ColisageForm
-          blId={blId}
-          bl={bl}
-          clientInfo={clientInfo}
-          zonesDirectes={zonesDirectes}
-          responsablesList={responsablesList}
-          modifiable={modifiable}
-          hasColis={hasColis}
-          onSuccess={(createdColis) => {
-            // L'impression automatique est déclenchée ici
-            triggerAutoPrintEtiquettes(createdColis, bl);
-          }}
-        />
-      )}
+      <ColisageForm
+        blId={blId}
+        bl={bl}
+        clientInfo={clientInfo}
+        zonesDirectes={zonesDirectes}
+        responsablesList={responsablesList}
+        modifiable={modifiable}
+        hasColis={hasColis}
+        colisExistants={colisExistants}
+        onSuccess={(createdColis) => {
+          // L'impression automatique est déclenchée ici
+          triggerAutoPrintEtiquettes(createdColis, bl);
+        }}
+      />
 
       {etiquettes.length > 0 && (
         <EtiquettesSection etiquettes={etiquettes} blReference={bl.reference} />
