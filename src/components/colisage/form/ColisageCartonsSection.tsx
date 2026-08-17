@@ -148,29 +148,23 @@ export function ColisageCartonsSection({
                         <SelectValue placeholder="Choisir un article…" />
                       </SelectTrigger>
                       <SelectContent>
-                        {optionsDisponibles.length === 0 ? (
-                          <div className="px-2 py-1.5 text-xs text-muted-foreground">
-                            Tous les articles ont été répartis
-                          </div>
-                        ) : (
-                          optionsDisponibles
-                            .filter((l) => {
-                              const k = keyForLigne(l);
-                              const dispoTotal = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
-                              const dispoLigne = k === li.produit_id ? dispoTotal + currentQte : dispoTotal;
-                              return dispoLigne > 0;
-                            })
-                            .map((l) => {
-                              const k = keyForLigne(l);
-                              const dispoTotal = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
-                              const dispoAffiche = k === li.produit_id ? dispoTotal + currentQte : dispoTotal;
-                              return (
-                                <SelectItem key={k} value={k}>
-                                  {l.designation} — reste {dispoAffiche} / {l.quantite}
-                                </SelectItem>
-                              );
-                            })
-                        )}
+                        {lignesCommande
+                          .filter((l) => {
+                            const k = keyForLigne(l);
+                            const currentQteEnLigne = li.produit_id === k ? currentQte : 0;
+                            const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) + currentQteEnLigne;
+                            return dispo > 0;
+                          })
+                          .map((l) => {
+                            const k = keyForLigne(l);
+                            const currentQteEnLigne = li.produit_id === k ? currentQte : 0;
+                            const dispoAffiche = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) + currentQteEnLigne;
+                            return (
+                              <SelectItem key={k} value={k}>
+                                {l.designation} — reste {dispoAffiche} / {l.quantite}
+                              </SelectItem>
+                            );
+                          })}
                       </SelectContent>
                     </Select>
                     <Input
