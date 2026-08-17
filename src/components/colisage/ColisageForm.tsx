@@ -118,6 +118,7 @@ export function ColisageForm({
   // — Initialisation depuis colisExistants —
   useEffect(() => {
     if (colisExistants && colisExistants.length > 0) {
+      console.log("[ColisageForm] Chargement du colisage existant:", colisExistants);
       const firstColis = colisExistants[0];
       if (firstColis.responsable_nom) setResponsable(firstColis.responsable_nom);
       if (firstColis.observations) setObservations(firstColis.observations);
@@ -130,15 +131,24 @@ export function ColisageForm({
       if (firstColis.gare_responsable) setGareResp(firstColis.gare_responsable);
       if (firstColis.gare_telephone) setGareTel(firstColis.gare_telephone);
 
-      const newCartons: CartonState[] = colisExistants.map((c) => ({
-        poids: (c as any).poids?.toString() || "",
-        observations: c.observations || "",
-        lignes: (c.colis_lignes || []).map((l) => ({
+      // Reconstruction fidèle de l'état des cartons
+      const newCartons: CartonState[] = colisExistants.map((c) => {
+        // Groupement des lignes par produit_id si nécessaire (normalement déjà fait par l'API)
+        const lines = (c.colis_lignes || []).map((l) => ({
           produit_id: l.produit_id || "",
-          quantite: l.quantite?.toString() || "",
-        })),
-      }));
-      setCartons(newCartons);
+          quantite: l.quantite?.toString() || "0",
+        }));
+
+        return {
+          poids: (c as any).poids?.toString() || "",
+          observations: c.observations || "",
+          lignes: lines.length > 0 ? lines : [{ produit_id: "", quantite: "" }],
+        };
+      });
+
+      if (newCartons.length > 0) {
+        setCartons(newCartons);
+      }
     }
   }, [colisExistants]);
 
@@ -331,8 +341,9 @@ export function ColisageForm({
     <Card className="print:hidden">
       <SectionHeader
         icon={PackageCheck}
-        title={hasColis ? "Refaire le colisage" : "Créer le colisage"}
+        title={hasColis ? "Modifier le colisage" : "Créer le colisage"}
         color="#3B82F6"
+        description={hasColis ? "Le contenu enregistré a été chargé. Vous pouvez ajuster la répartition." : undefined}
       />
       <CardContent className="pl-5 sm:pl-6">
         <fieldset disabled={!modifiable} className="contents">
