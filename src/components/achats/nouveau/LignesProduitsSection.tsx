@@ -94,9 +94,9 @@ export function LignesProduitsSection({
                   <ProductCoverThumb 
                     produit={{ 
                       titre: l.designation, 
-                      cover_path: (l as any).cover_path, 
-                      cover_thumb_path: (l as any).cover_thumb_path 
-                    }} 
+                      cover_path: l.produit_id ? (l as any).cover_path : undefined, 
+                      cover_thumb_path: l.produit_id ? (l as any).cover_thumb_path : undefined
+                    } as any} 
                     size="xs" 
                   />
                 </TableCell>

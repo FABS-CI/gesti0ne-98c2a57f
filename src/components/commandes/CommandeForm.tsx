@@ -335,8 +335,8 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
       produit_id: "",
       reference_produit: "",
       designation: "",
-      quantite: undefined as any,
-      prix_unitaire: undefined as any,
+      quantite: 0,
+      prix_unitaire: 0,
       remise_pct: undefined,
       stock_produit: null,
     });
