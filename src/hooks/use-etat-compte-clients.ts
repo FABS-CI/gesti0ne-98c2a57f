@@ -77,11 +77,13 @@ export function useEtatCompteClients(q: string, exerciceId: string | null | unde
         supabase
           .from("paiements")
           .select("montant, date_paiement, statut, factures!inner(client_id)")
-          .not("factures.client_id", "is", null),
+          .not("factures.client_id", "is", null)
+          .eq("statut", "valide"), // Performance : on ne ramène que les paiements validés qui impactent le solde
         supabase
           .from("retours")
           .select("client_id, facture_id, montant, date_retour, statut")
-          .not("client_id", "is", null),
+          .not("client_id", "is", null)
+          .neq("statut", "annule"), // Performance : exclure les retours annulés
         exerciceId
           ? supabase
               .from("soldes_ouverture_clients")
