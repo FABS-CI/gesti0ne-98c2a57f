@@ -148,6 +148,11 @@ export function ColisageCartonsSection({
                         <SelectValue placeholder="Choisir un article…" />
                       </SelectTrigger>
                       <SelectContent>
+                        {lignesCommande.length === 0 && (
+                          <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                            Aucun article dans cette commande
+                          </div>
+                        )}
                         {lignesCommande
                           .filter((l) => {
                             const k = keyForLigne(l);
