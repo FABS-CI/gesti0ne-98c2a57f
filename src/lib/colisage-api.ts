@@ -111,7 +111,6 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
   let lignes: BLDetail["lignes"] = [];
   let facture_reference: string | null = null;
   if (data.commande_id) {
-    console.log("[colisage-api] Fetching lines for commande_id:", data.commande_id);
     const { data: ls, error: lsError } = await supabase
       .from("commande_lignes")
       .select("ligne_id, produit_id, designation, reference_produit, quantite, produits:produit_id(cover_path)")
@@ -122,12 +121,6 @@ export async function getBLDetail(blId: string): Promise<BLDetail | null> {
       .select("reference")
       .eq("commande_id", data.commande_id)
       .maybeSingle();
-
-    if (lsError) {
-      console.error("[colisage-api] Error fetching lines:", lsError);
-    } else {
-      console.log("[colisage-api] Fetched lines:", ls?.length || 0);
-    }
 
     lignes = (ls ?? []).map((l) => ({
       ligne_id: l.ligne_id,
