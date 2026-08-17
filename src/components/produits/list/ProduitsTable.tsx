@@ -42,7 +42,7 @@ export function ProduitsTable({
 }: Props) {
   const navigate = useNavigate();
   const colSpan = canSeeSensitive ? 13 : 6;
-  const totalValeurVente = items.reduce((sum, p) => sum + (p.stock * p.prix_vente), 0);
+  const totalValeurVente = 0; // Désactivé (stock statique)
   return (
     <div className="rounded-lg border bg-card">
       <Table>
@@ -163,12 +163,13 @@ export function ProduitsTable({
                   )}
                   {canSeeSensitive && (
                     <TableCell className="text-right font-medium text-emerald-600">
-                      {formatFCFA(p.stock * p.prix_vente)}
+                      {/* formatFCFA(p.stock * p.prix_vente) */}
+                      <span className="text-muted-foreground text-xs italic">Voir dépôts</span>
                     </TableCell>
                   )}
                   {canSeeSensitive && (
                     <TableCell className="text-right">
-                      <span className={low ? "font-semibold text-destructive" : ""}>{p.stock}</span>
+                      <span className="text-muted-foreground text-xs italic">Indisponible</span>
                     </TableCell>
                   )}
                   {canSeeSensitive && (
@@ -219,7 +220,7 @@ export function ProduitsTable({
             <TableRow>
               <TableCell colSpan={8} />
               <TableCell className="text-right font-black text-blue-900 text-base">
-                {formatFCFA(totalValeurVente)}
+                —
               </TableCell>
               <TableCell colSpan={4} />
             </TableRow>
