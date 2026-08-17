@@ -135,7 +135,8 @@ export function ColisageCartonsSection({
                 const optionsDisponibles = lignesCommande.filter((l) => {
                   const k = keyForLigne(l);
                   if (k === li.produit_id) return true;
-                  return (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0) > 0;
+                  const dispo = (attendu.get(k) ?? 0) - (reparti.get(k) ?? 0);
+                  return dispo > 0;
                 });
                 return (
                   <div key={lj} className="grid grid-cols-1 sm:grid-cols-[1fr,120px,auto] gap-2">
