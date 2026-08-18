@@ -211,7 +211,6 @@ import { Route as AuthenticatedEmployesEmployeIdModifierRouteImport } from './ro
 import { Route as AuthenticatedContratsContratIdModifierRouteImport } from './routes/_authenticated/contrats.$contratId.modifier'
 import { Route as AuthenticatedCongesCongeIdModifierRouteImport } from './routes/_authenticated/conges.$congeId.modifier'
 import { Route as AuthenticatedCommandesCommandeIdModifierRouteImport } from './routes/_authenticated/commandes.$commandeId.modifier'
-import { Route as AuthenticatedColisageBlIdHistoricalRouteImport } from './routes/_authenticated/colisage.blId.historical'
 import { Route as AuthenticatedClientsClientIdModifierRouteImport } from './routes/_authenticated/clients.$clientId.modifier'
 import { Route as AuthenticatedAdminAuditPaiementsAuditIdRouteImport } from './routes/_authenticated/admin.audit-paiements.$auditId'
 import { Route as AuthenticatedAbsencesAbsenceIdModifierRouteImport } from './routes/_authenticated/absences.$absenceId.modifier'
@@ -1379,12 +1378,6 @@ const AuthenticatedCommandesCommandeIdModifierRoute =
     path: '/modifier',
     getParentRoute: () => AuthenticatedCommandesCommandeIdRoute,
   } as any)
-const AuthenticatedColisageBlIdHistoricalRoute =
-  AuthenticatedColisageBlIdHistoricalRouteImport.update({
-    id: '/blId/historical',
-    path: '/blId/historical',
-    getParentRoute: () => AuthenticatedColisageRoute,
-  } as any)
 const AuthenticatedClientsClientIdModifierRoute =
   AuthenticatedClientsClientIdModifierRouteImport.update({
     id: '/modifier',
@@ -1592,7 +1585,6 @@ export interface FileRoutesByFullPath {
   '/absences/$absenceId/modifier': typeof AuthenticatedAbsencesAbsenceIdModifierRoute
   '/admin/audit-paiements/$auditId': typeof AuthenticatedAdminAuditPaiementsAuditIdRoute
   '/clients/$clientId/modifier': typeof AuthenticatedClientsClientIdModifierRoute
-  '/colisage/blId/historical': typeof AuthenticatedColisageBlIdHistoricalRoute
   '/commandes/$commandeId/modifier': typeof AuthenticatedCommandesCommandeIdModifierRoute
   '/conges/$congeId/modifier': typeof AuthenticatedCongesCongeIdModifierRoute
   '/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
@@ -1777,7 +1769,6 @@ export interface FileRoutesByTo {
   '/absences/$absenceId/modifier': typeof AuthenticatedAbsencesAbsenceIdModifierRoute
   '/admin/audit-paiements/$auditId': typeof AuthenticatedAdminAuditPaiementsAuditIdRoute
   '/clients/$clientId/modifier': typeof AuthenticatedClientsClientIdModifierRoute
-  '/colisage/blId/historical': typeof AuthenticatedColisageBlIdHistoricalRoute
   '/commandes/$commandeId/modifier': typeof AuthenticatedCommandesCommandeIdModifierRoute
   '/conges/$congeId/modifier': typeof AuthenticatedCongesCongeIdModifierRoute
   '/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
@@ -1986,7 +1977,6 @@ export interface FileRoutesById {
   '/_authenticated/absences/$absenceId/modifier': typeof AuthenticatedAbsencesAbsenceIdModifierRoute
   '/_authenticated/admin/audit-paiements/$auditId': typeof AuthenticatedAdminAuditPaiementsAuditIdRoute
   '/_authenticated/clients/$clientId/modifier': typeof AuthenticatedClientsClientIdModifierRoute
-  '/_authenticated/colisage/blId/historical': typeof AuthenticatedColisageBlIdHistoricalRoute
   '/_authenticated/commandes/$commandeId/modifier': typeof AuthenticatedCommandesCommandeIdModifierRoute
   '/_authenticated/conges/$congeId/modifier': typeof AuthenticatedCongesCongeIdModifierRoute
   '/_authenticated/contrats/$contratId/modifier': typeof AuthenticatedContratsContratIdModifierRoute
@@ -2195,7 +2185,6 @@ export interface FileRouteTypes {
     | '/absences/$absenceId/modifier'
     | '/admin/audit-paiements/$auditId'
     | '/clients/$clientId/modifier'
-    | '/colisage/blId/historical'
     | '/commandes/$commandeId/modifier'
     | '/conges/$congeId/modifier'
     | '/contrats/$contratId/modifier'
@@ -2380,7 +2369,6 @@ export interface FileRouteTypes {
     | '/absences/$absenceId/modifier'
     | '/admin/audit-paiements/$auditId'
     | '/clients/$clientId/modifier'
-    | '/colisage/blId/historical'
     | '/commandes/$commandeId/modifier'
     | '/conges/$congeId/modifier'
     | '/contrats/$contratId/modifier'
@@ -2588,7 +2576,6 @@ export interface FileRouteTypes {
     | '/_authenticated/absences/$absenceId/modifier'
     | '/_authenticated/admin/audit-paiements/$auditId'
     | '/_authenticated/clients/$clientId/modifier'
-    | '/_authenticated/colisage/blId/historical'
     | '/_authenticated/commandes/$commandeId/modifier'
     | '/_authenticated/conges/$congeId/modifier'
     | '/_authenticated/contrats/$contratId/modifier'
@@ -4043,13 +4030,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCommandesCommandeIdModifierRouteImport
       parentRoute: typeof AuthenticatedCommandesCommandeIdRoute
     }
-    '/_authenticated/colisage/blId/historical': {
-      id: '/_authenticated/colisage/blId/historical'
-      path: '/blId/historical'
-      fullPath: '/colisage/blId/historical'
-      preLoaderRoute: typeof AuthenticatedColisageBlIdHistoricalRouteImport
-      parentRoute: typeof AuthenticatedColisageRoute
-    }
     '/_authenticated/clients/$clientId/modifier': {
       id: '/_authenticated/clients/$clientId/modifier'
       path: '/modifier'
@@ -4130,7 +4110,6 @@ interface AuthenticatedColisageRouteChildren {
   AuthenticatedColisageHistoricalRoute: typeof AuthenticatedColisageHistoricalRoute
   AuthenticatedColisageResponsablesRoute: typeof AuthenticatedColisageResponsablesRoute
   AuthenticatedColisageIndexRoute: typeof AuthenticatedColisageIndexRoute
-  AuthenticatedColisageBlIdHistoricalRoute: typeof AuthenticatedColisageBlIdHistoricalRoute
 }
 
 const AuthenticatedColisageRouteChildren: AuthenticatedColisageRouteChildren = {
@@ -4139,8 +4118,6 @@ const AuthenticatedColisageRouteChildren: AuthenticatedColisageRouteChildren = {
   AuthenticatedColisageResponsablesRoute:
     AuthenticatedColisageResponsablesRoute,
   AuthenticatedColisageIndexRoute: AuthenticatedColisageIndexRoute,
-  AuthenticatedColisageBlIdHistoricalRoute:
-    AuthenticatedColisageBlIdHistoricalRoute,
 }
 
 const AuthenticatedColisageRouteWithChildren =
