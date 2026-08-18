@@ -9,21 +9,15 @@ vi.mock("qrcode", () => ({
 function makeData(numero: number, nb: number): EtiquettePayload {
   return {
     commande: "CMD-001",
-    facture: null,
     bl: "BL-TEST",
     colis_id: `colis-${numero}`,
     client: "Client X",
-    etablissement: null,
-    representant: null,
     telephone: "0700000000",
     ville: "Abidjan",
-    adresse: "Cocody",
     nb_cartons: nb,
     numero_carton: numero,
-    responsable: "Op1",
-    date: "2026-07-01",
     mode_acheminement: "livraison",
-    produits: [{ designation: "Cahier", quantite: 10 }],
+    produits: [{ nom: "Cahier", designation: "Cahier", quantite: 10 }],
   };
 }
 
