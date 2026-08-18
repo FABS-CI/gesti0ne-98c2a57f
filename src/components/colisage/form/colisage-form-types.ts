@@ -1,6 +1,5 @@
 export type CartonState = {
   poids: string;
-  format: string;
   observations: string;
   lignes: { produit_id: string; quantite: string }[];
 };

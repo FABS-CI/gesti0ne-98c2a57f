@@ -24,7 +24,7 @@ export type EtiquettePayload = {
   ville_destination?: string | null;
   gare_responsable?: string | null;
   gare_telephone?: string | null;
-  format_carton?: string | null;
+  // format_carton supprimé selon instructions historiques
   produits: { designation: string | null; quantite: number; cover_path?: string | null }[];
 };
 
@@ -136,7 +136,7 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
         </div>
       </div>
 
-      {/* Carton X / Y & Format */}
+      {/* Carton X / Y */}
       <div className="flex gap-4 mb-6">
         <div className="flex-1 text-center" style={{ border: "2.5px solid #000", padding: "5mm" }}>
           <div style={{ fontSize: "14pt", fontWeight: 700, letterSpacing: "0.15em" }}>CARTON</div>
@@ -144,14 +144,6 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
             {data.numero_carton} / {data.nb_cartons}
           </div>
         </div>
-        {data.format_carton && (
-          <div className="flex-1 text-center" style={{ border: "2.5px solid #000", padding: "5mm" }}>
-            <div style={{ fontSize: "14pt", fontWeight: 700, letterSpacing: "0.15em" }}>FORMAT</div>
-            <div style={{ fontSize: "40pt", fontWeight: 900, lineHeight: 1 }}>
-              {data.format_carton}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Infos principales */}
