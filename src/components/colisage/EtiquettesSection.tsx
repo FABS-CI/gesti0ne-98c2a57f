@@ -37,10 +37,9 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
             variant="default"
             size="sm"
             className="bg-primary hover:bg-primary/90"
-            onClick={(e) => {
-              e.preventDefault();
-              const h = getHtml();
-              if (h) printEtiquettes(h, `Étiquettes ${blReference}`, "a4-portrait-auto");
+            onClick={(ev) => {
+              ev.preventDefault();
+              void run(null, `Étiquettes ${blReference}`, "print");
             }}
           >
             <Printer className="mr-2 h-4 w-4" /> Imprimer tout ({etiquettes.length})
@@ -48,10 +47,9 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
           <Button
             variant="outline"
             size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              const h = getHtml();
-              if (h) printEtiquettes(h, `Aperçu étiquettes ${blReference}`, "a4-portrait-auto", "preview");
+            onClick={(ev) => {
+              ev.preventDefault();
+              void run(null, `Aperçu étiquettes ${blReference}`, "preview");
             }}
           >
             <Eye className="mr-2 h-4 w-4" /> Aperçu global
