@@ -13,7 +13,11 @@ export function getEtiquettesHtml(etiquettes: EtiquettePayload[]): string {
   // Cas 1 : Une seule étiquette -> Page A4 Portrait centrée
   if (etiquettes.length === 1) {
     const e = etiquettes[0];
-    const itemHtml = document.querySelector(`[data-colis-id="${e.colis_id}"]`)?.outerHTML ?? "";
+    const element = document.querySelector(`[data-colis-id="${e.colis_id}"]`);
+    if (!element) {
+      console.error("[getEtiquettesHtml] Élément DOM non trouvé pour colis_id:", e.colis_id);
+    }
+    const itemHtml = element?.outerHTML ?? "";
     return `
       <div class="a4-page single-label-page">
         ${itemHtml}
@@ -27,8 +31,16 @@ export function getEtiquettesHtml(etiquettes: EtiquettePayload[]): string {
     const e1 = etiquettes[i];
     const e2 = etiquettes[i + 1];
     
-    const item1Html = document.querySelector(`[data-colis-id="${e1.colis_id}"]`)?.outerHTML ?? "";
-    const item2Html = e2 ? (document.querySelector(`[data-colis-id="${e2.colis_id}"]`)?.outerHTML ?? "") : "";
+    const element1 = document.querySelector(`[data-colis-id="${e1.colis_id}"]`);
+    if (!element1) console.error("[getEtiquettesHtml] Élément DOM non trouvé pour colis_id:", e1.colis_id);
+    const item1Html = element1?.outerHTML ?? "";
+    
+    let item2Html = "";
+    if (e2) {
+      const element2 = document.querySelector(`[data-colis-id="${e2.colis_id}"]`);
+      if (!element2) console.error("[getEtiquettesHtml] Élément DOM non trouvé pour colis_id:", e2.colis_id);
+      item2Html = element2?.outerHTML ?? "";
+    }
 
     finalHtml += `
       <div class="a4-page double-label-page">
@@ -47,11 +59,24 @@ export function getEtiquettesHtml(etiquettes: EtiquettePayload[]): string {
 export function triggerAutoPrintEtiquettes(colis: ColisRow[], bl: BLDetail) {
   const payload = buildEtiquettesPayload(colis, bl);
   
-  // Délai de 800ms pour garantir que le DOM est totalement stable et que les QR codes sont générés
+  console.log("[triggerAutoPrintEtiquettes] Lancement de l'impression automatique pour", payload.length, "étiquettes");
+  
+  // Augmentation du délai à 1200ms pour garantir le rendu complet du DOM et des QR codes
   setTimeout(() => {
     const html = getEtiquettesHtml(payload);
-    if (html) {
+    if (html && html.trim() !== "") {
+      console.log("[triggerAutoPrintEtiquettes] HTML généré avec succès, ouverture de la fenêtre d'impression");
       printEtiquettes(html, `Étiquettes ${bl.reference}`, "a4-portrait-auto");
+    } else {
+      console.error("[triggerAutoPrintEtiquettes] Échec de la génération du HTML (DOM peut-être non prêt)");
+      // Tentative de secours après 2 secondes supplémentaires si vide
+      setTimeout(() => {
+        const retryHtml = getEtiquettesHtml(payload);
+        if (retryHtml) {
+          console.log("[triggerAutoPrintEtiquettes] Succès au deuxième essai");
+          printEtiquettes(retryHtml, `Étiquettes ${bl.reference}`, "a4-portrait-auto");
+        }
+      }, 2000);
     }
-  }, 800);
+  }, 1200);
 }
