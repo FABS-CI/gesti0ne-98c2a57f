@@ -345,6 +345,30 @@ export function ColisageForm({
     mutation.mutate({ payload, cartons: cartonsPayload });
   };
 
+  if (hasColis && !showForm) {
+    return (
+      <Card className="border-primary/20 bg-primary/5 print:hidden">
+        <CardContent className="flex flex-col items-center justify-center py-10 gap-4">
+          <div className="rounded-full bg-primary/10 p-4">
+            <PackageCheck className="h-10 w-10 text-primary" />
+          </div>
+          <div className="text-center">
+            <h3 className="text-lg font-bold">Colisage enregistré</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Ce bon de livraison a déjà été colisé ({colisExistants?.length} cartons). 
+              Vous pouvez consulter les étiquettes ci-dessous ou modifier le colisage si nécessaire.
+            </p>
+          </div>
+          {modifiable && (
+            <Button onClick={() => setShowForm(true)} variant="outline" className="mt-2">
+              Modifier le colisage
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="print:hidden">
       <SectionHeader
