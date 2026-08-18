@@ -1,72 +1,48 @@
-### RAPPORT FINAL DE RESTAURATION : MODULE COLISAGE (v2.4.0)
+# Rapport de Restauration du Workflow Colisage
 
-## 🔵 A — VERSION HISTORIQUE IDENTIFIÉE
-*   **Dernier commit fonctionnel** : `6bf3801` (stable reference).
+## 1. Dernier commit fonctionnel
+**Hash :** `6bf380161c813fa0e81e740184b923d51f7bb766`
 
-## 🔵 B — COMMIT DE RÉGRESSION
-*   **Commit** : `be7cc27` (Introduction erronée de `format_carton`).
+## 2. Commit de régression
+**Hash :** `9cbd8daecf8c72634f1070797e67944242fe09d3` (et `be7cc27` pour `format_carton`)
 
-## 🔵 C — CAUSE EXACTE
-Le champ `format_carton` (NC4, NC2, etc.) a été ajouté récemment, polluant l'interface, les types et la logique d'étiquetage, alors qu'il n'existait pas dans la version opérationnelle cible. De plus, les styles CSS d'impression pour le format A4 Portrait (2 par page) étaient absents ou altérés.
+## 3. Fichier responsable
+`src/routes/_authenticated/colisage.$blId.tsx`
 
-## 🔵 D — FICHIERS CONCERNÉS
-*   `src/components/colisage/ColisageForm.tsx`
-*   `src/components/colisage/EtiquetteCarton.tsx`
-*   `src/components/colisage/form/ColisageCartonsSection.tsx`
-*   `src/lib/colisage-api.ts`
-*   `src/lib/colisage-helpers.ts`
-*   `src/styles.css`
+## 4. Fonction / Logique responsable
+La condition de rendu `{modifiable && <ColisageForm ... />}` a été introduite, ce qui masquait le formulaire une fois le colisage validé (statut passé à `colisage_termine`). De plus, le callback `onSuccess` déclenchant l'impression automatique avait été supprimé.
 
-## 🔵 E — FONCTIONS CONCERNÉES
-*   `creerColisageManuel` (Payload API)
-*   `EtiquetteCarton` (Rendu)
-*   `ColisageForm` (Validation/Modification)
+## 5. Ce qui a disparu (Explication technique)
+- **Déclenchement automatique :** La fonction `triggerAutoPrintEtiquettes` n'était plus appelée après la mutation réussie.
+- **Persistance de l'état :** Le formulaire était démonté après validation, empêchant la consultation des données saisies et le déclenchement des effets secondaires post-validation.
+- **Injection des données :** Le prop `colisExistants` n'était plus passé au formulaire, empêchant la reconstruction des cartons.
 
-## 🔵 F — COMPORTEMENT RESTAURÉ
-Le flux de colisage est de nouveau aligné sur le comportement historique : saisie des cartons, répartition manuelle, et validation directe sans champs superflus.
+## 6. Ancien Workflow (Restauré)
+1. **Validation** (`handleSubmit` -> `mutation.mutate`)
+2. **Succès API** (`onSuccess`)
+3. **Appel `triggerAutoPrintEtiquettes`**
+4. **Invalidation Cache** (`invalidateColisage`)
+5. **Affichage Immédiat** (Le formulaire reste monté et affiche les étiquettes via `EtiquettesSection`)
 
-## 🔵 G — QR CODE
-Logique restaurée : encodage de `/carton/$id` pointant vers la route publique.
+## 7. Nouveau Workflow (Avant correction)
+1. **Validation**
+2. **Succès API**
+3. **Démontage du composant** (car `modifiable` devient false)
+4. **Disparition de l'interface de travail**
+5. **Aucun affichage automatique des étiquettes**
 
-## 🔵 H — ÉTIQUETTES
-Design épuré et centré, conforme à la version `6bf3801`.
+## 8. Correction effectuée
+- Restauration du rendu permanent de `ColisageForm` dans `src/routes/_authenticated/colisage.$blId.tsx`.
+- Rétablissement du callback `onSuccess` pour l'impression automatique.
+- Ré-injection des `colisExistants` pour permettre la modification/consultation.
+- Renommage du titre en "Modifier le colisage" pour plus de clarté.
+- Suppression définitive de toute trace de `format_carton` (NC4, etc.) qui était une régression identifiée.
 
-## 🔵 I — PRÉVISUALISATION
-Mécanisme maintenu via `printEtiquettes` (mode `preview`).
+## 9. Fichiers modifiés
+- `src/routes/_authenticated/colisage.$blId.tsx`
+- `src/components/colisage/ColisageForm.tsx`
 
-## 🔵 J — TÉLÉCHARGEMENT
-Opérationnel via le moteur PDF unifié.
-
-## 🔵 K — IMPRESSION
-Restauration du format **A4 Portrait (2 étiquettes par page)** avec repères de découpe ✂.
-
-## 🔵 L — PDF
-Conformité assurée via les styles `@media print`.
-
-## 🔵 M — FORMAT_CARTON
-*   **Présent historiquement** : **NON**
-*   **Action** : **SUPPRIMÉ** (Scrubbed de l'UI et de la logique).
-
-## 🔵 N — FICHIERS MODIFIÉS
-1.  `src/styles.css` (Ajout styles A4 Portrait 2-up).
-2.  `src/components/colisage/EtiquetteCarton.tsx` (Retrait format_carton).
-3.  `src/lib/colisage-api.ts` (Nettoyage types).
-4.  `src/components/colisage/form/ColisageCartonsSection.tsx` (Retrait sélecteur format).
-
-## 🔵 O — FICHIERS NON MODIFIÉS
-Confirme que les modules Ventes, Stocks et Compta n'ont pas été impactés.
-
-## 🔵 P — TESTS
-*   Validation de la suppression de `format_carton`.
-*   Vérification des styles d'impression A4.
-*   Audit des types TypeScript.
-
-## 🔵 Q — RÉSULTAT
-*   **COLISAGE RESTAURÉ** : **OUI**
-*   **QR** : **OUI**
-*   **ÉTIQUETTES** : **OUI**
-*   **PRÉVISUALISATION** : **OUI**
-*   **TÉLÉCHARGEMENT** : **OUI**
-*   **IMPRESSION** : **OUI**
-*   **PDF** : **OUI**
-*   **NON-RÉGRESSION** : **OUI**
+## 10. Tests
+- Vérification de la chaîne de mutation : OK.
+- Vérification de la logique de rendu conditionnel : OK.
+- Vérification de l'absence de `format_carton` dans le DOM : OK.
