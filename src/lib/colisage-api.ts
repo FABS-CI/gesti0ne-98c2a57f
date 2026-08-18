@@ -226,7 +226,6 @@ export type ColisRow = {
   gare_responsable: string | null;
   gare_telephone: string | null;
   observations: string | null;
-  // format_carton supprimé selon instructions historiques
   date_colisage: string | null;
   colis_lignes?: {
     produit_id: string | null;
