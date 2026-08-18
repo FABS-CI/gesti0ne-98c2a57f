@@ -61,8 +61,8 @@ function ColisageDetailPage() {
 
   const st = STATUT_BL_LABEL[bl.statut];
   const hasColis = (colisExistants ?? []).length > 0;
-  // Modifiable si statut "en attente" OU si Super Admin, sauf si statut final "colisage_termine" (sauf Super Admin qui peut forcer via déverrouillage)
-  const modifiable = isColisageEnAttente(bl.statut) || isSuperAdmin || canDeverrouiller;
+  const modifiable =
+    (isColisageEnAttente(bl.statut) || isSuperAdmin) && bl.statut !== "colisage_termine";
   const annulable = isColisageEnAttente(bl.statut) || isSuperAdmin;
   const suppressible = isColisageEnAttente(bl.statut) || bl.statut === "annule" || isSuperAdmin;
   const locked = !isColisageEnAttente(bl.statut) && !isSuperAdmin;
@@ -213,20 +213,17 @@ function ColisageDetailPage() {
         </CardContent>
       </Card>
 
-      {/* Rendu permanent du formulaire pour consultation ou modification */}
-      <ColisageForm
-        blId={blId}
-        bl={bl}
-        clientInfo={clientInfo!}
-        zonesDirectes={zonesDirectes}
-        responsablesList={responsablesList}
-        modifiable={modifiable}
-        hasColis={hasColis}
-        colisExistants={colisExistants}
-        onSuccess={(createdColis) => {
-          triggerAutoPrintEtiquettes(createdColis, bl);
-        }}
-      />
+      {modifiable && (
+        <ColisageForm
+          blId={blId}
+          bl={bl}
+          clientInfo={clientInfo}
+          zonesDirectes={zonesDirectes}
+          responsablesList={responsablesList}
+          modifiable={modifiable}
+          hasColis={hasColis}
+        />
+      )}
 
       {etiquettes.length > 0 && (
         <EtiquettesSection etiquettes={etiquettes} blReference={bl.reference} />
