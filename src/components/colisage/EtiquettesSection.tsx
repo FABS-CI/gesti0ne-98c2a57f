@@ -72,13 +72,11 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                   className="flex-1 min-w-[140px]"
                   onClick={(e_btn) => {
                     e_btn.preventDefault();
-                    const h = getHtml(e.colis_id);
-                    if (h)
-                      printEtiquettes(
-                        h,
-                        `Sticker ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
-                        "a4-portrait-auto",
-                      );
+                    void run(
+                      e.colis_id,
+                      `Sticker ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
+                      "print",
+                    );
                   }}
                 >
                   <Printer className="mr-2 h-4 w-4" /> Imprimer A4
