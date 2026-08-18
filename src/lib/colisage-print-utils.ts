@@ -47,12 +47,11 @@ export function getEtiquettesHtml(etiquettes: EtiquettePayload[]): string {
 export function triggerAutoPrintEtiquettes(colis: ColisRow[], bl: BLDetail) {
   const payload = buildEtiquettesPayload(colis, bl);
   
-  // Petit délai pour laisser le temps au DOM de rendre les composants EtiquetteCarton
-  // (car getEtiquettesHtml utilise document.querySelector)
+  // Délai de 800ms pour garantir que le DOM est totalement stable et que les QR codes sont générés
   setTimeout(() => {
     const html = getEtiquettesHtml(payload);
     if (html) {
       printEtiquettes(html, `Étiquettes ${bl.reference}`, "a4-portrait-auto");
     }
-  }, 500);
+  }, 800);
 }
