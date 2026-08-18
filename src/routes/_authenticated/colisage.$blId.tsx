@@ -61,8 +61,7 @@ function ColisageDetailPage() {
 
   const st = STATUT_BL_LABEL[bl.statut];
   const hasColis = (colisExistants ?? []).length > 0;
-  const modifiable =
-    (isColisageEnAttente(bl.statut) || isSuperAdmin) && bl.statut !== "colisage_termine";
+  const modifiable = isColisageEnAttente(bl.statut) || isSuperAdmin;
   const annulable = isColisageEnAttente(bl.statut) || isSuperAdmin;
   const suppressible = isColisageEnAttente(bl.statut) || bl.statut === "annule" || isSuperAdmin;
   const locked = !isColisageEnAttente(bl.statut) && !isSuperAdmin;

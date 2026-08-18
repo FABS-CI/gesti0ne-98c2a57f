@@ -140,7 +140,7 @@ export function ColisageActionButtons({
         <AlertDialog open={openDever} onOpenChange={setOpenDever}>
           <AlertDialogTrigger asChild>
             <Button variant="secondary" size="sm">
-              <Unlock className="mr-2 h-4 w-4" /> Modifier le colisage
+              <Unlock className="mr-2 h-4 w-4" /> Refaire le colisage
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>

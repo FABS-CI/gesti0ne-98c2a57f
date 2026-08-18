@@ -239,7 +239,7 @@ export type ColisRow = {
 export type CartonManuel = {
   numero?: number;
   poids?: number | null;
-  // format supprimé selon instructions historiques
+  
   observations?: string | null;
   lignes: {
     produit_id: string; // clé (produit_id OU ligne_id de la commande)
