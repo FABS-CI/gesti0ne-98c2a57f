@@ -15,7 +15,10 @@ export interface EtiquettePayload {
   produits: Array<{
     nom: string;
     quantite: number;
+    cover_path?: string;
+    designation?: string;
   }>;
+  gare_telephone?: string;
 }
 
 export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
