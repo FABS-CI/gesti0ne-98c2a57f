@@ -24,7 +24,7 @@ export type EtiquettePayload = {
   ville_destination?: string | null;
   gare_responsable?: string | null;
   gare_telephone?: string | null;
-  format_carton?: string | null;
+  // format_carton supprimé selon instructions historiques
   produits: { designation: string | null; quantite: number; cover_path?: string | null }[];
 };
 
