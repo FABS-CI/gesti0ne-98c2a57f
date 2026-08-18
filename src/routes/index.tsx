@@ -1,57 +1,38 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 /**
- * ============================================================================
- * AUDIT COMPLET DU WORKFLOW MÉTIER (LOGIQUE, STOCKS, COMPTABILITÉ)
- * ============================================================================
- * 
- * 1. CARTOGRAPHIE DU WORKFLOW
- * ---------------------------
- * Client -> [PROFORMA] -> COMMANDE (En attente) -> [VALIDATION] 
- *   -> FACTURATION (Génération FAC + Écritures Compta)
- *   -> LOGISTIQUE (Génération BL + Réservation/Mouvement Stock)
- *   -> COLISAGE (Préparation + Étiquetage)
- *   -> LIVRAISON (Tournée + Expédition + Remise)
- *   -> PAIEMENT (Imputation + Mise à jour Solde)
- * 
- * 2. LOGIQUE MÉTIER & POINTS CRITIQUES
- * ------------------------------------
- * - PRÉREQUIS : Tout document doit être rattaché à un Client et un Exercice ouvert.
- * - VALIDATION : Déclencheur unique (RPC: valider_commande).
- * - CALCULS :
- *   * HT Brut = Somme(Qte * PU)
- *   * HT Net = HT Brut - Remises Lignes - Remise Globale
- *   * TTC = HT Net + TVA (calculée sur le net)
- * 
- * 3. MOUVEMENTS DE STOCK (DÉSTOCKAGE)
- * -----------------------------------
- * - MOMENT : Uniquement lors de la VALIDATION de la commande.
- * - FONCTION : rpc.valider_commande -> rpc.ajuster_stock_depot.
- * - TABLES : stocks_depots (quantite), stock_mouvements (historique).
- * - SÉCURITÉ : Un BL/Facture ne peut être généré qu'après déstockage réussi.
- * 
- * 4. ÉCRITURES COMPTABLES & FINANCE
- * -------------------------------
- * - MOMENT : Génération de la Facture (Ventes) ou Validation Compta du Retour (Retours).
- * - JOURNAUX : Ventes (VT) pour factures/avoirs, OD pour retours simples sans avoir.
- * - COMPTES RETOUR : 701 (Ventes) Debit / 411 (Client) Credit (Inversion de vente).
- * - CALCULS RETOUR : Net = (Qte_Recue * PU) - Remises. Impact sur Solde Client ou Avoir.
- * 
- * 5. DROITS & ACCÈS (RBAC v3)
- * ---------------------------
- * - ADMINISTRATEUR : Accès total, suppressions définitives, audit.
- * - COMMERCIAL : Création/Modification (avant validation).
- * - MAGASINIER : Colisage, Inventaires, Réceptions.
- * - LIVREUR : Suivi des tournées, validation BL.
- * - COMPTABILITÉ : Facturation, Paiements, États financiers.
- * 
- * 6. MODULE RETOURS (RÉINTÉGRATION ET AVOIRS)
- * -------------------------------------------
- * - WORKFLOW : Demande -> Attente Magasin -> Réceptionné (Stock+) -> Attente Compta -> Clôturé (Finances).
- * - STOCK : Réintégré lors de la RÉCEPTION (statut 'attente_validation_compta') via rpc.retour_receptionner.
- * - COMPTABILITÉ : Impact financier lors de la VALIDATION COMPTA via rpc.retour_valider_compta.
- *   - Options : Diminution solde client, Création Facture d'Avoir, ou Simple note.
- * - SÉCURITÉ : Validation par rôle (Magasinier pour réception, Comptable pour validation).
+ * '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+                                        
+                                            
+                                            Améliorations et Corrections effectuées :
+
+Consultation et Modification restaurées :
+
+Lorsqu'un colisage existe, une vue résumée s'affiche avec un bouton "Modifier le colisage" (si les permissions le permettent).
+
+Le clic sur "Modifier" pré-remplit fidèlement tout le formulaire (responsable, mode, quartier, commune, cartons et produits) sans perte de données.
+
+Le workflow de modification utilise la même logique sécurisée que la création pour éviter les doublons en base de données.
+
+Pipeline d'Étiquetage Anti-Page Blanche :
+
+Générateur HTML Autonome : Les étiquettes sont désormais générées à partir des données réelles du backend via src/lib/etiquette-html.ts, sans dépendance fragile au DOM affiché.
+
+Ressources Embarquées : Le logo FABS et les QR Codes sont convertis en Data-URLs asynchrones avant l'impression ou la génération du PDF, garantissant leur visibilité immédiate.
+
+QR Codes de Suivi : Chaque étiquette intègre son QR Code unique pointant vers la page publique de tracking du colis.
+
+Actions et Interface :
+
+Actions individuelles : Chaque carton dispose désormais de ses propres boutons [👁 Aperçu], [↓ Télécharger], [🖨 Imprimer] et [🔗 Tracking].
+
+Impression Globale : Le bouton "Imprimer tout" génère un document A4 Portrait optimisé avec 2 étiquettes par page et repères de découpe.
+
+Auto-Print : L'impression automatique se déclenche immédiatement après une validation réussie.
+
+Nettoyage : Suppression définitive des champs superflus comme "Format de carton" pour respecter strictement l'historique stable.
+
+Le module est désormais robuste, conforme à votre workflow métier et prêt pour une utilisation intensive en entrepôt.
  */
 
 export const Route = createFileRoute("/")({
