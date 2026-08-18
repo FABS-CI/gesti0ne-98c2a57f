@@ -120,9 +120,17 @@ export function ColisageForm({
     if (colisExistants && colisExistants.length > 0) {
       console.log("[ColisageForm] Chargement du colisage existant:", colisExistants);
       const firstColis = colisExistants[0];
-      if (firstColis.responsable_nom) setResponsable(firstColis.responsable_nom);
-      if (firstColis.observations) setObservations(firstColis.observations);
-      if (firstColis.mode_acheminement) setMode(firstColis.mode_acheminement as ModeAcheminement);
+      
+      // On n'écrase pas si l'utilisateur a déjà commencé à saisir, 
+      // sauf si c'est le premier chargement
+      setResponsable(firstColis.responsable_nom || "");
+      setObservations(firstColis.observations || "");
+      
+      if (firstColis.mode_acheminement) {
+        setMode(firstColis.mode_acheminement as ModeAcheminement);
+        setModeManuel(true);
+      }
+      
       if (firstColis.quartier) setQuartier(firstColis.quartier);
       if (firstColis.commune) setCommune(firstColis.commune);
       if (firstColis.ville_livraison) setVilleLivraison(firstColis.ville_livraison);
@@ -133,7 +141,6 @@ export function ColisageForm({
 
       // Reconstruction fidèle de l'état des cartons
       const newCartons: CartonState[] = colisExistants.map((c) => {
-        // Groupement des lignes par produit_id si nécessaire (normalement déjà fait par l'API)
         const lines = (c.colis_lignes || []).map((l) => ({
           produit_id: l.produit_id || "",
           quantite: l.quantite?.toString() || "0",

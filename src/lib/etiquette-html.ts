@@ -72,7 +72,7 @@ function labelHtml(
     })
     .join("");
 
-  return `<div class="etiquette-carton" data-colis-id="${esc(e.colis_id ?? "")}" style="width:100%;min-height:148.5mm;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;padding:8mm;border:1px solid #000;background:#fff;color:#000;display:flex;flex-direction:column;position:relative">
+  return `<div class="etiquette-carton" data-colis-id="${esc(e.colis_id ?? "")}" style="width:100%;min-height:148.5mm;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;padding:8mm;border:1px solid #000;background:#fff;color:#000;display:flex;flex-direction:column;position:relative;box-sizing:border-box">
     <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #000;padding-bottom:4mm;margin-bottom:6mm">
       <img src="${logo}" alt="FABS-CI" style="height:18mm;width:auto" />
       <div style="text-align:right">
@@ -107,7 +107,7 @@ function labelHtml(
     </div>
 
     <div style="margin-top:auto;padding-top:5mm;text-align:center">
-      ${qr ? `<img src="${qr}" alt="QR" style="width:35mm;height:35mm;margin:0 auto;display:block" />` : ""}
+      ${qr ? `<img src="${qr}" alt="QR" style="width:35mm;height:35mm;margin:0 auto;display:block" />` : `<div style="width:35mm;height:35mm;border:1px dashed #ccc;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:8pt;color:#999">QR CODE</div>`}
     </div>
   </div>`;
 }
