@@ -54,7 +54,9 @@ function labelHtml(
 ): string {
   const isExpedition = e.mode_acheminement === "expedition";
   const telephone = isExpedition ? e.gare_telephone || e.telephone : e.telephone;
-  const modeLabel = isExpedition ? "EXPÉDITION" : "LIVRAISON DIRECTE";
+  const modeLabel = e.mode_acheminement === "direct" ? "LIVRAISON DIRECTE" : 
+                    e.mode_acheminement === "gare" ? "GARE / TRANSPORTEUR" : 
+                    (e.mode_acheminement || "—").toUpperCase();
 
   const produits = (e.produits ?? [])
     .map((p) => {
@@ -65,7 +67,7 @@ function labelHtml(
       return `<div style="display:flex;gap:6mm;align-items:flex-start">
         ${img}
         <div style="flex:1">
-          <div style="font-size:12pt;font-weight:700">${esc(p.designation ?? "—")}</div>
+          <div style="font-size:12pt;font-weight:700">${esc(p.nom || p.designation || "—")}</div>
           <div style="font-size:16pt;font-weight:900;margin-top:1mm">QUANTITÉ : ${esc(p.quantite)} EXEMPLAIRES</div>
         </div>
       </div>`;
