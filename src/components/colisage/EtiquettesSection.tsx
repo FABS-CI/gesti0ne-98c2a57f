@@ -97,14 +97,11 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                   className="flex-1 min-w-[140px]"
                   onClick={(e_btn) => {
                     e_btn.preventDefault();
-                    const h = getHtml(e.colis_id);
-                    if (h)
-                      printEtiquettes(
-                        h,
-                        `Aperçu ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
-                        "a4-portrait-auto",
-                        "preview",
-                      );
+                    void run(
+                      e.colis_id,
+                      `Aperçu ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
+                      "preview",
+                    );
                   }}
                 >
                   <Eye className="mr-2 h-4 w-4" /> Aperçu
