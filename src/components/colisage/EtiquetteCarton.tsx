@@ -208,11 +208,3 @@ function InfoRow({ label, value, strong }: { label: string; value: string; stron
   );
 }
 
-function InfoRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "35mm 1fr", gap: "2mm", borderBottom: "1px solid #ddd", padding: "1.5mm 0" }}>
-      <div style={{ color: "#555" }}>{label}</div>
-      <div style={{ fontWeight: strong ? 800 : 600 }}>{value}</div>
-    </div>
-  );
-}
