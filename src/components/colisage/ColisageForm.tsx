@@ -66,6 +66,7 @@ export function ColisageForm({
 }: ColisageFormProps) {
   const qc = useQueryClient();
 
+  const [showForm, setShowForm] = useState(false);
   const [responsable, setResponsable] = useState("");
   const responsableTriggerRef = useRef<HTMLButtonElement>(null);
   const [observations, setObservations] = useState("");
@@ -120,9 +121,17 @@ export function ColisageForm({
     if (colisExistants && colisExistants.length > 0) {
       console.log("[ColisageForm] Chargement du colisage existant:", colisExistants);
       const firstColis = colisExistants[0];
-      if (firstColis.responsable_nom) setResponsable(firstColis.responsable_nom);
-      if (firstColis.observations) setObservations(firstColis.observations);
-      if (firstColis.mode_acheminement) setMode(firstColis.mode_acheminement as ModeAcheminement);
+      
+      // On n'écrase pas si l'utilisateur a déjà commencé à saisir, 
+      // sauf si c'est le premier chargement
+      setResponsable(firstColis.responsable_nom || "");
+      setObservations(firstColis.observations || "");
+      
+      if (firstColis.mode_acheminement) {
+        setMode(firstColis.mode_acheminement as ModeAcheminement);
+        setModeManuel(true);
+      }
+      
       if (firstColis.quartier) setQuartier(firstColis.quartier);
       if (firstColis.commune) setCommune(firstColis.commune);
       if (firstColis.ville_livraison) setVilleLivraison(firstColis.ville_livraison);
@@ -133,7 +142,6 @@ export function ColisageForm({
 
       // Reconstruction fidèle de l'état des cartons
       const newCartons: CartonState[] = colisExistants.map((c) => {
-        // Groupement des lignes par produit_id si nécessaire (normalement déjà fait par l'API)
         const lines = (c.colis_lignes || []).map((l) => ({
           produit_id: l.produit_id || "",
           quantite: l.quantite?.toString() || "0",
@@ -336,6 +344,30 @@ export function ColisageForm({
     });
     mutation.mutate({ payload, cartons: cartonsPayload });
   };
+
+  if (hasColis && !showForm) {
+    return (
+      <Card className="border-primary/20 bg-primary/5 print:hidden">
+        <CardContent className="flex flex-col items-center justify-center py-10 gap-4">
+          <div className="rounded-full bg-primary/10 p-4">
+            <PackageCheck className="h-10 w-10 text-primary" />
+          </div>
+          <div className="text-center">
+            <h3 className="text-lg font-bold">Colisage enregistré</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Ce bon de livraison a déjà été colisé ({colisExistants?.length} cartons). 
+              Vous pouvez consulter les étiquettes ci-dessous ou modifier le colisage si nécessaire.
+            </p>
+          </div>
+          {modifiable && (
+            <Button onClick={() => setShowForm(true)} variant="outline" className="mt-2">
+              Modifier le colisage
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="print:hidden">

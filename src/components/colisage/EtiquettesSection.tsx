@@ -1,4 +1,4 @@
-import { Eye, ExternalLink, Printer } from "lucide-react";
+import { Eye, ExternalLink, Printer, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EtiquetteCarton, type EtiquettePayload } from "@/components/colisage/EtiquetteCarton";
@@ -11,17 +11,29 @@ interface EtiquettesSectionProps {
 }
 
 export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSectionProps) {
-  const run = async (
+  const runAction = async (
     coliId: string | null | undefined,
     title: string,
-    mode: "print" | "preview",
+    mode: "print" | "preview" | "download",
   ) => {
     const selected = coliId ? etiquettes.filter((e) => e.colis_id === coliId) : etiquettes;
     if (selected.length === 0) return;
-    const html = await buildEtiquettesPrintHtml(selected);
-    if (html) printEtiquettes(html, title, "a4-portrait-auto", mode);
-  };
 
+    console.log(`[EtiquettesSection] Action ${mode} pour ${selected.length} étiquette(s)`);
+    const html = await buildEtiquettesPrintHtml(selected);
+    
+    if (!html || html.trim() === "") {
+      console.error("[EtiquettesSection] Le HTML généré est vide");
+      return;
+    }
+
+    if (mode === "download") {
+      // Pour le téléchargement, on utilise le mode print (génère un PDF)
+      printEtiquettes(html, title, "a4-portrait-auto", "print");
+    } else {
+      printEtiquettes(html, title, "a4-portrait-auto", mode);
+    }
+  };
 
   return (
     <Card className="shadow-lg border-primary/20">
@@ -39,7 +51,7 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
             className="bg-primary hover:bg-primary/90"
             onClick={(ev) => {
               ev.preventDefault();
-              void run(null, `Étiquettes ${blReference}`, "print");
+              void runAction(null, `Étiquettes ${blReference}`, "print");
             }}
           >
             <Printer className="mr-2 h-4 w-4" /> Imprimer tout ({etiquettes.length})
@@ -49,7 +61,7 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
             size="sm"
             onClick={(ev) => {
               ev.preventDefault();
-              void run(null, `Aperçu étiquettes ${blReference}`, "preview");
+              void runAction(null, `Aperçu étiquettes ${blReference}`, "preview");
             }}
           >
             <Eye className="mr-2 h-4 w-4" /> Aperçu global
@@ -65,39 +77,31 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                   <EtiquetteCarton data={e} />
                 </div>
               </div>
+              
               <div className="flex flex-wrap justify-center gap-3 print:hidden w-full pt-2 border-t border-muted-foreground/10">
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="flex-1 min-w-[140px]"
-                  onClick={(e_btn) => {
-                    e_btn.preventDefault();
-                    void run(
+                  className="flex-1 min-w-[120px]"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    void runAction(
                       e.colis_id,
                       `Sticker ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
                       "print",
                     );
                   }}
                 >
-                  <Printer className="mr-2 h-4 w-4" /> Imprimer A4
+                  <Printer className="mr-2 h-4 w-4" /> Imprimer
                 </Button>
-                {e.colis_id && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex-1 min-w-[140px]"
-                    onClick={(e_btn) => { e_btn.preventDefault(); window.open(`/carton/${e.colis_id}`, "_blank"); }}
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" /> Page Tracking
-                  </Button>
-                )}
+
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 min-w-[140px]"
-                  onClick={(e_btn) => {
-                    e_btn.preventDefault();
-                    void run(
+                  className="flex-1 min-w-[120px]"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    void runAction(
                       e.colis_id,
                       `Aperçu ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
                       "preview",
@@ -106,6 +110,36 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
                 >
                   <Eye className="mr-2 h-4 w-4" /> Aperçu
                 </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 min-w-[120px]"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    void runAction(
+                      e.colis_id,
+                      `Export ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
+                      "download",
+                    );
+                  }}
+                >
+                  <Download className="mr-2 h-4 w-4" /> Télécharger
+                </Button>
+
+                {e.colis_id && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex-1 min-w-[120px]"
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                      window.open(`/carton/${e.colis_id}`, "_blank");
+                    }}
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" /> Tracking
+                  </Button>
+                )}
               </div>
             </div>
           ))}
