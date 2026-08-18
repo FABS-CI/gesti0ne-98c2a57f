@@ -1,210 +1,128 @@
-import { useEffect, useState } from "react";
-import fabsLogoUrl from "@/assets/fabs-logo.png";
-import { supabase } from "@/integrations/supabase/client";
+import { QRCodeSVG } from "qrcode.react";
+import { useMemo } from "react";
 
-export type EtiquettePayload = {
-  commande: string | null;
-  facture: string | null;
+export interface EtiquettePayload {
+  colis_id?: string;
   bl: string;
-  colis_id?: string | null;
-  client: string | null;
-  etablissement: string | null;
-  representant: string | null;
-  telephone: string | null;
-  ville: string | null;
-  adresse: string | null;
-  nb_cartons: number;
+  commande?: string;
+  client?: string;
+  ville?: string;
+  representant?: string;
+  telephone?: string;
   numero_carton: number;
-  responsable: string | null;
-  date: string;
-  mode_acheminement: "livraison" | "expedition";
-  livreur_nom?: string | null;
-  livreur_telephone?: string | null;
-  gare_depart?: string | null;
-  ville_destination?: string | null;
-  gare_responsable?: string | null;
-  gare_telephone?: string | null;
-  produits: { designation: string | null; quantite: number; cover_path?: string | null }[];
-};
+  nb_cartons: number;
+  mode_acheminement?: string;
+  produits: Array<{
+    nom: string;
+    quantite: number;
+  }>;
+}
 
 export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
-  const [qr, setQr] = useState<string>("");
-  const [logoDataUrl, setLogoDataUrl] = useState<string>(fabsLogoUrl);
-  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+  // Memoize QR URL
+  const qrUrl = useMemo(() => {
+    if (!data.colis_id) return null;
+    return `${window.location.origin}/carton/${data.colis_id}`;
+  }, [data.colis_id]);
 
-  useEffect(() => {
-    console.log("[EtiquetteCarton] Rendu de l'étiquette:", data.colis_id, data.numero_carton);
-  }, [data.colis_id, data.numero_carton]);
-
-  useEffect(() => {
-    fetch(fabsLogoUrl)
-      .then((r) => r.blob())
-      .then(
-        (b) =>
-          new Promise<string>((resolve, reject) => {
-            const fr = new FileReader();
-            fr.onerror = () => reject(fr.error);
-            fr.onload = () => resolve(String(fr.result));
-            fr.readAsDataURL(b);
-          }),
-      )
-      .then(setLogoDataUrl)
-      .catch(() => undefined);
-  }, []);
-
-  useEffect(() => {
-    const envBase = (import.meta.env.VITE_PUBLIC_URL as string | undefined)?.replace(/\/$/, "");
-    const origin =
-      envBase ||
-      (typeof window !== "undefined" ? window.location.origin : "https://gesti-0ne.lovable.app");
-    const url = data.colis_id
-      ? `${origin}/carton/${data.colis_id}`
-      : JSON.stringify({
-          bl: data.bl,
-          commande: data.commande,
-          carton: `${data.numero_carton}/${data.nb_cartons}`,
-        });
-    
-    import("qrcode")
-      .then(({ default: QRCode }) =>
-        QRCode.toDataURL(url, {
-          margin: 1,
-          width: 150,
-          errorCorrectionLevel: "M",
-        }),
-      )
-      .then(setQr)
-      .catch(() => setQr(""));
-  }, [data]);
-
-  useEffect(() => {
-    const loadImages = async () => {
-      const urls: Record<string, string> = {};
-      for (const p of data.produits) {
-        if (p.cover_path && !urls[p.cover_path]) {
-          try {
-            const { data: imgData } = supabase.storage
-              .from("produits")
-              .getPublicUrl(p.cover_path);
-            if (imgData?.publicUrl) {
-              const res = await fetch(imgData.publicUrl);
-              const blob = await res.blob();
-              const dataUrl = await new Promise<string>((resolve) => {
-                const fr = new FileReader();
-                fr.onload = () => resolve(String(fr.result));
-                fr.readAsDataURL(blob);
-              });
-              urls[p.cover_path] = dataUrl;
-            }
-          } catch (e) {
-            console.error("Erreur chargement image produit:", e);
-          }
-        }
-      }
-      setImageUrls(urls);
-    };
-    loadImages();
-  }, [data.produits]);
-
-  const isExpedition = data.mode_acheminement === "expedition";
-  const telephone = isExpedition ? data.gare_telephone || data.telephone : data.telephone;
-  const modeLabel = isExpedition ? "EXPÉDITION" : "LIVRAISON DIRECTE";
+  const modeLabel = data.mode_acheminement === "direct" ? "Livraison Directe" : 
+                    data.mode_acheminement === "gare" ? "Gare / Transporteur" : 
+                    data.mode_acheminement || "—";
 
   return (
-    <div
-      className="etiquette-carton bg-white text-black break-inside-avoid flex flex-col"
-      data-colis-id={data.colis_id ?? ""}
-      style={{
-        width: "100%",
-        minHeight: "148.5mm", // Important pour la visibilité
-        fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-        padding: "8mm",
-        border: "1px solid #000", // Bordure noire plus visible
-        backgroundColor: "white",
-        color: "black",
-        position: "relative",
-        zIndex: 10
-      }}
+    <div 
+      className="etiquette-carton bg-white text-black flex flex-col p-[8mm] border-[2px] border-black h-full shadow-inner relative overflow-hidden"
+      style={{ width: '100%', minHeight: '148.5mm', boxSizing: 'border-box' }}
     >
-      {/* En-tête */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: "2px solid #000",
-          paddingBottom: "4mm",
-          marginBottom: "6mm",
-        }}
-      >
-        <img src={logoDataUrl} alt="FABS-CI" style={{ height: "18mm", width: "auto" }} />
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: "20pt", fontWeight: 900, letterSpacing: "0.1em" }}>ÉTIQUETAGE</div>
-          <div style={{ fontSize: "10pt", color: "#555", marginTop: "1mm" }}>Fiche carton — FABS-CI Éditions</div>
+      {/* Header avec Logo */}
+      <div className="flex items-center justify-between border-b-[3px] border-black pb-4 mb-6">
+        <img 
+          src="/logo.png" 
+          alt="FABS-CI" 
+          className="h-16 w-auto object-contain"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "https://gesti0ne.lovable.app/logo.png";
+          }}
+        />
+        <div className="text-right">
+          <div className="text-[20pt] font-[900] tracking-widest leading-none">ÉTIQUETAGE</div>
+          <div className="text-[10pt] text-gray-600 mt-1 font-bold">Fiche carton — FABS-CI Éditions</div>
         </div>
       </div>
 
-      <div className="text-center" style={{ border: "2.5px solid #000", padding: "5mm", marginBottom: "6mm" }}>
-        <div style={{ fontSize: "14pt", fontWeight: 700, letterSpacing: "0.15em" }}>CARTON</div>
-        <div style={{ fontSize: "40pt", fontWeight: 900, lineHeight: 1 }}>
-          {data.numero_carton} / {data.nb_cartons}
+      {/* Numéro de Carton */}
+      <div className="text-center border-[3px] border-black p-4 mb-6 bg-gray-50/50">
+        <div className="text-[14pt] font-black tracking-[0.2em] mb-1">CARTON</div>
+        <div className="text-[48pt] font-[900] leading-none">
+          {data.numero_carton} <span className="text-gray-400 text-[30pt]">/</span> {data.nb_cartons}
         </div>
       </div>
 
-      {/* Infos principales */}
-      <div style={{ fontSize: "12pt", lineHeight: 1.5 }}>
-        <div style={{ background: "#1B2A57", color: "#fff", padding: "4mm", marginBottom: "5mm", textAlign: "center", fontWeight: 900, fontSize: "16pt" }}>
-          MODE DE LIVRAISON : {modeLabel}
+      {/* Informations Livraison */}
+      <div className="text-[12pt] space-y-4">
+        <div className="bg-[#1B2A57] text-white p-4 text-center font-black text-[16pt] uppercase tracking-wide">
+          MODE : {modeLabel}
         </div>
-        <InfoRow label="N° BL" value={data.bl} />
-        {data.colis_id && <InfoRow label="N° Colisage" value={data.colis_id.slice(0, 8).toUpperCase()} />}
-        <InfoRow label="N° Commande" value={data.commande ?? "—"} />
-        <InfoRow label="Client" value={data.client ?? "—"} strong />
-        <div style={{ padding: "3mm 0", borderBottom: "1px solid #ddd" }}>
-          <div style={{ color: "#555", fontSize: "10pt", marginBottom: "1mm" }}>Responsable Achat / Contact</div>
-          <div style={{ fontWeight: 800, fontSize: "12pt" }}>
-            {data.representant ?? "—"}{telephone ? ` · ${telephone}` : ""}
+        
+        <div className="grid grid-cols-3 gap-2 border-b border-gray-200 pb-2 items-end">
+          <div className="text-gray-500 text-[10pt] uppercase font-bold">N° BL</div>
+          <div className="col-span-2 text-[14pt] font-black">{data.bl}</div>
+        </div>
+
+        {data.colis_id && (
+          <div className="grid grid-cols-3 gap-2 border-b border-gray-200 pb-2 items-end">
+            <div className="text-gray-500 text-[10pt] uppercase font-bold">ID Colis</div>
+            <div className="col-span-2 font-mono text-[11pt] font-bold">{data.colis_id.slice(0, 8).toUpperCase()}</div>
           </div>
-          <div style={{ marginTop: "1mm", fontSize: "12pt", fontWeight: 700, textTransform: "uppercase" }}>
-            {data.ville || "—"}
+        )}
+
+        <div className="grid grid-cols-3 gap-2 border-b border-gray-200 pb-2 items-end">
+          <div className="text-gray-500 text-[10pt] uppercase font-bold">Client</div>
+          <div className="col-span-2 text-[13pt] font-black uppercase leading-tight">{data.client || "—"}</div>
+        </div>
+
+        <div className="border-b border-gray-200 pb-2">
+          <div className="text-gray-500 text-[10pt] uppercase font-bold mb-1">Responsable / Contact</div>
+          <div className="flex justify-between items-baseline">
+            <span className="text-[13pt] font-black uppercase">{data.representant || "—"}</span>
+            <span className="text-[12pt] font-bold text-[#1B2A57]">{data.telephone || ""}</span>
           </div>
+          <div className="mt-1 text-[13pt] font-black text-primary uppercase">{data.ville || "—"}</div>
         </div>
       </div>
 
-      {/* Section Produits */}
-      <div style={{ marginTop: "4mm", flex: 1 }}>
-        <div style={{ fontSize: "12pt", fontWeight: 700, borderBottom: "1.5px solid #000", paddingBottom: "1.5mm", marginBottom: "3mm" }}>
-          PRODUITS & QUANTITÉS
+      {/* Liste des produits */}
+      <div className="mt-6 flex-1 min-h-0 overflow-hidden">
+        <div className="text-[11pt] font-black border-b-2 border-black pb-1 mb-3 uppercase tracking-wider">
+          Contenu du carton
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "4mm" }}>
+        <div className="space-y-2">
           {data.produits.map((p, i) => (
-            <div key={i} style={{ display: "flex", gap: "6mm", alignItems: "start" }}>
-              {p.cover_path && imageUrls[p.cover_path] && (
-                <img src={imageUrls[p.cover_path]} alt="" style={{ width: "22mm", height: "28mm", objectFit: "contain", border: "1px solid #ddd" }} />
-              )}
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "12pt", fontWeight: 700 }}>{p.designation}</div>
-                <div style={{ fontSize: "16pt", fontWeight: 900, marginTop: "1mm" }}>QUANTITÉ : {p.quantite} EXEMPLAIRES</div>
-              </div>
+            <div key={i} className="flex justify-between items-center text-[11pt] border-b border-gray-100 py-1">
+              <span className="font-bold truncate pr-4">{p.nom}</span>
+              <span className="font-black px-3 py-1 bg-gray-100 rounded text-[12pt]">x {p.quantite}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* QR Code */}
-      <div style={{ marginTop: "auto", paddingTop: "5mm", textAlign: "center" }}>
-        {qr && <img src={qr} alt="QR" style={{ width: "35mm", height: "35mm", margin: "0 auto" }} />}
+      {/* QR Code et Footer */}
+      <div className="mt-auto pt-6 flex justify-center items-center">
+        {qrUrl ? (
+          <div className="p-2 border-2 border-gray-100 rounded-xl bg-white shadow-sm">
+            <QRCodeSVG 
+              value={qrUrl} 
+              size={120} 
+              level="H"
+              includeMargin={false}
+            />
+          </div>
+        ) : (
+          <div className="h-[120px] w-[120px] border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center text-gray-300 text-[8pt] font-bold text-center p-4">
+            SCAN TRACKING INDISPONIBLE
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-function InfoRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "35mm 1fr", gap: "2mm", borderBottom: "1px solid #ddd", padding: "1.5mm 0" }}>
-      <div style={{ color: "#555" }}>{label}</div>
-      <div style={{ fontWeight: strong ? 800 : 600 }}>{value}</div>
-    </div>
-  );
-}
-
