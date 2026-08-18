@@ -226,7 +226,7 @@ export type ColisRow = {
   gare_responsable: string | null;
   gare_telephone: string | null;
   observations: string | null;
-  format_carton: string | null;
+  // format_carton supprimé selon instructions historiques
   date_colisage: string | null;
   colis_lignes?: {
     produit_id: string | null;
@@ -240,7 +240,7 @@ export type ColisRow = {
 export type CartonManuel = {
   numero?: number;
   poids?: number | null;
-  format?: string | null;
+  // format supprimé selon instructions historiques
   observations?: string | null;
   lignes: {
     produit_id: string; // clé (produit_id OU ligne_id de la commande)
