@@ -2,8 +2,8 @@ import { Eye, ExternalLink, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EtiquetteCarton, type EtiquettePayload } from "@/components/colisage/EtiquetteCarton";
+import { buildEtiquettesPrintHtml } from "@/lib/etiquette-html";
 import { printEtiquettes } from "@/lib/print-etiquettes";
-import { useEffect } from "react";
 
 interface EtiquettesSectionProps {
   etiquettes: EtiquettePayload[];
@@ -11,64 +11,17 @@ interface EtiquettesSectionProps {
 }
 
 export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSectionProps) {
-  useEffect(() => {
-    console.log("[EtiquettesSection] Monté avec", etiquettes.length, "étiquettes");
-  }, [etiquettes]);
-
-  const getHtml = (coliId?: string | null) => {
-    const selectedEtiquettes = coliId 
-      ? etiquettes.filter(e => e.colis_id === coliId)
-      : etiquettes;
-
-    if (selectedEtiquettes.length === 0) {
-      console.warn("[EtiquettesSection] Aucune étiquette sélectionnée pour impression");
-      return "";
-    }
-
-    console.log("[EtiquettesSection] Génération HTML pour", selectedEtiquettes.length, "étiquettes");
-
-    // Cas 1 : Une seule étiquette -> Page A4 Portrait centrée
-    if (selectedEtiquettes.length === 1) {
-      const e = selectedEtiquettes[0];
-      const element = document.querySelector(`[data-colis-id="${e.colis_id}"]`);
-      if (!element) {
-        console.error("[EtiquettesSection] Élément DOM non trouvé pour colis_id:", e.colis_id);
-      }
-      const itemHtml = element?.outerHTML ?? "";
-      return `
-        <div class="a4-page single-label-page">
-          ${itemHtml}
-        </div>
-      `;
-    }
-
-    // Cas 2 : Plusieurs étiquettes -> 2 par page (A4 Portrait vertical)
-    let finalHtml = "";
-    for (let i = 0; i < selectedEtiquettes.length; i += 2) {
-      const e1 = selectedEtiquettes[i];
-      const e2 = selectedEtiquettes[i + 1];
-      
-      const element1 = document.querySelector(`[data-colis-id="${e1.colis_id}"]`);
-      if (!element1) console.error("[EtiquettesSection] Élément DOM non trouvé pour colis_id:", e1.colis_id);
-      const item1Html = element1?.outerHTML ?? "";
-      
-      let item2Html = "";
-      if (e2) {
-        const element2 = document.querySelector(`[data-colis-id="${e2.colis_id}"]`);
-        if (!element2) console.error("[EtiquettesSection] Élément DOM non trouvé pour colis_id:", e2.colis_id);
-        item2Html = element2?.outerHTML ?? "";
-      }
-
-      finalHtml += `
-        <div class="a4-page double-label-page">
-          <div class="label-half">${item1Html}</div>
-          ${e2 ? `<div class="crop-marks-v"></div><div class="cut-icon"></div>` : ""}
-          <div class="label-half">${item2Html}</div>
-        </div>
-      `;
-    }
-    return finalHtml;
+  const run = async (
+    coliId: string | null | undefined,
+    title: string,
+    mode: "print" | "preview",
+  ) => {
+    const selected = coliId ? etiquettes.filter((e) => e.colis_id === coliId) : etiquettes;
+    if (selected.length === 0) return;
+    const html = await buildEtiquettesPrintHtml(selected);
+    if (html) printEtiquettes(html, title, "a4-portrait-auto", mode);
   };
+
 
   return (
     <Card className="shadow-lg border-primary/20">
