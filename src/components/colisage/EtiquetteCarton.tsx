@@ -24,7 +24,6 @@ export type EtiquettePayload = {
   ville_destination?: string | null;
   gare_responsable?: string | null;
   gare_telephone?: string | null;
-  // format_carton supprimé selon instructions historiques (v2.4.0)
   produits: { designation: string | null; quantite: number; cover_path?: string | null }[];
 };
 
@@ -32,6 +31,10 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
   const [qr, setQr] = useState<string>("");
   const [logoDataUrl, setLogoDataUrl] = useState<string>(fabsLogoUrl);
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    console.log("[EtiquetteCarton] Rendu de l'étiquette:", data.colis_id, data.numero_carton);
+  }, [data.colis_id, data.numero_carton]);
 
   useEffect(() => {
     fetch(fabsLogoUrl)
@@ -61,6 +64,7 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
           commande: data.commande,
           carton: `${data.numero_carton}/${data.nb_cartons}`,
         });
+    
     import("qrcode")
       .then(({ default: QRCode }) =>
         QRCode.toDataURL(url, {
@@ -112,10 +116,14 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
       data-colis-id={data.colis_id ?? ""}
       style={{
         width: "100%",
-        minHeight: "100%",
+        minHeight: "148.5mm", // Important pour la visibilité
         fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
         padding: "8mm",
-        border: "1px solid #eee"
+        border: "1px solid #000", // Bordure noire plus visible
+        backgroundColor: "white",
+        color: "black",
+        position: "relative",
+        zIndex: 10
       }}
     >
       {/* En-tête */}
@@ -164,7 +172,7 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
       </div>
 
       {/* Section Produits */}
-        <div style={{ marginTop: "4mm", flex: 1 }}>
+      <div style={{ marginTop: "4mm", flex: 1 }}>
         <div style={{ fontSize: "12pt", fontWeight: 700, borderBottom: "1.5px solid #000", paddingBottom: "1.5mm", marginBottom: "3mm" }}>
           PRODUITS & QUANTITÉS
         </div>
@@ -185,8 +193,17 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
 
       {/* QR Code */}
       <div style={{ marginTop: "auto", paddingTop: "5mm", textAlign: "center" }}>
-        {qr && <img src={qr} alt="QR" style={{ width: "25mm", height: "25mm", margin: "0 auto" }} />}
+        {qr && <img src={qr} alt="QR" style={{ width: "35mm", height: "35mm", margin: "0 auto" }} />}
       </div>
+    </div>
+  );
+}
+
+function InfoRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "35mm 1fr", gap: "2mm", borderBottom: "1px solid #ddd", padding: "1.5mm 0" }}>
+      <div style={{ color: "#555" }}>{label}</div>
+      <div style={{ fontWeight: strong ? 800 : 600 }}>{value}</div>
     </div>
   );
 }
