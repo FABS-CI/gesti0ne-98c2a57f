@@ -223,12 +223,16 @@ function ColisageDetailPage() {
         hasColis={hasColis}
         colisExistants={colisExistants}
         onSuccess={(createdColis) => {
+          // Déclenchement automatique de l'affichage/impression des étiquettes
+          console.log("[Colisage] Validation réussie, déclenchement auto-print");
           triggerAutoPrintEtiquettes(createdColis, bl);
         }}
       />
 
       {etiquettes.length > 0 && (
-        <EtiquettesSection etiquettes={etiquettes} blReference={bl.reference} />
+        <div id="section-etiquettes-cartons">
+          <EtiquettesSection etiquettes={etiquettes} blReference={bl.reference} />
+        </div>
       )}
     </div>
   );
