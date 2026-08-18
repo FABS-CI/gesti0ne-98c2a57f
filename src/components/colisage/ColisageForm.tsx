@@ -66,6 +66,7 @@ export function ColisageForm({
 }: ColisageFormProps) {
   const qc = useQueryClient();
 
+  const [showForm, setShowForm] = useState(false);
   const [responsable, setResponsable] = useState("");
   const responsableTriggerRef = useRef<HTMLButtonElement>(null);
   const [observations, setObservations] = useState("");
