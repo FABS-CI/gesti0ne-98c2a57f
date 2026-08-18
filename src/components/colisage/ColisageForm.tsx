@@ -341,7 +341,7 @@ export function ColisageForm({
     <Card className="print:hidden">
       <SectionHeader
         icon={PackageCheck}
-        title={hasColis ? "Refaire le colisage" : "Créer le colisage"}
+        title={hasColis ? "Modifier le colisage" : "Créer le colisage"}
         color="#3B82F6"
       />
       <CardContent className="pl-5 sm:pl-6">

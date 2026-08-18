@@ -172,6 +172,7 @@ import { Route as AuthenticatedComptabiliteAuditRouteImport } from './routes/_au
 import { Route as AuthenticatedCommandesNouvelleRouteImport } from './routes/_authenticated/commandes.nouvelle'
 import { Route as AuthenticatedCommandesCommandeIdRouteImport } from './routes/_authenticated/commandes.$commandeId'
 import { Route as AuthenticatedColisageResponsablesRouteImport } from './routes/_authenticated/colisage.responsables'
+import { Route as AuthenticatedColisageHistoricalRouteImport } from './routes/_authenticated/colisage..historical'
 import { Route as AuthenticatedColisageBlIdRouteImport } from './routes/_authenticated/colisage.$blId'
 import { Route as AuthenticatedClientsNouveauRouteImport } from './routes/_authenticated/clients.nouveau'
 import { Route as AuthenticatedClientsDashboardRouteImport } from './routes/_authenticated/clients.dashboard'
@@ -1148,6 +1149,12 @@ const AuthenticatedColisageResponsablesRoute =
     path: '/responsables',
     getParentRoute: () => AuthenticatedColisageRoute,
   } as any)
+const AuthenticatedColisageHistoricalRoute =
+  AuthenticatedColisageHistoricalRouteImport.update({
+    id: '/historical',
+    path: '/historical',
+    getParentRoute: () => AuthenticatedColisageRoute,
+  } as any)
 const AuthenticatedColisageBlIdRoute =
   AuthenticatedColisageBlIdRouteImport.update({
     id: '/$blId',
@@ -1500,6 +1507,7 @@ export interface FileRoutesByFullPath {
   '/clients/dashboard': typeof AuthenticatedClientsDashboardRoute
   '/clients/nouveau': typeof AuthenticatedClientsNouveauRoute
   '/colisage/$blId': typeof AuthenticatedColisageBlIdRoute
+  '/colisage/historical': typeof AuthenticatedColisageHistoricalRoute
   '/colisage/responsables': typeof AuthenticatedColisageResponsablesRoute
   '/commandes/$commandeId': typeof AuthenticatedCommandesCommandeIdRouteWithChildren
   '/commandes/nouvelle': typeof AuthenticatedCommandesNouvelleRoute
@@ -1684,6 +1692,7 @@ export interface FileRoutesByTo {
   '/clients/dashboard': typeof AuthenticatedClientsDashboardRoute
   '/clients/nouveau': typeof AuthenticatedClientsNouveauRoute
   '/colisage/$blId': typeof AuthenticatedColisageBlIdRoute
+  '/colisage/historical': typeof AuthenticatedColisageHistoricalRoute
   '/colisage/responsables': typeof AuthenticatedColisageResponsablesRoute
   '/commandes/nouvelle': typeof AuthenticatedCommandesNouvelleRoute
   '/comptabilite/audit': typeof AuthenticatedComptabiliteAuditRoute
@@ -1890,6 +1899,7 @@ export interface FileRoutesById {
   '/_authenticated/clients/dashboard': typeof AuthenticatedClientsDashboardRoute
   '/_authenticated/clients/nouveau': typeof AuthenticatedClientsNouveauRoute
   '/_authenticated/colisage/$blId': typeof AuthenticatedColisageBlIdRoute
+  '/_authenticated/colisage/historical': typeof AuthenticatedColisageHistoricalRoute
   '/_authenticated/colisage/responsables': typeof AuthenticatedColisageResponsablesRoute
   '/_authenticated/commandes/$commandeId': typeof AuthenticatedCommandesCommandeIdRouteWithChildren
   '/_authenticated/commandes/nouvelle': typeof AuthenticatedCommandesNouvelleRoute
@@ -2097,6 +2107,7 @@ export interface FileRouteTypes {
     | '/clients/dashboard'
     | '/clients/nouveau'
     | '/colisage/$blId'
+    | '/colisage/historical'
     | '/colisage/responsables'
     | '/commandes/$commandeId'
     | '/commandes/nouvelle'
@@ -2281,6 +2292,7 @@ export interface FileRouteTypes {
     | '/clients/dashboard'
     | '/clients/nouveau'
     | '/colisage/$blId'
+    | '/colisage/historical'
     | '/colisage/responsables'
     | '/commandes/nouvelle'
     | '/comptabilite/audit'
@@ -2486,6 +2498,7 @@ export interface FileRouteTypes {
     | '/_authenticated/clients/dashboard'
     | '/_authenticated/clients/nouveau'
     | '/_authenticated/colisage/$blId'
+    | '/_authenticated/colisage/historical'
     | '/_authenticated/colisage/responsables'
     | '/_authenticated/commandes/$commandeId'
     | '/_authenticated/commandes/nouvelle'
@@ -3744,6 +3757,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedColisageResponsablesRouteImport
       parentRoute: typeof AuthenticatedColisageRoute
     }
+    '/_authenticated/colisage/historical': {
+      id: '/_authenticated/colisage/historical'
+      path: '/historical'
+      fullPath: '/colisage/historical'
+      preLoaderRoute: typeof AuthenticatedColisageHistoricalRouteImport
+      parentRoute: typeof AuthenticatedColisageRoute
+    }
     '/_authenticated/colisage/$blId': {
       id: '/_authenticated/colisage/$blId'
       path: '/$blId'
@@ -4087,12 +4107,14 @@ const AuthenticatedClientsRouteWithChildren =
 
 interface AuthenticatedColisageRouteChildren {
   AuthenticatedColisageBlIdRoute: typeof AuthenticatedColisageBlIdRoute
+  AuthenticatedColisageHistoricalRoute: typeof AuthenticatedColisageHistoricalRoute
   AuthenticatedColisageResponsablesRoute: typeof AuthenticatedColisageResponsablesRoute
   AuthenticatedColisageIndexRoute: typeof AuthenticatedColisageIndexRoute
 }
 
 const AuthenticatedColisageRouteChildren: AuthenticatedColisageRouteChildren = {
   AuthenticatedColisageBlIdRoute: AuthenticatedColisageBlIdRoute,
+  AuthenticatedColisageHistoricalRoute: AuthenticatedColisageHistoricalRoute,
   AuthenticatedColisageResponsablesRoute:
     AuthenticatedColisageResponsablesRoute,
   AuthenticatedColisageIndexRoute: AuthenticatedColisageIndexRoute,
