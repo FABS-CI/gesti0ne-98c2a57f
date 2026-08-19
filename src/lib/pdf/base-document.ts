@@ -340,7 +340,10 @@ export class BaseDocument {
     const { shouldShowQr } = await import("./docTypeConfig");
     const prefix = this.data.reference.split('-')[0];
     
-    if (shouldShowQr(prefix)) {
+    // Règle métier : QR Code uniquement pour les FACTURES
+    // On vérifie à la fois le type explicite ET le préfixe de référence
+    const isFactureType = this.data.type === "Facture";
+    if (isFactureType && shouldShowQr(prefix)) {
       const qrX = MARGINS.x + boxW + 15;
       this.page.drawRectangle({
         x: qrX,

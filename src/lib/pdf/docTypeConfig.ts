@@ -17,14 +17,14 @@ const QR_BY_TYPE: Record<string, boolean> = {
   PF: false,  // Alias Proforma
   CMD: false, // Bon de commande
   BC: false,  // Alias Bon de commande
-  BL: true,  // Bon de livraison
+  BL: false, // Bon de livraison
   RET: false, // Bon de retour
   ACH: false, // Achats (Bon de Réception)
   BR: false,  // Alias Bon de Réception
   AVO: false, // Avoir
   AV: false,  // Alias Avoir
-  RP: true,   // Reçu de paiement (Activé pour traçabilité des encaissements)
-  PAI: true,  // Alias Paiement (Activé pour traçabilité)
+  RP: false,  // Reçu de paiement
+  PAI: false, // Alias Paiement
   BS: false,  // Bon spécimens
   SP: false,  // Alias Spécimens
   BP: false,  // Bulletin de paie (interne)
