@@ -432,25 +432,47 @@ export function UsersAdmin() {
                             )}
                           </div>
                           
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-muted-foreground px-1">
-                              <span>MFA : {u.mfa_required ? "Activé" : "Désactivé"}</span>
+                          <div className="flex flex-col gap-1.5 mt-1">
+                            <div className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground px-0.5">
+                              {u.mfa_required ? (
+                                <>
+                                  <ShieldCheck className="h-3 w-3 text-green-600" />
+                                  <span>MFA — Statut : Activé</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ShieldOff className="h-3 w-3 text-slate-400" />
+                                  <span>MFA — Statut : Désactivé</span>
+                                </>
+                              )}
                             </div>
-                            <Button 
-                              variant={u.mfa_required ? "outline" : "default"} 
-                              size="sm" 
-                              className="h-7 w-full text-[10px] font-bold"
-                              disabled={mfaToggleMutation.isPending}
-                              onClick={() => mfaToggleMutation.mutate({ userId: u.id, required: !u.mfa_required })}
-                            >
-                              {u.mfa_required ? "Désactiver" : "Activer"}
-                            </Button>
+                            
+                            <div className="flex items-center gap-1">
+                              <Button 
+                                variant={u.mfa_required ? "default" : "outline"}
+                                size="sm" 
+                                className="h-7 flex-1 text-[10px] font-bold"
+                                disabled={mfaToggleMutation.isPending}
+                                onClick={() => mfaToggleMutation.mutate({ userId: u.id, required: true })}
+                              >
+                                Activer
+                              </Button>
+                              <Button 
+                                variant={!u.mfa_required ? "default" : "outline"}
+                                size="sm" 
+                                className="h-7 flex-1 text-[10px] font-bold"
+                                disabled={mfaToggleMutation.isPending}
+                                onClick={() => mfaToggleMutation.mutate({ userId: u.id, required: false })}
+                              >
+                                Désactiver
+                              </Button>
+                            </div>
 
                             {!u.mfa_enrolled_at && (
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                className="h-7 w-full text-[10px] text-orange-600 hover:text-orange-700 hover:bg-orange-100/50"
+                                className="h-6 w-full text-[9px] text-orange-600 hover:text-orange-700 hover:bg-orange-100/50"
                                 onClick={() => setMfaEnrollTarget(u)}
                               >
                                 [Configurer MFA]
