@@ -71,73 +71,73 @@ export function EtiquettesSection({ etiquettes, blReference }: EtiquettesSection
       <CardContent className="pt-6">
         <div className="grid gap-8 grid-cols-1 xl:grid-cols-2 print:grid-cols-1 print:gap-0">
           {etiquettes.map((e, i) => (
-            <div key={i} className="flex flex-col items-center gap-4 p-4 rounded-xl bg-muted/20 border border-muted-foreground/10 hover:border-primary/30 transition-colors">
-              <div className="w-full overflow-x-auto rounded-lg shadow-sm border bg-white p-4">
+            <div key={i} className="flex flex-col items-center gap-6 p-6 rounded-xl bg-muted/20 border-2 border-muted-foreground/10 hover:border-primary/40 transition-all shadow-sm">
+              <div className="w-full overflow-x-auto rounded-lg shadow-md border-2 bg-white p-6">
                 <div className="mx-auto" style={{ width: "148.5mm", minHeight: "148.5mm" }}>
                   <EtiquetteCarton data={e} />
                 </div>
               </div>
               
-              <div className="flex flex-wrap justify-center gap-3 print:hidden w-full pt-2 border-t border-muted-foreground/10">
+              <div className="flex flex-wrap items-center justify-center gap-4 w-full pt-4 border-t-2 border-muted-foreground/10">
                 <Button
-                  variant="secondary"
-                  size="sm"
-                  className="flex-1 min-w-[120px]"
+                  variant="default"
+                  size="default"
+                  className="flex-1 min-w-[140px] bg-primary hover:bg-primary/90 shadow-sm"
                   onClick={(ev) => {
                     ev.preventDefault();
                     void runAction(
                       e.colis_id,
-                      `Sticker ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
+                      `Impression Sticker ${blReference} - Carton ${e.numero_carton}/${e.nb_cartons}`,
                       "print",
                     );
                   }}
                 >
-                  <Printer className="mr-2 h-4 w-4" /> Imprimer
+                  <Printer className="mr-2 h-5 w-5" /> Imprimer
                 </Button>
 
                 <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 min-w-[120px]"
+                  variant="secondary"
+                  size="default"
+                  className="flex-1 min-w-[140px] shadow-sm"
                   onClick={(ev) => {
                     ev.preventDefault();
                     void runAction(
                       e.colis_id,
-                      `Aperçu ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
+                      `Aperçu Sticker ${blReference} - Carton ${e.numero_carton}/${e.nb_cartons}`,
                       "preview",
                     );
                   }}
                 >
-                  <Eye className="mr-2 h-4 w-4" /> Aperçu
+                  <Eye className="mr-2 h-5 w-5" /> Aperçu
                 </Button>
 
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="flex-1 min-w-[120px]"
+                  size="default"
+                  className="flex-1 min-w-[140px] border-2"
                   onClick={(ev) => {
                     ev.preventDefault();
                     void runAction(
                       e.colis_id,
-                      `Export ${blReference} ${e.numero_carton}/${e.nb_cartons}`,
+                      `Téléchargement Sticker ${blReference} - Carton ${e.numero_carton}/${e.nb_cartons}`,
                       "download",
                     );
                   }}
                 >
-                  <Download className="mr-2 h-4 w-4" /> Télécharger
+                  <Download className="mr-2 h-5 w-5" /> Télécharger
                 </Button>
 
                 {e.colis_id && (
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="flex-1 min-w-[120px]"
+                    size="default"
+                    className="flex-1 min-w-[140px] hover:bg-primary/10 hover:text-primary transition-colors border-2 border-transparent hover:border-primary/20"
                     onClick={(ev) => {
                       ev.preventDefault();
                       window.open(`/carton/${e.colis_id}`, "_blank");
                     }}
                   >
-                    <ExternalLink className="mr-2 h-4 w-4" /> Tracking
+                    <ExternalLink className="mr-2 h-5 w-5" /> Tracking
                   </Button>
                 )}
               </div>
