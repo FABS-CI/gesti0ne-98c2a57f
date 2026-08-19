@@ -132,15 +132,19 @@ export async function loadFactureDocLignes(factureId: string): Promise<DocLigne[
 
 /** Lignes enrichies d'un bon de livraison. */
 export async function loadBLDocLignes(blId: string): Promise<DocLigne[]> {
-  const { data, error } = await supabase
-    .from("bons_livraison_lignes")
-    .select("produit_id, designation, quantite, reference_produit")
-    .eq("bl_id", blId);
-  if (error) return [];
-  // Simulation de colonnes prix pour toDocLignes
-  const rows = (data ?? []).map(r => ({ ...r, prix_unitaire: 0, total_ligne: 0 }));
-  const hydrated = await hydrateProduits(rows as unknown as RawLigne[]);
-  return toDocLignes(hydrated);
+  const { data: bl } = await supabase
+    .from("bons_livraison")
+    .select("commande_id")
+    .eq("bl_id", blId)
+    .maybeSingle();
+    
+  if (!bl?.commande_id) {
+    // Si pas de commande direct, peut-être des colis ?
+    // Mais selon le schéma actuel, on se base sur commande_id.
+    return [];
+  }
+
+  return loadCommandeDocLignes(bl.commande_id);
 }
 
 export type DocClientInfo = Pick<

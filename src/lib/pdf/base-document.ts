@@ -320,7 +320,8 @@ export class BaseDocument {
       color: COLORS.grisClair,
       opacity: 0.5,
     });
-    this.page.drawText(isBR ? "FOURNISSEUR" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
+    const isBL = this.data.type === "Bon de Livraison";
+    this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
     this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 12, font: this.fonts.bold, color: COLORS.bleuFabs });
     
     const kv = [

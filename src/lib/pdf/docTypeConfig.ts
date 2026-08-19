@@ -7,8 +7,8 @@
 export type FabsDocCode = "FAC" | "PRO" | "CMD" | "BL" | "RET" | "AVO" | "RP" | "BS" | "BP" | "IN";
 
 /** 
- * Le QR code et l'UUID de vérification sont désormais activés 
- * UNIQUEMENT sur les factures (FAC).
+ * Le QR code et l'UUID de vérification sont activés 
+ * pour les factures (FAC), bons de livraison (BL) et reçus de paiement (RP).
  */
 const QR_BY_TYPE: Record<string, boolean> = {
   FAC: true,  // Facture
@@ -17,7 +17,7 @@ const QR_BY_TYPE: Record<string, boolean> = {
   PF: false,  // Alias Proforma
   CMD: false, // Bon de commande
   BC: false,  // Alias Bon de commande
-  BL: false,  // Bon de livraison
+  BL: true,  // Bon de livraison
   RET: false, // Bon de retour
   ACH: false, // Achats (Bon de Réception)
   BR: false,  // Alias Bon de Réception
