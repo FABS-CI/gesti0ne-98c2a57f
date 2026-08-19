@@ -266,18 +266,51 @@ export async function creerColisageManuel(
 }
 
 export async function listColisForBL(blId: string): Promise<ColisRow[]> {
-  const { data, error } = await supabase
+  const { data: colis, error: colisError } = await supabase
     .from("colis")
     .select(`
       colis_id, reference, numero_carton, nb_cartons, destinataire, responsable_nom, mode_acheminement, 
       livreur_nom, livreur_telephone, vehicule, quartier, commune, ville_livraison, gare_depart, 
       ville_destination, gare_responsable, gare_telephone, observations, date_colisage,
-      colis_lignes(produit_id, designation, reference_produit, quantite, produits:produit_id(cover_path))
+      colis_lignes(produit_id, designation, reference_produit, quantite)
     `)
     .eq("bl_id", blId)
     .order("numero_carton");
-  if (error) throw error;
-  return (data ?? []) as ColisRow[];
+
+  if (colisError) throw colisError;
+  if (!colis) return [];
+
+  // Manual enrichment for produits because FK is missing in schema cache
+  const produitIds = Array.from(
+    new Set(
+      colis
+        .flatMap((c) => c.colis_lignes || [])
+        .map((l) => l.produit_id)
+        .filter(Boolean) as string[],
+    ),
+  );
+
+  let produitsMap: Record<string, { cover_path: string | null }> = {};
+  if (produitIds.length > 0) {
+    const { data: prods } = await supabase
+      .from("produits")
+      .select("produit_id, cover_path")
+      .in("produit_id", produitIds);
+
+    if (prods) {
+      produitsMap = Object.fromEntries(
+        prods.map((p) => [p.produit_id, { cover_path: p.cover_path ?? null }]),
+      );
+    }
+  }
+
+  return colis.map((c) => ({
+    ...c,
+    colis_lignes: (c.colis_lignes || []).map((l) => ({
+      ...l,
+      produits: l.produit_id ? produitsMap[l.produit_id] : null,
+    })),
+  })) as ColisRow[];
 }
 
 export async function annulerColisage(blId: string, motif?: string | null): Promise<void> {
