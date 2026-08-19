@@ -29,7 +29,7 @@ export function useVisibleGroups(): Group[] {
 
   // Diagnostic logs in DEV mode
   if (import.meta.env.DEV) {
-    console.log("[Menu] Groups visible:", visible.length, "/", groups.length, "| isSuperAdmin:", isSuperAdmin);
+    console.log("[Menu] Groups visible:", visible.length, "/", groups.length, "| isSuperAdmin:", isSuperAdmin, "| isLoading:", isLoading, "| permsCount:", permissions.size);
   }
 
   return visible;
