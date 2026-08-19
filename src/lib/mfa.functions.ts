@@ -267,6 +267,38 @@ export const mfaVerifyBackupCode = createServerFn({ method: "POST" })
     throw new Error("Code de secours invalide");
   });
 
+/** Bascule l'exigence MFA pour un utilisateur. */
+export const mfaToggleRequirement = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ targetUserId: z.string().uuid(), required: z.boolean() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    
+    // Check if current user is super_admin
+    const { data: superAdminFlag } = await supabase.rpc("has_role_compat", {
+      _user_id: userId,
+      _role: "super_admin",
+    });
+    if (!superAdminFlag) throw new Error("Permission refusée");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const db = supabaseAdmin;
+
+    const { error } = await db.from("profiles").update({ mfa_required: data.required }).eq("id", data.targetUserId);
+    if (error) throw new Error(error.message);
+
+    // Audit the action
+    await db.from("rbac2_audit").insert({
+      actor_id: userId,
+      action: data.required ? "mfa.enable" : "mfa.disable",
+      target_type: "user",
+      target_id: data.targetUserId,
+      after: { mfa_required: data.required },
+    });
+
+    return { ok: true };
+  });
+
 /** Réinitialise le MFA d'un utilisateur (Admin seulement). */
 export const mfaResetUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -290,8 +322,9 @@ export const mfaResetUser = createServerFn({ method: "POST" })
       db.from("mfa_backup_codes").delete().eq("user_id", data.targetUserId),
       db.from("mfa_otp_attempts").delete().eq("user_id", data.targetUserId),
       db.from("mfa_session_validations").delete().eq("user_id", data.targetUserId),
-      db.from("profiles").update({ mfa_enrolled_at: null }).eq("id", data.targetUserId),
+      db.from("profiles").update({ mfa_enrolled_at: null, mfa_required: false }).eq("id", data.targetUserId),
     ]);
+
 
     // Audit the action
     await db.from("rbac2_audit").insert({

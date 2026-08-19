@@ -29,7 +29,7 @@ import {
   secSetUserStatut,
   secUpdateUser,
 } from "@/lib/security-users.functions";
-import { mfaResetUser } from "@/lib/mfa.functions";
+import { mfaResetUser, mfaToggleRequirement } from "@/lib/mfa.functions";
 import { MfaEnrollView } from "@/components/mfa/MfaEnrollView";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -101,7 +101,9 @@ type UserRow = {
   role_codes: string[];
   depot_ids: string[];
   mfa_enrolled_at: string | null;
+  mfa_required: boolean;
 };
+
 
 
 const NONE = "__none__";
@@ -155,6 +157,8 @@ export function UsersAdmin() {
   const resetPwd = useServerFn(secResetPassword);
 
   const mfaReset = useServerFn(mfaResetUser);
+  const mfaToggle = useServerFn(mfaToggleRequirement);
+
 
   const users = useQuery({ queryKey: ["sec", "users"], queryFn: () => listUsers({ data: {} }) });
   const refs = useQuery({ queryKey: ["sec", "refs"], queryFn: () => listRefs({ data: {} }) });
@@ -238,6 +242,17 @@ export function UsersAdmin() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  const mfaToggleMutation = useMutation({
+    mutationFn: (v: { userId: string; required: boolean }) => 
+      mfaToggle({ data: { targetUserId: v.userId, required: v.required } }),
+    onSuccess: (_, variables) => {
+      toast.success(variables.required ? "MFA activé" : "MFA désactivé");
+      invalidate();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
 
   const services = refs.data?.services ?? [];
   const departements = refs.data?.departements ?? [];
@@ -403,26 +418,49 @@ export function UsersAdmin() {
                         <Badge variant="secondary" className="bg-slate-100 text-slate-500 border-slate-200">
                           ⚪ EXEMPTÉ
                         </Badge>
-                      ) : u.mfa_enrolled_at ? (
-                        <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
-                          🟢 Configuré
-                        </Badge>
                       ) : (
-                        <>
-                          <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
-                            🟠 Non configuré
-                          </Badge>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-7 px-2 text-[10px] text-orange-600 hover:text-orange-700 hover:bg-orange-100/50 mt-1 block"
-                            onClick={() => setMfaEnrollTarget(u)}
-                          >
-                            [Configurer MFA]
-                          </Button>
-                        </>
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-2">
+                            {u.mfa_enrolled_at ? (
+                              <Badge variant="default" className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200 text-[10px] h-5">
+                                Configuré
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 text-[10px] h-5">
+                                Non configuré
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center justify-between text-[11px] font-medium text-muted-foreground px-1">
+                              <span>MFA : {u.mfa_required ? "Activé" : "Désactivé"}</span>
+                            </div>
+                            <Button 
+                              variant={u.mfa_required ? "outline" : "default"} 
+                              size="sm" 
+                              className="h-7 w-full text-[10px] font-bold"
+                              disabled={mfaToggleMutation.isPending}
+                              onClick={() => mfaToggleMutation.mutate({ userId: u.id, required: !u.mfa_required })}
+                            >
+                              {u.mfa_required ? "Désactiver" : "Activer"}
+                            </Button>
+
+                            {!u.mfa_enrolled_at && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-7 w-full text-[10px] text-orange-600 hover:text-orange-700 hover:bg-orange-100/50"
+                                onClick={() => setMfaEnrollTarget(u)}
+                              >
+                                [Configurer MFA]
+                              </Button>
+                            )}
+                          </div>
+                        </div>
                       )}
                     </TableCell>
+
                     <TableCell>
                       <Badge variant={STATUT_META[u.statut].variant}>
                         {STATUT_META[u.statut].label}
