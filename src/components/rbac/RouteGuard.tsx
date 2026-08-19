@@ -16,7 +16,7 @@ import { logPermissionDenied } from "@/lib/rbac-api";
  */
 export function RouteGuard({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { has, hasAny, isLoading, isSuperAdmin } = usePermissions();
+  const { has, hasAny, isLoading, isSuperAdmin, permissions } = usePermissions();
   const navigate = useNavigate();
 
   const required = getRoutePermission(pathname);
