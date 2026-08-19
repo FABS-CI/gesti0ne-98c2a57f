@@ -150,7 +150,8 @@ export function usePermissions() {
   const hasAny = (keys: string[]) => isSuperAdmin || keys.some((k) => permissions.has(k));
   const hasAll = (keys: string[]) => isSuperAdmin || keys.every((k) => permissions.has(k));
 
-  const isLoading = authLoading || (!!userId && rolesLoading) || (!!userId && query.isLoading);
+  const isActuallyLoading = authLoading || (!!userId && rolesLoading) || (!!userId && query.isLoading);
+  const isLoading = isActuallyLoading;
 
   // Diagnostic logs in DEV mode
   useEffect(() => {
