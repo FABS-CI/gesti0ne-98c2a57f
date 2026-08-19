@@ -36,14 +36,19 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
     status()
       .then((r) => {
         if (!alive) return;
+        
+        // La session est valide si :
+        // 1. Le MFA n'est pas requis pour cet utilisateur
+        // 2. OU si le MFA a déjà été validé pour cette session
+        const isValid = !r.required || r.sessionValid;
+
         setState({
           loading: false,
           enrolled: r.enrolled,
-          valid: r.sessionValid || !r.required, // Considéré valide si non requis
+          valid: isValid,
           exempt: !!r.isSuperAdmin,
           required: !!r.required,
         });
-
       })
       .catch(
         () =>
