@@ -90,7 +90,7 @@ function registerRbacRealtime(userId: string, queryClient: QueryClient) {
  */
 export function usePermissions() {
   const { user, isLoading: authLoading } = useAuth();
-  const { isSuperAdmin, isLoading: rolesLoading } = useUserRoles();
+  const { isSuperAdmin, roles, isLoading: rolesLoading } = useUserRoles();
   const qc = useQueryClient();
   const userId = user?.id ?? null;
 
@@ -150,13 +150,22 @@ export function usePermissions() {
   const hasAny = (keys: string[]) => isSuperAdmin || keys.some((k) => permissions.has(k));
   const hasAll = (keys: string[]) => isSuperAdmin || keys.every((k) => permissions.has(k));
 
+  const isLoading = authLoading || (!!userId && rolesLoading) || (!!userId && query.isLoading);
+
+  // Diagnostic logs in DEV mode
+  useEffect(() => {
+    if (import.meta.env.DEV && userId && !isLoading) {
+      console.log("[RBAC] User:", user?.email, "| Roles:", rolesLoading ? "Loading..." : roles, "| Perms count:", permissions.size, "| isSuperAdmin:", isSuperAdmin);
+    }
+  }, [userId, isLoading, user?.email, roles, permissions.size, isSuperAdmin, rolesLoading]);
+
   return {
     permissions,
     has,
     hasAny,
     hasAll,
     isSuperAdmin,
-    isLoading: authLoading || rolesLoading || query.isLoading,
+    isLoading,
     refresh,
   };
 }

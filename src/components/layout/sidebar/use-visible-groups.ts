@@ -16,12 +16,21 @@ import { groups, type Group } from "./nav-data";
 export function useVisibleGroups(): Group[] {
   const { permissions, isSuperAdmin, isLoading } = usePermissions();
 
+  // On ne retourne rien tant que les permissions ne sont pas chargées
+  // pour éviter un flash de menu vide ou une navigation erronée.
   if (isLoading) return [];
+
+  // Super admin : accès total immédiat
   if (isSuperAdmin) return groups;
 
-  // Les groupes marqués `superAdminOnly` (ex. Administration) ne sont
-  // jamais visibles pour un utilisateur non super-admin, quelles que
-  // soient les permissions accordées dans la matrice RBAC.
+  // Filtrage dynamique pour les autres rôles
   const accessible = groups.filter((g) => !g.superAdminOnly);
-  return filterNavGroupsByPermissions(permissions, accessible);
+  const visible = filterNavGroupsByPermissions(permissions, accessible);
+
+  // Diagnostic logs in DEV mode
+  if (import.meta.env.DEV) {
+    console.log("[Menu] Groups visible:", visible.length, "/", groups.length, "| isSuperAdmin:", isSuperAdmin);
+  }
+
+  return visible;
 }
