@@ -44,7 +44,9 @@ function frDate(d: string | null | undefined) {
 function ColisageListPage() {
   const [q, setQ] = useState("");
   const [statut, setStatut] = useState<string>("a_traiter");
+  const [printingBlId, setPrintingBlId] = useState<string | null>(null);
   const exerciceId = useExerciceConsulteId();
+
   const { data, isLoading } = useQuery({
     queryKey: ["colisage-bl-list", exerciceId],
     enabled: !!exerciceId,
@@ -53,7 +55,6 @@ function ColisageListPage() {
 
   const filtered = useMemo(() => {
     const rows = (data ?? []).filter((r) => r.statut !== "colisage_supprime");
-    // Priorité d'affichage : brouillons / à préparer en premier
     const priority: Record<string, number> = {
       brouillon: 0,
       a_preparer: 1,
@@ -81,6 +82,30 @@ function ColisageListPage() {
     );
     return out;
   }, [data, q, statut]);
+
+  const handlePrintEtiquettes = async (blId: string) => {
+    try {
+      setPrintingBlId(blId);
+      const [bl, colis] = await Promise.all([
+        import("@/lib/colisage-api").then((m) => m.getBLDetail(blId)),
+        import("@/lib/colisage-api").then((m) => m.listColisForBL(blId)),
+      ]);
+
+      if (!bl) throw new Error("Bon de livraison introuvable");
+      if (!colis || colis.length === 0) {
+        throw new Error("Aucun colisage trouvé pour ce bon de livraison");
+      }
+
+      const { triggerAutoPrintEtiquettes } = await import("@/lib/colisage-print-utils");
+      await triggerAutoPrintEtiquettes(colis, bl);
+    } catch (error: any) {
+      console.error("[handlePrintEtiquettes]", error);
+      const { toast } = await import("sonner");
+      toast.error(error.message || "Erreur lors de l'impression des étiquettes");
+    } finally {
+      setPrintingBlId(null);
+    }
+  };
 
   const statutLabel =
     statut === "a_traiter"
@@ -172,7 +197,7 @@ function ColisageListPage() {
                   <TableHead className="text-right">Articles</TableHead>
                   <TableHead className="text-right">Qté</TableHead>
                   <TableHead>État</TableHead>
-                  <TableHead></TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -213,11 +238,31 @@ function ColisageListPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Button asChild size="sm">
-                            <Link to="/colisage/$blId" params={{ blId: r.bl_id }}>
-                              Ouvrir
-                            </Link>
-                          </Button>
+                          <div className="flex items-center gap-2">
+                            <Button asChild size="sm" variant="outline">
+                              <Link to="/colisage/$blId" params={{ blId: r.bl_id }}>
+                                Ouvrir
+                              </Link>
+                            </Button>
+
+                            {r.statut === "colisage_termine" && (
+                              <Button
+                                size="sm"
+                                onClick={() => handlePrintEtiquettes(r.bl_id)}
+                                disabled={printingBlId === r.bl_id}
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                              >
+                                {printingBlId === r.bl_id ? (
+                                  <span className="flex items-center gap-1.5">
+                                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                    ...
+                                  </span>
+                                ) : (
+                                  "🖨 Imprimer les étiquettes"
+                                )}
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
