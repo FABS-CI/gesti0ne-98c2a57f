@@ -110,16 +110,17 @@ function Dashboard() {
 
       <MesRaccourcisCard />
 
-      {isLoading ? (
-        <>
-          <SkeletonKpiRow count={8} />
-          <Skeleton className="h-72 w-full rounded-xl" />
-          <div className="grid gap-4 lg:grid-cols-2">
-            <Skeleton className="h-64 w-full rounded-xl" />
-            <Skeleton className="h-64 w-full rounded-xl" />
+      <div className="min-h-[400px]">
+        {isLoading ? (
+          <div className="space-y-6">
+            <SkeletonKpiRow count={8} />
+            <Skeleton className="h-72 w-full rounded-xl" />
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Skeleton className="h-64 w-full rounded-xl" />
+              <Skeleton className="h-64 w-full rounded-xl" />
+            </div>
           </div>
-        </>
-      ) : !hasData ? (
+        ) : !hasData ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center gap-4 py-20 text-center">
             <Inbox className="h-10 w-10 text-muted-foreground" />

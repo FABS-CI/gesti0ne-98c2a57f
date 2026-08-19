@@ -56,11 +56,28 @@ export function RouteGuard({ children }: { children: ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm font-medium text-muted-foreground">Vérification des accès...</p>
+        </div>
       </div>
     );
   }
-  if (!allowed) return null;
+
+  if (!allowed) {
+    if (import.meta.env.DEV) {
+      console.warn("[Guard] Access denied for", pathname, "- Returning null placeholder");
+    }
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-sm font-medium text-destructive">Accès restreint</p>
+          <p className="text-xs text-muted-foreground mt-1">Vous n'avez pas la permission de voir cette page.</p>
+        </div>
+      </div>
+    );
+  }
+
   return <>{children}</>;
 }
