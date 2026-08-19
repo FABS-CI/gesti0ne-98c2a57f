@@ -90,7 +90,16 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
     }
   }
 
-  if (state.loading) return null;
+  if (state.loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm font-medium text-muted-foreground">Sécurisation de la session...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Super admin exempté du MFA conformément aux spécifications.
   if (state.exempt) return <>{children}</>;
@@ -98,7 +107,14 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
   // Not enrolled and on enroll page → let user enroll
   if (!state.enrolled) {
     if (onEnrollPage) return <>{children}</>;
-    return null;
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">Configuration MFA requise...</p>
+        </div>
+      </div>
+    );
   }
 
   // Enrolled but session not validated → block with modal

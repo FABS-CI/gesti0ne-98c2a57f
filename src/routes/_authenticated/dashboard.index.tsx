@@ -110,53 +110,55 @@ function Dashboard() {
 
       <MesRaccourcisCard />
 
-      {isLoading ? (
-        <>
-          <SkeletonKpiRow count={8} />
-          <Skeleton className="h-72 w-full rounded-xl" />
-          <div className="grid gap-4 lg:grid-cols-2">
-            <Skeleton className="h-64 w-full rounded-xl" />
-            <Skeleton className="h-64 w-full rounded-xl" />
+      <div className="min-h-[400px]">
+        {isLoading ? (
+          <div className="space-y-6">
+            <SkeletonKpiRow count={8} />
+            <Skeleton className="h-72 w-full rounded-xl" />
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Skeleton className="h-64 w-full rounded-xl" />
+              <Skeleton className="h-64 w-full rounded-xl" />
+            </div>
           </div>
-        </>
-      ) : !hasData ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center gap-4 py-20 text-center">
-            <Inbox className="h-10 w-10 text-muted-foreground" />
-            <div>
-              <p className="font-semibold">Aucune donnée à afficher</p>
-              <p className="text-sm text-muted-foreground">
-                Aucune activité enregistrée sur les {periode} derniers jours. Créez votre première
-                commande pour voir vos indicateurs.
-              </p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-2">
-              <Button asChild>
-                <Link to="/commandes">Nouvelle commande</Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link to="/clients">Ajouter un client</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          <DashboardKpis data={data} canSeeCA={canSeeCA} />
-          <DashboardChartsSection
-            ref={chartsRef}
-            data={data}
-            canSeeCA={canSeeCA}
-            periode={periode}
-          />
-          <Suspense fallback={<Skeleton className="h-40 w-full rounded-xl" />}>
-            <DashboardModulesNav data={data} />
-          </Suspense>
-          <Suspense fallback={<Skeleton className="h-40 w-full rounded-xl" />}>
-            <DashboardStockAlerts data={data} />
-          </Suspense>
-        </>
-      )}
+        ) : !hasData ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center gap-4 py-20 text-center">
+              <Inbox className="h-10 w-10 text-muted-foreground" />
+              <div>
+                <p className="font-semibold">Aucune donnée à afficher</p>
+                <p className="text-sm text-muted-foreground">
+                  Aucune activité enregistrée sur les {periode} derniers jours. Créez votre première
+                  commande pour voir vos indicateurs.
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button asChild>
+                  <Link to="/commandes">Nouvelle commande</Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link to="/clients">Ajouter un client</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <DashboardKpis data={data} canSeeCA={canSeeCA} />
+            <DashboardChartsSection
+              ref={chartsRef}
+              data={data}
+              canSeeCA={canSeeCA}
+              periode={periode}
+            />
+            <Suspense fallback={<Skeleton className="h-40 w-full rounded-xl" />}>
+              <DashboardModulesNav data={data} />
+            </Suspense>
+            <Suspense fallback={<Skeleton className="h-40 w-full rounded-xl" />}>
+              <DashboardStockAlerts data={data} />
+            </Suspense>
+          </>
+        )}
+      </div>
     </div>
   );
 }

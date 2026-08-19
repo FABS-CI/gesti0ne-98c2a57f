@@ -116,7 +116,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               {blocked ? (
                 <AccessDenied />
               ) : (
-                <div key={pathname} className="animate-fade-in">
+                <div key={pathname} className="animate-fade-in min-h-[500px] w-full bg-background">
                   {children}
                 </div>
               )}
