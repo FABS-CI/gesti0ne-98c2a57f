@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/table";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
-const PERIODES = ["24h", "7j", "30j"] as const;
+export const PERIODES = ["24h", "7j", "30j"] as const;
 type Periode = (typeof PERIODES)[number];
 const PERIODE_HOURS: Record<Periode, number> = { "24h": 24, "7j": 24 * 7, "30j": 24 * 30 };
 
