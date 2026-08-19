@@ -21,7 +21,9 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
     enrolled: boolean;
     valid: boolean;
     exempt: boolean;
-  }>({ loading: true, enrolled: false, valid: false, exempt: false });
+    required: boolean;
+  }>({ loading: true, enrolled: false, valid: false, exempt: false, required: false });
+
   const [code, setCode] = useState("");
   const [useBackup, setUseBackup] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,14 +39,16 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
         setState({
           loading: false,
           enrolled: r.enrolled,
-          valid: r.sessionValid,
+          valid: r.sessionValid || !r.required, // Considéré valide si non requis
           exempt: !!r.isSuperAdmin,
+          required: !!r.required,
         });
+
       })
       .catch(
         () =>
           alive &&
-          setState({ loading: false, enrolled: false, valid: true, exempt: false }),
+          setState({ loading: false, enrolled: false, valid: true, exempt: false, required: false }),
       );
     return () => {
       alive = false;
@@ -56,9 +60,11 @@ export function MfaGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (state.loading) return;
     if (state.exempt) return;
-    if (!state.enrolled && !onEnrollPage) {
+    // Rediriger vers l'enrôlement uniquement si le MFA est requis
+    if (!state.enrolled && !onEnrollPage && state.required) {
       navigate({ to: "/mfa/enroll" });
     }
+
   }, [state, onEnrollPage, navigate]);
 
   async function onSubmit() {
