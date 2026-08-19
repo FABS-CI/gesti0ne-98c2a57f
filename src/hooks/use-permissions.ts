@@ -90,7 +90,7 @@ function registerRbacRealtime(userId: string, queryClient: QueryClient) {
  */
 export function usePermissions() {
   const { user, isLoading: authLoading } = useAuth();
-  const { isSuperAdmin, isLoading: rolesLoading } = useUserRoles();
+  const { isSuperAdmin, roles, isLoading: rolesLoading } = useUserRoles();
   const qc = useQueryClient();
   const userId = user?.id ?? null;
 
