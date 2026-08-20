@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 import { friendlyError } from "@/lib/friendly-error";
-import { mfaStatus } from "@/lib/mfa.functions";
+
 import { useNavigate } from "@tanstack/react-router";
 
 
@@ -39,10 +39,6 @@ function Profil() {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const { data: mfa } = useQuery({
-    queryKey: ["mfa-status"],
-    queryFn: () => statusFn(),
-  });
 
 
   const { data: profile, refetch } = useQuery({
