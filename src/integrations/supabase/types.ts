@@ -3604,84 +3604,6 @@ export type Database = {
         }
         Relationships: []
       }
-      mfa_backup_codes: {
-        Row: {
-          code_hash: string
-          created_at: string
-          id: string
-          used_at: string | null
-          user_id: string
-        }
-        Insert: {
-          code_hash: string
-          created_at?: string
-          id?: string
-          used_at?: string | null
-          user_id: string
-        }
-        Update: {
-          code_hash?: string
-          created_at?: string
-          id?: string
-          used_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
-      mfa_otp_attempts: {
-        Row: {
-          fail_count: number
-          last_fail_at: string | null
-          locked_until: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          fail_count?: number
-          last_fail_at?: string | null
-          locked_until?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          fail_count?: number
-          last_fail_at?: string | null
-          locked_until?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      mfa_session_validations: {
-        Row: {
-          expires_at: string
-          id: string
-          revoked_at: string | null
-          session_token: string
-          user_agent: string | null
-          user_id: string
-          validated_at: string
-        }
-        Insert: {
-          expires_at?: string
-          id?: string
-          revoked_at?: string | null
-          session_token: string
-          user_agent?: string | null
-          user_id: string
-          validated_at?: string
-        }
-        Update: {
-          expires_at?: string
-          id?: string
-          revoked_at?: string | null
-          session_token?: string
-          user_agent?: string | null
-          user_id?: string
-          validated_at?: string
-        }
-        Relationships: []
-      }
       missions: {
         Row: {
           created_at: string
@@ -4304,8 +4226,6 @@ export type Database = {
           locked_at: string | null
           locked_reason: string | null
           matricule: string | null
-          mfa_enrolled_at: string | null
-          mfa_required: boolean
           must_change_password: boolean
           nom: string | null
           nom_complet: string | null
@@ -4332,8 +4252,6 @@ export type Database = {
           locked_at?: string | null
           locked_reason?: string | null
           matricule?: string | null
-          mfa_enrolled_at?: string | null
-          mfa_required?: boolean
           must_change_password?: boolean
           nom?: string | null
           nom_complet?: string | null
@@ -4360,8 +4278,6 @@ export type Database = {
           locked_at?: string | null
           locked_reason?: string | null
           matricule?: string | null
-          mfa_enrolled_at?: string | null
-          mfa_required?: boolean
           must_change_password?: boolean
           nom?: string | null
           nom_complet?: string | null
@@ -6278,33 +6194,6 @@ export type Database = {
           transporteur_id?: string
           type?: string | null
           updated_at?: string
-        }
-        Relationships: []
-      }
-      two_fa_secrets: {
-        Row: {
-          active: boolean
-          codes_recuperation: string | null
-          created_at: string
-          secret_chiffre: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          active?: boolean
-          codes_recuperation?: string | null
-          created_at?: string
-          secret_chiffre: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          active?: boolean
-          codes_recuperation?: string | null
-          created_at?: string
-          secret_chiffre?: string
-          updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
