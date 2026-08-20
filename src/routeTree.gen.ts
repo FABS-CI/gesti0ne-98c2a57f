@@ -146,8 +146,6 @@ import { Route as AuthenticatedPaiementsNouveauRouteImport } from './routes/_aut
 import { Route as AuthenticatedPaiementsPaiementIdRouteImport } from './routes/_authenticated/paiements.$paiementId'
 import { Route as AuthenticatedPaieNouveauRouteImport } from './routes/_authenticated/paie.nouveau'
 import { Route as AuthenticatedPaieBulletinIdRouteImport } from './routes/_authenticated/paie.$bulletinId'
-import { Route as AuthenticatedMfaEnrollRouteImport } from './routes/_authenticated/mfa.enroll'
-import { Route as AuthenticatedMfaBackupCodesRouteImport } from './routes/_authenticated/mfa.backup-codes'
 import { Route as AuthenticatedLivraisonSuiviTourneesRouteImport } from './routes/_authenticated/livraison-suivi.tournees'
 import { Route as AuthenticatedLivraisonSuiviCommandeRefRouteImport } from './routes/_authenticated/livraison-suivi.$commandeRef'
 import { Route as AuthenticatedInventairesNouveauPhysiqueRouteImport } from './routes/_authenticated/inventaires.nouveau-physique'
@@ -994,17 +992,6 @@ const AuthenticatedPaieBulletinIdRoute =
     path: '/$bulletinId',
     getParentRoute: () => AuthenticatedPaieRoute,
   } as any)
-const AuthenticatedMfaEnrollRoute = AuthenticatedMfaEnrollRouteImport.update({
-  id: '/mfa/enroll',
-  path: '/mfa/enroll',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedMfaBackupCodesRoute =
-  AuthenticatedMfaBackupCodesRouteImport.update({
-    id: '/mfa/backup-codes',
-    path: '/mfa/backup-codes',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedLivraisonSuiviTourneesRoute =
   AuthenticatedLivraisonSuiviTourneesRouteImport.update({
     id: '/tournees',
@@ -1532,8 +1519,6 @@ export interface FileRoutesByFullPath {
   '/inventaires/nouveau-physique': typeof AuthenticatedInventairesNouveauPhysiqueRoute
   '/livraison-suivi/$commandeRef': typeof AuthenticatedLivraisonSuiviCommandeRefRouteWithChildren
   '/livraison-suivi/tournees': typeof AuthenticatedLivraisonSuiviTourneesRouteWithChildren
-  '/mfa/backup-codes': typeof AuthenticatedMfaBackupCodesRoute
-  '/mfa/enroll': typeof AuthenticatedMfaEnrollRoute
   '/paie/$bulletinId': typeof AuthenticatedPaieBulletinIdRoute
   '/paie/nouveau': typeof AuthenticatedPaieNouveauRoute
   '/paiements/$paiementId': typeof AuthenticatedPaiementsPaiementIdRoute
@@ -1716,8 +1701,6 @@ export interface FileRoutesByTo {
   '/inventaires/nouveau-physique': typeof AuthenticatedInventairesNouveauPhysiqueRoute
   '/livraison-suivi/$commandeRef': typeof AuthenticatedLivraisonSuiviCommandeRefRouteWithChildren
   '/livraison-suivi/tournees': typeof AuthenticatedLivraisonSuiviTourneesRouteWithChildren
-  '/mfa/backup-codes': typeof AuthenticatedMfaBackupCodesRoute
-  '/mfa/enroll': typeof AuthenticatedMfaEnrollRoute
   '/paie/$bulletinId': typeof AuthenticatedPaieBulletinIdRoute
   '/paie/nouveau': typeof AuthenticatedPaieNouveauRoute
   '/paiements/$paiementId': typeof AuthenticatedPaiementsPaiementIdRoute
@@ -1924,8 +1907,6 @@ export interface FileRoutesById {
   '/_authenticated/inventaires/nouveau-physique': typeof AuthenticatedInventairesNouveauPhysiqueRoute
   '/_authenticated/livraison-suivi/$commandeRef': typeof AuthenticatedLivraisonSuiviCommandeRefRouteWithChildren
   '/_authenticated/livraison-suivi/tournees': typeof AuthenticatedLivraisonSuiviTourneesRouteWithChildren
-  '/_authenticated/mfa/backup-codes': typeof AuthenticatedMfaBackupCodesRoute
-  '/_authenticated/mfa/enroll': typeof AuthenticatedMfaEnrollRoute
   '/_authenticated/paie/$bulletinId': typeof AuthenticatedPaieBulletinIdRoute
   '/_authenticated/paie/nouveau': typeof AuthenticatedPaieNouveauRoute
   '/_authenticated/paiements/$paiementId': typeof AuthenticatedPaiementsPaiementIdRoute
@@ -2132,8 +2113,6 @@ export interface FileRouteTypes {
     | '/inventaires/nouveau-physique'
     | '/livraison-suivi/$commandeRef'
     | '/livraison-suivi/tournees'
-    | '/mfa/backup-codes'
-    | '/mfa/enroll'
     | '/paie/$bulletinId'
     | '/paie/nouveau'
     | '/paiements/$paiementId'
@@ -2316,8 +2295,6 @@ export interface FileRouteTypes {
     | '/inventaires/nouveau-physique'
     | '/livraison-suivi/$commandeRef'
     | '/livraison-suivi/tournees'
-    | '/mfa/backup-codes'
-    | '/mfa/enroll'
     | '/paie/$bulletinId'
     | '/paie/nouveau'
     | '/paiements/$paiementId'
@@ -2523,8 +2500,6 @@ export interface FileRouteTypes {
     | '/_authenticated/inventaires/nouveau-physique'
     | '/_authenticated/livraison-suivi/$commandeRef'
     | '/_authenticated/livraison-suivi/tournees'
-    | '/_authenticated/mfa/backup-codes'
-    | '/_authenticated/mfa/enroll'
     | '/_authenticated/paie/$bulletinId'
     | '/_authenticated/paie/nouveau'
     | '/_authenticated/paiements/$paiementId'
@@ -3574,20 +3549,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/paie/$bulletinId'
       preLoaderRoute: typeof AuthenticatedPaieBulletinIdRouteImport
       parentRoute: typeof AuthenticatedPaieRoute
-    }
-    '/_authenticated/mfa/enroll': {
-      id: '/_authenticated/mfa/enroll'
-      path: '/mfa/enroll'
-      fullPath: '/mfa/enroll'
-      preLoaderRoute: typeof AuthenticatedMfaEnrollRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/mfa/backup-codes': {
-      id: '/_authenticated/mfa/backup-codes'
-      path: '/mfa/backup-codes'
-      fullPath: '/mfa/backup-codes'
-      preLoaderRoute: typeof AuthenticatedMfaBackupCodesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/livraison-suivi/tournees': {
       id: '/_authenticated/livraison-suivi/tournees'
@@ -4674,8 +4635,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBonDeSortieTourneeIdRoute: typeof AuthenticatedBonDeSortieTourneeIdRoute
   AuthenticatedBonDeTourneeTourneeIdRoute: typeof AuthenticatedBonDeTourneeTourneeIdRoute
   AuthenticatedFneDetailFactureIdRoute: typeof AuthenticatedFneDetailFactureIdRoute
-  AuthenticatedMfaBackupCodesRoute: typeof AuthenticatedMfaBackupCodesRoute
-  AuthenticatedMfaEnrollRoute: typeof AuthenticatedMfaEnrollRoute
   AuthenticatedSpecimensSpecimenIdRoute: typeof AuthenticatedSpecimensSpecimenIdRoute
   AuthenticatedSpecimensNouveauRoute: typeof AuthenticatedSpecimensNouveauRoute
   AuthenticatedTourneesBlTourneeIdRoute: typeof AuthenticatedTourneesBlTourneeIdRoute
@@ -4795,8 +4754,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBonDeTourneeTourneeIdRoute:
     AuthenticatedBonDeTourneeTourneeIdRoute,
   AuthenticatedFneDetailFactureIdRoute: AuthenticatedFneDetailFactureIdRoute,
-  AuthenticatedMfaBackupCodesRoute: AuthenticatedMfaBackupCodesRoute,
-  AuthenticatedMfaEnrollRoute: AuthenticatedMfaEnrollRoute,
   AuthenticatedSpecimensSpecimenIdRoute: AuthenticatedSpecimensSpecimenIdRoute,
   AuthenticatedSpecimensNouveauRoute: AuthenticatedSpecimensNouveauRoute,
   AuthenticatedTourneesBlTourneeIdRoute: AuthenticatedTourneesBlTourneeIdRoute,
