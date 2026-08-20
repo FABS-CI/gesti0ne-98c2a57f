@@ -152,8 +152,6 @@ export const ROUTE_TO_PERMISSION: Record<string, RoutePermissionRequirement> = {
   "/admin/data-quality": "audit.voir",
   "/profil": null,
   "/documentation": null,
-  "/mfa/enroll": null,
-  "/mfa/backup-codes": null,
   "/parametres": "parametres.voir",
   "/centre-documents": ["centre_documents.voir", "documents.voir"],
   "/modeles-documents": "modeles_documents.voir",

@@ -273,8 +273,6 @@ export const RBAC_PERMISSION_CODES: ReadonlySet<string> = new Set([
   "utilisateurs.assigner_role",
   "utilisateurs.creer",
   "utilisateurs.modifier",
-  "utilisateurs.reset_mfa",
-  "utilisateurs.revoquer_mfa",
   "utilisateurs.revoquer_role",
   "utilisateurs.supprimer",
   "utilisateurs.voir",

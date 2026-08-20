@@ -4,7 +4,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/layout/AppShell";
 import { RouteGuard } from "@/components/rbac/RouteGuard";
-import { MfaGate } from "@/components/mfa/MfaGate";
+
 import { ActifGate } from "@/components/rbac/ActifGate";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
@@ -46,11 +46,9 @@ export const Route = createFileRoute("/_authenticated")({
   component: () => (
     <AppShell>
       <ActifGate>
-        <MfaGate>
           <RouteGuard>
             <Outlet />
           </RouteGuard>
-        </MfaGate>
       </ActifGate>
     </AppShell>
   ),
