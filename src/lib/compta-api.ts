@@ -82,21 +82,16 @@ export async function getBalance(
     p_exercice_id: exerciceId ?? undefined,
   });
   if (error) throw error;
-  return (data ?? []).map(
-    (r: {
-      compte: string;
-      compte_libelle: string | null;
-      debit: number | string | null;
-      credit: number | string | null;
-      solde: number | string | null;
-    }) => ({
-      compte: r.compte,
-      compte_libelle: r.compte_libelle ?? "",
-      debit: Number(r.debit ?? 0),
-      credit: Number(r.credit ?? 0),
-      solde: Number(r.solde ?? 0),
-    }),
-  ) as BalanceRow[];
+  type BalanceRpcRow =
+    Database["public"]["Functions"]["compta_balance"]["Returns"][number];
+  return ((data ?? []) as BalanceRpcRow[]).map((r) => ({
+    compte: r.numero_compte,
+    compte_libelle: r.libelle ?? "",
+    debit: Number(r.debit ?? 0),
+    credit: Number(r.credit ?? 0),
+    solde: Number(r.solde ?? 0),
+  }));
+
 }
 
 export type DashboardCompta = {
