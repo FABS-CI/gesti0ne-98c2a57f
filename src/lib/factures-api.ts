@@ -28,17 +28,6 @@ export type Facture = {
   updated_at: string;
 };
 
-export type FactureInput = {
-  client_id?: string | null;
-  client_nom?: string | null;
-  commande_id?: string | null;
-  date_facture: string;
-  date_echeance?: string | null;
-  montant_total: number;
-  montant_paye: number;
-  statut: string;
-  notes?: string | null;
-};
 
 export type ListFacturesAdvanced = {
   reference?: string;

@@ -45,15 +45,6 @@ export type Paiement = {
   cree_par?: string | null;
 };
 
-export type PaiementInput = {
-  facture_id?: string | null;
-  client_nom?: string | null;
-  date_paiement: string;
-  montant: number;
-  mode_paiement: string;
-  statut: string;
-  notes?: string | null;
-};
 
 export async function listPaiements(q?: string, statut?: string, exerciceId?: string | null) {
   let query = supabase.from("paiements").select("*");
