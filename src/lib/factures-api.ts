@@ -28,17 +28,6 @@ export type Facture = {
   updated_at: string;
 };
 
-export type FactureInput = {
-  client_id?: string | null;
-  client_nom?: string | null;
-  commande_id?: string | null;
-  date_facture: string;
-  date_echeance?: string | null;
-  montant_total: number;
-  montant_paye: number;
-  statut: string;
-  notes?: string | null;
-};
 
 export type ListFacturesAdvanced = {
   reference?: string;
@@ -196,58 +185,12 @@ export async function listFacturesPaginated(params: {
   };
 }
 
-export async function createFacture(input: FactureInput) {
-  const { data, error } = await supabase
-    .from("factures")
-    .insert({
-      client_id: input.client_id ?? null,
-      client_nom: input.client_nom ?? null,
-      commande_id: input.commande_id ?? null,
-      date_facture: input.date_facture,
-      date_echeance: input.date_echeance ?? null,
-      montant_total: input.montant_total,
-      montant_paye: input.montant_paye,
-      statut: input.statut,
-      notes: input.notes ?? null,
-    })
-    .select()
-    .single();
-  if (error) throw error;
-  return data as Facture;
-}
+// Les écritures directes `createFacture` / `updateFacture` ont été supprimées :
+// elles contournaient les invariants des RPC (`valider_commande`,
+// `enregistrer_paiement`, `annuler_paiement`) et pouvaient désynchroniser
+// `factures.montant_paye` de la somme réelle des paiements.
 
-export async function updateFacture(id: string, input: FactureInput) {
-  // Sécurité : une facture "payee" ou "annulee" ne doit plus être modifiable.
-  // Le guard précédent portait sur un statut inexistant ("validee") et ne
-  // se déclenchait donc jamais.
-  const { data: current, error: eGet } = await supabase
-    .from("factures")
-    .select("statut")
-    .eq("facture_id", id)
-    .single();
-  if (eGet) throw eGet;
-  const currentStatut = (current as { statut: string } | null)?.statut;
-  if (currentStatut === "payee" || currentStatut === "annulee") {
-    throw new Error(
-      `Modification interdite : la facture est ${currentStatut === "payee" ? "payée" : "annulée"}.`,
-    );
-  }
-  const { error } = await supabase
-    .from("factures")
-    .update({
-      client_id: input.client_id ?? null,
-      client_nom: input.client_nom ?? null,
-      commande_id: input.commande_id ?? null,
-      date_facture: input.date_facture,
-      date_echeance: input.date_echeance ?? null,
-      montant_total: input.montant_total,
-      montant_paye: input.montant_paye,
-      statut: input.statut,
-      notes: input.notes ?? null,
-    })
-    .eq("facture_id", id);
-  if (error) throw error;
-}
+
 
 /** @deprecated Utiliser `deleteFactureDefinitif` — la suppression directe est réservée au super_admin. */
 export async function deleteFacture(id: string, motif?: string) {
