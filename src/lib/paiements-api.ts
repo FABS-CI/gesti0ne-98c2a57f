@@ -75,39 +75,11 @@ export async function listFacturesOptions() {
   return (data ?? []) as { facture_id: string; reference: string; client_nom: string | null }[];
 }
 
-export async function createPaiement(input: PaiementInput) {
-  const { data, error } = await supabase
-    .from("paiements")
-    .insert({
-      facture_id: input.facture_id ?? null,
-      client_nom: input.client_nom ?? null,
-      date_paiement: input.date_paiement,
-      montant: input.montant,
-      mode_paiement: input.mode_paiement,
-      statut: input.statut,
-      notes: input.notes ?? null,
-    })
-    .select()
-    .single();
-  if (error) throw error;
-  return data as Paiement;
-}
+// Les écritures directes `createPaiement` / `updatePaiement` ont été supprimées :
+// tout mouvement de paiement doit passer par les RPC `enregistrer_paiement` /
+// `annuler_paiement`, seules garantes de la cohérence des soldes clients.
 
-export async function updatePaiement(id: string, input: PaiementInput) {
-  const { error } = await supabase
-    .from("paiements")
-    .update({
-      facture_id: input.facture_id ?? null,
-      client_nom: input.client_nom ?? null,
-      date_paiement: input.date_paiement,
-      montant: input.montant,
-      mode_paiement: input.mode_paiement,
-      statut: input.statut,
-      notes: input.notes ?? null,
-    })
-    .eq("paiement_id", id);
-  if (error) throw error;
-}
+
 
 /** Suppression directe interdite par trigger : passer par `annuler_paiement`. */
 export async function deletePaiement(id: string, raison = "annulation", notes?: string) {
