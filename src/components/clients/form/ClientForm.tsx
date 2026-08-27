@@ -123,27 +123,11 @@ export function ClientForm({ clientId }: ClientFormProps) {
     mutationFn: async (values: ClientFormValues) => {
       const payload = formValuesToClientInput(values);
       if (editing) {
-        const updated = await updateClient(clientId!, payload);
-        audit({
-          action: "UPDATE",
-          module: "clients",
-          table_name: "clients",
-          record_id: updated.client_id,
-          record_ref: updated.reference,
-          metadata: { before: existing, after: updated },
-        });
-        return updated;
+        // Audit : assuré par le trigger DB `audit_crud_clients` (source unique).
+        return await updateClient(clientId!, payload);
       }
-      const created = await createClient(payload);
-      audit({
-        action: "INSERT",
-        module: "clients",
-        table_name: "clients",
-        record_id: created.client_id,
-        record_ref: created.reference,
-        metadata: { after: created },
-      });
-      return created;
+      return await createClient(payload);
+
     },
     onSuccess: (client: Client) => {
       toast.success(editing ? "Client mis à jour" : "Client créé");
