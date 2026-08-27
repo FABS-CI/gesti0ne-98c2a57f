@@ -229,16 +229,41 @@ export async function generateRecuPaiementPDF(data: DocBase): Promise<Blob> {
 }
 
 
-// Stubs pour les PDF d'incidents (à implémenter si nécessaire dans unified-generator)
+// PDF d'incidents — moteur unifié pdf-lib (IncidentDocument / RapportIncidentsDocument)
 export async function generateIncidentPDF(data: IncidentPdfData): Promise<Blob> {
-  console.warn("generateIncidentPDF non encore migré vers le nouveau moteur");
-  return new Blob([], { type: "application/pdf" });
+  const { IncidentDocument } = await import("./incident-document");
+  const doc = new IncidentDocument(
+    {
+      id: data.numero,
+      type: "Fiche d'incident",
+      reference: data.numero,
+      date: data.dateIncident,
+      client: { nom: data.depot ?? "STOCK" },
+    } as never,
+    data,
+  );
+  await doc.init();
+  await doc.drawContent();
+  return await doc.getBlob();
 }
 
 export async function generateRapportIncidentsPDF(data: RapportIncidentsData): Promise<Blob> {
-  console.warn("generateRapportIncidentsPDF non encore migré vers le nouveau moteur");
-  return new Blob([], { type: "application/pdf" });
+  const { RapportIncidentsDocument } = await import("./incident-document");
+  const doc = new RapportIncidentsDocument(
+    {
+      id: data.reference,
+      type: "Rapport d'incidents",
+      reference: data.reference,
+      date: new Date().toISOString(),
+      client: { nom: "FABS-CI" },
+    } as never,
+    data as never,
+  );
+  await doc.init();
+  await doc.drawContent();
+  return await doc.getBlob();
 }
+
 
 // ----------------------------------------------------------------------------
 // Utilitaires système (Action et QR)
