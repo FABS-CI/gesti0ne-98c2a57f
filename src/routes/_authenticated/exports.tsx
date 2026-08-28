@@ -86,17 +86,8 @@ function ExportsPage() {
     }
   };
 
-  const handleBackup = async () => {
-    try {
-      setBusy("Sauvegarde");
-      await exportFullBackupJSON();
-      toast.success("Sauvegarde complète téléchargée");
-    } catch (e) {
-      toast.error(friendlyError(e));
-    } finally {
-      setBusy(null);
-    }
-  };
+
+
 
   const preview = rows.slice(0, 10);
 
