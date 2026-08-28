@@ -172,7 +172,7 @@ function ExportsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Archive className="h-4 w-4" /> Sauvegarde complète
+            <Archive className="h-4 w-4" /> Sauvegarde complète (module dédié)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
