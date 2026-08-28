@@ -10,9 +10,9 @@ import {
   EXPORT_ENTITIES,
   fetchExportRows,
   exportXLSX,
-  exportFullBackupJSON,
   type ExportEntity,
 } from "@/lib/export-api";
+
 import { exportPdf } from "@/lib/export-csv";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,17 +86,8 @@ function ExportsPage() {
     }
   };
 
-  const handleBackup = async () => {
-    try {
-      setBusy("Sauvegarde");
-      await exportFullBackupJSON();
-      toast.success("Sauvegarde complète téléchargée");
-    } catch (e) {
-      toast.error(friendlyError(e));
-    } finally {
-      setBusy(null);
-    }
-  };
+
+
 
   const preview = rows.slice(0, 10);
 
@@ -181,22 +172,22 @@ function ExportsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Archive className="h-4 w-4" /> Sauvegarde complète
+            <Archive className="h-4 w-4" /> Sauvegarde complète (module dédié)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Exporte toutes les entités principales dans un seul fichier JSON, utilisable pour
-            archivage ou restauration manuelle.
+            Cette page n'effectue que des exports partiels par module (10 000 lignes maximum). La
+            sauvegarde faisant autorité — toutes les tables, les utilisateurs, les fichiers et une
+            empreinte d'intégrité — se pilote depuis le module Sauvegarde.
           </p>
-          <Button onClick={handleBackup} disabled={busy !== null}>
-            {busy === "Sauvegarde" ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Download className="h-4 w-4 mr-2" />
-            )}
-            Télécharger la sauvegarde JSON
+          <Button asChild>
+            <Link to="/backup">
+              <Archive className="h-4 w-4 mr-2" />
+              Ouvrir le module Sauvegarde
+            </Link>
           </Button>
+
         </CardContent>
       </Card>
     </div>

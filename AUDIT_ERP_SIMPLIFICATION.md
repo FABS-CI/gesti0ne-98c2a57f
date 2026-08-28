@@ -222,3 +222,18 @@ via `incidents-pdf.ts:20-92,134`) exécute un enrichissement complet en amont. �
 ---
 
 *Audit produit en lecture seule. Aucune correction, refactorisation, migration ou suppression n'a été effectuée.*
+
+---
+
+## 6. Suivi d'application (lot P1)
+
+| Reco | État | Détail |
+|---|---|---|
+| R1 | ✅ Appliqué | Mapping `compta_balance` corrigé via le type généré. |
+| R2 | ✅ Appliqué | Une seule source d'audit : le trigger DB `audit_crud_clients`. Les 2 appels manuels `audit()` de `ClientForm.tsx` (3e écriture) ont été retirés. Vérifié en base : `audit_events` est une **vue** sur `audit_logs`, un seul système de triggers subsiste (`audit_crud_*`). |
+| R3 | ✅ Appliqué | Écritures directes mortes ventes/paiements supprimées. |
+| R4 | ✅ Appliqué | Moteur de paie orphelin `calculateBulletin.ts` supprimé. |
+| R5 | ✅ Appliqué | `exportFullBackupJSON` supprimé ; `/exports` renvoie désormais vers le module `/backup` (source unique de sauvegarde), et annonce explicitement la limite de 10 000 lignes des exports par module. |
+| Bug PDF Incidents | ✅ Corrigé | `IncidentDocument` / `RapportIncidentsDocument` (`src/lib/pdf/incident-document.ts`) branchés sur le moteur pdf-lib unifié ; PDF générés vérifiés (~30 Ko, non vides). |
+
+Restent ouverts : R6 (centralisation stock, P2), R7 (invalidation cache RH, P2), R8 (fusion façade PDF, P3).
