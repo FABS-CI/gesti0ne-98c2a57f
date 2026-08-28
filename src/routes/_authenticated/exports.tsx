@@ -10,9 +10,9 @@ import {
   EXPORT_ENTITIES,
   fetchExportRows,
   exportXLSX,
-  exportFullBackupJSON,
   type ExportEntity,
 } from "@/lib/export-api";
+
 import { exportPdf } from "@/lib/export-csv";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
