@@ -1,7 +1,9 @@
 
 import { BaseDocument, COLORS, MARGINS, PAGE, CONTENT_W, type DocLigne } from "./base-document";
 import { formatFCFA } from "@/lib/format";
-import { rgb } from "pdf-lib";
+import { rgb, degrees } from "pdf-lib";
+import tamponUrl from "@/assets/tampon-comptabilite.png";
+
 
 export class CommercialDocument extends BaseDocument {
   discountMode: 'A' | 'B' | 'NONE' = 'NONE';
