@@ -87,8 +87,9 @@ export class CommercialDocument extends BaseDocument {
     // }
     
     // Signatures
-    this.drawSignatures(y);
+    await this.drawSignatures(y);
   }
+
 
   drawNotes(y: number): number {
     return super.drawNotes(y);
