@@ -1,7 +1,9 @@
 
 import { BaseDocument, COLORS, MARGINS, PAGE, CONTENT_W, type DocLigne } from "./base-document";
 import { formatFCFA } from "@/lib/format";
-import { rgb } from "pdf-lib";
+import { rgb, degrees } from "pdf-lib";
+import tamponUrl from "@/assets/tampon-comptabilite.png";
+
 
 export class CommercialDocument extends BaseDocument {
   discountMode: 'A' | 'B' | 'NONE' = 'NONE';
@@ -87,8 +89,9 @@ export class CommercialDocument extends BaseDocument {
     // }
     
     // Signatures
-    this.drawSignatures(y);
+    await this.drawSignatures(y);
   }
+
 
   drawNotes(y: number): number {
     return super.drawNotes(y);
@@ -129,7 +132,7 @@ export class CommercialDocument extends BaseDocument {
     return y - 35;
   }
 
-  drawSignatures(y: number) {
+  async drawSignatures(y: number) {
     const boxW = (CONTENT_W - 20) / 2;
     const boxH = 60;
     const curY = Math.max(y - 80, 150);
@@ -161,8 +164,11 @@ export class CommercialDocument extends BaseDocument {
       this.page.drawText("RÉCEPTION CLIENT", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 15, size: 8, font: this.fonts.bold });
       this.page.drawText("Nom : ....................................", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 30, size: 7, font: this.fonts.regular });
       this.page.drawText("Signature & Cachet :", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 50, size: 7, font: this.fonts.italic });
-    } else if (this.data.type === 'Facture' || this.data.type === 'Proforma' || this.data.type === 'Commande' || this.data.type === 'Bon de Réception') {
-      // Bloc signature déplacé en bas à droite et renommé en LA COMPTABILITÉ
+    } else if (this.data.type === 'Facture') {
+      // FACTURE UNIQUEMENT : tampon officiel de comptabilité (remplace le bloc texte)
+      await this.drawTamponComptabilite(curY, boxW, boxH);
+    } else if (this.data.type === 'Proforma' || this.data.type === 'Commande' || this.data.type === 'Bon de Réception') {
+      // Bloc signature classique (sans tampon)
       this.page.drawRectangle({
         x: PAGE.w - MARGINS.x - boxW,
         y: curY - boxH,
@@ -174,4 +180,33 @@ export class CommercialDocument extends BaseDocument {
       this.page.drawText("LA COMPTABILITÉ", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 15, size: 8, font: this.fonts.bold });
     }
   }
+
+  /** Tampon circulaire bleu « EDITIONS FABS-CI / Comptabilité » — factures seulement. */
+  async drawTamponComptabilite(curY: number, boxW: number, boxH: number) {
+    const size = 95;
+    const x = PAGE.w - MARGINS.x - size;
+    const yBottom = Math.max(curY - boxH - 20, 60);
+    try {
+      const res = await fetch(tamponUrl);
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      const img = await this.doc.embedPng(bytes);
+      this.page.drawImage(img, {
+        x,
+        y: yBottom,
+        width: size,
+        height: size,
+        opacity: 0.85,
+        rotate: degrees(-8),
+      });
+    } catch {
+      // Si l'image n'est pas disponible, on retombe sur le libellé texte
+      this.page.drawText("LA COMPTABILITÉ", {
+        x: PAGE.w - MARGINS.x - boxW + 5,
+        y: curY - 15,
+        size: 8,
+        font: this.fonts.bold,
+      });
+    }
+  }
 }
+
