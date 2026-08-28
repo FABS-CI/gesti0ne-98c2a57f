@@ -138,18 +138,11 @@ export async function exportXLSX(entity: ExportEntity, rows: Record<string, unkn
   );
 }
 
-export async function exportFullBackupJSON() {
-  const out: Record<string, unknown> = { exported_at: new Date().toISOString() };
-  for (const e of EXPORT_ENTITIES) {
-    try {
-      out[e.key] = await fetchExportRows(e);
-    } catch (err) {
-      out[e.key] = { error: (err as Error).message };
-    }
-  }
-  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  triggerDownload(
-    new Blob([JSON.stringify(out, null, 2)], { type: "application/json" }),
-    `backup_${stamp}.json`,
-  );
-}
+/**
+ * SUPPRIMÉ (audit R5) — `exportFullBackupJSON` promettait une « sauvegarde
+ * complète » alors qu'elle n'exportait que 8 entités plafonnées à 10 000 lignes,
+ * sans utilisateurs ni fichiers de stockage. La seule sauvegarde faisant
+ * autorité est le module /backup (toutes les tables + utilisateurs + storage +
+ * empreinte SHA-256).
+ */
+
