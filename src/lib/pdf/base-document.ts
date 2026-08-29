@@ -536,7 +536,15 @@ export class BaseDocument {
     }
 
     rows.forEach(row => {
-      this.page.drawText(row.label, { x: x + 5, y: curY - 13, size: 8, font: this.fonts.regular });
+      let labelX = x + 5;
+      // Remise globale : afficher le pourcentage en rouge avant le libellé
+      if (row.label === "REMISE GLOBALE" && this.totals.sousTotal > 0 && this.totals.remiseGlobale) {
+        const pct = this.totals.remiseGlobalePct ?? Math.round((this.totals.remiseGlobale / this.totals.sousTotal) * 100);
+        const pctText = `(${pct} %)`;
+        this.page.drawText(pctText, { x: labelX, y: curY - 13, size: 8, font: this.fonts.bold, color: COLORS.rougeFabs });
+        labelX += this.fonts.bold.widthOfTextAtSize(pctText, 8) + 4;
+      }
+      this.page.drawText(row.label, { x: labelX, y: curY - 13, size: 8, font: this.fonts.regular });
       const val = formatFCFA(row.value, false);
       const valW = this.fonts.bold.widthOfTextAtSize(val, 9);
       this.page.drawText(val, {
