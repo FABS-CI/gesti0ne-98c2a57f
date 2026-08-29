@@ -332,10 +332,17 @@ export class BaseDocument {
     if (this.data.client.modePaiement) {
       kv.push({ l: "Paiement", v: this.data.client.modePaiement });
     }
+    const isFacture = this.data.type === "Facture";
+    const labelSize = isFacture ? 10 : 8;
+    const valueSize = isFacture ? 11 : 8;
+    const lineGap = isFacture ? 15 : 11;
+    const valueX = MARGINS.x + (isFacture ? 100 : 80);
     kv.forEach((item, i) => {
-      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: y - 48 - i * 11, size: 8, font: this.fonts.regular });
-      this.page.drawText(item.v, { x: MARGINS.x + 80, y: y - 48 - i * 11, size: 8, font: this.fonts.bold });
+      const lineY = y - 48 - i * lineGap;
+      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: lineY, size: labelSize, font: this.fonts.regular });
+      this.page.drawText(item.v, { x: valueX, y: lineY, size: valueSize, font: this.fonts.bold });
     });
+
 
     const { shouldShowQr } = await import("./docTypeConfig");
     const prefix = this.data.reference.split('-')[0];
