@@ -461,7 +461,7 @@ export class BaseDocument {
           const txtW = this.fonts.regular.widthOfTextAtSize(lineText, fontSize);
           
           let alignX = curX + colHPadding;
-          if (['qte', 'prixUnit', 'remisePct', 'montantHT', 'pu'].includes(col.key)) {
+          if (['qte', 'prixUnit', 'remisePct', 'montantHT', 'pu', 'total', 'montant'].includes(col.key)) {
             alignX = curX + col.width - txtW - colHPadding;
           }
 
