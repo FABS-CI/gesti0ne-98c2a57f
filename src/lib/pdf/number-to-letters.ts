@@ -49,6 +49,7 @@ function convertirGroupe(n: number): string {
 }
 
 export function numberToLetters(n: number): string {
+  n = Math.round(n); // évite les index fractionnaires (ex. 72,5 → "soixante-undefined")
   if (n === 0) return "zéro francs CFA";
   if (n < 0) return "moins " + numberToLetters(Math.abs(n));
 
