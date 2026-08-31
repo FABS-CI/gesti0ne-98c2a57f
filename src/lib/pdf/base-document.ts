@@ -540,7 +540,8 @@ export class BaseDocument {
       this.page.drawText(row.label, { x: labelX, y: curY - 13, size: 8, font: this.fonts.regular });
       // Remise globale : afficher le pourcentage en rouge après le libellé
       if (row.label === "REMISE GLOBALE" && this.totals.sousTotal > 0 && this.totals.remiseGlobale) {
-        const pct = Math.round(this.totals.remiseGlobalePct ?? (this.totals.remiseGlobale / this.totals.sousTotal) * 100);
+        const rawPct = this.totals.remiseGlobalePct ?? (this.totals.remiseGlobale / this.totals.sousTotal) * 100;
+        const pct = parseFloat(rawPct.toFixed(10));
         const pctText = `(${pct} %)`;
         labelX += this.fonts.regular.widthOfTextAtSize(row.label, 8) + 4;
         this.page.drawText(pctText, { x: labelX, y: curY - 13, size: 8, font: this.fonts.bold, color: COLORS.rougeFabs });
