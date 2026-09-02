@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FileSignature, FileDown, Eye, Printer, Mail, ScanEye, Trash2 } from "lucide-react";
+import { FileSignature, FileDown, Eye, Printer, Mail, ScanEye, Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { ResourceManager, type ResourceConfig } from "@/components/crud/ResourceManager";
 import { downloadBlob, fileNameFor } from "@/lib/pdf/fabsTemplates";
@@ -10,7 +10,7 @@ import {
   loadProformaTotals,
 } from "@/lib/pdf/enrich-lignes";
 import { printCached, viewCached, emailDoc } from "@/lib/pdf/actions";
-import { getOrCreatePdf, pdfCacheKey } from "@/lib/pdf/pdfCache";
+import { getOrCreatePdf, pdfCacheKey, invalidatePdfByPrefix } from "@/lib/pdf/pdfCache";
 import { SuperAdminDeleteButton } from "@/components/documents/SuperAdminDeleteButton";
 import { deleteProformaDefinitif } from "@/lib/proformas-api";
 
@@ -132,6 +132,20 @@ const config: ResourceConfig = {
           await printCached(cacheKeyFor(row), () => buildProformaBlob(row));
         } catch (e) {
           toast.error(friendlyError(e, "Erreur impression"));
+        }
+      },
+    },
+    {
+      label: "Régénérer le PDF",
+      icon: RefreshCw,
+      onClick: async (row) => {
+        try {
+          invalidatePdfByPrefix(`PF:${row.reference as string}:`);
+          const blob = await getOrCreatePdf(cacheKeyFor(row), () => buildProformaBlob(row));
+          downloadBlob(blob, fileNameFor(row.reference as string, row.client_nom as string | null));
+          toast.success("Document régénéré avec le nouveau modèle");
+        } catch (e) {
+          toast.error(friendlyError(e, "Erreur régénération"));
         }
       },
     },
