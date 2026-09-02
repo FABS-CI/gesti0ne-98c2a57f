@@ -136,6 +136,12 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+            onClick={() => setEditOpen(true)}
+          >
+            <Pencil className="mr-2 h-4 w-4" /> Modifier le client
+          </Button>
+          <Button
             onClick={() =>
               navigate({
                 to: "/commandes",
