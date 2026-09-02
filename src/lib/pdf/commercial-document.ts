@@ -164,10 +164,10 @@ export class CommercialDocument extends BaseDocument {
       this.page.drawText("RÉCEPTION CLIENT", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 15, size: 8, font: this.fonts.bold });
       this.page.drawText("Nom : ....................................", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 30, size: 7, font: this.fonts.regular });
       this.page.drawText("Signature & Cachet :", { x: PAGE.w - MARGINS.x - boxW + 5, y: curY - 50, size: 7, font: this.fonts.italic });
-    } else if (this.data.type === 'Facture') {
-      // FACTURE UNIQUEMENT : tampon officiel de comptabilité (remplace le bloc texte)
+    } else if (this.data.type === 'Facture' || this.data.type === 'Proforma') {
+      // FACTURE & PROFORMA : tampon officiel de comptabilité (remplace le bloc texte)
       await this.drawTamponComptabilite(curY, boxW, boxH);
-    } else if (this.data.type === 'Proforma' || this.data.type === 'Commande' || this.data.type === 'Bon de Réception') {
+    } else if (this.data.type === 'Commande' || this.data.type === 'Bon de Réception') {
       // Bloc signature classique (sans tampon)
       this.page.drawRectangle({
         x: PAGE.w - MARGINS.x - boxW,

@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Calendar, FileDown, FileText, Loader2, Receipt, User } from "lucide-react";
+import { ArrowLeft, Calendar, FileDown, FileText, Loader2, Receipt, RefreshCw, User } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { generateUnifiedCommercialPDF } from "@/lib/pdf/unified-generator";
 import { fileNameFor } from "@/lib/pdf/fabsTemplates";
-import { pdfCacheKey } from "@/lib/pdf/pdfCache";
+import { pdfCacheKey, invalidatePdfByPrefix } from "@/lib/pdf/pdfCache";
 import { viewCached, printCached, emailDoc } from "@/lib/pdf/actions";
 import {
   loadProformaDocLignes,
@@ -148,6 +148,41 @@ function ProformaDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={async () => {
+              try {
+                invalidatePdfByPrefix(`PF:${proforma.reference}:`);
+                const [lignes, clientInfo, totals] = await Promise.all([
+                  loadProformaDocLignes(proformaId),
+                  loadClientInfoForProforma(proformaId),
+                  loadProformaTotals(proformaId),
+                ]);
+                const blob = await generateUnifiedCommercialPDF("Proforma", {
+                  id: proformaId,
+                  proforma_id: proformaId,
+                  reference: proforma.reference,
+                  date: proforma.date_proforma,
+                  clientNom: proforma.client_nom,
+                  totalVente: Number(proforma.montant_total),
+                  montantHT: Number(proforma.montant_total),
+                  lignes,
+                  ...clientInfo,
+                  ...totals,
+                });
+                const url = URL.createObjectURL(blob);
+                window.open(url, "_blank");
+                setTimeout(() => URL.revokeObjectURL(url), 60_000);
+                toast.success("Document régénéré avec le nouveau modèle");
+              } catch {
+                toast.error("Erreur lors de la régénération");
+              }
+            }}
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Régénérer le PDF
+          </Button>
           {(() => {
             const st = pdf.getState(proformaId);
             return (

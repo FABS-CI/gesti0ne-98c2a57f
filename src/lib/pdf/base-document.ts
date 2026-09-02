@@ -333,10 +333,12 @@ export class BaseDocument {
       kv.push({ l: "Paiement", v: this.data.client.modePaiement });
     }
     const isFacture = this.data.type === "Facture";
-    const labelSize = isFacture ? 10 : 8;
-    const valueSize = isFacture ? 11 : 8;
-    const lineGap = isFacture ? 15 : 11;
-    const valueX = MARGINS.x + (isFacture ? 100 : 80);
+    const isProforma = this.data.type === "Proforma";
+    const grandTexte = isFacture || isProforma;
+    const labelSize = grandTexte ? 10 : 8;
+    const valueSize = grandTexte ? 11 : 8;
+    const lineGap = grandTexte ? 15 : 11;
+    const valueX = MARGINS.x + (grandTexte ? 100 : 80);
     kv.forEach((item, i) => {
       const lineY = y - 48 - i * lineGap;
       this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: lineY, size: labelSize, font: this.fonts.regular });
@@ -347,10 +349,10 @@ export class BaseDocument {
     const { shouldShowQr } = await import("./docTypeConfig");
     const prefix = this.data.reference.split('-')[0];
     
-    // Règle métier : QR Code uniquement pour les FACTURES
+    // Règle métier : QR Code pour les FACTURES et les PROFORMAS
     // On vérifie à la fois le type explicite ET le préfixe de référence
-    const isFactureType = this.data.type === "Facture";
-    if (isFactureType && shouldShowQr(prefix)) {
+    const qrAutorise = this.data.type === "Facture" || this.data.type === "Proforma";
+    if (qrAutorise && shouldShowQr(prefix)) {
       const qrX = MARGINS.x + boxW + 15;
       this.page.drawRectangle({
         x: qrX,
