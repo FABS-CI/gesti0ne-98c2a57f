@@ -1,4 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { formatFCFA } from "@/lib/format";
+
 import {
   Activity,
   Users,

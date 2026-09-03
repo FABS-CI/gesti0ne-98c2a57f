@@ -1,3 +1,4 @@
+import { formatFCFA } from "@/lib/format";
 export type TourneeCout = {
   tournee_id: string;
   reference: string;

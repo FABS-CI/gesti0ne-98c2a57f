@@ -1,4 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatFCFA } from "@/lib/format";
+
 import { Input } from "@/components/ui/input";
 import { Field } from "./parts";
 import { COST_FIELDS, type Tournee } from "./types";

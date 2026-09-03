@@ -1,4 +1,6 @@
 import { STATUT_LABEL, type Commande } from "@/lib/commandes-api";
+import { formatFCFA } from "@/lib/format";
+
 import { exportCsv } from "@/lib/export-csv";
 import { exportListePDF } from "@/lib/pdf/exportListe";
 import { describeFilters, type AdvancedFilters } from "@/components/search/AdvancedSearchBar";

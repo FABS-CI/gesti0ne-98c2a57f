@@ -1,4 +1,6 @@
 import { listClients } from "@/lib/clients-api";
+import { formatFCFA } from "@/lib/format";
+
 import { TYPE_COLOR } from "@/lib/company";
 import { exportCsv } from "@/lib/export-csv";
 import type { CrmFilters } from "@/lib/crm-api";

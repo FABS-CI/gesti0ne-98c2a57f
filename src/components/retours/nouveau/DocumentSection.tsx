@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatFCFA } from "@/lib/format";
+
 import type { UseFormReturn, UseFieldArrayReturn } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
