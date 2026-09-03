@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { typeClientVariants } from "@/lib/company";
 
 export type Client = {
   client_id: string;

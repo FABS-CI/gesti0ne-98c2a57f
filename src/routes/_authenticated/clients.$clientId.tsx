@@ -89,7 +89,7 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
 
   const prefetchOnHover = (fn: () => void) => ({ onMouseEnter: fn, onFocus: fn });
 
-  const type = TYPE_COLOR[client.type_client];
+  const type = TYPE_COLOR[normalizeTypeClient(client.type_client)];
   const encoursFactures = factures.reduce((s, f) => {
     if (f.statut === "annulee" || f.statut === "avoir") return s;
     const solde = Number(f.montant_total) - Number(f.montant_paye);

@@ -94,7 +94,7 @@ export function ClientsTable({
               </TableRow>
             ) : (
               items.map((c) => {
-                const type = TYPE_COLOR[c.type_client];
+                const type = TYPE_COLOR[normalizeTypeClient(c.type_client)];
                 return (
                   <TableRow
                     key={c.client_id}
