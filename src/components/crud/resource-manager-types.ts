@@ -91,6 +91,8 @@ export type ResourceConfig = {
   fields: FieldDef[];
   statusFilter?: { field: string; options: Option[] };
   csvName: string;
+  /** Masque le bouton « Exporter » (CSV) dans l'en-tête. */
+  hideCsvExport?: boolean;
   rowActions?: RowAction[];
   readOnly?: boolean;
   orderField?: string;

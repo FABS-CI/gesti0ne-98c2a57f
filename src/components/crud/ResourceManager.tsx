@@ -338,9 +338,11 @@ export function ResourceManager({ config }: { config: ResourceConfig }) {
           {config.subtitle && <p className="text-sm text-muted-foreground">{config.subtitle}</p>}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExport} disabled={!rows.length}>
-            <Download className="mr-2 h-4 w-4" /> Exporter
-          </Button>
+          {!config.hideCsvExport && (
+            <Button variant="outline" onClick={handleExport} disabled={!rows.length}>
+              <Download className="mr-2 h-4 w-4" /> Exporter
+            </Button>
+          )}
           <Button variant="outline" onClick={handleExportPDF} disabled={!rows.length}>
             <FileDown className="mr-2 h-4 w-4" /> PDF
           </Button>

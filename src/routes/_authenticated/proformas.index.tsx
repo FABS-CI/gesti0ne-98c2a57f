@@ -63,6 +63,7 @@ const config: ResourceConfig = {
   readOnly: true,
   entityLabel: "la proforma",
   csvName: "proformas",
+  hideCsvExport: true,
   searchFields: ["reference", "client_nom"],
   advancedFilters: {
     fields: [
