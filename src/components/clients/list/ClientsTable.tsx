@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { formatFCFA } from "@/lib/format";
-import { TYPE_COLOR } from "@/lib/company";
+import { TYPE_COLOR, normalizeTypeClient } from "@/lib/company";
 import type { Client } from "@/lib/clients-api";
 import { Can } from "@/components/rbac/Can";
 import { usePermissions } from "@/hooks/use-permissions";
