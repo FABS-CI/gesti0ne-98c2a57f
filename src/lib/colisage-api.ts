@@ -365,8 +365,14 @@ export async function deverrouillerColisage(blId: string, motif: string): Promis
  *  Une fois « colisage_termine » (validé), seul un super_admin peut modifier,
  *  annuler ou supprimer le colisage. */
 export function isColisageEnAttente(statut: string | null | undefined): boolean {
-  // Statuts BL modifiables : le BL en cours de préparation logistique
-  // ("brouillon" = créé, "preparee" = prêt, plus les anciens libellés).
+  // ATTENTION — double référentiel de statuts BL assumé.
+  // Deux nomenclatures coexistent dans les données existantes car la migration
+  // de statuts n'a jamais été finalisée en base :
+  //   - ancienne : "brouillon" (BL créé), "preparee" (BL prêt à coliser)
+  //   - actuelle : "a_preparer", "colisage_en_cours"
+  // Les BL historiques portent encore les anciens libellés ; on doit donc
+  // accepter les quatre valeurs, sinon ces BL deviennent non modifiables.
+  // Ne pas "nettoyer" cette liste sans migration de données préalable.
   return (
     statut === "brouillon" ||
     statut === "preparee" ||
