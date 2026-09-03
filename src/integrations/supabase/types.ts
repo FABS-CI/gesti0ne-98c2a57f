@@ -8011,6 +8011,8 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      norm_key: { Args: { _v: string }; Returns: string }
+      norm_txt: { Args: { _v: string }; Returns: string }
       normalize_phone: { Args: { phone: string }; Returns: string }
       payer_achat: { Args: { _achat_id: string }; Returns: undefined }
       preview_cloture_exercice: {
@@ -8023,7 +8025,7 @@ export type Database = {
         Returns: number
       }
       rapport_agregat: {
-        Args: { _dimension?: string; _filtres?: Json }
+        Args: { _dim?: string; _filtres?: Json }
         Returns: Json
       }
       rapport_clients_produit: {
@@ -8036,6 +8038,24 @@ export type Database = {
       }
       rapport_flop_produits: { Args: { _filtres?: Json }; Returns: Json }
       rapport_kpi: { Args: { _filtres?: Json }; Returns: Json }
+      rapport_lignes_filtrees: {
+        Args: { _filtres?: Json }
+        Returns: {
+          ca: number
+          categorie: string
+          client_id: string
+          commande_id: string
+          date_facture: string
+          facture_id: string
+          niveau: string
+          produit_id: string
+          quantite: number
+          remise: number
+          representant: string
+          type_client: string
+          ville: string
+        }[]
+      }
       rapport_produits: {
         Args: {
           _filtres?: Json
