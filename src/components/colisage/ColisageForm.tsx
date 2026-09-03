@@ -119,7 +119,7 @@ export function ColisageForm({
   // — Initialisation depuis colisExistants —
   useEffect(() => {
     if (colisExistants && colisExistants.length > 0) {
-      console.log("[ColisageForm] Chargement du colisage existant:", colisExistants);
+      
       const firstColis = colisExistants[0];
       
       // On n'écrase pas si l'utilisateur a déjà commencé à saisir, 
