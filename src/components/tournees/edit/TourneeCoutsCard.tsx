@@ -42,7 +42,7 @@ export function TourneeCoutsCard({
         ))}
         <div className="flex items-center justify-between pt-2 border-t text-sm font-medium">
           <span>Total</span>
-          <span className="tabular-nums">{coutTotal.toLocaleString("fr-FR")}</span>
+          <span className="tabular-nums">{__FMTN__(coutTotal)}</span>
         </div>
       </CardContent>
     </Card>

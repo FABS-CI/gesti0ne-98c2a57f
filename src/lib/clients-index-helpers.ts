@@ -44,7 +44,7 @@ export async function exportClientsPdf(filters: {
       { label: "Clients actifs", value: String(actifs) },
       { label: "Clients débiteurs", value: String(debiteurs) },
       { label: "Clients créditeurs", value: String(crediteurs) },
-      { label: "Encours total", value: totalSolde.toLocaleString("fr-FR") + " FCFA" },
+      { label: "Encours total", value: __FMT__(totalSolde) },
     ],
   });
   return all.items.length;

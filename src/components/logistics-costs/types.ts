@@ -57,7 +57,7 @@ export function statutMeta(v: string) {
 }
 
 export function fmtFCFA(n: number | null | undefined): string {
-  return Math.round(Number(n ?? 0)).toLocaleString("fr-FR") + " FCFA";
+  return __FMT__(Math.round(Number(n ?? 0)));
 }
 
 export function startOf(period: "day" | "week" | "month" | "year"): Date {
