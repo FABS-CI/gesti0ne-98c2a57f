@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, Mail, MessageCircle, Pencil, PlusCircle, RotateCcw, Wallet, ReceiptText } from "lucide-react";
 
-import { TYPE_COLOR } from "@/lib/company";
+import { TYPE_COLOR, normalizeTypeClient } from "@/lib/company";
 import { formatFCFA } from "@/lib/format";
 
 import { Button } from "@/components/ui/button";
@@ -89,7 +89,7 @@ function ClientDetailInner({ clientId }: { clientId: string }) {
 
   const prefetchOnHover = (fn: () => void) => ({ onMouseEnter: fn, onFocus: fn });
 
-  const type = TYPE_COLOR[client.type_client];
+  const type = TYPE_COLOR[normalizeTypeClient(client.type_client)];
   const encoursFactures = factures.reduce((s, f) => {
     if (f.statut === "annulee" || f.statut === "avoir") return s;
     const solde = Number(f.montant_total) - Number(f.montant_paye);

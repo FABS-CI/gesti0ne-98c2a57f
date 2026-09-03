@@ -1,7 +1,7 @@
 import { listClients } from "@/lib/clients-api";
 import { formatFCFA } from "@/lib/format";
 
-import { TYPE_COLOR } from "@/lib/company";
+import { TYPE_COLOR, normalizeTypeClient } from "@/lib/company";
 import { exportCsv } from "@/lib/export-csv";
 import type { CrmFilters } from "@/lib/crm-api";
 
@@ -30,7 +30,7 @@ export async function exportClientsPdf(filters: {
   const rows = all.items.map((c) => [
     c.reference,
     c.nom,
-    TYPE_COLOR[c.type_client]?.label ?? c.type_client,
+    TYPE_COLOR[normalizeTypeClient(c.type_client)]?.label ?? c.type_client,
     c.representant ?? "",
     c.telephone ?? "",
     c.solde,

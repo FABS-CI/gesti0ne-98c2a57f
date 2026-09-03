@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { typeClientVariants } from "@/lib/company";
 
 export type Client = {
   client_id: string;
@@ -79,7 +80,7 @@ export async function listClients(params: ListClientsParams = {}) {
       `nom.ilike.${like},reference.ilike.${like},representant.ilike.${like},phone_normalized.ilike.${like}`
     );
   }
-  if (type_client) query = query.eq("type_client", type_client);
+  if (type_client) query = query.in("type_client", typeClientVariants(type_client));
   if (ville) query = query.ilike("ville", `%${ville}%`);
   if (actif != null) query = query.eq("actif", actif);
   if (clientIds) query = query.in("client_id", clientIds);

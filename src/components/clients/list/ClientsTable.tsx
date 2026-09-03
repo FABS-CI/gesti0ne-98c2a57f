@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
 import { formatFCFA } from "@/lib/format";
-import { TYPE_COLOR } from "@/lib/company";
+import { TYPE_COLOR, normalizeTypeClient } from "@/lib/company";
 import type { Client } from "@/lib/clients-api";
 import { Can } from "@/components/rbac/Can";
 import { usePermissions } from "@/hooks/use-permissions";
@@ -94,7 +94,7 @@ export function ClientsTable({
               </TableRow>
             ) : (
               items.map((c) => {
-                const type = TYPE_COLOR[c.type_client];
+                const type = TYPE_COLOR[normalizeTypeClient(c.type_client)];
                 return (
                   <TableRow
                     key={c.client_id}
