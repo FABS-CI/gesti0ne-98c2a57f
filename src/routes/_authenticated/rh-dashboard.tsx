@@ -30,10 +30,6 @@ export const Route = createFileRoute("/_authenticated/rh-dashboard")({
   notFoundComponent: RouteNotFound,
 });
 
-function formatFCFA(n: number) {
-  return formatFCFA(n);
-}
-
 const SEVERITE_STYLE: Record<string, string> = {
   info: "border-l-4 border-l-blue-500 bg-blue-500/5",
   warning: "border-l-4 border-l-orange-500 bg-orange-500/5",
