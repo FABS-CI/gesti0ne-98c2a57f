@@ -23,7 +23,7 @@ import { FneRowActions } from "@/components/fne/FneRowActions";
 import { EmptyState } from "@/components/common/EmptyState";
 import type { FNEStatus } from "@/lib/fne-api";
 
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
@@ -390,7 +390,7 @@ function FacturesPage() {
                           {f.reference}
                         </div>
                       </TableCell>
-                      <TableCell className="whitespace-nowrap">{f.date_facture}</TableCell>
+                      <TableCell className="whitespace-nowrap">{formatDate(f.date_facture)}</TableCell>
                       <TableCell className="font-medium">{f.client_nom}</TableCell>
                       <TableCell className="text-right">
                         {formatFCFA(Number(f.montant_total))}

@@ -17,7 +17,7 @@ import {
   TYPE_TRANSACTION_LABEL,
   type Transaction,
 } from "@/lib/finances-api";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { useConfirmDelete } from "@/hooks/use-confirm-delete";
 
 type Props = {
@@ -70,7 +70,7 @@ export function TransactionsTable({ transactions, isLoading, onEdit, onDelete }:
               return (
                 <TableRow key={t.transaction_id}>
                   <TableCell className="font-mono text-xs">{t.reference}</TableCell>
-                  <TableCell className="whitespace-nowrap">{t.date_transaction}</TableCell>
+                  <TableCell className="whitespace-nowrap">{formatDate(t.date_transaction)}</TableCell>
                   <TableCell className="font-medium">{t.libelle}</TableCell>
                   <TableCell>{CATEGORIE_TRANSACTION_LABEL[t.categorie] ?? t.categorie}</TableCell>
                   <TableCell>

@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 export type Notification = {
   notification_id: string;
   titre: string;
@@ -105,7 +105,7 @@ async function computeAlertes(): Promise<AlerteCandidate[]> {
     if (reste <= 0) continue;
     alertes.push({
       titre: `Facture en retard — ${f.reference}`,
-      message: `${f.client_nom ?? "Client"} • échéance ${f.date_echeance} • reste ${formatFCFA(Math.round(
+      message: `${f.client_nom ?? "Client"} • échéance ${formatDate(f.date_echeance)} • reste ${formatFCFA(Math.round(
         reste,
       ), false)} FCFA`,
       type_notification: "erreur",
@@ -149,7 +149,7 @@ async function computeAlertes(): Promise<AlerteCandidate[]> {
     const nom = c.employes?.nom_complet ?? "Employé";
     alertes.push({
       titre: `Congé à valider — ${nom}`,
-      message: `Du ${c.date_debut} au ${c.date_fin}`,
+      message: `Du ${formatDate(c.date_debut)} au ${formatDate(c.date_fin)}`,
       type_notification: "alerte",
     });
   }
@@ -168,7 +168,7 @@ async function computeAlertes(): Promise<AlerteCandidate[]> {
     if (c.statut && c.statut !== "actif") continue;
     alertes.push({
       titre: `Contrat expirant — ${c.employe_nom ?? ""}`,
-      message: `${c.type_contrat ?? "Contrat"} se termine le ${c.date_fin}`,
+      message: `${c.type_contrat ?? "Contrat"} se termine le ${formatDate(c.date_fin)}`,
       type_notification: "alerte",
     });
   }

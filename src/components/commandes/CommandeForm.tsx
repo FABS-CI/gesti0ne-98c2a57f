@@ -32,7 +32,7 @@ import { getProduit, type Produit } from "@/lib/produits-api";
 import { getStockProduitDepot } from "@/lib/depots-api";
 import { creerCommande, modifierCommande } from "@/lib/commandes-api";
 import { newIdempotencyKey } from "@/lib/idempotency";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { ClientSearchSelect } from "@/components/search/ClientSearchSelect";
 import { DepotSortieField } from "@/components/stock/DepotSortieField";
 import { NumberField } from "./form/NumberField";
@@ -678,7 +678,7 @@ export function CommandeForm({ mode, commandeId, initialValues, presetClientId }
           {pendingValues && (
             <div className="space-y-3 text-sm max-h-[60vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-2">
-                <InfoCell label="Date" value={pendingValues.date_commande} />
+                <InfoCell label="Date" value={formatDate(pendingValues.date_commande)} />
                 <InfoCell
                   label="Client"
                   value={selectedClient?.nom ?? pendingValues.etablissement ?? "—"}

@@ -15,7 +15,7 @@ import {
 } from "@/lib/paiements-api";
 import { describeSupabaseError } from "@/lib/rbac-api";
 
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
@@ -283,7 +283,7 @@ function PaiementsPage() {
                   return (
                     <TableRow key={p.paiement_id}>
                       <TableCell className="font-mono text-xs">{p.reference}</TableCell>
-                      <TableCell className="whitespace-nowrap">{p.date_paiement}</TableCell>
+                      <TableCell className="whitespace-nowrap">{formatDate(p.date_paiement)}</TableCell>
                       <TableCell className="font-medium">{p.client_nom}</TableCell>
                       <TableCell>
                         {MODE_PAIEMENT_LABEL[p.mode_paiement] ?? p.mode_paiement}

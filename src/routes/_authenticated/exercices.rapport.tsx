@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { useExercice } from "@/contexts/ExerciceContext";
 import { getDashboardCompta } from "@/lib/compta-api";
 
@@ -171,7 +171,7 @@ function RapportExercicePage() {
               <SelectContent>
                 {exercices.map((e) => (
                   <SelectItem key={e.exercice_id} value={e.exercice_id}>
-                    {e.code} ({e.date_debut} → {e.date_fin})
+                    {e.code} ({formatDate(e.date_debut)} → {formatDate(e.date_fin)})
                   </SelectItem>
                 ))}
               </SelectContent>

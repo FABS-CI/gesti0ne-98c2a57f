@@ -3,7 +3,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { ProductCoverThumb } from "@/components/produits/ProductCoverThumb";
 import { Badge } from "@/components/ui/badge";
 import { STATUT_LABEL, type Commande } from "@/lib/commandes-api";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { CommandeActions } from "@/components/commandes/CommandeActions";
 
 interface CommandeRowProps {
@@ -38,7 +38,7 @@ function CommandeRowInner({
         </div>
       </TableCell>
       <TableCell>{c.client_nom || "—"}</TableCell>
-      <TableCell className="text-muted-foreground">{c.date_commande}</TableCell>
+      <TableCell className="text-muted-foreground">{formatDate(c.date_commande)}</TableCell>
       <TableCell>
         <Badge
           variant="outline"

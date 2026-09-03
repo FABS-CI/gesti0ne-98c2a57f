@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, FileDown, Printer } from "lucide-react";
@@ -486,7 +486,7 @@ function FeuilleTourneePage() {
             <h2 className="text-xl font-bold uppercase tracking-wide">Bon de tournée</h2>
             <p className="text-sm font-mono">{bonRef}</p>
             <p className="text-[11px]">N° tournée : <b>{t.reference}</b></p>
-            {t.date_tournee && <p className="text-[11px]">Date : {t.date_tournee}</p>}
+            {t.date_tournee && <p className="text-[11px]">Date : {formatDate(t.date_tournee)}</p>}
             <div className="flex justify-end gap-2 mt-2 items-start">
               <div className="text-center">
                 <QrCode value={`${bonRef}|${t.reference}`} size={64} />

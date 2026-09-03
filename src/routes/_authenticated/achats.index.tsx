@@ -29,7 +29,7 @@ import {
   type AchatLigne,
 } from "@/lib/achats-api";
 import { listFournisseurs } from "@/lib/fournisseurs-api";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { CATEGORIES_PRODUIT, CATEGORIE_LABEL } from "@/lib/company";
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -467,7 +467,7 @@ function ApprovisionnementsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="font-mono text-xs">{a.reference}</TableCell>
-                      <TableCell className="whitespace-nowrap">{a.date_achat}</TableCell>
+                      <TableCell className="whitespace-nowrap">{formatDate(a.date_achat)}</TableCell>
                       <TableCell>{a.fournisseurs?.raison_sociale ?? "—"}</TableCell>
                       <TableCell className="text-right">{ls.length}</TableCell>
                       <TableCell className="text-right">{qte}</TableCell>

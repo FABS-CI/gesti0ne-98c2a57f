@@ -25,7 +25,7 @@ import { fr } from "date-fns/locale";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDateTime } from "@/lib/format";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -383,8 +383,8 @@ function ApprovalsList({
         r.statut,
         r.niveau_urgence ?? "normal",
         String(getMetaNumber(r.metadata, "montant") ?? ""),
-        format(new Date(r.created_at), "yyyy-MM-dd HH:mm"),
-        r.decided_at ? format(new Date(r.decided_at), "yyyy-MM-dd HH:mm") : "",
+        formatDateTime(r.created_at),
+        r.decided_at ? formatDateTime(r.decided_at) : "",
         r.decided_at
           ? String(differenceInMinutes(new Date(r.decided_at), new Date(r.created_at)))
           : "",

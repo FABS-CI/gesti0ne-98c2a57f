@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import type { PreviewResult } from "./exercices-shared";
 
 type Props = {
@@ -54,7 +54,7 @@ export function CloturePreviewDialog({
             <div className="rounded-lg border p-3">
               <p className="text-xs text-muted-foreground">Exercice à clôturer</p>
               <p className="font-semibold">
-                {preview.exercice.code} ({preview.exercice.date_debut} → {preview.exercice.date_fin}
+                {preview.exercice.code} ({formatDate(preview.exercice.date_debut)} → {formatDate(preview.exercice.date_fin)}
                 )
               </p>
               {preview.exercice_suivant && (

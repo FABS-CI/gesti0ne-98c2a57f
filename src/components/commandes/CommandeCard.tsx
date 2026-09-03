@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { STATUT_LABEL, type Commande } from "@/lib/commandes-api";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { CommandeActions } from "@/components/commandes/CommandeActions";
 
 interface CommandeCardProps {
@@ -46,7 +46,7 @@ function CommandeCardInner({
             </Badge>
           </div>
           <p className="mt-0.5 truncate text-sm text-foreground">{c.client_nom || "—"}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">{c.date_commande}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{formatDate(c.date_commande)}</p>
         </div>
         <div className="shrink-0 text-right">
           <p className="text-xs text-muted-foreground">Total</p>

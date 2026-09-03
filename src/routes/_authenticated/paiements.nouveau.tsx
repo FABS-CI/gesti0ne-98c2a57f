@@ -24,7 +24,7 @@ import { ClientSearchSelect } from "@/components/search/ClientSearchSelect";
 import { FacturesImpayeesCard } from "@/components/paiements/nouveau/FacturesImpayeesCard";
 import { PaiementFormCard, type FormState } from "@/components/paiements/nouveau/PaiementFormCard";
 import { RecapCard } from "@/components/paiements/nouveau/RecapCard";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { computeRecap } from "@/lib/paiement-recap";
 
 import { newIdempotencyKey } from "@/lib/idempotency";
@@ -272,7 +272,7 @@ function NouveauPaiementPage() {
             <div className="space-y-2 rounded-md border p-3 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Client</span><span className="font-medium">{clientNom || "—"}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Facture</span><span className="font-mono text-xs">{recap.reference}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Date paiement</span><span>{form.date_paiement}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Date paiement</span><span>{formatDate(form.date_paiement)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Mode</span><span className="capitalize">{form.mode_paiement}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Référence</span><span className="font-mono text-xs">{form.reference_paiement}</span></div>
               <div className="my-2 border-t" />
