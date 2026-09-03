@@ -224,7 +224,6 @@ function ColisageDetailPage() {
         colisExistants={colisExistants}
         onSuccess={(createdColis) => {
           // Déclenchement automatique de l'affichage/impression des étiquettes
-          console.log("[Colisage] Validation réussie, déclenchement auto-print");
           triggerAutoPrintEtiquettes(createdColis, bl);
         }}
       />
