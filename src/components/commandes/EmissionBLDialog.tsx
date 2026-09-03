@@ -7,7 +7,7 @@ import { ResponsiveDialog } from "@/components/ui/responsive-dialog";
 import type { Commande } from "@/lib/commandes-api";
 import type { ColisageInput } from "@/lib/cycle-vente";
 
-interface ColisageDialogProps {
+interface EmissionBLDialogProps {
   commande: Commande | null;
   onClose: () => void;
   onSubmit: (params: ColisageInput) => void;
@@ -24,7 +24,7 @@ const defaultColisage = (): ColisageInput => ({
   decrementer_stock: true,
 });
 
-export function ColisageDialog({ commande, onClose, onSubmit, isPending }: ColisageDialogProps) {
+export function EmissionBLDialog({ commande, onClose, onSubmit, isPending }: EmissionBLDialogProps) {
   const [form, setForm] = useState<ColisageInput>(defaultColisage());
 
   return (
