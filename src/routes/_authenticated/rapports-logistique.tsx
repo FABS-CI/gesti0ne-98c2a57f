@@ -126,7 +126,7 @@ function RapportsLogistique() {
       pageTitle: "RAPPORT DES TOURNÉES",
       summary: [
         { label: "Nombre de tournées", value: String(rows.length) },
-        { label: "Coût total", value: totaux.cout.toLocaleString("fr-FR") + " FCFA" },
+        { label: "Coût total", value: __FMT__(totaux.cout) },
         { label: "Colis livrés", value: String(totaux.colis) },
         { label: "Cartons livrés", value: String(totaux.cartons) },
         { label: "Clients servis", value: String(totaux.clients) },

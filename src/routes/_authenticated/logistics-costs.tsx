@@ -187,7 +187,7 @@ function LogisticsCostsPage() {
         r.type_tournee ?? "—",
         r.nb_colis,
         r.nb_cartons,
-        Math.round(Number(r.cout_total ?? 0)).toLocaleString("fr-FR"),
+        __FMTN__(Math.round(Number(r.cout_total ?? 0))),
         statutMeta(r.validation_statut).label,
       ]),
       recap: [
@@ -374,7 +374,7 @@ function LogisticsCostsPage() {
                       <td className="border p-2 text-right tabular-nums">{r.nb_colis}</td>
                       <td className="border p-2 text-right tabular-nums">{r.nb_cartons}</td>
                       <td className="border p-2 text-right tabular-nums font-semibold">
-                        {Math.round(Number(r.cout_total ?? 0)).toLocaleString("fr-FR")}
+                        {__FMTN__(Math.round(Number(r.cout_total ?? 0)))}
                       </td>
                       <td className="border p-2">
                         <Badge variant="outline" className={`text-${meta.color}-700`}>

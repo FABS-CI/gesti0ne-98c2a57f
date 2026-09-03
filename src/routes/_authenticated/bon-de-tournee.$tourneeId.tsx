@@ -346,8 +346,7 @@ async function fetchFeuille(tourneeId: string): Promise<FeuilleData> {
 }
 
 function fmt(n: number): string {
-  return Math.round(n)
-    .toLocaleString("fr-FR")
+  return __FMTN__(Math.round(n))
     .replace(/[\u00a0\u202f]/g, " ");
 }
 
@@ -526,7 +525,7 @@ function FeuilleTourneePage() {
           />
           <Field
             label="Créé le"
-            value={t.created_at ? new Date(t.created_at).toLocaleString("fr-FR") : undefined}
+            value={t.created_at ? new __FMTN__(Date(t.created_at)) : undefined}
           />
           <Field label="Statut" value={STATUT_META[t.statut]?.label ?? t.statut} />
         </div>
