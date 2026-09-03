@@ -447,7 +447,7 @@ export const REPORTS: ReportDef[] = [
       return (data ?? []) as Record<string, unknown>[];
     },
     summary: (rows) => [
-      { label: "Total devis (FCFA)", value: formatFCFA(sum(rows, "montant_total")) },
+      { label: "Montant total", value: formatFCFA(sum(rows, "montant_total")) },
     ],
   },
 

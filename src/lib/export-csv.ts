@@ -170,7 +170,7 @@ export async function exportPdf(
   // Pied de page complet (adresse, banques, signature) uniquement
   // sur la dernière page ; les pages intermédiaires restent épurées.
   doc.setPage(total);
-  drawFooter(doc, "Le Gestionnaire de Stock", t, {
+  drawFooter(doc, "", t, {
     hideLogo: true,
     signatureColor: [0, 0, 0],
     signatureFontStyle: "bold",
