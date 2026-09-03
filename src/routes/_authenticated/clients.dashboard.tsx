@@ -106,7 +106,7 @@ function CrmDashboardPage() {
                   {
                     label: "CA cumulé",
                     value:
-                      __FMT__((data?.top_clients ?? [])
+                      formatFCFA((data?.top_clients ?? [])
                         .reduce((s, c) => s + Number(c.ca || 0), 0)),
                   },
                 ],
@@ -134,7 +134,7 @@ function CrmDashboardPage() {
                   {
                     label: "CA cumulé",
                     value:
-                      __FMT__((data?.top_representants ?? [])
+                      formatFCFA((data?.top_representants ?? [])
                         .reduce((s, r) => s + Number(r.ca || 0), 0)),
                   },
                 ],
@@ -168,7 +168,7 @@ function CrmDashboardPage() {
                   {
                     label: "CA cumulé",
                     value:
-                      __FMT__((data?.top_produits ?? [])
+                      formatFCFA((data?.top_produits ?? [])
                         .reduce((s, p) => s + Number(p.ca || 0), 0)),
                   },
                 ],
@@ -202,7 +202,7 @@ function CrmDashboardPage() {
                   {
                     label: "CA cumulé",
                     value:
-                      __FMT__((data?.flop_produits ?? [])
+                      formatFCFA((data?.flop_produits ?? [])
                         .reduce((s, p) => s + Number(p.ca || 0), 0)),
                   },
                 ],

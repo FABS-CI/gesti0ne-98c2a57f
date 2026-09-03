@@ -167,7 +167,7 @@ function EmployesPage() {
           {
             label: "Masse salariale brute",
             value:
-              __FMT__(employes
+              formatFCFA(employes
                 .filter((e) => e.actif)
                 .reduce((s, e) => s + (Number(e.salaire) || 0), 0)),
           },

@@ -32,7 +32,7 @@ export function NewTourneeCoutsCard({
         ))}
         <div className="flex items-center justify-between pt-2 border-t text-sm font-medium">
           <span>Total</span>
-          <span className="tabular-nums">{__FMTN__(coutTotal)}</span>
+          <span className="tabular-nums">{formatFCFA(coutTotal, false)}</span>
         </div>
       </CardContent>
     </Card>

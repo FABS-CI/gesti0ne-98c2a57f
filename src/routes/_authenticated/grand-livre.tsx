@@ -122,9 +122,9 @@ function GrandLivrePage() {
                         label: "Comptes distincts",
                         value: String(new Set(filtered.map((l) => l.compte)).size),
                       },
-                      { label: "Total débit", value: __FMT__(td) },
-                      { label: "Total crédit", value: __FMT__(tc) },
-                      { label: "Solde", value: __FMT__((td - tc)) },
+                      { label: "Total débit", value: formatFCFA(td) },
+                      { label: "Total crédit", value: formatFCFA(tc) },
+                      { label: "Solde", value: formatFCFA((td - tc)) },
                     ];
                   })(),
                 },

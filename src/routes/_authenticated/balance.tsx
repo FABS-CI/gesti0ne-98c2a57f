@@ -67,14 +67,14 @@ function BalancePage() {
                   pageTitle: "BALANCE GÉNÉRALE",
                   summary: [
                     { label: "Nombre de comptes", value: String(rows.length) },
-                    { label: "Total débit", value: __FMT__(totals.debit) },
+                    { label: "Total débit", value: formatFCFA(totals.debit) },
                     {
                       label: "Total crédit",
-                      value: __FMT__(totals.credit),
+                      value: formatFCFA(totals.credit),
                     },
                     {
                       label: "Solde net",
-                      value: __FMT__((totals.debit - totals.credit)),
+                      value: formatFCFA((totals.debit - totals.credit)),
                     },
                   ],
                 },

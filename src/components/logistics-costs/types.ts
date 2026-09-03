@@ -57,7 +57,7 @@ export function statutMeta(v: string) {
 }
 
 export function fmtFCFA(n: number | null | undefined): string {
-  return __FMT__(Math.round(Number(n ?? 0)));
+  return formatFCFA(Math.round(Number(n ?? 0)));
 }
 
 export function startOf(period: "day" | "week" | "month" | "year"): Date {
