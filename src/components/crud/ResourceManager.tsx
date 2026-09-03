@@ -296,18 +296,34 @@ export function ResourceManager({ config }: { config: ResourceConfig }) {
       filtres.push(`Statut : ${m?.label ?? statutFilter}`);
     }
     filtres.push(...describeFilters(advanced));
+    const isDateCol = (c: (typeof config.columns)[number]) =>
+      c.type === "date" || /date|validite|échéance|echeance/i.test(c.name);
+    const moneyCols = config.columns.filter((c) => c.type === "money");
+    const montantTotal = moneyCols.length
+      ? rows.reduce(
+          (s, r) => s + moneyCols.reduce((a, c) => a + (Number(r[c.name]) || 0), 0),
+          0,
+        )
+      : null;
     exportListePDF({
       titre: config.pdfExport?.title ?? config.title,
       colonnes: config.columns.map((c) => c.label),
       lignes: rows.map((r) =>
         config.columns.map((c) => {
           const v = r[c.name];
-          if (c.type === "money") return formatFCFA(Number(v ?? 0), false);
+          if (c.type === "money") return formatFCFA(Number(v ?? 0));
           if (c.type === "badge") return optionMeta(c.options, v)?.label ?? v ?? "";
+          if (isDateCol(c)) return v ? formatDate(v as string) : "";
           return v ?? "";
         }),
       ),
       filtres,
+      recap: [
+        { label: "Nombre total de lignes", valeur: String(rows.length) },
+        ...(montantTotal != null
+          ? [{ label: "Montant total", valeur: formatFCFA(montantTotal) }]
+          : []),
+      ],
       filename: config.pdfExport?.filename ?? config.csvName,
     });
   }
