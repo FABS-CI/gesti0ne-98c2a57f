@@ -186,6 +186,37 @@ export async function getRapportEvolution(
   return (data ?? []) as unknown as SerieTemp[];
 }
 
+/**
+ * Clé de normalisation identique à public.norm_key() côté base :
+ * minuscules, sans accents/espaces/tirets, pluriel simple retiré.
+ * Permet de fusionner « ABIDJAN / Abidjan », « college / colleges »…
+ */
+function normKey(v: string): string {
+  const s = v
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+  return s.length > 3 && s.endsWith("s") ? s.slice(0, -1) : s;
+}
+
+/** Déduplique une liste de libellés sur leur clé normalisée (garde le 1er libellé lisible). */
+function dedupeLabels(values: (string | null | undefined)[]): string[] {
+  const map = new Map<string, string>();
+  for (const raw of values) {
+    const v = (raw ?? "").trim();
+    if (!v) continue;
+    const k = normKey(v);
+    if (!k) continue;
+    const prev = map.get(k);
+    // Préfère un libellé « propre » (pas tout en majuscules) et le plus court
+    if (!prev || (prev === prev.toUpperCase() && v !== v.toUpperCase()) || v.length < prev.length) {
+      map.set(k, v);
+    }
+  }
+  return [...map.values()].sort((a, b) => a.localeCompare(b, "fr"));
+}
+
 /** Facettes filtres (produits, villes, représentants, types, niveaux, catégories, statuts). */
 export async function getRapportFacets() {
   const [prod, fac] = await Promise.all([
@@ -206,18 +237,17 @@ export async function getRapportFacets() {
     representants: string[];
     types: string[];
   };
-  const uniq = <T>(arr: (T | null | undefined)[]) =>
-    [...new Set(arr.filter((x): x is T => !!x))] as T[];
   return {
     produits: (prod.data ?? []).map((p) => ({ id: p.produit_id, titre: p.titre })),
-    niveaux: uniq((prod.data ?? []).map((p) => p.niveau)).sort(),
-    categories: uniq((prod.data ?? []).map((p) => p.categorie)).sort(),
-    villes: facets.villes ?? [],
-    representants: facets.representants ?? [],
-    types: facets.types ?? [],
+    niveaux: dedupeLabels((prod.data ?? []).map((p) => p.niveau)),
+    categories: dedupeLabels((prod.data ?? []).map((p) => p.categorie)),
+    villes: dedupeLabels(facets.villes ?? []),
+    representants: dedupeLabels(facets.representants ?? []),
+    types: dedupeLabels(facets.types ?? []),
     statuts: ["validee", "livree", "facturee"],
   };
 }
+
 
 /** Export Excel (XLSX) — respecte les colonnes/données fournies. */
 export async function exportXlsx(
