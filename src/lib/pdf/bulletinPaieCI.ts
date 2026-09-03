@@ -9,6 +9,8 @@
 // pour compat).
 // ---------------------------------------------------------------------------
 import type jsPDFType from "jspdf";
+import { formatFCFA } from "@/lib/format";
+
 import type autoTableType from "jspdf-autotable";
 import logoUrl from "@/assets/fabs-logo.png";
 
@@ -131,11 +133,11 @@ export const ENTREPRISE_FABS: BulletinEntreprise = {
 const stripNbsp = (s: string): string => s.replace(/[\u202F\u00A0]/g, " ");
 const fmt = (n: number | null | undefined): string => {
   if (n === null || n === undefined || Number.isNaN(Number(n)) || Number(n) === 0) return "";
-  return stripNbsp(new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(Number(n)));
+  return formatFCFA(Number(n), false);
 };
 const fmtAlways = (n: number | null | undefined): string => {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return "0";
-  return stripNbsp(new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(Number(n)));
+  return formatFCFA(Number(n), false);
 };
 
 const fmtTaux = (t: number | null | undefined): string => {

@@ -1,4 +1,6 @@
 import { getCurrentUser } from "@/lib/current-user";
+import { formatDateTime } from "@/lib/format";
+
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -168,7 +170,7 @@ function BackupPage() {
   }
 
   async function handleRestore(backup: BackupRow) {
-    if (!confirm(`ATTENTION : Vous allez restaurer l'ERP à l'état du ${new Date(backup.created_at).toLocaleString()}. Cette action peut écraser des données récentes. Continuer ?`)) return;
+    if (!confirm(`ATTENTION : Vous allez restaurer l'ERP à l'état du ${formatDateTime(backup.created_at)}. Cette action peut écraser des données récentes. Continuer ?`)) return;
     
     setRestoring(backup.backup_id);
     try {

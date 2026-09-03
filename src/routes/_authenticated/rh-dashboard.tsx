@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { formatFCFA } from "@/lib/format";
+
 import { useQuery } from "@tanstack/react-query";
 import {
   Users,
@@ -29,7 +31,7 @@ export const Route = createFileRoute("/_authenticated/rh-dashboard")({
 });
 
 function formatFCFA(n: number) {
-  return new Intl.NumberFormat("fr-FR").format(Math.round(n)) + " FCFA";
+  return formatFCFA(n);
 }
 
 const SEVERITE_STYLE: Record<string, string> = {
