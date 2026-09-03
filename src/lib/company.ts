@@ -68,3 +68,30 @@ export const CATEGORIES_PRODUIT: { value: string; label: string }[] = [
 export const CATEGORIE_LABEL: Record<string, string> = Object.fromEntries(
   CATEGORIES_PRODUIT.map((c) => [c.value, c.label]),
 );
+
+/**
+ * La base contient des variantes historiques d'un même type de client
+ * (« librairies » vs « librairie », « lycees » vs « lycee », casse/accents/espaces).
+ * On normalise vers la valeur canonique de TYPE_CLIENTS.
+ */
+export function normalizeTypeClient(value?: string | null): string {
+  const s = (value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+  if (!s) return "";
+  if (TYPE_COLOR[s]) return s;
+  if (s.endsWith("s") && TYPE_COLOR[s.slice(0, -1)]) return s.slice(0, -1);
+  if (TYPE_COLOR[`${s}s`]) return `${s}s`;
+  return s;
+}
+
+/** Toutes les variantes stockées en base correspondant à un type canonique. */
+export function typeClientVariants(value: string): string[] {
+  const base = normalizeTypeClient(value);
+  const set = new Set<string>([value, base, `${base}s`]);
+  if (base.endsWith("s")) set.add(base.slice(0, -1));
+  return [...set].filter(Boolean);
+}
