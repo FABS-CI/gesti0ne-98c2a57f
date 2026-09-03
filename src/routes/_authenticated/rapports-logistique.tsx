@@ -23,7 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { exportCsv } from "@/lib/export-csv";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
 
 export const Route = createFileRoute("/_authenticated/rapports-logistique")({
@@ -126,7 +126,7 @@ function RapportsLogistique() {
       pageTitle: "RAPPORT DES TOURNÉES",
       summary: [
         { label: "Nombre de tournées", value: String(rows.length) },
-        { label: "Coût total", value: totaux.cout.toLocaleString("fr-FR") + " FCFA" },
+        { label: "Coût total", value: formatFCFA(totaux.cout) },
         { label: "Colis livrés", value: String(totaux.colis) },
         { label: "Cartons livrés", value: String(totaux.cartons) },
         { label: "Clients servis", value: String(totaux.clients) },
@@ -226,7 +226,7 @@ function RapportsLogistique() {
                   rows.map((r) => (
                     <TableRow key={r.tournee_id}>
                       <TableCell className="font-mono text-xs">{r.reference}</TableCell>
-                      <TableCell>{r.date_tournee}</TableCell>
+                      <TableCell>{formatDate(r.date_tournee)}</TableCell>
                       <TableCell>{r.chauffeur_nom ?? "—"}</TableCell>
                       <TableCell>{r.statut}</TableCell>
                       <TableCell className="text-right">{r.nb_colis}</TableCell>

@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { formatDate } from "@/lib/format";
+
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Download, FileSpreadsheet, Plane, Printer, Search } from "lucide-react";
@@ -309,8 +311,8 @@ function CongesEnCoursPage() {
                   <TableCell>{DEPARTEMENT_LABEL[c.departement] ?? c.departement}</TableCell>
                   <TableCell>{c.poste ?? "—"}</TableCell>
                   <TableCell>{TYPE_CONGE_LABEL[c.type] ?? c.type}</TableCell>
-                  <TableCell>{c.date_debut}</TableCell>
-                  <TableCell>{c.date_fin}</TableCell>
+                  <TableCell>{formatDate(c.date_debut)}</TableCell>
+                  <TableCell>{formatDate(c.date_fin)}</TableCell>
                   <TableCell className="text-right">{c.jours}</TableCell>
                   <TableCell>
                     <Badge variant="default" style={{ backgroundColor: "#10B981" }}>

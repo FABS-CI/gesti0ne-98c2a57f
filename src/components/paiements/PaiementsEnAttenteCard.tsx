@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Can } from "@/components/rbac/Can";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { MODE_PAIEMENT_LABEL } from "@/lib/paiements-api";
 import {
   usePaiementsEnAttente,
@@ -60,7 +60,7 @@ export function PaiementsEnAttenteCard({ exerciceId }: { exerciceId?: string | n
                 {paiements.map((p) => (
                   <TableRow key={p.paiement_id}>
                     <TableCell className="font-medium">{p.reference}</TableCell>
-                    <TableCell>{p.date_paiement}</TableCell>
+                    <TableCell>{formatDate(p.date_paiement)}</TableCell>
                     <TableCell>{p.client_nom ?? "—"}</TableCell>
                     <TableCell>{MODE_PAIEMENT_LABEL[p.mode_paiement] ?? p.mode_paiement}</TableCell>
                     <TableCell className="text-right font-medium">{formatFCFA(Number(p.montant))}</TableCell>

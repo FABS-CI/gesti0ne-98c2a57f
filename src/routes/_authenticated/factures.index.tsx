@@ -23,7 +23,7 @@ import { FneRowActions } from "@/components/fne/FneRowActions";
 import { EmptyState } from "@/components/common/EmptyState";
 import type { FNEStatus } from "@/lib/fne-api";
 
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { exportCsv } from "@/lib/export-csv";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useExerciceConsulteId } from "@/contexts/ExerciceContext";
@@ -183,9 +183,9 @@ function FacturesPage() {
             label: "Factures annulées",
             value: String(factures.filter((f) => f.statut === "annulee").length),
           },
-          { label: "Total facturé", value: totals.total.toLocaleString("fr-FR") + " FCFA" },
-          { label: "Total encaissé", value: totals.paye.toLocaleString("fr-FR") + " FCFA" },
-          { label: "Reste à recouvrer", value: totals.du.toLocaleString("fr-FR") + " FCFA" },
+          { label: "Total facturé", value: formatFCFA(totals.total) },
+          { label: "Total encaissé", value: formatFCFA(totals.paye) },
+          { label: "Reste à recouvrer", value: formatFCFA(totals.du) },
         ],
       },
     );
@@ -212,9 +212,9 @@ function FacturesPage() {
         f.reference,
         f.date_facture,
         f.client_nom ?? "",
-        Number(f.montant_total).toLocaleString("fr-FR"),
-        Number(f.montant_paye).toLocaleString("fr-FR"),
-        (Number(f.montant_total) - Number(f.montant_paye)).toLocaleString("fr-FR"),
+        formatFCFA(Number(f.montant_total), false),
+        formatFCFA(Number(f.montant_paye), false),
+        formatFCFA((Number(f.montant_total) - Number(f.montant_paye)), false),
         STATUT_FACTURE_LABEL[f.statut]?.label ?? f.statut,
       ]),
       filtres,
@@ -390,7 +390,7 @@ function FacturesPage() {
                           {f.reference}
                         </div>
                       </TableCell>
-                      <TableCell className="whitespace-nowrap">{f.date_facture}</TableCell>
+                      <TableCell className="whitespace-nowrap">{formatDate(f.date_facture)}</TableCell>
                       <TableCell className="font-medium">{f.client_nom}</TableCell>
                       <TableCell className="text-right">
                         {formatFCFA(Number(f.montant_total))}

@@ -1,4 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { formatDate } from "@/lib/format";
+
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, Plus, Check, X, Pencil, Trash2 } from "lucide-react";
@@ -141,8 +143,8 @@ function CongesListPage() {
                   <TableRow key={c.conge_id}>
                     <TableCell className="font-medium">{c.employes?.nom_complet ?? "—"}</TableCell>
                     <TableCell>{TYPE_CONGE_LABEL[c.type] ?? c.type}</TableCell>
-                    <TableCell className="whitespace-nowrap">{c.date_debut}</TableCell>
-                    <TableCell className="whitespace-nowrap">{c.date_fin}</TableCell>
+                    <TableCell className="whitespace-nowrap">{formatDate(c.date_debut)}</TableCell>
+                    <TableCell className="whitespace-nowrap">{formatDate(c.date_fin)}</TableCell>
                     <TableCell className="max-w-[200px] truncate">{c.motif ?? "—"}</TableCell>
                     <TableCell>
                       <Badge

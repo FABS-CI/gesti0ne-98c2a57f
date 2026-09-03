@@ -1,3 +1,4 @@
+import { formatFCFA } from "@/lib/format";
 export type TourneeCout = {
   tournee_id: string;
   reference: string;
@@ -57,7 +58,7 @@ export function statutMeta(v: string) {
 }
 
 export function fmtFCFA(n: number | null | undefined): string {
-  return Math.round(Number(n ?? 0)).toLocaleString("fr-FR") + " FCFA";
+  return formatFCFA(Math.round(Number(n ?? 0)));
 }
 
 export function startOf(period: "day" | "week" | "month" | "year"): Date {

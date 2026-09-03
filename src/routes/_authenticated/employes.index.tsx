@@ -167,10 +167,9 @@ function EmployesPage() {
           {
             label: "Masse salariale brute",
             value:
-              employes
+              formatFCFA(employes
                 .filter((e) => e.actif)
-                .reduce((s, e) => s + (Number(e.salaire) || 0), 0)
-                .toLocaleString("fr-FR") + " FCFA",
+                .reduce((s, e) => s + (Number(e.salaire) || 0), 0)),
           },
         ],
       },

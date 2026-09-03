@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { formatFCFA } from "@/lib/format";
+
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -187,7 +189,7 @@ function LogisticsCostsPage() {
         r.type_tournee ?? "—",
         r.nb_colis,
         r.nb_cartons,
-        Math.round(Number(r.cout_total ?? 0)).toLocaleString("fr-FR"),
+        formatFCFA(Math.round(Number(r.cout_total ?? 0)), false),
         statutMeta(r.validation_statut).label,
       ]),
       recap: [
@@ -374,7 +376,7 @@ function LogisticsCostsPage() {
                       <td className="border p-2 text-right tabular-nums">{r.nb_colis}</td>
                       <td className="border p-2 text-right tabular-nums">{r.nb_cartons}</td>
                       <td className="border p-2 text-right tabular-nums font-semibold">
-                        {Math.round(Number(r.cout_total ?? 0)).toLocaleString("fr-FR")}
+                        {formatFCFA(Math.round(Number(r.cout_total ?? 0)), false)}
                       </td>
                       <td className="border p-2">
                         <Badge variant="outline" className={`text-${meta.color}-700`}>

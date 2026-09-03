@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { formatFCFA } from "@/lib/format";
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,7 +46,7 @@ const MODULES = [
 ];
 
 function fmt(n: number) {
-  return new Intl.NumberFormat("fr-FR").format(n);
+  return formatFCFA(n, false);
 }
 
 function SeuilsPage() {

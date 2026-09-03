@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { formatFCFA } from "@/lib/format";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -254,7 +255,7 @@ function DataQualityPage() {
                     <Badge variant="outline">{o.statut}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    {o.montant?.toLocaleString("fr-FR") ?? "—"}
+                    {formatFCFA(o.montant)}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {new Date(o.cree_le).toLocaleDateString("fr-FR")}

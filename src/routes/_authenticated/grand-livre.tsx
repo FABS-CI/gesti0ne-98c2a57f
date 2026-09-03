@@ -122,9 +122,9 @@ function GrandLivrePage() {
                         label: "Comptes distincts",
                         value: String(new Set(filtered.map((l) => l.compte)).size),
                       },
-                      { label: "Total débit", value: td.toLocaleString("fr-FR") + " FCFA" },
-                      { label: "Total crédit", value: tc.toLocaleString("fr-FR") + " FCFA" },
-                      { label: "Solde", value: (td - tc).toLocaleString("fr-FR") + " FCFA" },
+                      { label: "Total débit", value: formatFCFA(td) },
+                      { label: "Total crédit", value: formatFCFA(tc) },
+                      { label: "Solde", value: formatFCFA((td - tc)) },
                     ];
                   })(),
                 },

@@ -1,4 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatFCFA } from "@/lib/format";
+
 import { Input } from "@/components/ui/input";
 import { Field } from "./parts";
 import { COST_FIELDS, type Tournee } from "./types";
@@ -42,7 +44,7 @@ export function TourneeCoutsCard({
         ))}
         <div className="flex items-center justify-between pt-2 border-t text-sm font-medium">
           <span>Total</span>
-          <span className="tabular-nums">{coutTotal.toLocaleString("fr-FR")}</span>
+          <span className="tabular-nums">{formatFCFA(coutTotal, false)}</span>
         </div>
       </CardContent>
     </Card>

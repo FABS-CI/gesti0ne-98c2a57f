@@ -67,14 +67,14 @@ function BalancePage() {
                   pageTitle: "BALANCE GÉNÉRALE",
                   summary: [
                     { label: "Nombre de comptes", value: String(rows.length) },
-                    { label: "Total débit", value: totals.debit.toLocaleString("fr-FR") + " FCFA" },
+                    { label: "Total débit", value: formatFCFA(totals.debit) },
                     {
                       label: "Total crédit",
-                      value: totals.credit.toLocaleString("fr-FR") + " FCFA",
+                      value: formatFCFA(totals.credit),
                     },
                     {
                       label: "Solde net",
-                      value: (totals.debit - totals.credit).toLocaleString("fr-FR") + " FCFA",
+                      value: formatFCFA((totals.debit - totals.credit)),
                     },
                   ],
                 },

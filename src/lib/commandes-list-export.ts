@@ -1,4 +1,6 @@
 import { STATUT_LABEL, type Commande } from "@/lib/commandes-api";
+import { formatFCFA } from "@/lib/format";
+
 import { exportCsv } from "@/lib/export-csv";
 import { exportListePDF } from "@/lib/pdf/exportListe";
 import { describeFilters, type AdvancedFilters } from "@/components/search/AdvancedSearchBar";
@@ -27,7 +29,7 @@ export function exportCommandesCsv(items: Commande[]) {
           label: "Clients distincts",
           value: String(new Set(items.map((c) => c.client_nom).filter(Boolean)).size),
         },
-        { label: "Montant total", value: totalMt.toLocaleString("fr-FR") + " FCFA" },
+        { label: "Montant total", value: formatFCFA(totalMt) },
         ...Object.entries(statutCount).map(([k, v]) => ({
           label: STATUT_LABEL[k]?.label ?? k,
           value: String(v),
@@ -56,7 +58,7 @@ export function exportCommandesPdf(
       c.client_nom ?? "",
       c.ville ?? "",
       STATUT_LABEL[c.statut]?.label ?? c.statut,
-      Number(c.montant_total).toLocaleString("fr-FR"),
+      formatFCFA(Number(c.montant_total), false),
     ]),
     filtres,
     filename: "commandes",

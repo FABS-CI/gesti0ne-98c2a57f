@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { genererAlertes } from "@/lib/notifications-api";
 import { toast } from "sonner";
@@ -110,19 +110,19 @@ async function loadDashboardLogistique(): Promise<{
       alertes.push({
         id: `${v.vehicule_id}-ent`,
         type: "Entretien",
-        label: `${im} — entretien prévu le ${v.date_prochain_entretien}`,
+        label: `${im} — entretien prévu le ${formatDate(v.date_prochain_entretien)}`,
       });
     if (v.date_expiration_assurance && v.date_expiration_assurance <= dans30)
       alertes.push({
         id: `${v.vehicule_id}-ass`,
         type: "Assurance",
-        label: `${im} — assurance expire le ${v.date_expiration_assurance}`,
+        label: `${im} — assurance expire le ${formatDate(v.date_expiration_assurance)}`,
       });
     if (v.date_expiration_visite_technique && v.date_expiration_visite_technique <= dans30)
       alertes.push({
         id: `${v.vehicule_id}-vt`,
         type: "Visite technique",
-        label: `${im} — visite technique expire le ${v.date_expiration_visite_technique}`,
+        label: `${im} — visite technique expire le ${formatDate(v.date_expiration_visite_technique)}`,
       });
   });
   return { stats, alertes };

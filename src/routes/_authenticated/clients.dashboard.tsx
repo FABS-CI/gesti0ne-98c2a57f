@@ -106,9 +106,8 @@ function CrmDashboardPage() {
                   {
                     label: "CA cumulé",
                     value:
-                      (data?.top_clients ?? [])
-                        .reduce((s, c) => s + Number(c.ca || 0), 0)
-                        .toLocaleString("fr-FR") + " FCFA",
+                      formatFCFA((data?.top_clients ?? [])
+                        .reduce((s, c) => s + Number(c.ca || 0), 0)),
                   },
                 ],
               },
@@ -135,9 +134,8 @@ function CrmDashboardPage() {
                   {
                     label: "CA cumulé",
                     value:
-                      (data?.top_representants ?? [])
-                        .reduce((s, r) => s + Number(r.ca || 0), 0)
-                        .toLocaleString("fr-FR") + " FCFA",
+                      formatFCFA((data?.top_representants ?? [])
+                        .reduce((s, r) => s + Number(r.ca || 0), 0)),
                   },
                 ],
               },
@@ -170,9 +168,8 @@ function CrmDashboardPage() {
                   {
                     label: "CA cumulé",
                     value:
-                      (data?.top_produits ?? [])
-                        .reduce((s, p) => s + Number(p.ca || 0), 0)
-                        .toLocaleString("fr-FR") + " FCFA",
+                      formatFCFA((data?.top_produits ?? [])
+                        .reduce((s, p) => s + Number(p.ca || 0), 0)),
                   },
                 ],
               },
@@ -205,9 +202,8 @@ function CrmDashboardPage() {
                   {
                     label: "CA cumulé",
                     value:
-                      (data?.flop_produits ?? [])
-                        .reduce((s, p) => s + Number(p.ca || 0), 0)
-                        .toLocaleString("fr-FR") + " FCFA",
+                      formatFCFA((data?.flop_produits ?? [])
+                        .reduce((s, p) => s + Number(p.ca || 0), 0)),
                   },
                 ],
               },

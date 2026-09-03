@@ -1,4 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { formatFCFA } from "@/lib/format";
+
 import {
   Activity,
   Users,
@@ -63,7 +65,7 @@ export function AuditStats({ kpi, totalEvents }: Props) {
             <Activity className="h-6 w-6 text-[#F97316]" />
             <div className="text-sm text-muted-foreground">Événements sur la période</div>
             <div className="ml-auto text-2xl font-bold tabular-nums">
-              {totalEvents.toLocaleString("fr-FR")}
+              {formatFCFA(totalEvents, false)}
             </div>
           </CardContent>
         </Card>
@@ -75,7 +77,7 @@ export function AuditStats({ kpi, totalEvents }: Props) {
               <Icon className={`h-5 w-5 shrink-0 ${color}`} />
               <div className="min-w-0">
                 <div className="text-lg font-bold tabular-nums leading-tight">
-                  {v(key).toLocaleString("fr-FR")}
+                  {formatFCFA(v(key), false)}
                 </div>
                 <div className="truncate text-[11px] text-muted-foreground">{label}</div>
               </div>

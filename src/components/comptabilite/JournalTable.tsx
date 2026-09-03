@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ResponsiveTable } from "@/components/layout/ResponsiveTable";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
 import { JOURNAL_COLORS, type Ecriture } from "@/lib/comptabilite-helpers";
 
 interface Props {
@@ -70,7 +70,7 @@ export function JournalTable({ isLoading, ecritures, expanded, onToggle }: Props
                         )}
                       </TableCell>
                       <TableCell className="font-mono text-xs">{e.reference}</TableCell>
-                      <TableCell>{e.date_ecriture}</TableCell>
+                      <TableCell>{formatDate(e.date_ecriture)}</TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"

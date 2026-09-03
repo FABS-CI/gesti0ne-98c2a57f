@@ -1,4 +1,6 @@
 import { exportCsv } from "@/lib/export-csv";
+import { formatFCFA } from "@/lib/format";
+
 import { TYPES_INVENTAIRE, type InventaireLigne } from "@/lib/inventaires-api";
 
 type Inv = {
@@ -51,7 +53,7 @@ export function exportInventaireCsv(
     0,
   );
   const fmt = (n: number) =>
-    new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(n) + " FCFA";
+    formatFCFA(n);
   const typeLabel =
     TYPES_INVENTAIRE.find((t) => t.value === inv.type_inventaire)?.label ?? inv.type_inventaire;
   const dateFr = new Date(inv.date_inventaire).toLocaleDateString("fr-FR");

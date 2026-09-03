@@ -1,4 +1,6 @@
 import { listClients } from "@/lib/clients-api";
+import { formatFCFA } from "@/lib/format";
+
 import { TYPE_COLOR } from "@/lib/company";
 import { exportCsv } from "@/lib/export-csv";
 import type { CrmFilters } from "@/lib/crm-api";
@@ -44,7 +46,7 @@ export async function exportClientsPdf(filters: {
       { label: "Clients actifs", value: String(actifs) },
       { label: "Clients débiteurs", value: String(debiteurs) },
       { label: "Clients créditeurs", value: String(crediteurs) },
-      { label: "Encours total", value: totalSolde.toLocaleString("fr-FR") + " FCFA" },
+      { label: "Encours total", value: formatFCFA(totalSolde) },
     ],
   });
   return all.items.length;
