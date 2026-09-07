@@ -309,21 +309,11 @@ export class BaseDocument {
 
   async drawClientAndQr(y: number): Promise<number> {
     const isBR = this.data.type === "Bon de Réception";
-    const boxH = 90;
+    // Règle globale : le bloc client n'apparaît pas sur les Bons de commande
+    // ni sur les Proformas (s'applique à tous les documents de ces types).
+    const hideClientBlock = this.data.type === "Commande" || this.data.type === "Proforma";
     const boxW = (CONTENT_W - 15) / 2;
-    
-    this.page.drawRectangle({
-      x: MARGINS.x,
-      y: y - boxH,
-      width: boxW,
-      height: boxH,
-      color: COLORS.grisClair,
-      opacity: 0.5,
-    });
-    const isBL = this.data.type === "Bon de Livraison";
-    this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
-    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 12, font: this.fonts.bold, color: COLORS.bleuFabs });
-    
+
     const kv = [
       { l: "Ville", v: this.data.client.ville ?? "—" },
       { l: "Représentant", v: this.data.client.representant ?? "—" },
@@ -332,18 +322,36 @@ export class BaseDocument {
     if (this.data.client.modePaiement) {
       kv.push({ l: "Paiement", v: this.data.client.modePaiement });
     }
-    const isFacture = this.data.type === "Facture";
-    const isProforma = this.data.type === "Proforma";
-    const grandTexte = isFacture || isProforma;
-    const labelSize = grandTexte ? 10 : 8;
-    const valueSize = grandTexte ? 11 : 8;
-    const lineGap = grandTexte ? 15 : 11;
-    const valueX = MARGINS.x + (grandTexte ? 100 : 80);
-    kv.forEach((item, i) => {
-      const lineY = y - 48 - i * lineGap;
-      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: lineY, size: labelSize, font: this.fonts.regular });
-      this.page.drawText(item.v, { x: valueX, y: lineY, size: valueSize, font: this.fonts.bold });
-    });
+    const grandTexte = this.data.type === "Facture";
+    const titleSize = grandTexte ? 9 : 7;
+    const nameSize = grandTexte ? 15 : 12;
+    const labelSize = grandTexte ? 11 : 8;
+    const valueSize = grandTexte ? 12 : 8;
+    const lineGap = grandTexte ? 18 : 11;
+    const firstLineOffset = grandTexte ? 56 : 48;
+    const valueX = MARGINS.x + (grandTexte ? 110 : 80);
+    const boxH = Math.max(90, firstLineOffset + kv.length * lineGap + 4);
+
+    if (!hideClientBlock) {
+      this.page.drawRectangle({
+        x: MARGINS.x,
+        y: y - boxH,
+        width: boxW,
+        height: boxH,
+        color: COLORS.grisClair,
+        opacity: 0.5,
+      });
+      const isBL = this.data.type === "Bon de Livraison";
+      this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: titleSize, font: this.fonts.bold, color: COLORS.bleuFabs });
+      this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 34, size: nameSize, font: this.fonts.bold, color: COLORS.bleuFabs });
+
+      kv.forEach((item, i) => {
+        const lineY = y - firstLineOffset - i * lineGap;
+        this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: lineY, size: labelSize, font: this.fonts.regular });
+        this.page.drawText(item.v, { x: valueX, y: lineY, size: valueSize, font: this.fonts.bold });
+      });
+    }
+
 
 
     const { shouldShowQr } = await import("./docTypeConfig");
