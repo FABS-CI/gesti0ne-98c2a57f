@@ -228,7 +228,7 @@ export class BaseDocument {
     }
 
     const details = [
-      { l: "Date", v: this.data.date.includes('T') ? this.data.date.split('T')[0].split('-').reverse().join('/') : this.data.date },
+      { l: "Date", v: formatDocDate(this.data.date) },
       { l: "Heure", v: this.data.heure ?? new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }) },
     ];
     
@@ -309,7 +309,11 @@ export class BaseDocument {
 
   async drawClientAndQr(y: number): Promise<number> {
     const isBR = this.data.type === "Bon de Réception";
-    const boxH = 90;
+    const grandBloc =
+      this.data.type === "Facture" ||
+      this.data.type === "Proforma" ||
+      this.data.type === "Bon de Livraison";
+    const boxH = grandBloc ? 110 : 90;
     const boxW = (CONTENT_W - 15) / 2;
     
     this.page.drawRectangle({
