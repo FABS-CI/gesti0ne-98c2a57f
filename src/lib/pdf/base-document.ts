@@ -309,21 +309,11 @@ export class BaseDocument {
 
   async drawClientAndQr(y: number): Promise<number> {
     const isBR = this.data.type === "Bon de Réception";
-    const boxH = 90;
+    // Règle globale : le bloc client n'apparaît pas sur les Bons de commande
+    // ni sur les Proformas (s'applique à tous les documents de ces types).
+    const hideClientBlock = this.data.type === "Commande" || this.data.type === "Proforma";
     const boxW = (CONTENT_W - 15) / 2;
-    
-    this.page.drawRectangle({
-      x: MARGINS.x,
-      y: y - boxH,
-      width: boxW,
-      height: boxH,
-      color: COLORS.grisClair,
-      opacity: 0.5,
-    });
-    const isBL = this.data.type === "Bon de Livraison";
-    this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
-    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 12, font: this.fonts.bold, color: COLORS.bleuFabs });
-    
+
     const kv = [
       { l: "Ville", v: this.data.client.ville ?? "—" },
       { l: "Représentant", v: this.data.client.representant ?? "—" },
@@ -332,18 +322,36 @@ export class BaseDocument {
     if (this.data.client.modePaiement) {
       kv.push({ l: "Paiement", v: this.data.client.modePaiement });
     }
-    const isFacture = this.data.type === "Facture";
-    const isProforma = this.data.type === "Proforma";
-    const grandTexte = isFacture || isProforma;
-    const labelSize = grandTexte ? 10 : 8;
-    const valueSize = grandTexte ? 11 : 8;
-    const lineGap = grandTexte ? 15 : 11;
-    const valueX = MARGINS.x + (grandTexte ? 100 : 80);
-    kv.forEach((item, i) => {
-      const lineY = y - 48 - i * lineGap;
-      this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: lineY, size: labelSize, font: this.fonts.regular });
-      this.page.drawText(item.v, { x: valueX, y: lineY, size: valueSize, font: this.fonts.bold });
-    });
+    const grandTexte = this.data.type === "Facture";
+    const titleSize = grandTexte ? 9 : 7;
+    const nameSize = grandTexte ? 15 : 12;
+    const labelSize = grandTexte ? 11 : 8;
+    const valueSize = grandTexte ? 12 : 8;
+    const lineGap = grandTexte ? 18 : 11;
+    const firstLineOffset = grandTexte ? 56 : 48;
+    const valueX = MARGINS.x + (grandTexte ? 110 : 80);
+    const boxH = Math.max(90, firstLineOffset + kv.length * lineGap + 4);
+
+    if (!hideClientBlock) {
+      this.page.drawRectangle({
+        x: MARGINS.x,
+        y: y - boxH,
+        width: boxW,
+        height: boxH,
+        color: COLORS.grisClair,
+        opacity: 0.5,
+      });
+      const isBL = this.data.type === "Bon de Livraison";
+      this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: titleSize, font: this.fonts.bold, color: COLORS.bleuFabs });
+      this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 34, size: nameSize, font: this.fonts.bold, color: COLORS.bleuFabs });
+
+      kv.forEach((item, i) => {
+        const lineY = y - firstLineOffset - i * lineGap;
+        this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: lineY, size: labelSize, font: this.fonts.regular });
+        this.page.drawText(item.v, { x: valueX, y: lineY, size: valueSize, font: this.fonts.bold });
+      });
+    }
+
 
 
     const { shouldShowQr } = await import("./docTypeConfig");
@@ -352,7 +360,9 @@ export class BaseDocument {
     // Règle métier : QR Code pour les FACTURES et les PROFORMAS
     // On vérifie à la fois le type explicite ET le préfixe de référence
     const qrAutorise = this.data.type === "Facture" || this.data.type === "Proforma";
+    let qrAffiche = false;
     if (qrAutorise && shouldShowQr(prefix)) {
+      qrAffiche = true;
       const qrX = MARGINS.x + boxW + 15;
       this.page.drawRectangle({
         x: qrX,
@@ -369,7 +379,7 @@ export class BaseDocument {
         const qrDataUrl = await QRCode.toDataURL(url, { margin: 0, width: 120 });
         const qrImage = await this.doc.embedPng(qrDataUrl);
         this.page.drawImage(qrImage, { x: qrX + 10, y: y - boxH + 15, width: 60, height: 60 });
-        
+
         this.page.drawText("Scanner pour vérifier", { x: qrX + 80, y: y - 40, size: 7, font: this.fonts.regular });
         this.page.drawText("l'authenticité", { x: qrX + 80, y: y - 50, size: 7, font: this.fonts.regular });
       } catch (e) {
@@ -377,6 +387,7 @@ export class BaseDocument {
       }
     }
 
+    if (hideClientBlock && !qrAffiche) return y;
     return y - boxH - 20;
   }
 
@@ -491,6 +502,43 @@ export class BaseDocument {
     return curY;
   }
 
+  /**
+   * Mention de clôture dynamique selon le type de document (générique,
+   * jamais liée à un numéro de document précis).
+   */
+  mentionCloture(): string {
+    switch (this.data.type) {
+      case "Facture":
+        return "Arrêté la présente facture à la somme de :";
+      case "Commande":
+        return "Arrêté la présente commande à la somme de :";
+      case "Proforma":
+        return "Arrêté le présent proforma à la somme de :";
+      default:
+        return "Arrêté le présent document à la somme de :";
+    }
+  }
+
+  /** Retour à la ligne automatique en mesurant avec la police réellement utilisée. */
+  wrapTextWithFont(text: string, width: number, fontSize: number, font: PDFFont): string[] {
+    if (!text) return [""];
+    const words = text.split(/\s+/).filter(Boolean);
+    if (words.length === 0) return [""];
+    const lines: string[] = [];
+    let currentLine = words[0];
+    for (let i = 1; i < words.length; i++) {
+      const testLine = `${currentLine} ${words[i]}`;
+      if (font.widthOfTextAtSize(testLine, fontSize) <= width) {
+        currentLine = testLine;
+      } else {
+        lines.push(currentLine);
+        currentLine = words[i];
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  }
+
   wrapText(text: string, width: number, fontSize: number): string[] {
     if (!text) return [""];
     const words = text.split(/\s+/);
@@ -585,22 +633,29 @@ export class BaseDocument {
     });
 
     curY -= 40;
-    
-    const fullText = `Arrêté le présent document à la somme de : ${this.totals.montantLettres}`;
+
+    const fullText = `${this.mentionCloture()} ${this.totals.montantLettres}`;
     const fontSize = 10;
-    const wrappedLines = this.wrapText(fullText, CONTENT_W, fontSize);
-    
+    const lineH = fontSize * 1.35;
+    const wrappedLines = this.wrapTextWithFont(fullText, CONTENT_W, fontSize, this.fonts.bold);
+
+    // Saut de page si la mention (1 à n lignes) ne tient pas au bas de la page.
+    if (curY - wrappedLines.length * lineH < MARGINS.bottom + 20) {
+      this.addNewPage();
+      curY = PAGE.h - 120;
+    }
+
     wrappedLines.forEach((line, idx) => {
       this.page.drawText(line, {
         x: MARGINS.x,
-        y: curY - (idx * (fontSize * 1.3)),
+        y: curY - (idx * lineH),
         size: fontSize,
         font: this.fonts.bold,
         color: COLORS.noir
       });
     });
 
-    return curY - (wrappedLines.length * (fontSize * 1.3)) - 10;
+    return curY - (wrappedLines.length * lineH) - 10;
   }
 
   drawNotes(y: number): number {
