@@ -344,15 +344,13 @@ export class BaseDocument {
     if (this.data.client.modePaiement) {
       kv.push({ l: "Paiement", v: this.data.client.modePaiement });
     }
-    const isFacture = this.data.type === "Facture";
-    const isProforma = this.data.type === "Proforma";
-    const grandTexte = isFacture || isProforma;
+    const grandTexte = grandBloc;
     const labelSize = grandTexte ? 10 : 8;
     const valueSize = grandTexte ? 11 : 8;
-    const lineGap = grandTexte ? 15 : 11;
+    const lineGap = grandTexte ? 16 : 11;
     const valueX = MARGINS.x + (grandTexte ? 100 : 80);
     kv.forEach((item, i) => {
-      const lineY = y - 48 - i * lineGap;
+      const lineY = y - (grandTexte ? 58 : 48) - i * lineGap;
       this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: lineY, size: labelSize, font: this.fonts.regular });
       this.page.drawText(item.v, { x: valueX, y: lineY, size: valueSize, font: this.fonts.bold });
     });
