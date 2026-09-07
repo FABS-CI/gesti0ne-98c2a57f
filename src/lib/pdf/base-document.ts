@@ -596,22 +596,29 @@ export class BaseDocument {
     });
 
     curY -= 40;
-    
-    const fullText = `Arrêté le présent document à la somme de : ${this.totals.montantLettres}`;
+
+    const fullText = `${this.mentionCloture()} ${this.totals.montantLettres}`;
     const fontSize = 10;
-    const wrappedLines = this.wrapText(fullText, CONTENT_W, fontSize);
-    
+    const lineH = fontSize * 1.35;
+    const wrappedLines = this.wrapTextWithFont(fullText, CONTENT_W, fontSize, this.fonts.bold);
+
+    // Saut de page si la mention (1 à n lignes) ne tient pas au bas de la page.
+    if (curY - wrappedLines.length * lineH < MARGINS.bottom + 20) {
+      this.addNewPage();
+      curY = PAGE.h - 120;
+    }
+
     wrappedLines.forEach((line, idx) => {
       this.page.drawText(line, {
         x: MARGINS.x,
-        y: curY - (idx * (fontSize * 1.3)),
+        y: curY - (idx * lineH),
         size: fontSize,
         font: this.fonts.bold,
         color: COLORS.noir
       });
     });
 
-    return curY - (wrappedLines.length * (fontSize * 1.3)) - 10;
+    return curY - (wrappedLines.length * lineH) - 10;
   }
 
   drawNotes(y: number): number {
