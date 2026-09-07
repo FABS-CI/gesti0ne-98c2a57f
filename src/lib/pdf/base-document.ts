@@ -9,7 +9,15 @@ import {
   type RGB,
 } from "pdf-lib";
 import fabsLogoUrl from "@/assets/fabs-logo.png";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
+
+/** Toutes les dates des documents ERP : JJ/MM/AAAA */
+const formatDocDate = (d: string) => {
+  if (!d) return "—";
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(d)) return d;
+  const out = formatDate(d);
+  return out === "—" ? d : out;
+};
 import { buildQrUrl } from "./qr-logic";
 
 // --- Configuration & Couleurs ---
