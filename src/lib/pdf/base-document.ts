@@ -9,7 +9,15 @@ import {
   type RGB,
 } from "pdf-lib";
 import fabsLogoUrl from "@/assets/fabs-logo.png";
-import { formatFCFA } from "@/lib/format";
+import { formatFCFA, formatDate } from "@/lib/format";
+
+/** Toutes les dates des documents ERP : JJ/MM/AAAA */
+const formatDocDate = (d: string) => {
+  if (!d) return "—";
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(d)) return d;
+  const out = formatDate(d);
+  return out === "—" ? d : out;
+};
 import { buildQrUrl } from "./qr-logic";
 
 // --- Configuration & Couleurs ---
@@ -228,7 +236,7 @@ export class BaseDocument {
     }
 
     const details = [
-      { l: "Date", v: this.data.date.includes('T') ? this.data.date.split('T')[0].split('-').reverse().join('/') : this.data.date },
+      { l: "Date", v: formatDocDate(this.data.date) },
       { l: "Heure", v: this.data.heure ?? new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }) },
     ];
     
@@ -309,7 +317,11 @@ export class BaseDocument {
 
   async drawClientAndQr(y: number): Promise<number> {
     const isBR = this.data.type === "Bon de Réception";
-    const boxH = 90;
+    const grandBloc =
+      this.data.type === "Facture" ||
+      this.data.type === "Proforma" ||
+      this.data.type === "Bon de Livraison";
+    const boxH = grandBloc ? 110 : 90;
     const boxW = (CONTENT_W - 15) / 2;
     
     this.page.drawRectangle({
@@ -321,8 +333,8 @@ export class BaseDocument {
       opacity: 0.5,
     });
     const isBL = this.data.type === "Bon de Livraison";
-    this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 15, size: 7, font: this.fonts.bold, color: COLORS.bleuFabs });
-    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 32, size: 12, font: this.fonts.bold, color: COLORS.bleuFabs });
+    this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 18, size: grandBloc ? 9 : 7, font: this.fonts.bold, color: COLORS.bleuFabs });
+    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 38, size: grandBloc ? 14 : 12, font: this.fonts.bold, color: COLORS.bleuFabs });
     
     const kv = [
       { l: "Ville", v: this.data.client.ville ?? "—" },
@@ -332,15 +344,13 @@ export class BaseDocument {
     if (this.data.client.modePaiement) {
       kv.push({ l: "Paiement", v: this.data.client.modePaiement });
     }
-    const isFacture = this.data.type === "Facture";
-    const isProforma = this.data.type === "Proforma";
-    const grandTexte = isFacture || isProforma;
+    const grandTexte = grandBloc;
     const labelSize = grandTexte ? 10 : 8;
     const valueSize = grandTexte ? 11 : 8;
-    const lineGap = grandTexte ? 15 : 11;
+    const lineGap = grandTexte ? 16 : 11;
     const valueX = MARGINS.x + (grandTexte ? 100 : 80);
     kv.forEach((item, i) => {
-      const lineY = y - 48 - i * lineGap;
+      const lineY = y - (grandTexte ? 58 : 48) - i * lineGap;
       this.page.drawText(`${item.l} :`, { x: MARGINS.x + 10, y: lineY, size: labelSize, font: this.fonts.regular });
       this.page.drawText(item.v, { x: valueX, y: lineY, size: valueSize, font: this.fonts.bold });
     });
