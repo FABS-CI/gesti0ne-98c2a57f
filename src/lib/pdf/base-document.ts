@@ -502,6 +502,43 @@ export class BaseDocument {
     return curY;
   }
 
+  /**
+   * Mention de clôture dynamique selon le type de document (générique,
+   * jamais liée à un numéro de document précis).
+   */
+  mentionCloture(): string {
+    switch (this.data.type) {
+      case "Facture":
+        return "Arrêté la présente facture à la somme de :";
+      case "Commande":
+        return "Arrêté la présente commande à la somme de :";
+      case "Proforma":
+        return "Arrêté le présent proforma à la somme de :";
+      default:
+        return "Arrêté le présent document à la somme de :";
+    }
+  }
+
+  /** Retour à la ligne automatique en mesurant avec la police réellement utilisée. */
+  wrapTextWithFont(text: string, width: number, fontSize: number, font: PDFFont): string[] {
+    if (!text) return [""];
+    const words = text.split(/\s+/).filter(Boolean);
+    if (words.length === 0) return [""];
+    const lines: string[] = [];
+    let currentLine = words[0];
+    for (let i = 1; i < words.length; i++) {
+      const testLine = `${currentLine} ${words[i]}`;
+      if (font.widthOfTextAtSize(testLine, fontSize) <= width) {
+        currentLine = testLine;
+      } else {
+        lines.push(currentLine);
+        currentLine = words[i];
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  }
+
   wrapText(text: string, width: number, fontSize: number): string[] {
     if (!text) return [""];
     const words = text.split(/\s+/);
