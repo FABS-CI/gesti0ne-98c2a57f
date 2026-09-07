@@ -360,7 +360,9 @@ export class BaseDocument {
     // Règle métier : QR Code pour les FACTURES et les PROFORMAS
     // On vérifie à la fois le type explicite ET le préfixe de référence
     const qrAutorise = this.data.type === "Facture" || this.data.type === "Proforma";
+    let qrAffiche = false;
     if (qrAutorise && shouldShowQr(prefix)) {
+      qrAffiche = true;
       const qrX = MARGINS.x + boxW + 15;
       this.page.drawRectangle({
         x: qrX,
@@ -377,7 +379,7 @@ export class BaseDocument {
         const qrDataUrl = await QRCode.toDataURL(url, { margin: 0, width: 120 });
         const qrImage = await this.doc.embedPng(qrDataUrl);
         this.page.drawImage(qrImage, { x: qrX + 10, y: y - boxH + 15, width: 60, height: 60 });
-        
+
         this.page.drawText("Scanner pour vérifier", { x: qrX + 80, y: y - 40, size: 7, font: this.fonts.regular });
         this.page.drawText("l'authenticité", { x: qrX + 80, y: y - 50, size: 7, font: this.fonts.regular });
       } catch (e) {
@@ -385,6 +387,7 @@ export class BaseDocument {
       }
     }
 
+    if (hideClientBlock && !qrAffiche) return y;
     return y - boxH - 20;
   }
 
