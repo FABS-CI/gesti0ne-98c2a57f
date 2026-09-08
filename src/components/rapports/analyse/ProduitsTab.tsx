@@ -9,9 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Download, FileSpreadsheet, FileText } from "lucide-react";
+import { FileSpreadsheet, FileText } from "lucide-react";
 import { exportXlsx, type ProduitLigneRapport } from "@/lib/rapports-api";
-import { exportCsv as exportPdf } from "@/lib/export-csv";
 import { formatFCFA } from "@/lib/format";
 import {
   PRODUITS_COLUMNS,
