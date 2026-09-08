@@ -47,22 +47,15 @@ export function ProduitsTab({ rows, total, isLoading, tri, sens, onSort, page, o
           <Button
             variant="outline"
             size="sm"
-            onClick={() => exportPdf("rapport_produits", PRODUITS_HEADERS, doExport())}
-          >
-            <Download className="mr-2 h-4 w-4" /> PDF
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              exportPdf("rapport_produits", PRODUITS_HEADERS, doExport(), {
-                pageTitle: "Rapport produits",
-              })
-            }
+            onClick={async () => {
+              const { exportRapportProduitsPdf } = await import("@/lib/pdf/rapport-produits-pdf");
+              await exportRapportProduitsPdf(rows);
+            }}
           >
             <FileText className="mr-2 h-4 w-4" /> PDF
           </Button>
         </div>
+
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto">
