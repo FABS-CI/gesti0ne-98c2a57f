@@ -18,15 +18,15 @@ const COLUMNS: Array<{
   { header: "Code", width: 18, align: "left" },
   { header: "Désignation", width: 40, align: "left" },
   { header: "Niveau", width: 14, align: "left" },
-  { header: "Catégorie", width: 18, align: "left" },
-  { header: "PU", width: 16, align: "right" },
-  { header: "Qté vendue", width: 15, align: "right" },
-  { header: "Qté facturée", width: 15, align: "right" },
-  { header: "Nb factures", width: 13, align: "right" },
-  { header: "Nb clients", width: 14, align: "right" },
+  { header: "Catégorie", width: 26, align: "left" },
+  { header: "PU", width: 14, align: "right" },
+  { header: "Qté vendue", width: 14, align: "right" },
+  { header: "Qté facturée", width: 14, align: "right" },
+  { header: "Nb factures", width: 12, align: "right" },
+  { header: "Nb clients", width: 13, align: "right" },
   { header: "CA", width: 22, align: "right" },
-  { header: "Remises", width: 17, align: "right" },
-  { header: "Retours", width: 13, align: "right" },
+  { header: "Remises", width: 16, align: "right" },
+  { header: "Retours", width: 12, align: "right" },
   { header: "Stock actuel", width: 13, align: "right" },
   { header: "Stock initial", width: 13, align: "right" },
   { header: "Stock restant", width: 13, align: "right" },
@@ -36,6 +36,11 @@ const COLUMNS: Array<{
 
 const MARGIN_X = 10;
 const FOOTER_H = 16;
+
+/** jsPDF (helvetica) est limité au Latin-1 : on remplace les caractères hors jeu. */
+function safe(v: string): string {
+  return v.replace(/[\u2192\u2013\u2014]/g, "-").replace(/[\u2022]/g, "-").replace(/\u00a0/g, " ");
+}
 
 function num(v: number | null | undefined): string {
   if (v == null || isNaN(Number(v))) return "0";
@@ -137,7 +142,7 @@ export async function exportRapportProduitsPdf(
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(70, 70, 70);
-    doc.text(infos.join("   •   "), pageW / 2, y + 5, { align: "center" });
+    doc.text(safe(infos.join("   -   ")), pageW / 2, y + 5, { align: "center" });
     return y + 10;
   };
 
@@ -149,7 +154,7 @@ export async function exportRapportProduitsPdf(
   doc.setFont("helvetica", "normal");
   let alt = false;
   for (const r of rows) {
-    const cells = rowCells(r);
+    const cells = rowCells(r).map(safe);
     const wrapped = cells.map((v, i) =>
       i === 1 || i === 3 ? (doc.splitTextToSize(v, widths[i] - PAD * 2) as string[]) : [v],
     );
