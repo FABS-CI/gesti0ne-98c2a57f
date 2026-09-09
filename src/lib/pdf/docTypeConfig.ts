@@ -15,8 +15,8 @@ const QR_BY_TYPE: Record<string, boolean> = {
   FC: true,   // Alias Facture
   PRO: true,  // Proforma
   PF: true,   // Alias Proforma
-  CMD: false, // Bon de commande
-  BC: false,  // Alias Bon de commande
+  CMD: true,  // Bon de commande
+  BC: true,   // Alias Bon de commande
   BL: false, // Bon de livraison
   RET: false, // Bon de retour
   ACH: false, // Achats (Bon de Réception)
