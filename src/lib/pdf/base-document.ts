@@ -334,8 +334,12 @@ export class BaseDocument {
       opacity: 0.5,
     });
     const isBL = this.data.type === "Bon de Livraison";
-    this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 18, size: grandBloc ? 9 : 7, font: this.fonts.bold, color: COLORS.bleuFabs });
-    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 38, size: grandBloc ? 14 : 12, font: this.fonts.bold, color: COLORS.bleuFabs });
+    const isCommande = this.data.type === "Commande";
+    // Bon de commande : pas d'entête "FACTURÉ À", le bloc démarre par le client
+    if (!isCommande) {
+      this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 18, size: grandBloc ? 9 : 7, font: this.fonts.bold, color: COLORS.bleuFabs });
+    }
+    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - (isCommande ? 28 : 38), size: grandBloc ? 14 : 12, font: this.fonts.bold, color: COLORS.bleuFabs });
     
     const kv = [
       { l: "Ville", v: this.data.client.ville ?? "—" },
