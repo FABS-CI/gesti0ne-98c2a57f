@@ -247,10 +247,10 @@ export class BaseDocument {
     const detailsTop = isStatement ? cartY - 8 : cartY - 32;
 
     details.forEach((d, i) => {
-      const y = detailsTop - i * 11;
-      this.page.drawText(`${d.l} :`, { x: cartX + 15, y, size: 8, font: this.fonts.regular, color: COLORS.noir });
-      const valW = this.fonts.bold.widthOfTextAtSize(d.v, 8);
-      this.page.drawText(d.v, { x: PAGE.w - MARGINS.x - valW, y, size: 8, font: this.fonts.bold, color: COLORS.noir });
+      const y = detailsTop - i * 15;
+      this.page.drawText(`${d.l} :`, { x: cartX + 15, y, size: 11, font: this.fonts.regular, color: COLORS.noir });
+      const valW = this.fonts.bold.widthOfTextAtSize(d.v, 12);
+      this.page.drawText(d.v, { x: PAGE.w - MARGINS.x - valW, y, size: 12, font: this.fonts.bold, color: COLORS.noir });
     });
 
     this.page.drawLine({
@@ -320,6 +320,7 @@ export class BaseDocument {
     const grandBloc =
       this.data.type === "Facture" ||
       this.data.type === "Proforma" ||
+      this.data.type === "Commande" ||
       this.data.type === "Bon de Livraison";
     const boxH = grandBloc ? 110 : 90;
     const boxW = (CONTENT_W - 15) / 2;
@@ -333,8 +334,12 @@ export class BaseDocument {
       opacity: 0.5,
     });
     const isBL = this.data.type === "Bon de Livraison";
-    this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 18, size: grandBloc ? 9 : 7, font: this.fonts.bold, color: COLORS.bleuFabs });
-    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - 38, size: grandBloc ? 14 : 12, font: this.fonts.bold, color: COLORS.bleuFabs });
+    const isCommande = this.data.type === "Commande";
+    // Bon de commande : pas d'entête "FACTURÉ À", le bloc démarre par le client
+    if (!isCommande) {
+      this.page.drawText(isBR ? "FOURNISSEUR" : isBL ? "CLIENT" : "FACTURÉ À", { x: MARGINS.x + 10, y: y - 18, size: grandBloc ? 9 : 7, font: this.fonts.bold, color: COLORS.bleuFabs });
+    }
+    this.page.drawText(this.data.client.nom.toUpperCase(), { x: MARGINS.x + 10, y: y - (isCommande ? 28 : 38), size: grandBloc ? 14 : 12, font: this.fonts.bold, color: COLORS.bleuFabs });
     
     const kv = [
       { l: "Ville", v: this.data.client.ville ?? "—" },
@@ -361,7 +366,10 @@ export class BaseDocument {
     
     // Règle métier : QR Code pour les FACTURES et les PROFORMAS
     // On vérifie à la fois le type explicite ET le préfixe de référence
-    const qrAutorise = this.data.type === "Facture" || this.data.type === "Proforma";
+    const qrAutorise =
+      this.data.type === "Facture" ||
+      this.data.type === "Proforma" ||
+      this.data.type === "Commande";
     if (qrAutorise && shouldShowQr(prefix)) {
       const qrX = MARGINS.x + boxW + 15;
       this.page.drawRectangle({
@@ -376,12 +384,24 @@ export class BaseDocument {
       try {
         const { default: QRCode } = await import("qrcode");
         const url = buildQrUrl(this.data.reference);
-        const qrDataUrl = await QRCode.toDataURL(url, { margin: 0, width: 120 });
+        const qrDataUrl = await QRCode.toDataURL(url, { margin: 1, width: 240 });
         const qrImage = await this.doc.embedPng(qrDataUrl);
-        this.page.drawImage(qrImage, { x: qrX + 10, y: y - boxH + 15, width: 60, height: 60 });
-        
-        this.page.drawText("Scanner pour vérifier", { x: qrX + 80, y: y - 40, size: 7, font: this.fonts.regular });
-        this.page.drawText("l'authenticité", { x: qrX + 80, y: y - 50, size: 7, font: this.fonts.regular });
+        const qrSize = 72;
+        // Zone blanche autour du QR pour garantir la lecture au scan
+        this.page.drawRectangle({
+          x: qrX + 8,
+          y: y - boxH + 12,
+          width: qrSize + 8,
+          height: qrSize + 8,
+          color: COLORS.blanc,
+        });
+        this.page.drawImage(qrImage, { x: qrX + 12, y: y - boxH + 16, width: qrSize, height: qrSize });
+
+        const legende = isCommande
+          ? ["Scanner pour authentifier", "ce bon de commande"]
+          : ["Scanner pour vérifier", "l'authenticité"];
+        this.page.drawText(legende[0], { x: qrX + 95, y: y - 40, size: 7, font: this.fonts.regular });
+        this.page.drawText(legende[1], { x: qrX + 95, y: y - 50, size: 7, font: this.fonts.regular });
       } catch (e) {
         console.error("QR Error", e);
       }
