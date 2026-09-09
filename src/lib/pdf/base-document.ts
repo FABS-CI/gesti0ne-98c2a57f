@@ -366,7 +366,10 @@ export class BaseDocument {
     
     // Règle métier : QR Code pour les FACTURES et les PROFORMAS
     // On vérifie à la fois le type explicite ET le préfixe de référence
-    const qrAutorise = this.data.type === "Facture" || this.data.type === "Proforma";
+    const qrAutorise =
+      this.data.type === "Facture" ||
+      this.data.type === "Proforma" ||
+      this.data.type === "Commande";
     if (qrAutorise && shouldShowQr(prefix)) {
       const qrX = MARGINS.x + boxW + 15;
       this.page.drawRectangle({
