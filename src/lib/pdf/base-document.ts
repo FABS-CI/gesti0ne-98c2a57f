@@ -247,10 +247,10 @@ export class BaseDocument {
     const detailsTop = isStatement ? cartY - 8 : cartY - 32;
 
     details.forEach((d, i) => {
-      const y = detailsTop - i * 11;
-      this.page.drawText(`${d.l} :`, { x: cartX + 15, y, size: 8, font: this.fonts.regular, color: COLORS.noir });
-      const valW = this.fonts.bold.widthOfTextAtSize(d.v, 8);
-      this.page.drawText(d.v, { x: PAGE.w - MARGINS.x - valW, y, size: 8, font: this.fonts.bold, color: COLORS.noir });
+      const y = detailsTop - i * 15;
+      this.page.drawText(`${d.l} :`, { x: cartX + 15, y, size: 11, font: this.fonts.regular, color: COLORS.noir });
+      const valW = this.fonts.bold.widthOfTextAtSize(d.v, 12);
+      this.page.drawText(d.v, { x: PAGE.w - MARGINS.x - valW, y, size: 12, font: this.fonts.bold, color: COLORS.noir });
     });
 
     this.page.drawLine({
