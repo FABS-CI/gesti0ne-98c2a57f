@@ -384,12 +384,24 @@ export class BaseDocument {
       try {
         const { default: QRCode } = await import("qrcode");
         const url = buildQrUrl(this.data.reference);
-        const qrDataUrl = await QRCode.toDataURL(url, { margin: 0, width: 120 });
+        const qrDataUrl = await QRCode.toDataURL(url, { margin: 1, width: 240 });
         const qrImage = await this.doc.embedPng(qrDataUrl);
-        this.page.drawImage(qrImage, { x: qrX + 10, y: y - boxH + 15, width: 60, height: 60 });
-        
-        this.page.drawText("Scanner pour vérifier", { x: qrX + 80, y: y - 40, size: 7, font: this.fonts.regular });
-        this.page.drawText("l'authenticité", { x: qrX + 80, y: y - 50, size: 7, font: this.fonts.regular });
+        const qrSize = 72;
+        // Zone blanche autour du QR pour garantir la lecture au scan
+        this.page.drawRectangle({
+          x: qrX + 8,
+          y: y - boxH + 12,
+          width: qrSize + 8,
+          height: qrSize + 8,
+          color: COLORS.blanc,
+        });
+        this.page.drawImage(qrImage, { x: qrX + 12, y: y - boxH + 16, width: qrSize, height: qrSize });
+
+        const legende = isCommande
+          ? ["Scanner pour authentifier", "ce bon de commande"]
+          : ["Scanner pour vérifier", "l'authenticité"];
+        this.page.drawText(legende[0], { x: qrX + 95, y: y - 40, size: 7, font: this.fonts.regular });
+        this.page.drawText(legende[1], { x: qrX + 95, y: y - 50, size: 7, font: this.fonts.regular });
       } catch (e) {
         console.error("QR Error", e);
       }
