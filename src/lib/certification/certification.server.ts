@@ -248,6 +248,33 @@ export async function verifyByToken(token: string): Promise<VerificationResult> 
     .maybeSingle();
 
   if (!cert) return { status: "INVALID" };
+  return evaluateCertification(cert);
+}
+
+/**
+ * Vérification par référence de document (QR imprimés historiques).
+ * Renvoie UNCERTIFIED si le document existe mais n'a jamais été certifié.
+ */
+export async function verifyByReference(reference: string): Promise<VerificationResult> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  const doc = await loadDocumentData(reference);
+  if (!doc) return { status: "INVALID" };
+
+  const { data: cert } = await supabaseAdmin
+    .from("document_certifications" as any)
+    .select("*, signature_keys(public_key, algorithm)")
+    .eq("document_type", doc.type)
+    .eq("document_id", doc.id)
+    .order("version", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!cert) return { status: "UNCERTIFIED", document: doc.data };
+  return evaluateCertification(cert);
+}
+
+async function evaluateCertification(cert: unknown): Promise<VerificationResult> {
   const c = cert as any;
 
   const doc = await loadDocumentData(c.document_reference);
