@@ -121,13 +121,13 @@ export async function loadDocumentData(
         .from("commande_lignes" as any)
         .select("designation, quantite, prix_unitaire, total_ligne, total_ht_ligne")
         .eq("facture_id", docId);
-      lignes = l ?? [];
+      lignes = (l as any) ?? [];
     } else if (t.type === "COMMANDE") {
       const { data: l } = await supabaseAdmin
         .from("commande_lignes")
         .select("designation, quantite, prix_unitaire, total_ligne, total_ht_ligne")
         .eq("commande_id", docId);
-      lignes = l ?? [];
+      lignes = (l as any) ?? [];
     } else if (t.type === "PROFORMA") {
       const { data: l } = await supabaseAdmin
         .from("proforma_lignes")
