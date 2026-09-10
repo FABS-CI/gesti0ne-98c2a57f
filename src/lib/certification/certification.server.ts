@@ -118,7 +118,7 @@ export async function loadDocumentData(
     let lignes: Array<Record<string, unknown>> = [];
     if (t.type === "FACTURE") {
       const { data: l } = await supabaseAdmin
-        .from("commande_lignes")
+        .from("commande_lignes" as any)
         .select("designation, quantite, prix_unitaire, total_ligne, total_ht_ligne")
         .eq("facture_id", docId);
       lignes = l ?? [];
