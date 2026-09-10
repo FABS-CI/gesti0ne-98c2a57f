@@ -1857,6 +1857,71 @@ export type Database = {
         }
         Relationships: []
       }
+      document_certifications: {
+        Row: {
+          canonical_hash: string
+          certification_id: string
+          certified_at: string
+          certified_by: string | null
+          document_id: string
+          document_reference: string
+          document_type: string
+          key_id: string | null
+          revocation_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          signature: string
+          snapshot: Json
+          statut: string
+          token_hash: string
+          version: number
+        }
+        Insert: {
+          canonical_hash: string
+          certification_id?: string
+          certified_at?: string
+          certified_by?: string | null
+          document_id: string
+          document_reference: string
+          document_type: string
+          key_id?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          signature: string
+          snapshot?: Json
+          statut?: string
+          token_hash: string
+          version?: number
+        }
+        Update: {
+          canonical_hash?: string
+          certification_id?: string
+          certified_at?: string
+          certified_by?: string | null
+          document_id?: string
+          document_reference?: string
+          document_type?: string
+          key_id?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          signature?: string
+          snapshot?: Json
+          statut?: string
+          token_hash?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_certifications_key_id_fkey"
+            columns: ["key_id"]
+            isOneToOne: false
+            referencedRelation: "signature_keys"
+            referencedColumns: ["key_id"]
+          },
+        ]
+      }
       document_drafts: {
         Row: {
           created_at: string
@@ -1973,6 +2038,44 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      document_verification_logs: {
+        Row: {
+          certification_id: string | null
+          created_at: string
+          document_reference: string | null
+          ip_hash: string | null
+          log_id: string
+          result: string
+          user_agent: string | null
+        }
+        Insert: {
+          certification_id?: string | null
+          created_at?: string
+          document_reference?: string | null
+          ip_hash?: string | null
+          log_id?: string
+          result: string
+          user_agent?: string | null
+        }
+        Update: {
+          certification_id?: string | null
+          created_at?: string
+          document_reference?: string | null
+          ip_hash?: string | null
+          log_id?: string
+          result?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_verification_logs_certification_id_fkey"
+            columns: ["certification_id"]
+            isOneToOne: false
+            referencedRelation: "document_certifications"
+            referencedColumns: ["certification_id"]
+          },
+        ]
       }
       documents: {
         Row: {
@@ -5524,6 +5627,36 @@ export type Database = {
             referencedColumns: ["departement_id"]
           },
         ]
+      }
+      signature_keys: {
+        Row: {
+          algorithm: string
+          created_at: string
+          is_active: boolean
+          key_id: string
+          public_key: string
+          retired_at: string | null
+          secret_name: string
+        }
+        Insert: {
+          algorithm?: string
+          created_at?: string
+          is_active?: boolean
+          key_id?: string
+          public_key: string
+          retired_at?: string | null
+          secret_name: string
+        }
+        Update: {
+          algorithm?: string
+          created_at?: string
+          is_active?: boolean
+          key_id?: string
+          public_key?: string
+          retired_at?: string | null
+          secret_name?: string
+        }
+        Relationships: []
       }
       soldes_ouverture_clients: {
         Row: {
