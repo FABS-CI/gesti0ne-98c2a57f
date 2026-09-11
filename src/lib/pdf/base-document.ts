@@ -384,7 +384,11 @@ export class BaseDocument {
       try {
         const { default: QRCode } = await import("qrcode");
         const url = buildQrUrl(this.data.reference);
-        const qrDataUrl = await QRCode.toDataURL(url, { margin: 1, width: 240 });
+        const qrDataUrl = await QRCode.toDataURL(url, {
+          margin: 1,
+          width: 240,
+          color: QR_COLOR_OPTS,
+        });
         const qrImage = await this.doc.embedPng(qrDataUrl);
         const qrSize = 72;
         // Zone blanche autour du QR pour garantir la lecture au scan
