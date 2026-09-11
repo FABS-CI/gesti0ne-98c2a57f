@@ -1,5 +1,6 @@
 import { QRCodeSVG } from "qrcode.react";
 import { useMemo } from "react";
+import { QR_COLOR_DARK } from "@/lib/pdf/qr-logic";
 
 export interface EtiquettePayload {
   colis_id?: string;
@@ -117,6 +118,8 @@ export function EtiquetteCarton({ data }: { data: EtiquettePayload }) {
               value={qrUrl} 
               size={120} 
               level="H"
+              fgColor={QR_COLOR_DARK}
+              bgColor="#FFFFFF"
               includeMargin={false}
             />
           </div>

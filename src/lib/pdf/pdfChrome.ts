@@ -6,6 +6,7 @@ import {
   getActiveTemplate,
   type PdfTemplate,
 } from "@/lib/pdf/pdfConfig";
+import { QR_COLOR_OPTS } from "@/lib/pdf/qr-logic";
 import fabsLogoUrl from "@/assets/fabs-logo.png";
 
 let LOGO_DATA_URL: string | null = null;
@@ -70,7 +71,11 @@ export async function ensurePdfQr(reference: string): Promise<string> {
     return hit;
   }
   const { default: QRCode } = await import("qrcode");
-  const dataUrl = await QRCode.toDataURL(key, { margin: 0, width: 200 });
+  const dataUrl = await QRCode.toDataURL(key, {
+    margin: 0,
+    width: 200,
+    color: QR_COLOR_OPTS,
+  });
   QR_CACHE.set(key, dataUrl);
   CURRENT_QR_REF = key;
   return dataUrl;

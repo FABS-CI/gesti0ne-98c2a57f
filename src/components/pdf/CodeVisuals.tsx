@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { QR_COLOR_OPTS } from "@/lib/pdf/qr-logic";
 
 /**
  * Petit QR code SVG affiché à l'écran (et à l'impression). Utilise la
@@ -9,7 +10,7 @@ export function QrCode({ value, size = 72 }: { value: string; size?: number }) {
   useEffect(() => {
     let cancelled = false;
     import("qrcode")
-      .then(({ default: QR }) => QR.toDataURL(value, { margin: 0, width: size * 2 }))
+      .then(({ default: QR }) => QR.toDataURL(value, { margin: 0, width: size * 2, color: QR_COLOR_OPTS }))
       .then((url) => {
         if (!cancelled) setDataUrl(url);
       })
