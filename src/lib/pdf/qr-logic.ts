@@ -23,3 +23,11 @@ export function buildQrUrl(reference: string): string {
   const base = origin && !isEphemeralOrigin(origin) ? origin : PUBLIC_VERIFY_BASE_URL;
   return `${base}/verify/${encodeURIComponent(reference)}`;
 }
+
+/**
+ * Couleur unique des QR codes de l'ERP : bleu électrique, vif et professionnel.
+ * Contraste sur fond blanc largement suffisant pour rester 100 % scannable.
+ */
+export const QR_COLOR_DARK = "#0047FF";
+export const QR_COLOR_LIGHT = "#FFFFFF";
+export const QR_COLOR_OPTS = { dark: QR_COLOR_DARK, light: QR_COLOR_LIGHT };
