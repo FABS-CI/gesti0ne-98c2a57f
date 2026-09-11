@@ -1,87 +1,73 @@
-
 import { createFileRoute } from '@tanstack/react-router'
-import { z } from 'zod'
 
 export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
   server: {
     handlers: {
-      GET: async ({ params }) => {
-        const { uuid } = params as { uuid: string };
-        
+      GET: async ({ params, request }) => {
+        const { uuid } = params as { uuid: string }
+
         try {
-          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const {
+            verifyByReference,
+            verifyByToken,
+            logVerification,
+            isRateLimited,
+          } = await import('@/lib/certification/certification.server')
 
-          // Stratégie de recherche parallèle pour la rapidité
-          const tables = [
-            { name: 'factures', idCol: 'facture_id', type: 'Facture', dateCol: 'date_facture', montantCol: 'montant_total', refCol: 'reference' },
-            { name: 'proformas', idCol: 'proforma_id', type: 'Proforma', dateCol: 'date_proforma', montantCol: 'montant_ttc', refCol: 'reference' },
-            { name: 'commandes', idCol: 'commande_id', type: 'Commande', dateCol: 'date_commande', montantCol: 'montant_total', refCol: 'reference' },
-            { name: 'bons_livraison', idCol: 'bl_id', type: 'Bon de Livraison', dateCol: 'date_bon', montantCol: 'montant', refCol: 'reference' }
-          ];
+          const url = new URL(request.url)
+          const token = url.searchParams.get('t')
+          const ip =
+            request.headers.get('cf-connecting-ip') ??
+            request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+            null
+          const userAgent = request.headers.get('user-agent')
 
-          const results = await Promise.all(
-            tables.map(async (table) => {
-              const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
-              
-              let selectStr = '*';
-              if (table.name === 'factures' || table.name === 'proformas' || table.name === 'bons_livraison') {
-                // Pour ces tables, on a besoin d'aller chercher le représentant dans la commande liée
-                selectStr = '*, commandes(representant_nom)';
-              }
-
-              let query = supabaseAdmin
-                .from(table.name as any)
-                .select(selectStr);
-                
-              if (isUuid) {
-                query = query.or(`${table.idCol}.eq.${uuid},${table.refCol}.ilike.${uuid}`);
-              } else {
-                query = query.ilike(table.refCol, uuid);
-              }
-
-              const { data, error } = await query.maybeSingle();
-              
-              if (error) {
-                console.error(`Error querying ${table.name}:`, error);
-                return null;
-              }
-              
-              return data ? { ...Object(data), docType: table.type, dateCol: table.dateCol, montantCol: table.montantCol } : null;
-            })
-          );
-
-          const found = results.find(r => r !== null);
-          
-          if (!found) {
-            return new Response(JSON.stringify({ error: 'Document non trouvé' }), {
-              status: 404,
-              headers: { 'Content-Type': 'application/json' }
-            });
+          if (await isRateLimited(ip)) {
+            return Response.json(
+              { status: 'RATE_LIMITED', error: 'Trop de vérifications, réessayez plus tard.' },
+              { status: 429, headers: { 'Cache-Control': 'no-store' } },
+            )
           }
 
-          // Nettoyer l'objet de retour pour n'inclure que le strict nécessaire (public)
-          const typedFound = found as any;
-          const publicData = {
-            docType: typedFound.docType,
-            reference: typedFound.reference,
-            date: typedFound[typedFound.dateCol],
-            client_nom: typedFound.client_nom,
-            representant_nom: typedFound.representant_nom || typedFound.commandes?.representant_nom || null,
-            montant: typedFound[typedFound.montantCol] || typedFound.montant_ttc || typedFound.montant_total || typedFound.montant
-          };
+          const result = token ? await verifyByToken(token) : await verifyByReference(uuid)
 
-          return new Response(JSON.stringify(publicData), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          await logVerification({
+            reference: token ? null : uuid,
+            result: result.status,
+            ip,
+            userAgent,
+          })
+
+          if (result.status === 'INVALID') {
+            return Response.json(
+              { status: 'INVALID', error: 'Document non trouvé' },
+              { status: 404, headers: { 'Cache-Control': 'no-store' } },
+            )
+          }
+
+          const doc = result.document
+          return Response.json(
+            {
+              status: result.status,
+              reason: 'reason' in result ? result.reason ?? null : null,
+              docType: doc.docType,
+              reference: doc.reference,
+              date: doc.date,
+              client_nom: doc.client_nom,
+              representant_nom: doc.representant_nom ?? null,
+              montant: doc.montant,
+              statut_document: doc.statut_document ?? null,
+              certified_at: doc.certified_at ?? null,
+              canonical_hash: doc.canonical_hash ?? null,
+              signature_algorithm: doc.signature_algorithm ?? null,
+            },
+            { status: 200, headers: { 'Cache-Control': 'no-store' } },
+          )
         } catch (error) {
-          console.error('Verification handler error:', error);
-          return new Response(JSON.stringify({ error: 'Erreur serveur' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-          });
+          console.error('Verification handler error:', error)
+          return Response.json({ error: 'Erreur serveur' }, { status: 500 })
         }
-      }
-    }
-  }
+      },
+    },
+  },
 })
