@@ -46,5 +46,16 @@ export const listCertificationsFn = createServerFn({ method: "POST" })
       .eq("document_reference", data.reference)
       .order("version", { ascending: false });
     if (error) throw new Error(error.message);
-    return (rows ?? []) as unknown as Array<Record<string, unknown>>;
+    const list = (rows ?? []) as unknown as Array<Record<string, string | number | null>>;
+    return list.map((r) => ({
+      certification_id: String(r["certification_id"] ?? ""),
+      document_type: String(r["document_type"] ?? ""),
+      document_reference: String(r["document_reference"] ?? ""),
+      statut: String(r["statut"] ?? ""),
+      version: Number(r["version"] ?? 0),
+      certified_at: r["certified_at"] ? String(r["certified_at"]) : null,
+      revoked_at: r["revoked_at"] ? String(r["revoked_at"]) : null,
+      revocation_reason: r["revocation_reason"] ? String(r["revocation_reason"]) : null,
+      canonical_hash: String(r["canonical_hash"] ?? ""),
+    }));
   });
