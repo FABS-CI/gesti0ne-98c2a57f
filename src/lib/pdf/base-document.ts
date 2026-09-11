@@ -18,7 +18,7 @@ const formatDocDate = (d: string) => {
   const out = formatDate(d);
   return out === "—" ? d : out;
 };
-import { buildQrUrl } from "./qr-logic";
+import { buildQrUrl, QR_COLOR_OPTS } from "./qr-logic";
 
 // --- Configuration & Couleurs ---
 
