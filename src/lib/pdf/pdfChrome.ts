@@ -6,6 +6,7 @@ import {
   getActiveTemplate,
   type PdfTemplate,
 } from "@/lib/pdf/pdfConfig";
+import { QR_COLOR_OPTS } from "@/lib/pdf/qr-logic";
 import fabsLogoUrl from "@/assets/fabs-logo.png";
 
 let LOGO_DATA_URL: string | null = null;
