@@ -1,6 +1,7 @@
 import fabsLogoUrl from "@/assets/fabs-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import type { EtiquettePayload } from "@/components/colisage/EtiquetteCarton";
+import { QR_COLOR_OPTS } from "@/lib/pdf/qr-logic";
 
 /**
  * Génération autonome du HTML des étiquettes (indépendante du DOM).
