@@ -253,6 +253,140 @@ export async function verifyByToken(token: string): Promise<VerificationResult> 
 }
 
 /**
+ * Variante réservée à la route de téléchargement (Prompt 4) : réalise la même
+ * revalidation complète que `verifyByToken` (jamais de résultat mis en cache),
+ * mais renvoie en plus le type et l'identifiant interne du document afin de
+ * charger les données complètes nécessaires au PDF. Ces identifiants internes
+ * ne sont jamais transmis au client : seul le jeton public l'est.
+ */
+export async function verifyTokenForDownload(
+  token: string,
+): Promise<VerificationResult & { docType?: DocType; docId?: string; certificationId?: string }> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const tokenHash = sha256Hex(token);
+
+  const { data: cert } = await supabaseAdmin
+    .from("document_certifications" as any)
+    .select("*, signature_keys(public_key, algorithm)")
+    .eq("token_hash", tokenHash)
+    .maybeSingle();
+
+  if (!cert) return { status: "INVALID" };
+  const result = await evaluateCertification(cert);
+  const c = cert as any;
+  return { ...result, docType: c.document_type, docId: c.document_id, certificationId: c.certification_id };
+}
+
+/**
+ * Charge les données complètes (lignes, client, totaux) nécessaires à la
+ * génération du PDF officiel, côté serveur exclusivement (client admin).
+ * Ne doit être appelé qu'après une vérification AUTHENTIC réussie.
+ */
+export async function loadFullDocumentForDownload(
+  docType: DocType,
+  docId: string,
+  summary: PublicDocument,
+): Promise<Record<string, unknown>> {
+  const loaders = await import("@/lib/pdf/enrich-lignes.server");
+
+  switch (docType) {
+    case "FACTURE": {
+      const [lignes, clientInfo, totals] = await Promise.all([
+        loaders.loadFactureDocLignesServer(docId),
+        loaders.loadClientInfoForFactureServer(docId),
+        loaders.loadFactureTotalsServer(docId),
+      ]);
+      return {
+        ...clientInfo,
+        ...totals,
+        reference: summary.reference,
+        date: summary.date,
+        clientNom: clientInfo.clientNom ?? summary.client_nom,
+        totalVente: totals.totalVente ?? summary.montant ?? undefined,
+        totalTTC: totals.totalTTC ?? summary.montant ?? undefined,
+        lignes,
+      };
+    }
+    case "PROFORMA": {
+      const [lignes, clientInfo, totals] = await Promise.all([
+        loaders.loadProformaDocLignesServer(docId),
+        loaders.loadClientInfoForProformaServer(docId),
+        loaders.loadProformaTotalsServer(docId),
+      ]);
+      return {
+        ...clientInfo,
+        ...totals,
+        reference: summary.reference,
+        date: summary.date,
+        clientNom: clientInfo.clientNom ?? summary.client_nom,
+        totalVente: totals.totalVente ?? summary.montant ?? undefined,
+        totalTTC: totals.totalTTC ?? summary.montant ?? undefined,
+        lignes,
+      };
+    }
+    case "COMMANDE": {
+      const [lignes, clientInfo, totals] = await Promise.all([
+        loaders.loadCommandeDocLignesServer(docId),
+        loaders.loadClientInfoForCommandeServer(docId),
+        loaders.loadCommandeTotalsServer(docId),
+      ]);
+      return {
+        ...clientInfo,
+        ...totals,
+        reference: summary.reference,
+        date: summary.date,
+        clientNom: clientInfo.clientNom ?? summary.client_nom,
+        totalVente: totals.totalVente ?? summary.montant ?? undefined,
+        totalTTC: totals.totalTTC ?? summary.montant ?? undefined,
+        lignes,
+      };
+    }
+    case "BL": {
+      const [lignes, clientInfo] = await Promise.all([
+        loaders.loadBLDocLignesServer(docId),
+        loaders.loadClientInfoForBLServer(docId),
+      ]);
+      return {
+        ...clientInfo,
+        reference: summary.reference,
+        date: summary.date,
+        clientNom: clientInfo.clientNom ?? summary.client_nom,
+        lignes,
+      };
+    }
+    default:
+      throw new Error("Type de document non pris en charge pour le téléchargement");
+  }
+}
+
+/** Limitation de débit dédiée au téléchargement : plus stricte que la vérification. */
+export async function isDownloadRateLimited(ip: string | null, token: string): Promise<boolean> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  try {
+    const since = new Date(Date.now() - 60 * 1000).toISOString();
+    const tokenHash = sha256Hex(token);
+    const [byIp, byToken] = await Promise.all([
+      ip
+        ? supabaseAdmin
+            .from("document_verification_logs" as any)
+            .select("log_id", { count: "exact", head: true })
+            .eq("ip_hash", sha256Hex(ip))
+            .like("result", "DOWNLOAD_%")
+            .gte("created_at", since)
+        : Promise.resolve({ count: 0 }),
+      supabaseAdmin
+        .from("document_verification_logs" as any)
+        .select("log_id", { count: "exact", head: true })
+        .eq("document_reference", `token:${tokenHash.slice(0, 16)}`)
+        .gte("created_at", since),
+    ]);
+    return (byIp.count ?? 0) > 10 || (byToken.count ?? 0) > 10;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Vérification par référence de document (QR imprimés historiques).
  * Renvoie UNCERTIFIED si le document existe mais n'a jamais été certifié.
  */

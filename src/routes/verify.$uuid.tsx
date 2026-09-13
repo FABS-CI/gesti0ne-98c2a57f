@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import {
   CheckCircle2,
   XCircle,
@@ -14,6 +15,10 @@ import {
   AlertTriangle,
   Building2,
   WifiOff,
+  Download,
+  Package,
+  Truck,
+  Receipt,
 } from 'lucide-react';
 import { formatFCFA, formatDate } from '@/lib/format';
 import { Button } from '@/components/ui/button';
@@ -145,6 +150,73 @@ const STATUS_UI: Record<
       "La référence recherchée ne correspond à aucun document enregistré. Vérifiez la référence ou contactez l'émetteur.",
   },
 };
+
+/** Libellé + icône du bouton de téléchargement, choisis selon le type RÉEL renvoyé par le
+ * serveur (jamais un type demandé par le client) — voir Prompt 3. */
+const DOWNLOAD_UI: Array<{ match: (docType: string) => boolean; label: string; Icon: typeof FileText }> = [
+  { match: (t) => /facture/i.test(t), label: 'Télécharger la facture PDF', Icon: FileText },
+  { match: (t) => /commande/i.test(t), label: 'Télécharger le bon de commande PDF', Icon: Package },
+  { match: (t) => /proforma/i.test(t), label: 'Télécharger la proforma PDF', Icon: Receipt },
+  { match: (t) => /livraison/i.test(t), label: 'Télécharger le bon de livraison PDF', Icon: Truck },
+];
+
+function resolveDownloadUi(docType?: string) {
+  if (!docType) return null;
+  return DOWNLOAD_UI.find((d) => d.match(docType)) ?? null;
+}
+
+function DownloadButton({ token, docType, reference }: { token: string; docType?: string; reference?: string }) {
+  const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
+  const ui = resolveDownloadUi(docType);
+  if (!ui) return null;
+
+  const handleDownload = async () => {
+    if (state === 'loading') return; // anti double-clic
+    setState('loading');
+    try {
+      const res = await fetch(`/api/secure-documents/${encodeURIComponent(token)}/download`);
+      if (!res.ok) throw new Error('download_failed');
+      const blob = await res.blob();
+      const disposition = res.headers.get('content-disposition') ?? '';
+      const match = /filename="([^"]+)"/.exec(disposition);
+      const filename = match?.[1] ?? `${reference ?? 'document'}.pdf`;
+      const url = URL.createObjectURL(blob);
+      const a = window.document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      window.document.body.appendChild(a);
+      a.click();
+      window.document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setState('idle');
+    } catch {
+      setState('error');
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <Button
+        className="w-full"
+        onClick={() => void handleDownload()}
+        disabled={state === 'loading'}
+        aria-busy={state === 'loading'}
+      >
+        {state === 'loading' ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <ui.Icon className="mr-2 h-4 w-4" />
+        )}
+        {state === 'loading' ? 'Téléchargement en cours...' : ui.label}
+      </Button>
+      {state === 'error' && (
+        <p className="text-[11px] text-center text-red-600" role="alert">
+          Le téléchargement a échoué ou n'est plus autorisé. Revérifiez le document puis réessayez.
+        </p>
+      )}
+    </div>
+  );
+}
 
 function Row({
   Icon,
@@ -297,6 +369,12 @@ function VerificationPage() {
               </div>
 
               <p className="text-[12px] text-slate-600 leading-relaxed">{ui.message}</p>
+
+              {/* Téléchargement : uniquement si authentifié ET jeton présent (jamais via la
+                  seule référence métier, énumérable — voir Prompt 0). */}
+              {data.status === 'AUTHENTIC' && t && (
+                <DownloadButton token={t} docType={data.docType} reference={data.reference} />
+              )}
 
               {/* Informations document */}
               {hasDocumentInfo && (

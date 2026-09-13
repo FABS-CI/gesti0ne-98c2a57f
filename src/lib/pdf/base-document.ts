@@ -18,7 +18,7 @@ const formatDocDate = (d: string) => {
   const out = formatDate(d);
   return out === "—" ? d : out;
 };
-import { buildQrUrl, QR_COLOR_OPTS } from "./qr-logic";
+import { buildQrUrl, QR_COLOR_OPTS, PUBLIC_VERIFY_BASE_URL } from "./qr-logic";
 
 // --- Configuration & Couleurs ---
 
@@ -123,9 +123,16 @@ export class BaseDocument {
       boldItalic: await this.doc.embedFont(StandardFonts.HelveticaBoldOblique),
     };
 
-    // Charger le logo
+    // Charger le logo. `fabsLogoUrl` est une URL relative générée par le
+    // bundler : côté navigateur, fetch() la résout contre window.location.
+    // Côté serveur (route de téléchargement public), il n'y a pas de
+    // window : on la résout contre l'origine publique stable de l'app.
     try {
-      const res = await fetch(fabsLogoUrl);
+      const logoUrl =
+        typeof window !== "undefined"
+          ? fabsLogoUrl
+          : new URL(fabsLogoUrl, PUBLIC_VERIFY_BASE_URL).toString();
+      const res = await fetch(logoUrl);
       const bytes = await res.arrayBuffer();
       this.logoImg = await this.doc.embedPng(bytes);
     } catch (e) {
