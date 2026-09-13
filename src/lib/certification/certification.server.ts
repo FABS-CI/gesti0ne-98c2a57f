@@ -353,3 +353,82 @@ export async function isRateLimited(ip: string | null): Promise<boolean> {
     return false;
   }
 }
+
+/** Types de documents soumis à la certification automatique. */
+export const AUTO_CERTIFIED_TYPES: DocType[] = ["FACTURE", "PROFORMA", "COMMANDE"];
+
+export type EnsureCertificationResult = {
+  certified: boolean;
+  certification_id: string | null;
+  canonical_hash: string | null;
+  version: number | null;
+  certified_at: string | null;
+  statut: string | null;
+};
+
+/**
+ * Certification automatique et idempotente d'un document (FACTURE, PROFORMA, COMMANDE).
+ * - Si une certification existe déjà avec la même empreinte : elle est réutilisée.
+ * - Si le document a changé : une nouvelle version est créée automatiquement.
+ * - Les autres types de documents ne sont jamais certifiés.
+ */
+export async function ensureCertification(
+  reference: string,
+  userId: string | null = null,
+): Promise<EnsureCertificationResult> {
+  const empty: EnsureCertificationResult = {
+    certified: false,
+    certification_id: null,
+    canonical_hash: null,
+    version: null,
+    certified_at: null,
+    statut: null,
+  };
+
+  const doc = await loadDocumentData(reference);
+  if (!doc) return empty;
+  if (!AUTO_CERTIFIED_TYPES.includes(doc.type)) return empty;
+
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { hash } = buildCanonical(doc.canonicalInput);
+
+  const { data: last } = await supabaseAdmin
+    .from("document_certifications" as any)
+    .select("certification_id, canonical_hash, version, certified_at, statut")
+    .eq("document_type", doc.type)
+    .eq("document_id", doc.id)
+    .order("version", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const prev = last as any;
+  if (prev && prev.canonical_hash === hash) {
+    return {
+      certified: prev.statut === "AUTHENTIC",
+      certification_id: prev.certification_id,
+      canonical_hash: prev.canonical_hash,
+      version: prev.version,
+      certified_at: prev.certified_at,
+      statut: prev.statut,
+    };
+  }
+
+  // Document jamais certifié ou modifié depuis : nouvelle version automatique.
+  const created = await certifyDocument(reference, userId);
+
+  const { data: fresh } = await supabaseAdmin
+    .from("document_certifications" as any)
+    .select("certification_id, canonical_hash, version, certified_at, statut")
+    .eq("certification_id", created.certification_id)
+    .maybeSingle();
+
+  const f = fresh as any;
+  return {
+    certified: true,
+    certification_id: created.certification_id,
+    canonical_hash: created.hash,
+    version: f?.version ?? null,
+    certified_at: f?.certified_at ?? new Date().toISOString(),
+    statut: f?.statut ?? "AUTHENTIC",
+  };
+}
