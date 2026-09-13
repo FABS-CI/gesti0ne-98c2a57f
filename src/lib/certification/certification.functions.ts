@@ -59,3 +59,27 @@ export const listCertificationsFn = createServerFn({ method: "POST" })
       canonical_hash: String(r["canonical_hash"] ?? ""),
     }));
   });
+
+/**
+ * Certification automatique idempotente d'une FACTURE, PROFORMA ou COMMANDE.
+ * Appelée automatiquement à la validation du document et avant la génération du PDF.
+ */
+export const ensureCertificationFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { reference: string }) => ({
+    reference: String(input?.reference ?? "").trim(),
+  }))
+  .handler(async ({ data, context }) => {
+    if (!data.reference) {
+      return {
+        certified: false,
+        certification_id: null,
+        canonical_hash: null,
+        version: null,
+        certified_at: null,
+        statut: null,
+      };
+    }
+    const { ensureCertification } = await import("./certification.server");
+    return ensureCertification(data.reference, context.userId ?? null);
+  });
