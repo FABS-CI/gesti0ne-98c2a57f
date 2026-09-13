@@ -1,6 +1,7 @@
 import fabsLogoUrl from "@/assets/fabs-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import type { EtiquettePayload } from "@/components/colisage/EtiquetteCarton";
+import { QR_COLOR_OPTS } from "@/lib/pdf/qr-logic";
 
 /**
  * Génération autonome du HTML des étiquettes (indépendante du DOM).
@@ -126,7 +127,12 @@ export async function buildEtiquettesPrintHtml(etiquettes: EtiquettePayload[]): 
 
   const qrs = await Promise.all(
     etiquettes.map((e) =>
-      QRCode.toDataURL(qrUrlFor(e), { margin: 1, width: 300, errorCorrectionLevel: "M" }).catch(
+      QRCode.toDataURL(qrUrlFor(e), {
+        margin: 1,
+        width: 300,
+        errorCorrectionLevel: "M",
+        color: QR_COLOR_OPTS,
+      }).catch(
         () => "",
       ),
     ),
