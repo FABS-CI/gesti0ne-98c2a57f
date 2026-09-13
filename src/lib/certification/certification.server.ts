@@ -26,6 +26,7 @@ export type PublicDocument = {
   representant_nom?: string | null;
   montant: number | null;
   statut_document?: string | null;
+  certification_id?: string | null;
   certified_at?: string | null;
   canonical_hash?: string | null;
   signature_algorithm?: string | null;
@@ -282,6 +283,7 @@ async function evaluateCertification(cert: unknown): Promise<VerificationResult>
 
   const publicDoc: PublicDocument = {
     ...doc.data,
+    certification_id: c.certification_id ?? null,
     certified_at: c.certified_at,
     canonical_hash: c.canonical_hash,
     signature_algorithm: c.signature_keys?.algorithm ?? "Ed25519",
