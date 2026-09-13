@@ -8,9 +8,12 @@ import {
   Calendar,
   User,
   ArrowLeft,
+  RefreshCw,
   ShieldAlert,
   ShieldOff,
-  Info,
+  AlertTriangle,
+  Building2,
+  WifiOff,
 } from 'lucide-react';
 import { formatFCFA, formatDate } from '@/lib/format';
 import { Button } from '@/components/ui/button';
@@ -40,79 +43,171 @@ export const Route = createFileRoute('/verify/$uuid')({
   component: VerificationPage,
 });
 
+type ApiStatus =
+  | 'AUTHENTIC'
+  | 'REVOKED'
+  | 'CANCELLED'
+  | 'TAMPERED'
+  | 'UNCERTIFIED'
+  | 'NOT_FOUND';
+
 type VerifyResponse = {
-  status: 'AUTHENTIC' | 'REVOKED' | 'CANCELLED' | 'TAMPERED' | 'UNCERTIFIED';
+  status: ApiStatus;
   reason?: string | null;
-  docType: string;
-  reference: string;
-  date: string | null;
-  client_nom: string | null;
-  representant_nom: string | null;
-  montant: number | null;
+  docType?: string;
+  reference?: string;
+  date?: string | null;
+  client_nom?: string | null;
+  representant_nom?: string | null;
+  montant?: number | null;
+  statut_document?: string | null;
+  certification_id?: string | null;
   certified_at?: string | null;
   canonical_hash?: string | null;
   signature_algorithm?: string | null;
+  checked_at?: string;
 };
 
+/** Une erreur technique (réseau, 5xx, réponse invalide) est distincte d'un document introuvable. */
+class VerificationUnavailable extends Error {}
+
+const REFERENCE_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{2,60}$/;
+
 const STATUS_UI: Record<
-  VerifyResponse['status'],
-  { title: string; subtitle: string; tone: string; ring: string; Icon: typeof CheckCircle2 }
+  ApiStatus,
+  {
+    title: string;
+    subtitle: string;
+    text: string;
+    badge: string;
+    icon: string;
+    Icon: typeof CheckCircle2;
+    message: string;
+  }
 > = {
   AUTHENTIC: {
-    title: 'Authenticité Confirmée',
-    subtitle: 'DOCUMENT AUTHENTIQUE',
-    tone: 'text-green-600',
-    ring: 'bg-green-50 border-green-100',
+    title: 'Document certifié',
+    subtitle: 'Signature numérique valide',
+    text: 'text-emerald-700',
+    badge: 'bg-emerald-50 border-emerald-200',
+    icon: 'text-emerald-600',
     Icon: CheckCircle2,
-  },
-  REVOKED: {
-    title: 'Document Révoqué',
-    subtitle: 'CERTIFICATION RÉVOQUÉE',
-    tone: 'text-orange-600',
-    ring: 'bg-orange-50 border-orange-100',
-    Icon: ShieldOff,
-  },
-  CANCELLED: {
-    title: 'Document Annulé',
-    subtitle: 'DOCUMENT ANNULÉ',
-    tone: 'text-orange-600',
-    ring: 'bg-orange-50 border-orange-100',
-    Icon: ShieldOff,
-  },
-  TAMPERED: {
-    title: 'Intégrité Compromise',
-    subtitle: 'CONTENU MODIFIÉ APRÈS CERTIFICATION',
-    tone: 'text-red-600',
-    ring: 'bg-red-50 border-red-100',
-    Icon: ShieldAlert,
+    message:
+      "Ce document est signé numériquement par EDITIONS FABS-CI et son contenu n'a pas été modifié depuis sa certification.",
   },
   UNCERTIFIED: {
-    title: 'Document Non Certifié',
-    subtitle: 'AUCUNE SIGNATURE NUMÉRIQUE',
-    tone: 'text-slate-600',
-    ring: 'bg-slate-100 border-slate-200',
-    Icon: Info,
+    title: 'Document non certifié',
+    subtitle: 'Signature numérique absente',
+    text: 'text-amber-700',
+    badge: 'bg-amber-50 border-amber-200',
+    icon: 'text-amber-600',
+    Icon: AlertTriangle,
+    message:
+      "Ce document existe bien dans le registre d'EDITIONS FABS-CI, mais aucune certification numérique n'y est associée. Demandez à l'émetteur une version certifiée avant tout paiement.",
+  },
+  REVOKED: {
+    title: 'Certification révoquée',
+    subtitle: 'Document plus valide',
+    text: 'text-orange-700',
+    badge: 'bg-orange-50 border-orange-200',
+    icon: 'text-orange-600',
+    Icon: ShieldOff,
+    message:
+      "La certification de ce document a été révoquée par l'émetteur. Contactez EDITIONS FABS-CI avant tout paiement.",
+  },
+  CANCELLED: {
+    title: 'Document annulé',
+    subtitle: 'Annulé par l’émetteur',
+    text: 'text-orange-700',
+    badge: 'bg-orange-50 border-orange-200',
+    icon: 'text-orange-600',
+    Icon: ShieldOff,
+    message: "Ce document a été annulé et ne doit plus être utilisé.",
+  },
+  TAMPERED: {
+    title: 'Intégrité compromise',
+    subtitle: 'Contenu modifié après certification',
+    text: 'text-red-700',
+    badge: 'bg-red-50 border-red-200',
+    icon: 'text-red-600',
+    Icon: ShieldAlert,
+    message:
+      "Le contenu enregistré ne correspond plus à la signature numérique d'origine. Ne réglez pas ce document sans confirmation de l'émetteur.",
+  },
+  NOT_FOUND: {
+    title: 'Document introuvable',
+    subtitle: 'Aucune correspondance dans le registre',
+    text: 'text-slate-700',
+    badge: 'bg-slate-100 border-slate-200',
+    icon: 'text-slate-500',
+    Icon: XCircle,
+    message:
+      "La référence recherchée ne correspond à aucun document enregistré. Vérifiez la référence ou contactez l'émetteur.",
   },
 };
+
+function Row({
+  Icon,
+  label,
+  children,
+}: {
+  Icon: typeof FileText;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <Icon className="h-4 w-4 text-blue-600 mt-1 shrink-0" />
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{label}</p>
+        <div className="text-slate-900 font-semibold text-sm break-words leading-snug">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function VerificationPage() {
   const { uuid } = Route.useParams();
   const { t } = Route.useSearch();
 
-  const { data, isLoading, error } = useQuery<VerifyResponse>({
+  const malformed = !REFERENCE_RE.test(uuid);
+
+  const { data, isLoading, isFetching, error, refetch } = useQuery<VerifyResponse>({
     queryKey: ['verify-doc', uuid, t ?? null],
+    enabled: !malformed,
     queryFn: async () => {
-      const response = await fetch(
-        `/api/public/verify-doc/${encodeURIComponent(uuid)}${t ? `?t=${encodeURIComponent(t)}` : ''}`,
-      );
-      if (!response.ok) {
-        if (response.status === 404) throw new Error('Document non trouvé');
-        if (response.status === 429) throw new Error('Trop de vérifications, réessayez plus tard');
-        throw new Error('Erreur de vérification');
+      let response: Response;
+      try {
+        response = await fetch(
+          `/api/public/verify-doc/${encodeURIComponent(uuid)}${t ? `?t=${encodeURIComponent(t)}` : ''}`,
+        );
+      } catch {
+        throw new VerificationUnavailable('Connexion impossible au service de vérification.');
       }
-      return response.json();
+
+      if (response.status === 404) {
+        return { status: 'NOT_FOUND', reference: uuid } satisfies VerifyResponse;
+      }
+      if (response.status === 429) {
+        throw new VerificationUnavailable(
+          'Trop de vérifications successives. Patientez quelques instants puis réessayez.',
+        );
+      }
+      if (!response.ok) {
+        throw new VerificationUnavailable(
+          "Le service de vérification est momentanément indisponible.",
+        );
+      }
+
+      const json = (await response.json().catch(() => null)) as VerifyResponse | null;
+      if (!json || typeof json.status !== 'string' || !(json.status in STATUS_UI)) {
+        throw new VerificationUnavailable('Réponse de vérification invalide.');
+      }
+      return json;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
     retry: 1,
   });
 
@@ -120,153 +215,194 @@ function VerificationPage() {
     window.location.href = 'https://editionsfabs.ci';
   };
 
-  const ui = data ? STATUS_UI[data.status] ?? STATUS_UI.UNCERTIFIED : null;
+  const ui = data ? STATUS_UI[data.status] : null;
+  const hasDocumentInfo = !!data && data.status !== 'NOT_FOUND' && !!data.reference;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center space-y-6 border border-slate-100">
-        <div className="flex justify-center">
-          <img src="/fabs-logo.png" alt="EDITIONS FABS-CI" className="h-24 w-auto object-contain mb-2" />
-        </div>
-
-        {isLoading ? (
-          <div className="flex flex-col items-center space-y-4 py-8">
-            <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
-            <p className="text-slate-500 font-medium">Vérification de l'authenticité...</p>
-          </div>
-        ) : error || !data || !ui ? (
-          <div className="space-y-6 py-4">
-            <div className="flex justify-center">
-              <div className="bg-red-50 p-6 rounded-full border border-red-100">
-                <XCircle className="h-16 w-16 text-red-500" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <h1 className="text-2xl font-black text-red-600 uppercase tracking-tighter">Document Invalide</h1>
-              <div className="h-1 w-12 bg-red-600 mx-auto rounded-full" />
-            </div>
-
-            <p className="text-slate-600 leading-relaxed px-4">
-              {(error as Error | null)?.message ??
-                "Nous n'avons trouvé aucun document authentique correspondant à ce code dans notre base de données."}
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center px-4 py-8">
+      <div className="w-full max-w-md space-y-4">
+        {/* En-tête */}
+        <header className="text-center space-y-2">
+          <img
+            src="/fabs-logo.png"
+            alt="EDITIONS FABS-CI"
+            className="h-16 w-auto object-contain mx-auto"
+          />
+          <div>
+            <p className="text-lg font-black tracking-tight text-slate-900">GESTI-ONE</p>
+            <p className="text-[11px] text-slate-500 font-medium">
+              Système de certification numérique
             </p>
+            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-[0.2em]">
+              Éditions FABS-CI
+            </p>
+          </div>
+          <p className="inline-block text-[10px] uppercase font-bold tracking-widest text-blue-700 bg-blue-50 border border-blue-100 rounded-full px-3 py-1">
+            Vérification officielle de document
+          </p>
+        </header>
 
-            <div className="pt-4">
-              <Button
-                variant="outline"
-                className="w-full border-slate-200 hover:bg-slate-50 text-slate-700"
-                onClick={handleBack}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Retour au site officiel
+        <main className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 space-y-5">
+          {malformed ? (
+            <div className="text-center space-y-4">
+              <div className="mx-auto w-fit p-4 rounded-full bg-slate-100 border border-slate-200">
+                <XCircle className="h-10 w-10 text-slate-500" />
+              </div>
+              <h1 className="text-xl font-black text-slate-900">Référence invalide</h1>
+              <p className="text-sm text-slate-600">
+                Le code scanné ne correspond pas à un format de référence valide.
+              </p>
+            </div>
+          ) : isLoading ? (
+            <div className="flex flex-col items-center space-y-3 py-10">
+              <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
+              <p className="text-slate-500 text-sm font-medium">
+                Vérification de l'authenticité...
+              </p>
+            </div>
+          ) : error ? (
+            <div className="text-center space-y-4">
+              <div className="mx-auto w-fit p-4 rounded-full bg-amber-50 border border-amber-200">
+                <WifiOff className="h-10 w-10 text-amber-600" />
+              </div>
+              <h1 className="text-xl font-black text-slate-900 leading-tight">
+                Vérification temporairement indisponible
+              </h1>
+              <p className="text-sm text-slate-600">
+                {(error as Error).message ||
+                  "Impossible de confirmer l'authenticité du document pour le moment."}
+              </p>
+              <Button className="w-full" onClick={() => void refetch()} disabled={isFetching}>
+                <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+                Réessayer
               </Button>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <div className="flex justify-center">
-              <div className={`p-6 rounded-full border ${ui.ring}`}>
-                <ui.Icon className={`h-16 w-16 ${ui.tone}`} />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">{ui.title}</h1>
-              <p className={`font-bold text-lg uppercase tracking-wide ${ui.tone}`}>
-                {data.docType?.toUpperCase()} — {ui.subtitle}
-              </p>
-              {data.reason && (
-                <p className="text-sm text-slate-500 italic">Motif : {data.reason}</p>
-              )}
-            </div>
-
-            <div className="bg-slate-50 rounded-xl p-6 text-left space-y-4 border border-slate-200 shadow-inner">
-              <div className="flex items-start gap-3">
-                <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div>
-                  <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Référence Officielle</p>
-                  <p className="font-mono text-slate-900 font-bold text-lg leading-none mt-1">{data.reference}</p>
+          ) : ui && data ? (
+            <div className="space-y-5">
+              {/* Bloc statut */}
+              <div className={`rounded-xl border p-4 flex items-start gap-3 ${ui.badge}`}>
+                <ui.Icon className={`h-8 w-8 shrink-0 ${ui.icon}`} />
+                <div className="min-w-0">
+                  <h1 className={`text-base font-black uppercase tracking-tight ${ui.text}`}>
+                    {ui.title}
+                  </h1>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-slate-600">
+                    {hasDocumentInfo && data.docType ? `${data.docType} — ` : ''}
+                    {ui.subtitle}
+                  </p>
+                  {data.reason && (
+                    <p className="text-[11px] text-slate-500 italic mt-1">Motif : {data.reason}</p>
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4">
-                <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Émission</p>
-                    <p className="text-slate-900 font-bold">{data.date ? formatDate(data.date) : '—'}</p>
-                  </div>
-                </div>
+              <p className="text-[12px] text-slate-600 leading-relaxed">{ui.message}</p>
 
-                <div className="flex items-start gap-3">
-                  <User className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">Client & Représentant</p>
-                    <p className="text-slate-900 font-bold break-words leading-tight">
+              {/* Informations document */}
+              {hasDocumentInfo && (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-4">
+                  <Row Icon={FileText} label="Référence officielle">
+                    <span className="font-mono">{data.reference}</span>
+                    {data.docType && (
+                      <span className="block text-[11px] font-medium text-slate-500">
+                        {data.docType}
+                      </span>
+                    )}
+                  </Row>
+
+                  {data.date && (
+                    <Row Icon={Calendar} label="Date d'émission">
+                      {formatDate(data.date)}
+                    </Row>
+                  )}
+
+                  {data.client_nom && (
+                    <Row Icon={User} label="Client">
                       {data.client_nom}
                       {data.representant_nom && (
-                        <span className="block text-[11px] text-slate-500 font-medium mt-0.5 italic">
+                        <span className="block text-[11px] text-slate-500 font-medium italic mt-0.5">
                           Rep : {data.representant_nom}
                         </span>
                       )}
+                    </Row>
+                  )}
+
+                  <Row Icon={Building2} label="Émetteur">
+                    EDITIONS FABS-CI
+                  </Row>
+
+                  {typeof data.montant === 'number' && (
+                    <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+                      <p className="text-slate-500 text-sm font-medium">Montant total</p>
+                      <p className="text-xl font-black text-blue-900">
+                        {formatFCFA(data.montant)}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="pt-3 border-t border-slate-200 space-y-1">
+                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">
+                      Certification numérique
                     </p>
+                    {data.certified_at ? (
+                      <>
+                        <p className="text-[11px] text-slate-600">
+                          Certifié le {formatDate(data.certified_at)} •{' '}
+                          {data.signature_algorithm ?? 'Ed25519'}
+                        </p>
+                        {data.certification_id && (
+                          <p className="font-mono text-[10px] text-slate-400 break-all">
+                            ID : {data.certification_id}
+                          </p>
+                        )}
+                        {data.canonical_hash && (
+                          <p className="font-mono text-[10px] text-slate-400 break-all">
+                            SHA-256 : {data.canonical_hash}
+                          </p>
+                        )}
+                      </>
+                    ) : (
+                      <p className="text-[11px] text-slate-500">
+                        Aucune signature numérique enregistrée pour ce document.
+                      </p>
+                    )}
                   </div>
                 </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex justify-between items-center">
-                  <p className="text-slate-500 font-medium">Net à Payer</p>
-                  <p className="text-2xl font-black text-blue-900">{formatFCFA(data.montant ?? 0)}</p>
-                </div>
-              </div>
-
-              {data.certified_at && (
-                <div className="pt-4 border-t border-slate-200 space-y-1">
-                  <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest">
-                    Certification numérique
-                  </p>
-                  <p className="text-[11px] text-slate-500">
-                    Certifié le {formatDate(data.certified_at)} • {data.signature_algorithm ?? 'Ed25519'}
-                  </p>
-                  {data.canonical_hash && (
-                    <p className="font-mono text-[10px] text-slate-400 break-all">
-                      {data.canonical_hash}
-                    </p>
-                  )}
-                </div>
               )}
+
+              {data.checked_at && (
+                <p className="text-[10px] text-slate-400 text-center">
+                  Dernière vérification : {new Date(data.checked_at).toLocaleString('fr-FR')}
+                </p>
+              )}
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => void refetch()}
+                  disabled={isFetching}
+                >
+                  <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+                  Revérifier
+                </Button>
+                <Button variant="ghost" className="flex-1 text-slate-500" onClick={handleBack}>
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Site officiel
+                </Button>
+              </div>
             </div>
+          ) : null}
+        </main>
 
-            <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
-              <p className="text-[11px] text-blue-800 leading-relaxed font-medium">
-                {data.status === 'AUTHENTIC'
-                  ? "Confirmation officielle du système ERP EDITIONS FABS-CI : ce document est signé numériquement et enregistré dans notre registre."
-                  : data.status === 'UNCERTIFIED'
-                    ? "Ce document existe dans notre registre mais n'a pas été signé numériquement. Contactez EDITIONS FABS-CI pour confirmation."
-                    : "Ce document ne peut plus être considéré comme valide. Contactez EDITIONS FABS-CI avant tout paiement."}
-              </p>
-            </div>
-
-            <Button
-              variant="ghost"
-              className="w-full text-slate-400 text-xs hover:text-slate-600"
-              onClick={handleBack}
-            >
-              Fermer la vérification
-            </Button>
-          </div>
-        )}
-      </div>
-
-      <div className="mt-8 flex flex-col items-center space-y-2 opacity-60">
-        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">
-          Certification Digitale • Editions FABS-CI
-        </p>
-        <p className="text-slate-400 text-[10px]">
-          © {new Date().getFullYear()} Tous droits réservés.
-        </p>
+        <footer className="flex flex-col items-center space-y-1 opacity-60 pt-2">
+          <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+            Certification digitale • Editions FABS-CI
+          </p>
+          <p className="text-slate-400 text-[10px]">
+            © {new Date().getFullYear()} Tous droits réservés.
+          </p>
+        </footer>
       </div>
     </div>
   );
