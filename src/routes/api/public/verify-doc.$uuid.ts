@@ -1,10 +1,20 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+/** Validation stricte de la référence transmise dans l'URL (anti-injection / anti-énumération). */
+const REFERENCE_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{2,60}$/
+
 export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
   server: {
     handlers: {
       GET: async ({ params, request }) => {
         const { uuid } = params as { uuid: string }
+
+        if (!REFERENCE_RE.test(uuid)) {
+          return Response.json(
+            { status: 'NOT_FOUND', error: 'Référence invalide' },
+            { status: 404, headers: { 'Cache-Control': 'no-store' } },
+          )
+        }
 
         try {
           const {
@@ -38,9 +48,10 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
             userAgent,
           })
 
+          // INVALID = aucun document correspondant -> 404 explicite, sans données inventées.
           if (result.status === 'INVALID') {
             return Response.json(
-              { status: 'INVALID', error: 'Document non trouvé' },
+              { status: 'NOT_FOUND', error: 'Document non trouvé' },
               { status: 404, headers: { 'Cache-Control': 'no-store' } },
             )
           }
@@ -57,15 +68,21 @@ export const Route = createFileRoute('/api/public/verify-doc/$uuid')({
               representant_nom: doc.representant_nom ?? null,
               montant: doc.montant,
               statut_document: doc.statut_document ?? null,
+              certification_id: doc.certification_id ?? null,
               certified_at: doc.certified_at ?? null,
               canonical_hash: doc.canonical_hash ?? null,
               signature_algorithm: doc.signature_algorithm ?? null,
+              checked_at: new Date().toISOString(),
             },
             { status: 200, headers: { 'Cache-Control': 'no-store' } },
           )
         } catch (error) {
-          console.error('Verification handler error:', error)
-          return Response.json({ error: 'Erreur serveur' }, { status: 500 })
+          // Erreur technique : distincte d'un document introuvable, journalisée côté serveur.
+          console.error('[verify-doc] erreur de vérification', uuid, error)
+          return Response.json(
+            { status: 'ERROR', error: 'Vérification temporairement indisponible' },
+            { status: 503, headers: { 'Cache-Control': 'no-store' } },
+          )
         }
       },
     },
