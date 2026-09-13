@@ -1,49 +1,15 @@
-# Suppression Totale et Définitive du MFA
+# Certification automatique — Factures, Bons de commande, Proformas
 
-Ce plan détaille les étapes pour retirer complètement le système d'authentification multifacteur (MFA/TOTP) de l'application, en suivant les consignes de l'audit préalable.
+## Plan en 5 lignes
 
-## Actions à réaliser
+1. **Base de données** : aucune nouvelle table — on réutilise `document_certifications`, `signature_keys`, `document_verification_logs` ; on ajoute un index unique sur (type, document_id, version) si absent et on garde tout l'existant.
+2. **Serveur** : nouvelle fonction `ensureCertification(reference)` (idempotente) dans `certification.server.ts` + serveur-fonction publique authentifiée `ensureCertificationFn`, qui certifie automatiquement FACTURE / COMMANDE / PROFORMA et renvoie empreinte, version, date et lien de vérification ; les BL restent hors périmètre.
+3. **Déclenchement automatique** : appel de `ensureCertification` lors de la validation/génération des documents (`cycle-vente.ts` : facture, commande, proforma) et, en filet de sécurité, juste avant la génération du PDF.
+4. **PDF / QR** : `base-document.ts` + `docTypeConfig.ts` récupèrent la certification avant rendu et impriment le bloc « Certification numérique » (statut, version, date, empreinte, QR bleu vers `/verify/<référence>`) sur FAC, BC et PROFORMA uniquement.
+5. **UI et page publique** : suppression du bouton « Certifier ce document » dans `CertificationCard.tsx` (affichage seul, révocation conservée pour l'administrateur) ; `verify.$uuid.tsx` et `api/public/verify-doc.$uuid.ts` affichent « DOCUMENT AUTHENTIQUE » ou « DOCUMENT NON AUTHENTIQUE », vérification 100 % serveur.
 
-### 1. Base de données
-- Créer une migration SQL pour supprimer les tables liées au MFA : `two_fa_secrets`, `mfa_backup_codes`, `mfa_otp_attempts`, `mfa_session_validations`.
-- Supprimer les colonnes liées au MFA dans la table `profiles` : `mfa_required`, `mfa_enrolled_at`.
-- Supprimer les fonctions et triggers associés (ex: `check_mfa_session`).
+## Points techniques
 
-### 2. Backend (Server Functions)
-- Supprimer `src/lib/mfa.functions.ts` qui contient les fonctions de configuration et de vérification.
-- Nettoyer `src/lib/users.functions.ts` de toute référence au statut MFA.
-
-### 3. Frontend - Routes et Layouts
-- Supprimer les routes `src/routes/_authenticated/mfa.enroll.tsx` et `src/routes/_authenticated/mfa.backup-codes.tsx`.
-- Modifier `src/routes/_authenticated/route.tsx` pour retirer le composant `<MfaGate>`.
-- Supprimer le composant `src/components/mfa/MfaGate.tsx`.
-- Supprimer le dossier `src/components/mfa/`.
-
-### 4. Frontend - UI de gestion
-- Modifier `src/components/security/UsersAdmin.tsx` pour retirer les colonnes et boutons de gestion du MFA (Activer/Désactiver).
-- Modifier `src/routes/_authenticated/profil.tsx` pour retirer les options MFA du profil utilisateur.
-
-### 5. Nettoyage du Code et Dépendances
-- Retirer les imports inutilisés de `otpauth` et `input-otp` (sauf si `input-otp` est utilisé ailleurs, à vérifier).
-- Nettoyer les définitions RBAC dans `src/lib/rbac-catalog.ts`, `src/lib/rbac-permission-codes.ts` et `src/lib/route-permissions.ts`.
-- Supprimer le fichier de mémoire projet `mem://features/mfa-control.md`.
-
-### 6. Vérification
-- Vérifier que la connexion (Email/MDP) fonctionne pour tous les rôles.
-- Vérifier que le menu latéral et le contenu principal s'affichent correctement.
-- S'assurer qu'aucune référence résiduelle n'empêche le build.
-
-## Détails techniques
-
-### Dépendances à supprimer (via bun remove)
-- `otpauth`
-
-### Tables à supprimer (SQL)
-- `public.two_fa_secrets`
-- `public.mfa_backup_codes`
-- `public.mfa_otp_attempts`
-- `public.mfa_session_validations`
-
-### Modifications de schéma (SQL)
-- `ALTER TABLE public.profiles DROP COLUMN IF EXISTS mfa_required;`
-- `ALTER TABLE public.profiles DROP COLUMN IF EXISTS mfa_enrolled_at;`
+- Empreinte SHA-256 sur la représentation canonique existante, signature Ed25519 côté serveur ; le frontend ne décide jamais de l'authenticité.
+- Idempotence : si une certification AUTHENTIC existe déjà avec la même empreinte, on la réutilise ; si le document a changé, une nouvelle version est créée.
+- Aucun document existant hors FAC / BC / PROFORMA n'est modifié, aucune donnée supprimée, la génération PDF actuelle reste fonctionnelle.
