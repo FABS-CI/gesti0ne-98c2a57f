@@ -59,6 +59,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatFCFA as fmt } from "@/lib/format";
 import { RouteError, RouteNotFound } from "@/components/route-boundaries";
+import { CertificationCard } from "@/components/certification/CertificationCard";
 
 export const Route = createFileRoute("/_authenticated/factures/$factureId")({
   component: FactureDetailPage,
