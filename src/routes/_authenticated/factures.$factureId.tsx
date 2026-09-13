@@ -486,6 +486,8 @@ function FactureDetailPage() {
           </Card>
         );
       })()}
+
+      <CertificationCard reference={facture.reference} />
     </div>
   );
 }
