@@ -92,21 +92,12 @@ export function CertificationCard({ reference }: { reference: string }) {
             )}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            Ce document n'a pas encore de signature numérique. La page publique de vérification
-            l'affichera comme « non certifié ».
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" /> Certification automatique en cours…
           </p>
         )}
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button
-            size="sm"
-            onClick={() => certifyMut.mutate()}
-            disabled={certifyMut.isPending}
-          >
-            {certifyMut.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {active && active.statut === "ACTIVE" ? "Re-certifier" : "Certifier ce document"}
-          </Button>
           <Button asChild size="sm" variant="outline">
             <a href={`/verify/${encodeURIComponent(reference)}`} target="_blank" rel="noreferrer">
               Vérifier publiquement
