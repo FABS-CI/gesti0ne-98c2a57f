@@ -401,11 +401,62 @@ export class BaseDocument {
         });
         this.page.drawImage(qrImage, { x: qrX + 12, y: y - boxH + 16, width: qrSize, height: qrSize });
 
-        const legende = isCommande
-          ? ["Scanner pour authentifier", "ce bon de commande"]
-          : ["Scanner pour vérifier", "l'authenticité"];
-        this.page.drawText(legende[0], { x: qrX + 95, y: y - 40, size: 7, font: this.fonts.regular });
-        this.page.drawText(legende[1], { x: qrX + 95, y: y - 50, size: 7, font: this.fonts.regular });
+        // --- Bloc « Certification numérique » (certification automatique idempotente) ---
+        const { ensureCertificationSafe, isCertificationActive } = await import(
+          "@/lib/certification/auto-certify"
+        );
+        const cert = await ensureCertificationSafe(this.data.reference);
+        const textX = qrX + 95;
+
+        this.page.drawText("CERTIFICATION NUMÉRIQUE", {
+          x: textX,
+          y: y - 22,
+          size: 7,
+          font: this.fonts.bold,
+          color: COLORS.bleuFabs,
+        });
+
+        if (cert && isCertificationActive(cert.statut)) {
+          const dateFr = cert.certified_at
+            ? new Date(cert.certified_at).toLocaleDateString("fr-FR")
+            : "—";
+          const hash = cert.canonical_hash ?? "";
+          const hashCourt = hash ? `${hash.slice(0, 8).toUpperCase()}…${hash.slice(-4).toUpperCase()}` : "—";
+          const lignesCert = [
+            `Statut : ACTIVE`,
+            `Version : ${cert.version ?? 1}`,
+            `Date : ${dateFr}`,
+            `Empreinte : ${hashCourt}`,
+          ];
+          lignesCert.forEach((txt, i) => {
+            this.page.drawText(txt, {
+              x: textX,
+              y: y - 34 - i * 10,
+              size: 6.5,
+              font: this.fonts.regular,
+              color: COLORS.grisTexte,
+            });
+          });
+          this.page.drawText(
+            isCommande ? "Scanner pour authentifier" : "Scanner pour vérifier l'authenticité",
+            { x: textX, y: y - boxH + 14, size: 6, font: this.fonts.regular, color: COLORS.grisTexte },
+          );
+        } else {
+          this.page.drawText("Certification en attente", {
+            x: textX,
+            y: y - 34,
+            size: 6.5,
+            font: this.fonts.regular,
+            color: COLORS.grisTexte,
+          });
+          this.page.drawText("Scanner pour vérifier l'authenticité", {
+            x: textX,
+            y: y - 44,
+            size: 6,
+            font: this.fonts.regular,
+            color: COLORS.grisTexte,
+          });
+        }
       } catch (e) {
         console.error("QR Error", e);
       }
