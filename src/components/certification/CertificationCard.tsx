@@ -63,8 +63,8 @@ export function CertificationCard({ reference }: { reference: string }) {
             Certification numérique
           </span>
           {active ? (
-            <Badge variant={active.statut === "ACTIVE" ? "default" : "destructive"}>
-              {active.statut === "ACTIVE" ? "CERTIFIÉ" : active.statut}
+            <Badge variant={isCertificationActive(active.statut) ? "default" : "destructive"}>
+              {isCertificationActive(active.statut) ? "ACTIVE" : active.statut}
             </Badge>
           ) : (
             <Badge variant="outline">NON CERTIFIÉ</Badge>
