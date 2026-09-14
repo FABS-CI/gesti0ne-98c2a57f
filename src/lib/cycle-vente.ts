@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Commande } from "@/lib/commandes-api";
+import { ensureCertificationSafe } from "@/lib/certification/auto-certify";
 
 /**
  * Chaînage du cycle de vente :
@@ -25,7 +26,10 @@ export async function createCommandeFromProforma(proformaId: string): Promise<Co
     .eq("commande_id", commandeId as unknown as string)
     .single();
   if (eGet) throw eGet;
-  return data as Commande;
+  const commande = data as Commande;
+  // Certification automatique du bon de commande créé.
+  await ensureCertificationSafe(commande.reference);
+  return commande;
 }
 
 export type ColisageInput = {
@@ -81,6 +85,7 @@ export async function createFactureFromCommande(commande: Commande) {
     .neq("statut", "annulee")
     .limit(1);
   if (existing && existing.length > 0) {
+    await ensureCertificationSafe(existing[0].reference);
     return existing[0];
   }
 
@@ -89,7 +94,9 @@ export async function createFactureFromCommande(commande: Commande) {
   });
   if (error) throw new Error(error.message);
   const row = Array.isArray(data) ? data[0] : data;
-  return { reference: (row as { facture_reference?: string })?.facture_reference ?? "" };
+  const reference = (row as { facture_reference?: string })?.facture_reference ?? "";
+  await ensureCertificationSafe(reference);
+  return { reference };
 }
 
 /**
@@ -105,5 +112,8 @@ export async function validerCommande(commandeId: string) {
   });
   if (error) throw error;
   const row = Array.isArray(data) ? data[0] : data;
-  return row as { facture_reference: string; bl_reference: string };
+  const res = row as { facture_reference: string; bl_reference: string };
+  // Certification automatique de la facture issue de la validation.
+  await ensureCertificationSafe(res.facture_reference);
+  return res;
 }
