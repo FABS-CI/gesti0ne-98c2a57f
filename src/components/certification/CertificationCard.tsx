@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -9,16 +9,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { formatDate } from "@/lib/format";
 import {
-  certifyDocumentFn,
   revokeCertificationFn,
   listCertificationsFn,
 } from "@/lib/certification/certification.functions";
+import { ensureCertificationSafe, isCertificationActive } from "@/lib/certification/auto-certify";
 
-/** Section « Certification numérique » d'un document commercial (facture, proforma…). */
+/** Section « Certification numérique » d'un document commercial (facture, proforma, bon de commande). */
 export function CertificationCard({ reference }: { reference: string }) {
   const qc = useQueryClient();
   const list = useServerFn(listCertificationsFn);
-  const certify = useServerFn(certifyDocumentFn);
   const revoke = useServerFn(revokeCertificationFn);
   const [motif, setMotif] = useState("");
 
@@ -27,16 +26,22 @@ export function CertificationCard({ reference }: { reference: string }) {
     queryFn: () => list({ data: { reference } }),
   });
 
-  const active = certifications.find((c) => c.statut === "ACTIVE") ?? certifications[0] ?? null;
+  // Certification automatique : aucune action manuelle n'est demandée à l'utilisateur.
+  useEffect(() => {
+    let annule = false;
+    void (async () => {
+      const res = await ensureCertificationSafe(reference);
+      if (!annule && res?.certified) {
+        void qc.invalidateQueries({ queryKey: ["certifications", reference] });
+      }
+    })();
+    return () => {
+      annule = true;
+    };
+  }, [reference, qc]);
 
-  const certifyMut = useMutation({
-    mutationFn: () => certify({ data: { reference } }),
-    onSuccess: () => {
-      toast.success("Document certifié numériquement");
-      void qc.invalidateQueries({ queryKey: ["certifications", reference] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
+  const active =
+    certifications.find((c) => isCertificationActive(c.statut)) ?? certifications[0] ?? null;
 
   const revokeMut = useMutation({
     mutationFn: () =>
