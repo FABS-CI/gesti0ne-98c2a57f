@@ -105,7 +105,7 @@ export function CertificationCard({ reference }: { reference: string }) {
           </Button>
         </div>
 
-        {active && active.statut === "ACTIVE" && (
+        {active && isCertificationActive(active.statut) && (
           <div className="flex flex-wrap items-center gap-2 border-t pt-3">
             <Input
               value={motif}
