@@ -83,3 +83,29 @@ export const ensureCertificationFn = createServerFn({ method: "POST" })
     const { ensureCertification } = await import("./certification.server");
     return ensureCertification(data.reference, context.userId ?? null);
   });
+
+/**
+ * Jeton d'authenticité stable d'un document + URL publique de vérification.
+ * Appelé avant chaque génération de PDF : le jeton existant est toujours réutilisé.
+ */
+export const ensureVerificationTokenFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { reference: string }) => ({
+    reference: String(input?.reference ?? "").trim(),
+  }))
+  .handler(async ({ data, context }) => {
+    if (!data.reference) {
+      return {
+        certified: false,
+        certification_id: null,
+        canonical_hash: null,
+        version: null,
+        certified_at: null,
+        statut: null,
+        token: null,
+        verification_url: null,
+      };
+    }
+    const { ensureVerificationToken } = await import("./certification.server");
+    return ensureVerificationToken(data.reference, context.userId ?? null);
+  });
