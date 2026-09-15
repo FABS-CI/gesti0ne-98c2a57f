@@ -450,3 +450,47 @@ export async function ensureCertification(
     statut: f?.statut ?? "AUTHENTIC",
   };
 }
+
+export type VerificationTokenResult = EnsureCertificationResult & {
+  token: string | null;
+  verification_url: string | null;
+};
+
+/**
+ * Jeton d'authenticité stable d'un document (FACTURE, PROFORMA, COMMANDE, BL).
+ * - Certifie le document si nécessaire (idempotent).
+ * - Réutilise TOUJOURS le jeton existant : le QR code d'un document ne change jamais.
+ */
+export async function ensureVerificationToken(
+  reference: string,
+  userId: string | null = null,
+): Promise<VerificationTokenResult> {
+  const cert = await ensureCertification(reference, userId);
+  if (!cert.certification_id) return { ...cert, token: null, verification_url: null };
+
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("document_certifications" as any)
+    .select("verification_token, verification_url")
+    .eq("certification_id", cert.certification_id)
+    .maybeSingle();
+
+  let token = (data as any)?.verification_token as string | null | undefined;
+
+  // Certifications historiques créées avant l'ajout du jeton en clair : on en crée un, une seule fois.
+  if (!token) {
+    const generated = newVerificationToken();
+    const { error } = await supabaseAdmin
+      .from("document_certifications" as any)
+      .update({
+        verification_token: generated.token,
+        token_hash: generated.tokenHash,
+        verification_url: buildVerificationUrl(generated.token),
+      })
+      .eq("certification_id", cert.certification_id);
+    if (error) return { ...cert, token: null, verification_url: null };
+    token = generated.token;
+  }
+
+  return { ...cert, token, verification_url: buildVerificationUrl(token) };
+}
