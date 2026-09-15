@@ -410,10 +410,6 @@ export class BaseDocument {
         this.page.drawImage(qrImage, { x: qrX + 12, y: y - boxH + 16, width: qrSize, height: qrSize });
 
         // --- Bloc « Certification numérique » (certification automatique idempotente) ---
-        const { ensureCertificationSafe, isCertificationActive } = await import(
-          "@/lib/certification/auto-certify"
-        );
-        const cert = await ensureCertificationSafe(this.data.reference);
         const textX = qrX + 95;
 
         this.page.drawText("CERTIFICATION NUMÉRIQUE", {
