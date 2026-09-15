@@ -176,7 +176,6 @@ export async function certifyDocument(
 
   const { payload, hash, canonical } = buildCanonical(doc.canonicalInput);
   const signature = signPayload(payload);
-  const { token, tokenHash } = newVerificationToken();
 
   const { data: key } = await supabaseAdmin
     .from("signature_keys" as any)
@@ -187,7 +186,7 @@ export async function certifyDocument(
   // Version suivante si le document a déjà été certifié
   const { data: prev } = await supabaseAdmin
     .from("document_certifications" as any)
-    .select("version")
+    .select("version, verification_token, token_hash")
     .eq("document_type", doc.type)
     .eq("document_id", doc.id)
     .order("version", { ascending: false })
@@ -195,6 +194,13 @@ export async function certifyDocument(
     .maybeSingle();
 
   const version = ((prev as any)?.version ?? 0) + 1;
+
+  // STABILITÉ : un document conserve toujours le même jeton public, même
+  // lorsqu'une nouvelle version de certification est créée.
+  const previousToken = (prev as any)?.verification_token as string | undefined;
+  const fresh = newVerificationToken();
+  const token = previousToken ?? fresh.token;
+  const tokenHash = previousToken ? sha256Hex(previousToken) : fresh.tokenHash;
 
   const { data: inserted, error } = await supabaseAdmin
     .from("document_certifications" as any)
@@ -206,6 +212,8 @@ export async function certifyDocument(
       signature,
       key_id: (key as any)?.key_id ?? null,
       token_hash: tokenHash,
+      verification_token: token,
+      verification_url: buildVerificationUrl(token),
       statut: "AUTHENTIC",
       snapshot: canonical as any,
       certified_by: userId,
@@ -217,6 +225,13 @@ export async function certifyDocument(
   if (error) throw new Error(error.message);
 
   return { token, certification_id: (inserted as any).certification_id, hash };
+}
+
+/** Base publique des liens de vérification (jamais un domaine éphémère de preview). */
+export const PUBLIC_BASE_URL = "https://gesti0ne.lovable.app";
+
+export function buildVerificationUrl(token: string): string {
+  return `${PUBLIC_BASE_URL}/verify/${token}`;
 }
 
 export async function revokeCertification(
@@ -242,12 +257,15 @@ export async function verifyByToken(token: string): Promise<VerificationResult> 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const tokenHash = sha256Hex(token);
 
-  const { data: cert } = await supabaseAdmin
+  // Le jeton est stable : on retient toujours la certification la plus récente.
+  const { data: rows } = await supabaseAdmin
     .from("document_certifications" as any)
     .select("*, signature_keys(public_key, algorithm)")
     .eq("token_hash", tokenHash)
-    .maybeSingle();
+    .order("version", { ascending: false })
+    .limit(1);
 
+  const cert = (rows as any[] | null)?.[0];
   if (!cert) return { status: "INVALID" };
   return evaluateCertification(cert);
 }
@@ -355,7 +373,7 @@ export async function isRateLimited(ip: string | null): Promise<boolean> {
 }
 
 /** Types de documents soumis à la certification automatique. */
-export const AUTO_CERTIFIED_TYPES: DocType[] = ["FACTURE", "PROFORMA", "COMMANDE"];
+export const AUTO_CERTIFIED_TYPES: DocType[] = ["FACTURE", "PROFORMA", "COMMANDE", "BL"];
 
 export type EnsureCertificationResult = {
   certified: boolean;
@@ -431,4 +449,48 @@ export async function ensureCertification(
     certified_at: f?.certified_at ?? new Date().toISOString(),
     statut: f?.statut ?? "AUTHENTIC",
   };
+}
+
+export type VerificationTokenResult = EnsureCertificationResult & {
+  token: string | null;
+  verification_url: string | null;
+};
+
+/**
+ * Jeton d'authenticité stable d'un document (FACTURE, PROFORMA, COMMANDE, BL).
+ * - Certifie le document si nécessaire (idempotent).
+ * - Réutilise TOUJOURS le jeton existant : le QR code d'un document ne change jamais.
+ */
+export async function ensureVerificationToken(
+  reference: string,
+  userId: string | null = null,
+): Promise<VerificationTokenResult> {
+  const cert = await ensureCertification(reference, userId);
+  if (!cert.certification_id) return { ...cert, token: null, verification_url: null };
+
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("document_certifications" as any)
+    .select("verification_token, verification_url")
+    .eq("certification_id", cert.certification_id)
+    .maybeSingle();
+
+  let token = (data as any)?.verification_token as string | null | undefined;
+
+  // Certifications historiques créées avant l'ajout du jeton en clair : on en crée un, une seule fois.
+  if (!token) {
+    const generated = newVerificationToken();
+    const { error } = await supabaseAdmin
+      .from("document_certifications" as any)
+      .update({
+        verification_token: generated.token,
+        token_hash: generated.tokenHash,
+        verification_url: buildVerificationUrl(generated.token),
+      })
+      .eq("certification_id", cert.certification_id);
+    if (error) return { ...cert, token: null, verification_url: null };
+    token = generated.token;
+  }
+
+  return { ...cert, token, verification_url: buildVerificationUrl(token) };
 }

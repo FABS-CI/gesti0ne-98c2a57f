@@ -1874,6 +1874,8 @@ export type Database = {
           snapshot: Json
           statut: string
           token_hash: string
+          verification_token: string | null
+          verification_url: string | null
           version: number
         }
         Insert: {
@@ -1892,6 +1894,8 @@ export type Database = {
           snapshot?: Json
           statut?: string
           token_hash: string
+          verification_token?: string | null
+          verification_url?: string | null
           version?: number
         }
         Update: {
@@ -1910,6 +1914,8 @@ export type Database = {
           snapshot?: Json
           statut?: string
           token_hash?: string
+          verification_token?: string | null
+          verification_url?: string | null
           version?: number
         }
         Relationships: [
