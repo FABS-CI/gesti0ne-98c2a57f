@@ -9,10 +9,10 @@ export type AutoCertification = {
   statut: string | null;
 };
 
-/** Un document est-il éligible à la certification automatique (FAC / PRO / BC) ? */
+/** Un document est-il éligible à la certification automatique (FAC / PRO / BC / BL) ? */
 export function isCertifiable(reference: string): boolean {
   const prefix = (reference ?? "").split("-")[0]?.toUpperCase() ?? "";
-  return ["FAC", "FC", "PRO", "PF", "CMD", "BC"].includes(prefix);
+  return ["FAC", "FC", "PRO", "PF", "CMD", "BC", "BL"].includes(prefix);
 }
 
 /**
@@ -35,4 +35,27 @@ export async function ensureCertificationSafe(
 /** Statut technique actif d'une certification (valeur backend historique : AUTHENTIC). */
 export function isCertificationActive(statut?: string | null): boolean {
   return statut === "ACTIVE" || statut === "AUTHENTIC";
+}
+
+export type VerificationToken = AutoCertification & {
+  token: string | null;
+  verification_url: string | null;
+};
+
+/**
+ * Jeton d'authenticité stable du document + URL publique.
+ * Utilisé avant la génération du PDF : le même document produit toujours
+ * le même jeton, donc le même lien et le même QR code.
+ */
+export async function ensureVerificationSafe(
+  reference: string,
+): Promise<VerificationToken | null> {
+  if (!reference || !isCertifiable(reference)) return null;
+  try {
+    const { ensureVerificationTokenFn } = await import("./certification.functions");
+    return (await ensureVerificationTokenFn({ data: { reference } })) as VerificationToken;
+  } catch (e) {
+    console.error("Jeton de vérification indisponible", e);
+    return null;
+  }
 }
