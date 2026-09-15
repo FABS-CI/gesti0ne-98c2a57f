@@ -383,7 +383,15 @@ export class BaseDocument {
 
       try {
         const { default: QRCode } = await import("qrcode");
-        const url = buildQrUrl(this.data.reference);
+
+        // Jeton d'authenticité stable : réutilisé à chaque impression / téléchargement.
+        const { ensureVerificationSafe, isCertificationActive } = await import(
+          "@/lib/certification/auto-certify"
+        );
+        const cert = await ensureVerificationSafe(this.data.reference);
+        const url =
+          cert?.verification_url ??
+          (cert?.token ? buildQrUrl(cert.token) : buildQrUrl(this.data.reference));
         const qrDataUrl = await QRCode.toDataURL(url, {
           margin: 1,
           width: 240,
