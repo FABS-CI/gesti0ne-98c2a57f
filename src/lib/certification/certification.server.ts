@@ -257,12 +257,15 @@ export async function verifyByToken(token: string): Promise<VerificationResult> 
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const tokenHash = sha256Hex(token);
 
-  const { data: cert } = await supabaseAdmin
+  // Le jeton est stable : on retient toujours la certification la plus récente.
+  const { data: rows } = await supabaseAdmin
     .from("document_certifications" as any)
     .select("*, signature_keys(public_key, algorithm)")
     .eq("token_hash", tokenHash)
-    .maybeSingle();
+    .order("version", { ascending: false })
+    .limit(1);
 
+  const cert = (rows as any[] | null)?.[0];
   if (!cert) return { status: "INVALID" };
   return evaluateCertification(cert);
 }
