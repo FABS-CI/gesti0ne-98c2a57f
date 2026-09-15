@@ -373,7 +373,7 @@ export async function isRateLimited(ip: string | null): Promise<boolean> {
 }
 
 /** Types de documents soumis à la certification automatique. */
-export const AUTO_CERTIFIED_TYPES: DocType[] = ["FACTURE", "PROFORMA", "COMMANDE"];
+export const AUTO_CERTIFIED_TYPES: DocType[] = ["FACTURE", "PROFORMA", "COMMANDE", "BL"];
 
 export type EnsureCertificationResult = {
   certified: boolean;
