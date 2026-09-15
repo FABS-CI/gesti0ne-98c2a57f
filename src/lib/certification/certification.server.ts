@@ -176,7 +176,6 @@ export async function certifyDocument(
 
   const { payload, hash, canonical } = buildCanonical(doc.canonicalInput);
   const signature = signPayload(payload);
-  const { token, tokenHash } = newVerificationToken();
 
   const { data: key } = await supabaseAdmin
     .from("signature_keys" as any)
@@ -187,7 +186,7 @@ export async function certifyDocument(
   // Version suivante si le document a déjà été certifié
   const { data: prev } = await supabaseAdmin
     .from("document_certifications" as any)
-    .select("version")
+    .select("version, verification_token, token_hash")
     .eq("document_type", doc.type)
     .eq("document_id", doc.id)
     .order("version", { ascending: false })
@@ -195,6 +194,13 @@ export async function certifyDocument(
     .maybeSingle();
 
   const version = ((prev as any)?.version ?? 0) + 1;
+
+  // STABILITÉ : un document conserve toujours le même jeton public, même
+  // lorsqu'une nouvelle version de certification est créée.
+  const previousToken = (prev as any)?.verification_token as string | undefined;
+  const fresh = newVerificationToken();
+  const token = previousToken ?? fresh.token;
+  const tokenHash = previousToken ? sha256Hex(previousToken) : fresh.tokenHash;
 
   const { data: inserted, error } = await supabaseAdmin
     .from("document_certifications" as any)
@@ -206,6 +212,8 @@ export async function certifyDocument(
       signature,
       key_id: (key as any)?.key_id ?? null,
       token_hash: tokenHash,
+      verification_token: token,
+      verification_url: buildVerificationUrl(token),
       statut: "AUTHENTIC",
       snapshot: canonical as any,
       certified_by: userId,
@@ -217,6 +225,13 @@ export async function certifyDocument(
   if (error) throw new Error(error.message);
 
   return { token, certification_id: (inserted as any).certification_id, hash };
+}
+
+/** Base publique des liens de vérification (jamais un domaine éphémère de preview). */
+export const PUBLIC_BASE_URL = "https://gesti0ne.lovable.app";
+
+export function buildVerificationUrl(token: string): string {
+  return `${PUBLIC_BASE_URL}/verify/${token}`;
 }
 
 export async function revokeCertification(
